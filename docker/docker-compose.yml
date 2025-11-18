@@ -1,0 +1,43 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: imobiflow-db
+    environment:
+      POSTGRES_USER: imobiflow
+      POSTGRES_PASSWORD: imobiflow123
+      POSTGRES_DB: imobiflow
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - imobiflow-network
+
+  redis:
+    image: redis:7-alpine
+    container_name: imobiflow-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - imobiflow-network
+
+  mailhog:
+    image: mailhog/mailhog
+    container_name: imobiflow-mailhog
+    ports:
+      - "1025:1025"
+      - "8025:8025"
+    networks:
+      - imobiflow-network
+
+volumes:
+  postgres_data:
+  redis_data:
+
+networks:
+  imobiflow-network:
+    driver: bridge
