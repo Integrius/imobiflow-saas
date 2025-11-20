@@ -1,0 +1,42 @@
+import { FastifyRequest, FastifyReply } from 'fastify'
+import { ProprietariosService } from './proprietarios.service'
+import { 
+  createProprietarioSchema, 
+  updateProprietarioSchema,
+  filterProprietariosSchema 
+} from './proprietarios.schema'
+
+export class ProprietariosController {
+  constructor(private proprietariosService: ProprietariosService) {}
+
+  async create(request: FastifyRequest, reply: FastifyReply) {
+    const data = createProprietarioSchema.parse(request.body)
+    const proprietario = await this.proprietariosService.create(data)
+    return reply.status(201).send(proprietario)
+  }
+
+  async list(request: FastifyRequest, reply: FastifyReply) {
+    const filters = filterProprietariosSchema.parse(request.query)
+    const result = await this.proprietariosService.findAll(filters)
+    return reply.send(result)
+  }
+
+  async getById(request: FastifyRequest, reply: FastifyReply) {
+    const { id } = request.params as { id: string }
+    const proprietario = await this.proprietariosService.findById(id)
+    return reply.send(proprietario)
+  }
+
+  async update(request: FastifyRequest, reply: FastifyReply) {
+    const { id } = request.params as { id: string }
+    const data = updateProprietarioSchema.parse(request.body)
+    const proprietario = await this.proprietariosService.update(id, data)
+    return reply.send(proprietario)
+  }
+
+  async delete(request: FastifyRequest, reply: FastifyReply) {
+    const { id } = request.params as { id: string }
+    await this.proprietariosService.delete(id)
+    return reply.status(204).send()
+  }
+}

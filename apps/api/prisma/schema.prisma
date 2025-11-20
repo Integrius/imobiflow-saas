@@ -1,15 +1,406 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+// Schema Prisma - ImobiFlow
+// Database: PostgreSQL 16
 
 generator client {
-  provider = "prisma-client"
-  output   = "../generated/prisma"
+  provider = "prisma-client-js"
 }
 
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
+}
+
+// ============================================
+// AUTENTICAÇÃO E USUÁRIOS
+// ============================================
+
+model User {
+  id            String    @id @default(uuid())
+  nome          String
+  email         String    @unique
+  senha_hash    String
+  tipo          UserType  @default(CORRETOR)
+  ativo         Boolean   @default(true)
+  
+  // Timestamps
+  created_at    DateTime  @default(now())
+  updated_at    DateTime  @updatedAt
+  ultimo_login  DateTime?
+  
+  // Relacionamentos
+  corretor      Corretor?
+  
+  @@map("users")
+}
+
+enum UserType {
+  ADMIN
+  GESTOR
+  CORRETOR
+}
+
+// ============================================
+// CORRETORES
+// ============================================
+
+model Corretor {
+  id                  String   @id @default(uuid())
+  user_id             String   @unique
+  user                User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  
+  creci               String   @unique
+  telefone            String
+  foto_url            String?
+  
+  // Configurações
+  especializacoes     String[]
+  meta_mensal         Decimal? @db.Decimal(10, 2)
+  meta_anual          Decimal? @db.Decimal(10, 2)
+  comissao_padrao     Decimal  @default(3.00) @db.Decimal(5, 2)
+  
+  // Performance
+  performance_score   Int      @default(0)
+  disponibilidade     Json?
+  
+  // Timestamps
+  created_at          DateTime @default(now())
+  updated_at          DateTime @updatedAt
+  
+  // Relacionamentos
+  leads               Lead[]
+  negociacoes         Negociacao[]
+  
+  @@map("corretores")
+}
+
+// ============================================
+// LEADS
+// ============================================
+
+model Lead {
+  id                String      @id @default(uuid())
+  
+  // Dados pessoais
+  nome              String
+  email             String?
+  telefone          String
+  cpf               String?
+  
+  // Origem e qualificação
+  origem            OrigemLead
+  temperatura       Temperatura @default(FRIO)
+  score             Int         @default(0)
+  
+  // Interesse
+  interesse         Json
+  observacoes       String?     @db.Text
+  
+  // Timeline de interações
+  timeline          Json[]
+  
+  // Atribuição
+  corretor_id       String?
+  corretor          Corretor?   @relation(fields: [corretor_id], references: [id], onDelete: SetNull)
+  
+  // Timestamps
+  created_at        DateTime    @default(now())
+  updated_at        DateTime    @updatedAt
+  ultimo_contato    DateTime?
+  
+  // Relacionamentos
+  negociacoes       Negociacao[]
+  
+  @@map("leads")
+  @@index([corretor_id])
+  @@index([origem])
+  @@index([temperatura])
+  @@index([score])
+}
+
+enum OrigemLead {
+  SITE
+  PORTAL
+  WHATSAPP
+  TELEFONE
+  INDICACAO
+  REDES_SOCIAIS
+  EVENTO
+  OUTRO
+}
+
+enum Temperatura {
+  QUENTE
+  MORNO
+  FRIO
+}
+
+// ============================================
+// PROPRIETÁRIOS
+// ============================================
+
+model Proprietario {
+  id                  String   @id @default(uuid())
+  
+  // Dados pessoais
+  nome                String
+  cpf_cnpj            String   @unique
+  tipo_pessoa         TipoPessoa @default(FISICA)
+  
+  // Contato
+  email               String?
+  telefone            String
+  telefone_secundario String?
+  contato             Json?
+  
+  // Configurações financeiras
+  forma_pagamento     String   @default("PIX")
+  percentual_comissao Decimal  @default(5.00) @db.Decimal(5, 2)
+  banco               Json?
+  
+  // Timestamps
+  created_at          DateTime @default(now())
+  updated_at          DateTime @updatedAt
+  
+  // Relacionamentos
+  imoveis             Imovel[]
+  
+  @@map("proprietarios")
+}
+
+enum TipoPessoa {
+  FISICA
+  JURIDICA
+}
+
+// ============================================
+// IMÓVEIS
+// ============================================
+
+model Imovel {
+  id                  String          @id @default(uuid())
+  codigo              String          @unique
+  
+  // Tipo e categoria
+  tipo                TipoImovel
+  categoria           CategoriaImovel
+  status              StatusImovel    @default(DISPONIVEL)
+  
+  // Endereço
+  endereco            Json
+  
+  // Características
+  caracteristicas     Json
+  
+  // Descrição
+  titulo              String
+  descricao           String          @db.Text
+  diferenciais        String[]
+  
+  // Mídia
+  fotos               String[]
+  video_url           String?
+  tour_360_url        String?
+  
+  // Documentos
+  documentos          String[]
+  
+  // Valores
+  preco               Decimal         @db.Decimal(10, 2)
+  condominio          Decimal?        @db.Decimal(10, 2)
+  iptu                Decimal?        @db.Decimal(10, 2)
+  
+  // Validação
+  ultima_validacao    DateTime?
+  validado_por        String?
+  
+  // Proprietário
+  proprietario_id     String
+  proprietario        Proprietario    @relation(fields: [proprietario_id], references: [id], onDelete: Restrict)
+  
+  // Timestamps
+  created_at          DateTime        @default(now())
+  updated_at          DateTime        @updatedAt
+  publicado_em        DateTime?
+  
+  // Relacionamentos
+  negociacoes         Negociacao[]
+  
+  @@map("imoveis")
+  @@index([tipo])
+  @@index([categoria])
+  @@index([status])
+  @@index([proprietario_id])
+}
+
+enum TipoImovel {
+  APARTAMENTO
+  CASA
+  TERRENO
+  COMERCIAL
+  RURAL
+  CHACARA
+  SOBRADO
+  COBERTURA
+  LOFT
+  KITNET
+}
+
+enum CategoriaImovel {
+  VENDA
+  LOCACAO
+  TEMPORADA
+}
+
+enum StatusImovel {
+  DISPONIVEL
+  RESERVADO
+  VENDIDO
+  ALUGADO
+  INATIVO
+  MANUTENCAO
+}
+
+// ============================================
+// NEGOCIAÇÕES
+// ============================================
+
+model Negociacao {
+  id                  String            @id @default(uuid())
+  codigo              String            @unique
+  
+  // Relacionamentos principais
+  lead_id             String
+  lead                Lead              @relation(fields: [lead_id], references: [id], onDelete: Restrict)
+  
+  imovel_id           String
+  imovel              Imovel            @relation(fields: [imovel_id], references: [id], onDelete: Restrict)
+  
+  corretor_id         String
+  corretor            Corretor          @relation(fields: [corretor_id], references: [id], onDelete: Restrict)
+  
+  // Status
+  status              StatusNegociacao  @default(CONTATO)
+  
+  // Proposta
+  valor_proposta      Decimal?          @db.Decimal(10, 2)
+  valor_aprovado      Decimal?          @db.Decimal(10, 2)
+  condicoes           Json?
+  
+  // Comissões
+  comissoes           Json[]
+  valor_comissao      Decimal?          @db.Decimal(10, 2)
+  
+  // Documentos
+  documentos          String[]
+  contrato_url        String?
+  
+  // Timeline
+  timeline            Json[]
+  
+  // Datas importantes
+  data_proposta       DateTime?
+  data_contrato       DateTime?
+  data_fechamento     DateTime?
+  
+  // Motivo de perda
+  motivo_perda        String?           @db.Text
+  
+  // Timestamps
+  created_at          DateTime          @default(now())
+  updated_at          DateTime          @updatedAt
+  
+  @@map("negociacoes")
+  @@index([lead_id])
+  @@index([imovel_id])
+  @@index([corretor_id])
+  @@index([status])
+}
+
+enum StatusNegociacao {
+  CONTATO
+  VISITA_AGENDADA
+  VISITA_REALIZADA
+  PROPOSTA
+  ANALISE_CREDITO
+  CONTRATO
+  FECHADO
+  PERDIDO
+  CANCELADO
+}
+
+// ============================================
+// INTEGRAÇÕES
+// ============================================
+
+model Integracao {
+  id                String            @id @default(uuid())
+  
+  portal            PortalIntegracao
+  status            StatusIntegracao  @default(INATIVO)
+  
+  // Configuração
+  configuracao      Json
+  
+  // Sincronização
+  ultima_sync       DateTime?
+  proxima_sync      DateTime?
+  intervalo_sync    Int               @default(60)
+  
+  // Logs
+  logs              Json[]
+  total_sucesso     Int               @default(0)
+  total_erro        Int               @default(0)
+  
+  // Timestamps
+  created_at        DateTime          @default(now())
+  updated_at        DateTime          @updatedAt
+  
+  @@map("integracoes")
+  @@unique([portal])
+}
+
+enum PortalIntegracao {
+  ZAP_IMOVEIS
+  VIVA_REAL
+  OLX
+  IMOVELWEB
+  CHAVES_NA_MAO
+  CUSTOM
+}
+
+enum StatusIntegracao {
+  ATIVO
+  INATIVO
+  ERRO
+  MANUTENCAO
+}
+
+// ============================================
+// AUTOMAÇÕES
+// ============================================
+
+model Automacao {
+  id                String    @id @default(uuid())
+  
+  nome              String
+  descricao         String?   @db.Text
+  
+  // Configuração
+  trigger           String
+  condicoes         Json[]
+  acoes             Json[]
+  
+  // Estado
+  ativo             Boolean   @default(true)
+  
+  // Execuções
+  execucoes         Json[]
+  total_execucoes   Int       @default(0)
+  ultima_execucao   DateTime?
+  
+  // Timestamps
+  created_at        DateTime  @default(now())
+  updated_at        DateTime  @updatedAt
+  
+  @@map("automacoes")
 }
