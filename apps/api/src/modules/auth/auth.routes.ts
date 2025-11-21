@@ -1,9 +1,16 @@
-import type { FastifyInstance } from 'fastify'
+import { FastifyInstance } from 'fastify'
+import { PrismaClient } from '@prisma/client'
 import { AuthController } from './auth.controller'
+import { authMiddleware } from '../../shared/middlewares/auth.middleware'
 
-const authController = new AuthController()
+export async function authRoutes(server: FastifyInstance) {
+  const prisma = new PrismaClient()
+  const controller = new AuthController(prisma)
 
-export async function authRoutes(app: FastifyInstance) {
-  app.post('/register', authController.register.bind(authController))
-  app.post('/login', authController.login.bind(authController))
+  server.post('/register', controller.register.bind(controller))
+  server.post('/login', controller.login.bind(controller))
+  
+  server.get('/me', {
+    preHandler: authMiddleware
+  }, controller.me.bind(controller))
 }

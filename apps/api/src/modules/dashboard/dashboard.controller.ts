@@ -1,6 +1,6 @@
 import { FastifyRequest, FastifyReply } from 'fastify'
-import { DashboardService } from './dashboard.service'
 import { PrismaClient } from '@prisma/client'
+import { DashboardService } from './dashboard.service'
 
 export class DashboardController {
   private service: DashboardService
@@ -11,58 +11,112 @@ export class DashboardController {
 
   async getOverview(request: FastifyRequest, reply: FastifyReply) {
     try {
-      const { corretor_id, data_inicio, data_fim } = request.query as any
-      
-      const filters: any = {}
-      if (corretor_id) filters.corretor_id = corretor_id
-      if (data_inicio) filters.data_inicio = new Date(data_inicio)
-      if (data_fim) filters.data_fim = new Date(data_fim)
-
-      const overview = await this.service.getOverview(filters)
+      const overview = await this.service.getOverview()
       return reply.send(overview)
-    } catch (error) {
-      throw error
+    } catch (error: any) {
+      return reply.status(500).send({
+        error: 'Erro ao buscar overview do dashboard'
+      })
     }
   }
 
-  async getFunil(request: FastifyRequest, reply: FastifyReply) {
+  async getLeadsByOrigem(request: FastifyRequest, reply: FastifyReply) {
     try {
-      const { corretor_id, data_inicio, data_fim } = request.query as any
-      
-      const filters: any = {}
-      if (corretor_id) filters.corretor_id = corretor_id
-      if (data_inicio) filters.data_inicio = new Date(data_inicio)
-      if (data_fim) filters.data_fim = new Date(data_fim)
-
-      const funil = await this.service.getFunil(filters)
-      return reply.send(funil)
-    } catch (error) {
-      throw error
+      const data = await this.service.getLeadsByOrigem()
+      return reply.send(data)
+    } catch (error: any) {
+      return reply.status(500).send({
+        error: 'Erro ao buscar leads por origem'
+      })
     }
   }
 
-  async getAtividades(request: FastifyRequest, reply: FastifyReply) {
+  async getLeadsByTemperatura(request: FastifyRequest, reply: FastifyReply) {
     try {
-      const { limit } = request.query as any
-      const atividades = await this.service.getAtividades(limit ? parseInt(limit) : 10)
-      return reply.send(atividades)
-    } catch (error) {
-      throw error
+      const data = await this.service.getLeadsByTemperatura()
+      return reply.send(data)
+    } catch (error: any) {
+      return reply.status(500).send({
+        error: 'Erro ao buscar leads por temperatura'
+      })
+    }
+  }
+
+  async getNegociacoesByStatus(request: FastifyRequest, reply: FastifyReply) {
+    try {
+      const data = await this.service.getNegociacoesByStatus()
+      return reply.send(data)
+    } catch (error: any) {
+      return reply.status(500).send({
+        error: 'Erro ao buscar negociações por status'
+      })
+    }
+  }
+
+  async getImoveisByTipo(request: FastifyRequest, reply: FastifyReply) {
+    try {
+      const data = await this.service.getImoveisByTipo()
+      return reply.send(data)
+    } catch (error: any) {
+      return reply.status(500).send({
+        error: 'Erro ao buscar imóveis por tipo'
+      })
+    }
+  }
+
+  async getImoveisByCategoria(request: FastifyRequest, reply: FastifyReply) {
+    try {
+      const data = await this.service.getImoveisByCategoria()
+      return reply.send(data)
+    } catch (error: any) {
+      return reply.status(500).send({
+        error: 'Erro ao buscar imóveis por categoria'
+      })
     }
   }
 
   async getPerformanceCorretores(request: FastifyRequest, reply: FastifyReply) {
     try {
-      const { data_inicio, data_fim } = request.query as any
-      
-      const filters: any = {}
-      if (data_inicio) filters.data_inicio = new Date(data_inicio)
-      if (data_fim) filters.data_fim = new Date(data_fim)
+      const data = await this.service.getPerformanceCorretores()
+      return reply.send(data)
+    } catch (error: any) {
+      return reply.status(500).send({
+        error: 'Erro ao buscar performance dos corretores'
+      })
+    }
+  }
 
-      const performance = await this.service.getPerformanceCorretores(filters)
-      return reply.send(performance)
-    } catch (error) {
-      throw error
+  async getFunilVendas(request: FastifyRequest, reply: FastifyReply) {
+    try {
+      const data = await this.service.getFunilVendas()
+      return reply.send(data)
+    } catch (error: any) {
+      return reply.status(500).send({
+        error: 'Erro ao buscar funil de vendas'
+      })
+    }
+  }
+
+  async getRecentActivity(request: FastifyRequest, reply: FastifyReply) {
+    try {
+      const { limit } = request.query as { limit?: string }
+      const data = await this.service.getRecentActivity(limit ? parseInt(limit) : 10)
+      return reply.send(data)
+    } catch (error: any) {
+      return reply.status(500).send({
+        error: 'Erro ao buscar atividades recentes'
+      })
+    }
+  }
+
+  async getValorMedioNegociacoes(request: FastifyRequest, reply: FastifyReply) {
+    try {
+      const data = await this.service.getValorMedioNegociacoes()
+      return reply.send(data)
+    } catch (error: any) {
+      return reply.status(500).send({
+        error: 'Erro ao buscar valor médio de negociações'
+      })
     }
   }
 }

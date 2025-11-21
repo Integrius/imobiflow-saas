@@ -1,66 +1,59 @@
 import { PrismaClient } from '@prisma/client'
 import { NegociacoesRepository } from './negociacoes.repository'
-import { AppError } from '../../shared/errors/AppError'
-import {
-  CreateNegociacaoDTO,
-  UpdateNegociacaoDTO,
-  ChangeStatusDTO,
+import { 
+  CreateNegociacaoDTO, 
+  UpdateNegociacaoDTO, 
+  QueryNegociacoesDTO,
+  AddTimelineEventDTO,
   AddComissaoDTO,
-  AddDocumentoDTO,
-  ListNegociacoesDTO,
+  StatusNegociacao
 } from './negociacoes.schema'
+import { AppError } from '../../shared/errors/AppError'
 
 export class NegociacoesService {
   private repository: NegociacoesRepository
 
-  constructor(prisma: PrismaClient) {
+  constructor(private prisma: PrismaClient) {
     this.repository = new NegociacoesRepository(prisma)
   }
 
-  async create(data: CreateNegociacaoDTO, prisma: PrismaClient) {
-    const lead = await prisma.lead.findUnique({
-      where: { id: data.lead_id },
+  async create(data: CreateNegociacaoDTO) {
+    const lead = await this.prisma.lead.findUnique({
+      where: { id: data.lead_id }
     })
     if (!lead) {
       throw new AppError('Lead não encontrado', 404)
     }
 
-    const imovel = await prisma.imovel.findUnique({
-      where: { id: data.imovel_id },
+    const imovel = await this.prisma.imovel.findUnique({
+      where: { id: data.imovel_id }
     })
     if (!imovel) {
       throw new AppError('Imóvel não encontrado', 404)
     }
-    if (imovel.status === 'VENDIDO' || imovel.status === 'ALUGADO') {
+    if (imovel.status !== 'DISPONIVEL') {
       throw new AppError('Imóvel não está disponível', 400)
     }
 
-    const corretor = await prisma.corretor.findUnique({
-      where: { id: data.corretor_id },
+    const corretor = await this.prisma.corretor.findUnique({
+      where: { id: data.corretor_id }
     })
     if (!corretor) {
       throw new AppError('Corretor não encontrado', 404)
     }
 
-    const negociacaoExistente = await prisma.negociacao.findFirst({
-      where: {
-        lead_id: data.lead_id,
-        imovel_id: data.imovel_id,
-        status: {
-          notIn: ['FECHADO', 'PERDIDO', 'CANCELADO'],
-        },
-      },
+    const negociacao = await this.repository.create(data)
+
+    await this.prisma.imovel.update({
+      where: { id: data.imovel_id },
+      data: { status: 'RESERVADO' }
     })
 
-    if (negociacaoExistente) {
-      throw new AppError('Já existe uma negociação ativa para este lead e imóvel', 400)
-    }
-
-    return this.repository.create(data)
+    return negociacao
   }
 
-  async findAll(filters: ListNegociacoesDTO) {
-    return this.repository.findAll(filters)
+  async findAll(query: QueryNegociacoesDTO) {
+    return await this.repository.findAll(query)
   }
 
   async findById(id: string) {
@@ -72,119 +65,138 @@ export class NegociacoesService {
   }
 
   async update(id: string, data: UpdateNegociacaoDTO) {
-    await this.findById(id)
-    return this.repository.update(id, data)
-  }
-
-  async changeStatus(id: string, data: ChangeStatusDTO, prisma: PrismaClient) {
-    const negociacao = await this.findById(id)
-
-    this.validateStatusTransition(negociacao.status, data.status)
-
-    if (data.status === 'PERDIDO' && !data.motivo_perda) {
-      throw new AppError('Motivo da perda é obrigatório', 400)
+    const negociacao = await this.repository.findById(id)
+    if (!negociacao) {
+      throw new AppError('Negociação não encontrada', 404)
     }
 
-    if (data.status === 'FECHADO') {
-      const valor = data.valor_fechamento || negociacao.valor_proposta
-      if (!valor) {
-        throw new AppError('Valor de fechamento é obrigatório', 400)
-      }
-
-      const corretor = await prisma.corretor.findUnique({
-        where: { id: negociacao.corretor_id },
+    if (data.status && data.status !== negociacao.status) {
+      await this.addTimelineEvent(id, {
+        tipo: this.mapStatusToEventType(data.status),
+        descricao: `Status alterado para ${data.status}`,
+        dados: {
+          status_anterior: negociacao.status,
+          status_novo: data.status
+        }
       })
 
-      if (corretor && corretor.comissao_padrao) {
-        const valorComissao = (Number(valor) * Number(corretor.comissao_padrao)) / 100
-
-        await this.repository.addComissao(id, {
-          corretor_id: corretor.id,
-          percentual: Number(corretor.comissao_padrao),
-          valor: valorComissao,
-          tipo: 'VENDA',
-          observacoes: 'Comissão calculada automaticamente',
-        })
-      }
-
-      const imovel = await prisma.imovel.findUnique({
-        where: { id: negociacao.imovel_id },
-      })
-
-      if (imovel) {
-        const novoStatus = imovel.categoria === 'VENDA' ? 'VENDIDO' : 'ALUGADO'
-        await prisma.imovel.update({
+      if (data.status === 'FECHADO') {
+        const categoria = negociacao.imovel.categoria
+        const novoStatus = categoria === 'VENDA' ? 'VENDIDO' : 'ALUGADO'
+        
+        await this.prisma.imovel.update({
           where: { id: negociacao.imovel_id },
-          data: { status: novoStatus },
+          data: { status: novoStatus }
+        })
+
+        if (data.valor_proposta) {
+          await this.calcularComissoes(id, data.valor_proposta)
+        }
+      }
+
+      if (data.status === 'PERDIDO') {
+        await this.prisma.imovel.update({
+          where: { id: negociacao.imovel_id },
+          data: { status: 'DISPONIVEL' }
         })
       }
     }
 
-    return this.repository.changeStatus(
-      id,
-      data.status,
-      data.motivo_perda,
-      data.valor_fechamento
-    )
+    return await this.repository.update(id, data)
   }
 
-  async addComissao(id: string, data: AddComissaoDTO, prisma: PrismaClient) {
-    await this.findById(id)
+  async delete(id: string) {
+    const negociacao = await this.repository.findById(id)
+    if (!negociacao) {
+      throw new AppError('Negociação não encontrada', 404)
+    }
 
-    const corretor = await prisma.corretor.findUnique({
-      where: { id: data.corretor_id },
+    if (negociacao.status !== 'FECHADO') {
+      await this.prisma.imovel.update({
+        where: { id: negociacao.imovel_id },
+        data: { status: 'DISPONIVEL' }
+      })
+    }
+
+    return await this.repository.delete(id)
+  }
+
+  async addTimelineEvent(id: string, evento: AddTimelineEventDTO) {
+    const negociacao = await this.repository.findById(id)
+    if (!negociacao) {
+      throw new AppError('Negociação não encontrada', 404)
+    }
+
+    return await this.repository.addTimelineEvent(id, evento)
+  }
+
+  async addComissao(id: string, comissao: AddComissaoDTO) {
+    const negociacao = await this.repository.findById(id)
+    if (!negociacao) {
+      throw new AppError('Negociação não encontrada', 404)
+    }
+
+    const corretor = await this.prisma.corretor.findUnique({
+      where: { id: comissao.corretor_id }
     })
     if (!corretor) {
       throw new AppError('Corretor não encontrado', 404)
     }
 
-    return this.repository.addComissao(id, data)
+    return await this.repository.addComissao(id, comissao)
   }
 
-  async addDocumento(id: string, data: AddDocumentoDTO) {
-    await this.findById(id)
-    return this.repository.addDocumento(id, data)
-  }
-
-  async delete(id: string, prisma: PrismaClient) {
-    const negociacao = await this.findById(id)
-
-    if (!['CONTATO', 'PERDIDO', 'CANCELADO'].includes(negociacao.status)) {
-      throw new AppError(
-        'Só é possível excluir negociações em status CONTATO, PERDIDO ou CANCELADO',
-        400
-      )
+  async getPipeline() {
+    const countByStatus = await this.repository.countByStatus()
+    
+    return {
+      CONTATO: countByStatus['CONTATO'] || 0,
+      VISITA: countByStatus['VISITA'] || 0,
+      PROPOSTA: countByStatus['PROPOSTA'] || 0,
+      CONTRATO: countByStatus['CONTRATO'] || 0,
+      FECHADO: countByStatus['FECHADO'] || 0,
+      PERDIDO: countByStatus['PERDIDO'] || 0
     }
-
-    return this.repository.delete(id)
   }
 
-  async getStats(filters?: {
-    corretor_id?: string
-    data_inicio?: Date
-    data_fim?: Date
-  }) {
-    return this.repository.getStats(filters)
+  async getByCorretor(corretor_id: string) {
+    return await this.repository.findByCorretor(corretor_id)
   }
 
-  private validateStatusTransition(statusAtual: string, statusNovo: string) {
-    const transicoesValidas: Record<string, string[]> = {
-      CONTATO: ['VISITA_AGENDADA', 'PERDIDO', 'CANCELADO'],
-      VISITA_AGENDADA: ['VISITA_REALIZADA', 'CONTATO', 'PERDIDO', 'CANCELADO'],
-      VISITA_REALIZADA: ['PROPOSTA', 'CONTATO', 'PERDIDO', 'CANCELADO'],
-      PROPOSTA: ['ANALISE_CREDITO', 'CONTRATO', 'VISITA_REALIZADA', 'PERDIDO', 'CANCELADO'],
-      ANALISE_CREDITO: ['CONTRATO', 'PROPOSTA', 'PERDIDO', 'CANCELADO'],
-      CONTRATO: ['FECHADO', 'PERDIDO', 'CANCELADO'],
-      FECHADO: [],
-      PERDIDO: [],
-      CANCELADO: [],
+  private mapStatusToEventType(status: StatusNegociacao): string {
+    const map: Record<StatusNegociacao, string> = {
+      CONTATO: 'CONTATO',
+      VISITA: 'VISITA',
+      PROPOSTA: 'PROPOSTA',
+      CONTRATO: 'NEGOCIACAO',
+      FECHADO: 'FECHAMENTO',
+      PERDIDO: 'OBSERVACAO'
     }
+    return map[status]
+  }
 
-    if (!transicoesValidas[statusAtual]?.includes(statusNovo)) {
-      throw new AppError(
-        `Transição de ${statusAtual} para ${statusNovo} não é permitida`,
-        400
-      )
-    }
+  private async calcularComissoes(negociacao_id: string, valor_venda: number) {
+    const negociacao = await this.repository.findById(negociacao_id)
+    if (!negociacao) return
+
+    const corretor = negociacao.corretor
+    const percentualCorretor = corretor.comissao_padrao.toNumber()
+    const valorComissaoCorretor = (valor_venda * percentualCorretor) / 100
+
+    await this.addComissao(negociacao_id, {
+      corretor_id: corretor.id,
+      percentual: percentualCorretor,
+      valor: valorComissaoCorretor
+    })
+
+    await this.addTimelineEvent(negociacao_id, {
+      tipo: 'FECHAMENTO',
+      descricao: `Comissões calculadas automaticamente`,
+      dados: {
+        valor_venda,
+        comissao_corretor: valorComissaoCorretor,
+        percentual_corretor: percentualCorretor
+      }
+    })
   }
 }

@@ -1,33 +1,60 @@
-import type { FastifyRequest, FastifyReply } from 'fastify'
+import { FastifyRequest, FastifyReply } from 'fastify'
+import { PrismaClient } from '@prisma/client'
 import { AuthService } from './auth.service'
 import { registerSchema, loginSchema } from './auth.schema'
 
-const authService = new AuthService()
-
 export class AuthController {
+  private service: AuthService
+
+  constructor(prisma: PrismaClient) {
+    this.service = new AuthService(prisma)
+  }
+
   async register(request: FastifyRequest, reply: FastifyReply) {
     try {
       const data = registerSchema.parse(request.body)
-      const result = await authService.register(data)
+      const result = await this.service.register(data)
       return reply.status(201).send(result)
-    } catch (error) {
-      if (error instanceof Error) {
-        return reply.status(400).send({ error: error.message })
+    } catch (error: any) {
+      if (error.name === 'ZodError') {
+        return reply.status(400).send({
+          error: 'Dados inválidos',
+          details: error.errors
+        })
       }
-      return reply.status(500).send({ error: 'Erro interno do servidor' })
+      return reply.status(error.statusCode || 400).send({
+        error: error.message || 'Erro ao registrar usuário'
+      })
     }
   }
 
   async login(request: FastifyRequest, reply: FastifyReply) {
     try {
       const data = loginSchema.parse(request.body)
-      const result = await authService.login(data)
+      const result = await this.service.login(data)
       return reply.status(200).send(result)
-    } catch (error) {
-      if (error instanceof Error) {
-        return reply.status(401).send({ error: error.message })
+    } catch (error: any) {
+      if (error.name === 'ZodError') {
+        return reply.status(400).send({
+          error: 'Dados inválidos',
+          details: error.errors
+        })
       }
-      return reply.status(500).send({ error: 'Erro interno do servidor' })
+      return reply.status(error.statusCode || 401).send({
+        error: error.message || 'Erro ao fazer login'
+      })
+    }
+  }
+
+  async me(request: FastifyRequest, reply: FastifyReply) {
+    try {
+      const userId = (request as any).user.userId
+      const result = await this.service.me(userId)
+      return reply.send(result)
+    } catch (error: any) {
+      return reply.status(error.statusCode || 500).send({
+        error: error.message || 'Erro ao buscar usuário'
+      })
     }
   }
 }
