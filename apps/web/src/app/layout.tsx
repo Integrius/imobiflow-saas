@@ -1,8 +1,13 @@
-import type { Metadata } from 'next'
+import type { Metadata } from "next"
+import { Inter } from "next/font/google"
+import "./globals.css"
+import { Providers } from "./providers"
+
+const inter = Inter({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
-  title: 'ImobiFlow - Gestão Imobiliária',
-  description: 'Plataforma SaaS para gestão imobiliária',
+  title: "ImobiFlow - Gestão Imobiliária Inteligente",
+  description: "Plataforma SaaS completa para imobiliárias e corretores",
 }
 
 export default function RootLayout({
@@ -12,7 +17,11 @@ export default function RootLayout({
 }) {
   return (
     <html lang="pt-BR">
-      <body>{children}</body>
+      <body className={inter.className}>
+        <Providers>
+          {children}
+        </Providers>
+      </body>
     </html>
   )
 }

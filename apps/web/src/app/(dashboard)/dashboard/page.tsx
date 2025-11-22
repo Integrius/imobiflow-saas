@@ -1,53 +1,103 @@
 'use client'
 
-import { useAuthStore } from '@/stores/auth-store'
-import { useRouter } from 'next/navigation'
-import { useEffect } from 'react'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Users, Home, DollarSign, TrendingUp } from 'lucide-react'
 
 export default function DashboardPage() {
-  const { user, isAuthenticated, logout } = useAuthStore()
-  const router = useRouter()
-
-  useEffect(() => {
-    if (!isAuthenticated) {
-      router.push('/login')
-    }
-  }, [isAuthenticated, router])
-
-  if (!isAuthenticated || !user) {
-    return null
-  }
-
   return (
-    <div className="min-h-screen bg-gray-50">
-      <nav className="bg-white shadow">
-        <div className="mx-auto max-w-7xl px-4 py-4">
-          <div className="flex items-center justify-between">
-            <h1 className="text-2xl font-bold text-gray-900">ImobiFlow</h1>
-            <button
-              onClick={logout}
-              className="rounded-md bg-red-600 px-4 py-2 text-white hover:bg-red-700"
-            >
-              Sair
-            </button>
-          </div>
-        </div>
-      </nav>
+    <div className="space-y-6">
+      <div>
+        <h1 className="text-3xl font-bold">Dashboard</h1>
+        <p className="text-muted-foreground">
+          Visão geral do seu negócio
+        </p>
+      </div>
 
-      <main className="mx-auto max-w-7xl px-4 py-8">
-        <div className="rounded-lg bg-white p-6 shadow">
-          <h2 className="text-xl font-semibold">Bem-vindo, {user.nome}!</h2>
-          <p className="mt-2 text-gray-600">Email: {user.email}</p>
-          <p className="text-gray-600">Tipo: {user.tipo}</p>
-          
-          <div className="mt-6">
-            <p className="text-green-600 font-medium">✅ Autenticação funcionando!</p>
-            <p className="mt-2 text-sm text-gray-500">
-              Dashboard completo será implementado nas próximas sprints.
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">
+              Total de Leads
+            </CardTitle>
+            <Users className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">245</div>
+            <p className="text-xs text-muted-foreground">
+              +20% em relação ao mês anterior
             </p>
-          </div>
-        </div>
-      </main>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">
+              Imóveis Ativos
+            </CardTitle>
+            <Home className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">89</div>
+            <p className="text-xs text-muted-foreground">
+              +12 novos este mês
+            </p>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">
+              Negociações
+            </CardTitle>
+            <DollarSign className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">32</div>
+            <p className="text-xs text-muted-foreground">
+              8 em fase de contrato
+            </p>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">
+              Taxa de Conversão
+            </CardTitle>
+            <TrendingUp className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">13%</div>
+            <p className="text-xs text-muted-foreground">
+              +2% em relação ao mês anterior
+            </p>
+          </CardContent>
+        </Card>
+      </div>
+
+      <div className="grid gap-4 md:grid-cols-2">
+        <Card>
+          <CardHeader>
+            <CardTitle>Leads Recentes</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-sm text-muted-foreground">
+              Implemente a listagem de leads recentes aqui
+            </p>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>Atividades</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-sm text-muted-foreground">
+              Implemente a timeline de atividades aqui
+            </p>
+          </CardContent>
+        </Card>
+      </div>
     </div>
   )
 }
