@@ -9,7 +9,7 @@ export const createCorretorSchema = z.object({
   meta_mensal: z.number().positive().optional().nullable(),
   meta_anual: z.number().positive().optional().nullable(),
   comissao_padrao: z.number().min(0).max(100),
-  disponibilidade: z.record(z.any()).optional(),
+  disponibilidade: z.record(z.string(), z.any()).optional(),
 })
 
 export const updateCorretorSchema = z.object({
@@ -21,7 +21,7 @@ export const updateCorretorSchema = z.object({
   meta_anual: z.number().positive().optional().nullable(),
   comissao_padrao: z.number().min(0).max(100).optional(),
   performance_score: z.number().min(0).max(100).optional(),
-  disponibilidade: z.record(z.any()).optional(),
+  disponibilidade: z.record(z.string(), z.any()).optional(),
 })
 
 export const listCorretoresSchema = z.object({

@@ -163,14 +163,17 @@ export class NegociacoesService {
     return await this.repository.findByCorretor(corretor_id)
   }
 
-  private mapStatusToEventType(status: StatusNegociacao): string {
-    const map: Record<StatusNegociacao, string> = {
+  private mapStatusToEventType(status: StatusNegociacao): 'CONTATO' | 'VISITA' | 'PROPOSTA' | 'OBSERVACAO' | 'NEGOCIACAO' | 'FECHAMENTO' {
+    const map: Record<StatusNegociacao, 'CONTATO' | 'VISITA' | 'PROPOSTA' | 'OBSERVACAO' | 'NEGOCIACAO' | 'FECHAMENTO'> = {
       CONTATO: 'CONTATO',
-      VISITA: 'VISITA',
+      VISITA_AGENDADA: 'VISITA',
+      VISITA_REALIZADA: 'VISITA',
       PROPOSTA: 'PROPOSTA',
+      ANALISE_CREDITO: 'NEGOCIACAO',
       CONTRATO: 'NEGOCIACAO',
       FECHADO: 'FECHAMENTO',
-      PERDIDO: 'OBSERVACAO'
+      PERDIDO: 'OBSERVACAO',
+      CANCELADO: 'OBSERVACAO'
     }
     return map[status]
   }

@@ -10,6 +10,7 @@ interface CreateUserData {
 interface CreateCorretorData {
   user_id: string
   creci: string
+  telefone: string
   especializacoes: string[]
   comissao_padrao: number
 }

@@ -7,7 +7,11 @@ export class NegociacoesRepository {
   async create(data: CreateNegociacaoDTO) {
     return await this.prisma.negociacao.create({
       data: {
-        ...data,
+        lead_id: data.lead_id,
+        imovel_id: data.imovel_id,
+        corretor_id: data.corretor_id,
+        valor_proposta: data.valor_proposta || null,
+        codigo: `NEG-${Date.now()}`,
         status: 'CONTATO',
         timeline: [
           {
@@ -124,7 +128,10 @@ export class NegociacoesRepository {
   async update(id: string, data: UpdateNegociacaoDTO) {
     return await this.prisma.negociacao.update({
       where: { id },
-      data,
+      data: {
+        ...(data.status && { status: data.status }),
+        ...(data.valor_proposta !== undefined && { valor_proposta: data.valor_proposta }),
+      },
       include: {
         lead: true,
         imovel: true,

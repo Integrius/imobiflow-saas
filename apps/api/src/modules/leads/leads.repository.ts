@@ -43,7 +43,11 @@ export class LeadsRepository {
     if (origem) where.origem = origem
     if (corretor_id) where.corretor_id = corretor_id
     if (score_min !== undefined) where.score = { gte: score_min }
-    if (score_max !== undefined) where.score = { ...where.score, lte: score_max }
+    if (score_max !== undefined) {
+      where.score = where.score && typeof where.score === 'object'
+        ? { ...(where.score as { gte?: number }), lte: score_max }
+        : { lte: score_max }
+    }
     
     if (search) {
       where.OR = [

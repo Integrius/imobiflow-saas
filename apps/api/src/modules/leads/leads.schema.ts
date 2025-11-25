@@ -60,7 +60,7 @@ export const listLeadsSchema = z.object({
 export const addTimelineEventSchema = z.object({
   tipo: z.enum(['CONTATO', 'EMAIL', 'WHATSAPP', 'LIGACAO', 'VISITA', 'PROPOSTA', 'OBSERVACAO']),
   descricao: z.string().min(1),
-  detalhes: z.record(z.any()).optional(),
+  detalhes: z.record(z.string(), z.any()).optional(),
 })
 
 // Types exportados

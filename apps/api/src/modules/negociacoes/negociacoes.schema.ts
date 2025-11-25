@@ -3,11 +3,14 @@ import { z } from 'zod'
 // Enum de Status da Negociação
 export const statusNegociacaoSchema = z.enum([
   'CONTATO',
-  'VISITA',
+  'VISITA_AGENDADA',
+  'VISITA_REALIZADA',
   'PROPOSTA',
+  'ANALISE_CREDITO',
   'CONTRATO',
   'FECHADO',
-  'PERDIDO'
+  'PERDIDO',
+  'CANCELADO'
 ])
 
 // Schema para criar Negociação
@@ -15,22 +18,20 @@ export const createNegociacaoSchema = z.object({
   lead_id: z.string().uuid('Lead ID inválido'),
   imovel_id: z.string().uuid('Imóvel ID inválido'),
   corretor_id: z.string().uuid('Corretor ID inválido'),
-  valor_proposta: z.number().positive('Valor da proposta deve ser positivo').optional().nullable(),
-  observacoes: z.string().max(1000).optional().nullable()
+  valor_proposta: z.number().positive('Valor da proposta deve ser positivo').optional().nullable()
 })
 
 // Schema para atualizar Negociação
 export const updateNegociacaoSchema = z.object({
   status: statusNegociacaoSchema.optional(),
-  valor_proposta: z.number().positive('Valor da proposta deve ser positivo').optional().nullable(),
-  observacoes: z.string().max(1000).optional().nullable()
+  valor_proposta: z.number().positive('Valor da proposta deve ser positivo').optional().nullable()
 })
 
 // Schema para adicionar evento à timeline
 export const addTimelineEventSchema = z.object({
   tipo: z.enum(['CONTATO', 'VISITA', 'PROPOSTA', 'NEGOCIACAO', 'FECHAMENTO', 'OBSERVACAO']),
   descricao: z.string().min(1).max(500),
-  dados: z.record(z.any()).optional()
+  dados: z.record(z.string(), z.any()).optional()
 })
 
 // Schema para adicionar comissão

@@ -35,6 +35,7 @@ export class AuthService {
       await this.repository.createCorretor({
         user_id: user.id,
         creci: data.creci || '',
+        telefone: data.telefone,
         especializacoes: data.especializacoes || [],
         comissao_padrao: data.comissao_padrao || 3.0
       })
@@ -103,7 +104,7 @@ export class AuthService {
     const secret = process.env.JWT_SECRET || 'imobiflow-secret-key'
     const expiresIn = process.env.JWT_EXPIRES_IN || '7d'
 
-    return jwt.sign({ userId }, secret, { expiresIn })
+    return jwt.sign({ userId }, secret, { expiresIn } as jwt.SignOptions)
   }
 
   verifyToken(token: string): { userId: string } {

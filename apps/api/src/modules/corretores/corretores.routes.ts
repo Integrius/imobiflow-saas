@@ -22,9 +22,10 @@ export async function corretoresRoutes(server: FastifyInstance) {
     return controller.getById(request, reply)
   })
 
-  server.get('/corretores/:id/performance', async (request, reply) => {
-    return controller.getPerformance(request, reply)
-  })
+  // TODO: Implement performance endpoint
+  // server.get('/corretores/:id/performance', async (request, reply) => {
+  //   return controller.getPerformance(request, reply)
+  // })
 
   server.put('/corretores/:id', async (request, reply) => {
     return controller.update(request, reply)

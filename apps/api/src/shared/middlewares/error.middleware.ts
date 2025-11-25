@@ -15,11 +15,13 @@ export async function errorHandler(
     })
   }
 
-  if (error instanceof ZodError) {
+  // Handle Zod validation errors
+  const zodError = error as unknown as ZodError
+  if (zodError.issues !== undefined && Array.isArray(zodError.issues)) {
     return reply.status(400).send({
       status: 'error',
       message: 'Dados inválidos',
-      errors: error.errors,
+      errors: zodError.issues,
     })
   }
 
