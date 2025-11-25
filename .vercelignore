@@ -6,3 +6,5 @@ scripts
 .github
 docs
 PROMPT_CLAUDE_CODE.md
+turbo.json
+pnpm-workspace.yaml
