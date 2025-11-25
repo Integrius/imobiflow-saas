@@ -1,36 +1,33 @@
 import { apiClient } from './client'
 
-interface RegisterData {
-  nome: string
-  email: string
-  senha: string
-  creci: string
-  telefone: string
-}
-
-interface LoginData {
+interface LoginRequest {
   email: string
   senha: string
 }
 
-interface AuthResponse {
+interface LoginResponse {
+  token: string
   user: {
     id: string
     nome: string
     email: string
-    tipo: string
   }
-  token: string
 }
 
-export const authApi = {
-  register: async (data: RegisterData): Promise<AuthResponse> => {
-    const response = await apiClient.post('/api/v1/auth/register', data)
+export const authService = {
+  login: async (data: LoginRequest) => {
+    const response = await apiClient.post<LoginResponse>('/api/v1/auth/login', data)
+    if (response.data.token) {
+      localStorage.setItem('token', response.data.token)
+    }
     return response.data
   },
 
-  login: async (data: LoginData): Promise<AuthResponse> => {
-    const response = await apiClient.post('/api/v1/auth/login', data)
-    return response.data
+  logout: () => {
+    localStorage.removeItem('token')
   },
+
+  isAuthenticated: () => {
+    return !!localStorage.getItem('token')
+  }
 }

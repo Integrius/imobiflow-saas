@@ -6,15 +6,15 @@ import { Providers } from "./providers"
 const inter = Inter({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
-  title: "ImobiFlow - Gestão Imobiliária Inteligente",
-  description: "Plataforma SaaS completa para imobiliárias e corretores",
+  title: "ImobiFlow - Gestão Imobiliária",
+  description: "Plataforma SaaS para gestão imobiliária completa",
 }
 
 export default function RootLayout({
   children,
-}: {
+}: Readonly<{
   children: React.ReactNode
-}) {
+}>) {
   return (
     <html lang="pt-BR">
       <body className={inter.className}>
