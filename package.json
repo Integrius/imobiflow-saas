@@ -2,6 +2,7 @@
   "name": "imobiflow",
   "version": "1.0.0",
   "private": true,
+  "packageManager": "pnpm@10.22.0",
   "scripts": {
     "dev": "turbo run dev",
     "build": "turbo run build",
