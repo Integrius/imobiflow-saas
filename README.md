@@ -91,13 +91,23 @@ cd imobiflow
 # Instalar dependências
 pnpm install
 
-# Configurar variáveis de ambiente
-cp apps/web/.env.example apps/web/.env.local
-cp apps/api/.env.example apps/api/.env
+# Configurar banco de dados PostgreSQL
+# Veja a documentação completa em docs/DATABASE_SETUP.md
+./scripts/setup-database.sh
 
-# Rodar migrations do banco
+# OU manualmente:
+# 1. Certifique-se de que PostgreSQL está instalado e rodando
+# 2. O arquivo apps/api/.env já está configurado com:
+#    DATABASE_URL="postgresql://imobiflow:imobiflow123@localhost:5432/imobiflow"
+# 3. Criar banco e usuário:
+sudo -u postgres psql -c "CREATE DATABASE imobiflow;"
+sudo -u postgres psql -c "CREATE USER imobiflow WITH ENCRYPTED PASSWORD 'imobiflow123';"
+sudo -u postgres psql -c "GRANT ALL PRIVILEGES ON DATABASE imobiflow TO imobiflow;"
+
+# 4. Executar migrations:
 cd apps/api
-pnpm prisma migrate dev
+npx prisma generate
+npx prisma migrate deploy
 
 # Voltar para raiz
 cd ../..
@@ -159,6 +169,7 @@ Recomendações para deploy da API:
 
 ## 📚 Documentação
 
+- [Configuração do Banco de Dados](./docs/DATABASE_SETUP.md) - Guia completo de setup do PostgreSQL
 - [Guia de Deploy](./DEPLOY.md) - Guia completo de deployment
 - [Quick Start Deploy](./DEPLOY_QUICKSTART.md) - Guia rápido
 - [API Documentation](./apps/api/README.md) - Documentação da API
