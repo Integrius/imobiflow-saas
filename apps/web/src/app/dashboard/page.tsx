@@ -1,9 +1,11 @@
 'use client'
 
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
+import { useAuth } from '@/contexts/AuthContext'
 import { useRouter } from 'next/navigation'
-import { authService } from '@/lib/api/auth'
-import { useDashboard } from '@/hooks/use-dashboard'
+import { leadsService } from '@/services/leads.service'
+import { imoveisService } from '@/services/imoveis.service'
+import { negociacoesService } from '@/services/negociacoes.service'
 import { FunnelChart } from '@/components/dashboard/funnel-chart'
 import { EvolutionChart } from '@/components/dashboard/evolution-chart'
 import { TopCorretores } from '@/components/dashboard/top-corretores'
@@ -11,22 +13,100 @@ import { LeadsPieChart } from '@/components/dashboard/leads-pie-chart'
 import { Card, CardContent } from '@/components/ui/card'
 import { TrendingUp, Home, Users, Briefcase, RefreshCw } from 'lucide-react'
 
+interface ConversaoFunil {
+  leads: number
+  visitasAgendadas: number
+  visitasRealizadas: number
+  propostas: number
+  fechados: number
+}
+
+interface EvolucaoMensal {
+  mes: string
+  leads: number
+  negociacoes: number
+  fechamentos: number
+}
+
+interface TopCorretor {
+  id: string
+  nome: string
+  totalNegociacoes: number
+  totalFechados: number
+  valorTotal: number
+}
+
+interface DashboardStats {
+  totalLeads: number
+  totalImoveis: number
+  totalCorretores: number
+  negociacoesEmAndamento: number
+  conversaoFunil?: ConversaoFunil
+  evolucaoMensal?: EvolucaoMensal[]
+  topCorretores?: TopCorretor[]
+  leadsPorOrigem?: Record<string, number>
+}
+
 export default function DashboardPage() {
   const router = useRouter()
-  const { stats, isLoading } = useDashboard()
+  const { user, logout, isAuthenticated, loading: authLoading } = useAuth()
+  const [stats, setStats] = useState<DashboardStats | null>(null)
+  const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
-    if (!authService.isAuthenticated()) {
+    if (!authLoading && !isAuthenticated) {
       router.push('/login')
     }
-  }, [router])
+  }, [authLoading, isAuthenticated, router])
+
+  useEffect(() => {
+    async function loadDashboardData() {
+      if (!isAuthenticated) return
+
+      try {
+        setIsLoading(true)
+        const [leadsData, imoveisData, negociacoesData] = await Promise.all([
+          leadsService.getAll(),
+          imoveisService.getAll(),
+          negociacoesService.getAll(),
+        ])
+
+        const leads = leadsData.data || []
+        const imoveis = imoveisData.data || []
+        const negociacoes = negociacoesData.data || []
+
+        const negociacoesEmAndamento = negociacoes.filter(
+          (n: { status: string }) =>
+            !['FECHADO', 'PERDIDO', 'CANCELADO'].includes(n.status)
+        ).length
+
+        const leadsPorOrigem = leads.reduce((acc: Record<string, number>, lead: { origem: string }) => {
+          acc[lead.origem] = (acc[lead.origem] || 0) + 1
+          return acc
+        }, {})
+
+        setStats({
+          totalLeads: leads.length,
+          totalImoveis: imoveis.length,
+          totalCorretores: 0,
+          negociacoesEmAndamento,
+          leadsPorOrigem,
+        })
+      } catch (error) {
+        console.error('Erro ao carregar dados do dashboard:', error)
+      } finally {
+        setIsLoading(false)
+      }
+    }
+
+    loadDashboardData()
+  }, [isAuthenticated])
 
   const handleLogout = () => {
-    authService.logout()
-    router.push('/login')
+    logout()
   }
 
-  if (isLoading || !stats) {
+  if (authLoading || isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
         <div className="text-center">
@@ -35,6 +115,10 @@ export default function DashboardPage() {
         </div>
       </div>
     )
+  }
+
+  if (!stats) {
+    return null
   }
 
   const statCards = [
@@ -110,7 +194,9 @@ export default function DashboardPage() {
         <div className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
           <div>
             <h1 className="text-2xl font-bold text-gray-900">ImobiFlow Dashboard</h1>
-            <p className="text-sm text-gray-600 mt-1">Visão geral do seu negócio</p>
+            <p className="text-sm text-gray-600 mt-1">
+              Bem-vindo, {user?.nome || 'Usuário'}
+            </p>
           </div>
           <button
             onClick={handleLogout}
