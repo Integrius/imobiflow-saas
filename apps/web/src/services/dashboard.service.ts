@@ -93,54 +93,54 @@ export interface ValorMedioNegociacoes {
 
 export const dashboardService = {
   async getOverview(): Promise<DashboardOverview> {
-    const response = await api.get('/dashboard/overview')
+    const response = await api.get('/api/v1/dashboard/overview')
     return response.data
   },
 
   async getLeadsByOrigem(): Promise<LeadsByOrigem[]> {
-    const response = await api.get('/dashboard/leads/origem')
+    const response = await api.get('/api/v1/dashboard/leads/origem')
     return response.data
   },
 
   async getLeadsByTemperatura(): Promise<LeadsByTemperatura[]> {
-    const response = await api.get('/dashboard/leads/temperatura')
+    const response = await api.get('/api/v1/dashboard/leads/temperatura')
     return response.data
   },
 
   async getNegociacoesByStatus(): Promise<NegociacoesByStatus[]> {
-    const response = await api.get('/dashboard/negociacoes/status')
+    const response = await api.get('/api/v1/dashboard/negociacoes/status')
     return response.data
   },
 
   async getImoveisByTipo(): Promise<ImoveisByTipo[]> {
-    const response = await api.get('/dashboard/imoveis/tipo')
+    const response = await api.get('/api/v1/dashboard/imoveis/tipo')
     return response.data
   },
 
   async getImoveisByCategoria(): Promise<ImoveisByCategoria[]> {
-    const response = await api.get('/dashboard/imoveis/categoria')
+    const response = await api.get('/api/v1/dashboard/imoveis/categoria')
     return response.data
   },
 
   async getPerformanceCorretores(): Promise<PerformanceCorretor[]> {
-    const response = await api.get('/dashboard/corretores/performance')
+    const response = await api.get('/api/v1/dashboard/corretores/performance')
     return response.data
   },
 
   async getFunilVendas(): Promise<FunilVendas[]> {
-    const response = await api.get('/dashboard/funil')
+    const response = await api.get('/api/v1/dashboard/funil')
     return response.data
   },
 
   async getRecentActivity(limit?: number): Promise<RecentActivity> {
-    const response = await api.get('/dashboard/activity', {
+    const response = await api.get('/api/v1/dashboard/activity', {
       params: limit ? { limit } : undefined
     })
     return response.data
   },
 
   async getValorMedioNegociacoes(): Promise<ValorMedioNegociacoes> {
-    const response = await api.get('/dashboard/valores')
+    const response = await api.get('/api/v1/dashboard/valores')
     return response.data
   },
 }
