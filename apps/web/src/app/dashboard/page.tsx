@@ -3,9 +3,7 @@
 import { useEffect, useState } from 'react'
 import { useAuth } from '@/contexts/AuthContext'
 import { useRouter } from 'next/navigation'
-import { leadsService } from '@/services/leads.service'
-import { imoveisService } from '@/services/imoveis.service'
-import { negociacoesService } from '@/services/negociacoes.service'
+import { dashboardService } from '@/services/dashboard.service'
 import { FunnelChart } from '@/components/dashboard/funnel-chart'
 import { EvolutionChart } from '@/components/dashboard/evolution-chart'
 import { TopCorretores } from '@/components/dashboard/top-corretores'
@@ -41,6 +39,9 @@ interface DashboardStats {
   totalImoveis: number
   totalCorretores: number
   negociacoesEmAndamento: number
+  negociacoesFechadas: number
+  imoveisDisponiveis: number
+  leadsQuentes: number
   conversaoFunil?: ConversaoFunil
   evolucaoMensal?: EvolucaoMensal[]
   topCorretores?: TopCorretor[]
@@ -65,32 +66,37 @@ export default function DashboardPage() {
 
       try {
         setIsLoading(true)
-        const [leadsData, imoveisData, negociacoesData] = await Promise.all([
-          leadsService.getAll(),
-          imoveisService.getAll(),
-          negociacoesService.getAll(),
+        const [overview, leadsByOrigem, performanceCorretores] = await Promise.all([
+          dashboardService.getOverview(),
+          dashboardService.getLeadsByOrigem(),
+          dashboardService.getPerformanceCorretores(),
         ])
 
-        const leads = leadsData.data || []
-        const imoveis = imoveisData.data || []
-        const negociacoes = negociacoesData.data || []
-
-        const negociacoesEmAndamento = negociacoes.filter(
-          (n: { status: string }) =>
-            !['FECHADO', 'PERDIDO', 'CANCELADO'].includes(n.status)
-        ).length
-
-        const leadsPorOrigem = leads.reduce((acc: Record<string, number>, lead: { origem: string }) => {
-          acc[lead.origem] = (acc[lead.origem] || 0) + 1
+        // Converter leadsByOrigem de array para objeto
+        const leadsPorOrigem = leadsByOrigem.reduce((acc: Record<string, number>, item) => {
+          acc[item.origem] = item.total
           return acc
         }, {})
 
+        // Calcular negociações em andamento (total - fechadas)
+        const negociacoesEmAndamento = overview.negociacoes.total - overview.negociacoes.fechadas
+
         setStats({
-          totalLeads: leads.length,
-          totalImoveis: imoveis.length,
-          totalCorretores: 0,
+          totalLeads: overview.leads.total,
+          totalImoveis: overview.imoveis.total,
+          totalCorretores: performanceCorretores.length,
           negociacoesEmAndamento,
+          negociacoesFechadas: overview.negociacoes.fechadas,
+          imoveisDisponiveis: overview.imoveis.disponiveis,
+          leadsQuentes: overview.leads.quentes,
           leadsPorOrigem,
+          topCorretores: performanceCorretores.slice(0, 5).map(c => ({
+            id: c.id,
+            nome: c.nome,
+            totalNegociacoes: c.totalNegociacoes,
+            totalFechados: c.negociacoesFechadas,
+            valorTotal: 0, // TODO: adicionar valor total quando disponível
+          })),
         })
       } catch (error) {
         console.error('Erro ao carregar dados do dashboard:', error)
