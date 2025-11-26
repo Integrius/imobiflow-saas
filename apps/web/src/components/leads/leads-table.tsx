@@ -1,6 +1,6 @@
 'use client'
 
-import { Lead } from '@/lib/api/leads'
+import { Lead } from '@/services/leads.service'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { Button } from '@/components/ui/button'
 import { Pencil, Trash2 } from 'lucide-react'
@@ -50,7 +50,7 @@ export function LeadsTable({ leads, onEdit, onDelete }: LeadsTableProps) {
                 {lead.temperatura}
               </span>
             </TableCell>
-            <TableCell>{lead.corretor?.user.name || '-'}</TableCell>
+            <TableCell>{lead.corretor_id || '-'}</TableCell>
             <TableCell>{format(new Date(lead.created_at), 'dd/MM/yyyy')}</TableCell>
             <TableCell className="text-right space-x-2">
               <Button variant="ghost" size="icon" onClick={() => onEdit(lead)}>

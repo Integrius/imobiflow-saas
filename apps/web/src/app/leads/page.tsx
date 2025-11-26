@@ -1,19 +1,61 @@
 'use client'
 
 import { useState } from 'react'
-import { useLeads } from '@/hooks/use-leads'
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import { leadsService, type Lead, type CreateLeadDTO } from '@/services/leads.service'
 import { LeadsTable } from '@/components/leads/leads-table'
 import { LeadForm } from '@/components/leads/lead-form'
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Plus } from 'lucide-react'
-import { Lead } from '@/lib/api/leads'
+import { Plus, RefreshCw } from 'lucide-react'
+import { toast } from 'sonner'
 
 export default function LeadsPage() {
-  const { leads, isLoading, createLead, updateLead, deleteLead } = useLeads()
   const [dialogOpen, setDialogOpen] = useState(false)
   const [selectedLead, setSelectedLead] = useState<Lead | undefined>()
+  const queryClient = useQueryClient()
+
+  const { data: leadsData, isLoading } = useQuery({
+    queryKey: ['leads'],
+    queryFn: () => leadsService.getAll(),
+  })
+
+  const createMutation = useMutation({
+    mutationFn: (data: CreateLeadDTO) => leadsService.create(data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['leads'] })
+      toast.success('Lead criado com sucesso!')
+      setDialogOpen(false)
+    },
+    onError: () => {
+      toast.error('Erro ao criar lead')
+    },
+  })
+
+  const updateMutation = useMutation({
+    mutationFn: ({ id, data }: { id: string; data: Partial<CreateLeadDTO> }) =>
+      leadsService.update(id, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['leads'] })
+      toast.success('Lead atualizado com sucesso!')
+      setDialogOpen(false)
+    },
+    onError: () => {
+      toast.error('Erro ao atualizar lead')
+    },
+  })
+
+  const deleteMutation = useMutation({
+    mutationFn: (id: string) => leadsService.delete(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['leads'] })
+      toast.success('Lead excluído com sucesso!')
+    },
+    onError: () => {
+      toast.error('Erro ao excluir lead')
+    },
+  })
 
   const handleCreate = () => {
     setSelectedLead(undefined)
@@ -25,24 +67,32 @@ export default function LeadsPage() {
     setDialogOpen(true)
   }
 
-  const handleSubmit = async (data: unknown) => {
+  const handleSubmit = async (data: CreateLeadDTO) => {
     if (selectedLead) {
-      await updateLead.mutateAsync({ id: selectedLead.id, data: data as Partial<Lead> })
+      updateMutation.mutate({ id: selectedLead.id, data })
     } else {
-      await createLead.mutateAsync(data as Lead)
+      createMutation.mutate(data)
     }
-    setDialogOpen(false)
   }
 
   const handleDelete = async (id: string) => {
     if (confirm('Tem certeza que deseja excluir este lead?')) {
-      await deleteLead.mutateAsync(id)
+      deleteMutation.mutate(id)
     }
   }
 
   if (isLoading) {
-    return <div className="p-8">Carregando...</div>
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <RefreshCw className="h-12 w-12 animate-spin mx-auto mb-4 text-blue-600" />
+          <p className="text-lg text-gray-600">Carregando leads...</p>
+        </div>
+      </div>
+    )
   }
+
+  const leads = leadsData?.data || []
 
   return (
     <div className="p-8 space-y-6">
