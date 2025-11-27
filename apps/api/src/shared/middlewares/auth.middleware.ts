@@ -3,7 +3,7 @@ import { verify } from 'jsonwebtoken'
 import { prisma } from '../database/prisma.service'
 
 interface TokenPayload {
-  sub: string
+  userId: string
 }
 
 export async function authMiddleware(
@@ -22,7 +22,7 @@ export async function authMiddleware(
     const decoded = verify(token, process.env.JWT_SECRET!) as TokenPayload
 
     const user = await prisma.user.findUnique({
-      where: { id: decoded.sub },
+      where: { id: decoded.userId },
     })
 
     if (!user || !user.ativo) {
