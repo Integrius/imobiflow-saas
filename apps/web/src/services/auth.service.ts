@@ -28,17 +28,17 @@ export interface AuthResponse {
 
 export const authService = {
   async login(data: LoginDTO): Promise<AuthResponse> {
-    const response = await api.post('/auth/login', data)
+    const response = await api.post('/api/v1/auth/login', data)
     return response.data
   },
 
   async register(data: RegisterDTO): Promise<AuthResponse> {
-    const response = await api.post('/auth/register', data)
+    const response = await api.post('/api/v1/auth/register', data)
     return response.data
   },
 
   async getProfile() {
-    const response = await api.get('/auth/me')
+    const response = await api.get('/api/v1/auth/me')
     return response.data
   },
 
