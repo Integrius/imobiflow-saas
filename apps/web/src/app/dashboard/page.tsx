@@ -100,9 +100,10 @@ export default function DashboardPage() {
             valorTotal: 0, // TODO: adicionar valor total quando disponível
           })),
         })
-      } catch (error: any) {
+      } catch (error) {
         console.error('Erro ao carregar dados do dashboard:', error)
-        setError(error?.response?.data?.error || 'Erro ao carregar dados do dashboard. Verifique se a API está rodando.')
+        const err = error as { response?: { data?: { error?: string } } }
+        setError(err?.response?.data?.error || 'Erro ao carregar dados do dashboard. Verifique se a API está rodando.')
       } finally {
         setIsLoading(false)
       }
