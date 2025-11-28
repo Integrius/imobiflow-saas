@@ -40,9 +40,10 @@ server.register(dashboardRoutes, { prefix: '/api/v1/dashboard' })
 
 const start = async () => {
   try {
-    await server.listen({ port: 3333, host: '0.0.0.0' })
-    console.log('🚀 Server running on http://localhost:3333')
-    console.log('📊 Dashboard API: http://localhost:3333/api/v1/dashboard')
+    const PORT = Number(process.env.PORT) || 3333
+    await server.listen({ port: PORT, host: '0.0.0.0' })
+    console.log(`🚀 Server running on port ${PORT}`)
+    console.log(`📊 Dashboard API: http://localhost:${PORT}/api/v1/dashboard`)
   } catch (err) {
     server.log.error(err)
     process.exit(1)
