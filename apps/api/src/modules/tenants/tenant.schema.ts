@@ -15,8 +15,8 @@ export const updateTenantSchema = z.object({
   email: z.string().email().optional(),
   telefone: z.string().optional(),
   logo_url: z.string().url().optional(),
-  cores_tema: z.record(z.string()).optional(),
-  configuracoes: z.record(z.any()).optional(),
+  cores_tema: z.record(z.string(), z.string()).optional(),
+  configuracoes: z.record(z.string(), z.any()).optional(),
   plano: z.enum(['BASICO', 'PRO', 'ENTERPRISE', 'CUSTOM']).optional(),
   status: z.enum(['TRIAL', 'ATIVO', 'INATIVO', 'SUSPENSO', 'CANCELADO']).optional()
 })
