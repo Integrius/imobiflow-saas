@@ -1,13 +1,16 @@
 import { PrismaClient } from '@prisma/client'
 
 interface CreateUserData {
+  tenant_id: string
   nome: string
   email: string
-  senha_hash: string
+  senha_hash?: string
+  google_id?: string
   tipo: 'ADMIN' | 'GESTOR' | 'CORRETOR'
 }
 
 interface CreateCorretorData {
+  tenant_id: string
   user_id: string
   creci: string
   telefone: string
@@ -18,9 +21,14 @@ interface CreateCorretorData {
 export class AuthRepository {
   constructor(private prisma: PrismaClient) {}
 
-  async findByEmail(email: string) {
+  async findByEmail(email: string, tenantId: string) {
     return await this.prisma.user.findUnique({
-      where: { email }
+      where: {
+        tenant_id_email: {
+          tenant_id: tenantId,
+          email: email
+        }
+      }
     })
   }
 

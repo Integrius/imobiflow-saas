@@ -3,6 +3,8 @@ import { PrismaClient } from '@prisma/client'
 import { ProprietariosRepository } from './proprietarios.repository'
 import { ProprietariosService } from './proprietarios.service'
 import { ProprietariosController } from './proprietarios.controller'
+import { authMiddleware } from '../../shared/middlewares/auth.middleware'
+import { tenantMiddleware } from '../../shared/middlewares/tenant.middleware'
 
 const prisma = new PrismaClient()
 const repository = new ProprietariosRepository(prisma)
@@ -10,6 +12,9 @@ const service = new ProprietariosService(repository)
 const controller = new ProprietariosController(service)
 
 export async function proprietariosRoutes(server: FastifyInstance) {
+  server.addHook('preHandler', authMiddleware)
+  server.addHook('preHandler', tenantMiddleware)
+
   server.post('/proprietarios', async (request, reply) => {
     return controller.create(request, reply)
   })

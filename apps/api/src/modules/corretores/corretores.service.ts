@@ -5,36 +5,36 @@ import { AppError } from '../../shared/errors/app-error'
 export class CorretoresService {
   constructor(private corretoresRepository: CorretoresRepository) {}
 
-  async create(data: CreateCorretorDTO) {
-    const corretor = await this.corretoresRepository.create(data)
+  async create(data: CreateCorretorDTO, tenantId: string) {
+    const corretor = await this.corretoresRepository.create(data, tenantId)
     return corretor
   }
 
-  async findAll(query: ListCorretoresQuery) {
-    return await this.corretoresRepository.findAll(query)
+  async findAll(query: ListCorretoresQuery, tenantId: string) {
+    return await this.corretoresRepository.findAll(query, tenantId)
   }
 
-  async findById(id: string) {
-    const corretor = await this.corretoresRepository.findById(id)
+  async findById(id: string, tenantId: string) {
+    const corretor = await this.corretoresRepository.findById(id, tenantId)
     if (!corretor) {
       throw new AppError('Corretor não encontrado', 404, 'CORRETOR_NOT_FOUND')
     }
     return corretor
   }
 
-  async update(id: string, data: UpdateCorretorDTO) {
-    await this.findById(id)
-    const corretor = await this.corretoresRepository.update(id, data)
+  async update(id: string, data: UpdateCorretorDTO, tenantId: string) {
+    await this.findById(id, tenantId)
+    const corretor = await this.corretoresRepository.update(id, data, tenantId)
     return corretor
   }
 
-  async delete(id: string) {
-    await this.findById(id)
-    await this.corretoresRepository.delete(id)
+  async delete(id: string, tenantId: string) {
+    await this.findById(id, tenantId)
+    await this.corretoresRepository.delete(id, tenantId)
   }
 
-  async getStats(id: string) {
-    await this.findById(id)
-    return await this.corretoresRepository.getStats(id)
+  async getStats(id: string, tenantId: string) {
+    await this.findById(id, tenantId)
+    return await this.corretoresRepository.getStats(id, tenantId)
   }
 }

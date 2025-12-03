@@ -11,13 +11,148 @@ datasource db {
 }
 
 // ============================================
+// MULTI-TENANCY
+// ============================================
+
+model Tenant {
+  id                  String        @id @default(uuid())
+
+  // Identificação
+  nome                String
+  slug                String        @unique
+  subdominio          String?       @unique
+  dominio_custom      String?       @unique
+
+  // Contato
+  email               String
+  telefone            String?
+
+  // Configurações
+  logo_url            String?
+  cores_tema          Json?
+  configuracoes       Json?
+
+  // Plano e assinatura
+  plano               PlanoTenant   @default(BASICO)
+  status              StatusTenant  @default(TRIAL)
+  data_expiracao      DateTime?
+
+  // Limites por plano
+  limite_usuarios     Int           @default(3)
+  limite_imoveis      Int           @default(100)
+  limite_storage_mb   Int           @default(1000)
+
+  // Uso atual
+  total_usuarios      Int           @default(0)
+  total_imoveis       Int           @default(0)
+  storage_usado_mb    Int           @default(0)
+
+  // Timestamps
+  created_at          DateTime      @default(now())
+  updated_at          DateTime      @updatedAt
+
+  // Relacionamentos
+  users               User[]
+  corretores          Corretor[]
+  leads               Lead[]
+  proprietarios       Proprietario[]
+  imoveis             Imovel[]
+  negociacoes         Negociacao[]
+  integracoes         Integracao[]
+  automacoes          Automacao[]
+  assinaturas         Assinatura[]
+
+  @@map("tenants")
+  @@index([slug])
+  @@index([plano])
+  @@index([status])
+}
+
+enum PlanoTenant {
+  BASICO
+  PRO
+  ENTERPRISE
+  CUSTOM
+}
+
+enum StatusTenant {
+  TRIAL
+  ATIVO
+  INATIVO
+  SUSPENSO
+  CANCELADO
+}
+
+// ============================================
+// ASSINATURAS
+// ============================================
+
+model Assinatura {
+  id                  String            @id @default(uuid())
+
+  // Tenant
+  tenant_id           String
+  tenant              Tenant            @relation(fields: [tenant_id], references: [id], onDelete: Cascade)
+
+  // Plano e valor
+  plano               PlanoTenant
+  valor_mensal        Decimal           @db.Decimal(10, 2)
+  valor_anual         Decimal?          @db.Decimal(10, 2)
+  periodicidade       Periodicidade     @default(MENSAL)
+
+  // Status
+  status              StatusAssinatura  @default(PENDENTE)
+
+  // Datas
+  inicio              DateTime
+  fim                 DateTime?
+  proxima_cobranca    DateTime?
+
+  // Pagamento
+  gateway             String?
+  gateway_id          String?
+  metodo_pagamento    String?
+
+  // Histórico
+  historico           Json[]
+
+  // Timestamps
+  created_at          DateTime          @default(now())
+  updated_at          DateTime          @updatedAt
+
+  @@map("assinaturas")
+  @@index([tenant_id])
+  @@index([status])
+}
+
+enum Periodicidade {
+  MENSAL
+  TRIMESTRAL
+  SEMESTRAL
+  ANUAL
+}
+
+enum StatusAssinatura {
+  PENDENTE
+  ATIVA
+  CANCELADA
+  SUSPENSA
+  VENCIDA
+}
+
+// ============================================
 // AUTENTICAÇÃO E USUÁRIOS
 // ============================================
 
 model User {
   id            String    @id @default(uuid())
+
+  // Multi-tenant
+  tenant_id     String
+  tenant        Tenant    @relation(fields: [tenant_id], references: [id], onDelete: Cascade)
+
   nome          String
-  email         String    @unique
+  email         String
   senha_hash    String?
   google_id     String?   @unique
   tipo          UserType  @default(CORRETOR)
@@ -31,7 +166,10 @@ model User {
   // Relacionamentos
   corretor      Corretor?
 
+  @@unique([tenant_id, email])
   @@map("users")
+  @@index([tenant_id])
+  @@index([email])
 }
 
 enum UserType {
@@ -46,32 +184,39 @@ enum UserType {
 
 model Corretor {
   id                  String   @id @default(uuid())
+
+  // Multi-tenant
+  tenant_id           String
+  tenant              Tenant   @relation(fields: [tenant_id], references: [id], onDelete: Cascade)
+
   user_id             String   @unique
   user                User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
-  
-  creci               String   @unique
+
+  creci               String
   telefone            String
   foto_url            String?
-  
+
   // Configurações
   especializacoes     String[]
   meta_mensal         Decimal? @db.Decimal(10, 2)
   meta_anual          Decimal? @db.Decimal(10, 2)
   comissao_padrao     Decimal  @default(3.00) @db.Decimal(5, 2)
-  
+
   // Performance
   performance_score   Int      @default(0)
   disponibilidade     Json?
-  
+
   // Timestamps
   created_at          DateTime @default(now())
   updated_at          DateTime @updatedAt
-  
+
   // Relacionamentos
   leads               Lead[]
   negociacoes         Negociacao[]
-  
+
+  @@unique([tenant_id, creci])
   @@map("corretores")
+  @@index([tenant_id])
 }
 
 // ============================================
@@ -80,38 +225,43 @@ model Corretor {
 
 model Lead {
   id                String      @id @default(uuid())
-  
+
+  // Multi-tenant
+  tenant_id         String
+  tenant            Tenant      @relation(fields: [tenant_id], references: [id], onDelete: Cascade)
+
   // Dados pessoais
   nome              String
   email             String?
   telefone          String
   cpf               String?
-  
+
   // Origem e qualificação
   origem            OrigemLead
   temperatura       Temperatura @default(FRIO)
   score             Int         @default(0)
-  
+
   // Interesse
   interesse         Json
   observacoes       String?     @db.Text
-  
+
   // Timeline de interações
   timeline          Json[]
-  
+
   // Atribuição
   corretor_id       String?
   corretor          Corretor?   @relation(fields: [corretor_id], references: [id], onDelete: SetNull)
-  
+
   // Timestamps
   created_at        DateTime    @default(now())
   updated_at        DateTime    @updatedAt
   ultimo_contato    DateTime?
-  
+
   // Relacionamentos
   negociacoes       Negociacao[]
-  
+
   @@map("leads")
+  @@index([tenant_id])
   @@index([corretor_id])
   @@index([origem])
   @@index([temperatura])
@@ -141,31 +291,37 @@ enum Temperatura {
 
 model Proprietario {
   id                  String   @id @default(uuid())
-  
+
+  // Multi-tenant
+  tenant_id           String
+  tenant              Tenant   @relation(fields: [tenant_id], references: [id], onDelete: Cascade)
+
   // Dados pessoais
   nome                String
-  cpf_cnpj            String   @unique
+  cpf_cnpj            String
   tipo_pessoa         TipoPessoa @default(FISICA)
-  
+
   // Contato
   email               String?
   telefone            String
   telefone_secundario String?
   contato             Json?
-  
+
   // Configurações financeiras
   forma_pagamento     String   @default("PIX")
   percentual_comissao Decimal  @default(5.00) @db.Decimal(5, 2)
   banco               Json?
-  
+
   // Timestamps
   created_at          DateTime @default(now())
   updated_at          DateTime @updatedAt
-  
+
   // Relacionamentos
   imoveis             Imovel[]
-  
+
+  @@unique([tenant_id, cpf_cnpj])
   @@map("proprietarios")
+  @@index([tenant_id])
 }
 
 enum TipoPessoa {
@@ -179,54 +335,61 @@ enum TipoPessoa {
 
 model Imovel {
   id                  String          @id @default(uuid())
-  codigo              String          @unique
-  
+
+  // Multi-tenant
+  tenant_id           String
+  tenant              Tenant          @relation(fields: [tenant_id], references: [id], onDelete: Cascade)
+
+  codigo              String
+
   // Tipo e categoria
   tipo                TipoImovel
   categoria           CategoriaImovel
   status              StatusImovel    @default(DISPONIVEL)
-  
+
   // Endereço
   endereco            Json
-  
+
   // Características
   caracteristicas     Json
-  
+
   // Descrição
   titulo              String
   descricao           String          @db.Text
   diferenciais        String[]
-  
+
   // Mídia
   fotos               String[]
   video_url           String?
   tour_360_url        String?
-  
+
   // Documentos
   documentos          String[]
-  
+
   // Valores
   preco               Decimal         @db.Decimal(10, 2)
   condominio          Decimal?        @db.Decimal(10, 2)
   iptu                Decimal?        @db.Decimal(10, 2)
-  
+
   // Validação
   ultima_validacao    DateTime?
   validado_por        String?
-  
+
   // Proprietário
   proprietario_id     String
   proprietario        Proprietario    @relation(fields: [proprietario_id], references: [id], onDelete: Restrict)
-  
+
   // Timestamps
   created_at          DateTime        @default(now())
   updated_at          DateTime        @updatedAt
   publicado_em        DateTime?
-  
+
   // Relacionamentos
   negociacoes         Negociacao[]
-  
+
+  @@unique([tenant_id, codigo])
   @@map("imoveis")
+  @@index([tenant_id])
   @@index([tipo])
   @@index([categoria])
   @@index([status])
@@ -267,50 +430,57 @@ enum StatusImovel {
 
 model Negociacao {
   id                  String            @id @default(uuid())
-  codigo              String            @unique
-  
+
+  // Multi-tenant
+  tenant_id           String
+  tenant              Tenant            @relation(fields: [tenant_id], references: [id], onDelete: Cascade)
+
+  codigo              String
+
   // Relacionamentos principais
   lead_id             String
   lead                Lead              @relation(fields: [lead_id], references: [id], onDelete: Restrict)
-  
+
   imovel_id           String
   imovel              Imovel            @relation(fields: [imovel_id], references: [id], onDelete: Restrict)
-  
+
   corretor_id         String
   corretor            Corretor          @relation(fields: [corretor_id], references: [id], onDelete: Restrict)
-  
+
   // Status
   status              StatusNegociacao  @default(CONTATO)
-  
+
   // Proposta
   valor_proposta      Decimal?          @db.Decimal(10, 2)
   valor_aprovado      Decimal?          @db.Decimal(10, 2)
   condicoes           Json?
-  
+
   // Comissões
   comissoes           Json[]
   valor_comissao      Decimal?          @db.Decimal(10, 2)
-  
+
   // Documentos
   documentos          String[]
   contrato_url        String?
-  
+
   // Timeline
   timeline            Json[]
-  
+
   // Datas importantes
   data_proposta       DateTime?
   data_contrato       DateTime?
   data_fechamento     DateTime?
-  
+
   // Motivo de perda
   motivo_perda        String?           @db.Text
-  
+
   // Timestamps
   created_at          DateTime          @default(now())
   updated_at          DateTime          @updatedAt
-  
+
+  @@unique([tenant_id, codigo])
   @@map("negociacoes")
+  @@index([tenant_id])
   @@index([lead_id])
   @@index([imovel_id])
   @@index([corretor_id])
@@ -335,29 +505,34 @@ enum StatusNegociacao {
 
 model Integracao {
   id                String            @id @default(uuid())
-  
+
+  // Multi-tenant
+  tenant_id         String
+  tenant            Tenant            @relation(fields: [tenant_id], references: [id], onDelete: Cascade)
+
   portal            PortalIntegracao
   status            StatusIntegracao  @default(INATIVO)
-  
+
   // Configuração
   configuracao      Json
-  
+
   // Sincronização
   ultima_sync       DateTime?
   proxima_sync      DateTime?
   intervalo_sync    Int               @default(60)
-  
+
   // Logs
   logs              Json[]
   total_sucesso     Int               @default(0)
   total_erro        Int               @default(0)
-  
+
   // Timestamps
   created_at        DateTime          @default(now())
   updated_at        DateTime          @updatedAt
-  
+
+  @@unique([tenant_id, portal])
   @@map("integracoes")
-  @@unique([portal])
+  @@index([tenant_id])
 }
 
 enum PortalIntegracao {
@@ -382,26 +557,31 @@ enum StatusIntegracao {
 
 model Automacao {
   id                String    @id @default(uuid())
-  
+
+  // Multi-tenant
+  tenant_id         String
+  tenant            Tenant    @relation(fields: [tenant_id], references: [id], onDelete: Cascade)
+
   nome              String
   descricao         String?   @db.Text
-  
+
   // Configuração
   trigger           String
   condicoes         Json[]
   acoes             Json[]
-  
+
   // Estado
   ativo             Boolean   @default(true)
-  
+
   // Execuções
   execucoes         Json[]
   total_execucoes   Int       @default(0)
   ultima_execucao   DateTime?
-  
+
   // Timestamps
   created_at        DateTime  @default(now())
   updated_at        DateTime  @updatedAt
-  
+
   @@map("automacoes")
+  @@index([tenant_id])
 }

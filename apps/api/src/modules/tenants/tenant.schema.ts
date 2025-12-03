@@ -1,0 +1,25 @@
+import { z } from 'zod'
+
+export const createTenantSchema = z.object({
+  nome: z.string().min(3, 'Nome deve ter no mínimo 3 caracteres'),
+  slug: z.string()
+    .min(3, 'Slug deve ter no mínimo 3 caracteres')
+    .regex(/^[a-z0-9-]+$/, 'Slug deve conter apenas letras minúsculas, números e hífens'),
+  email: z.string().email('Email inválido'),
+  telefone: z.string().optional(),
+  plano: z.enum(['BASICO', 'PRO', 'ENTERPRISE', 'CUSTOM']).default('BASICO')
+})
+
+export const updateTenantSchema = z.object({
+  nome: z.string().min(3).optional(),
+  email: z.string().email().optional(),
+  telefone: z.string().optional(),
+  logo_url: z.string().url().optional(),
+  cores_tema: z.record(z.string()).optional(),
+  configuracoes: z.record(z.any()).optional(),
+  plano: z.enum(['BASICO', 'PRO', 'ENTERPRISE', 'CUSTOM']).optional(),
+  status: z.enum(['TRIAL', 'ATIVO', 'INATIVO', 'SUSPENSO', 'CANCELADO']).optional()
+})
+
+export type CreateTenantDTO = z.infer<typeof createTenantSchema>
+export type UpdateTenantDTO = z.infer<typeof updateTenantSchema>

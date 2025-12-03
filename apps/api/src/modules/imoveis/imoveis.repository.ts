@@ -4,9 +4,10 @@ import { CreateImovelDTO, UpdateImovelDTO, FilterImoveisDTO, ProximidadeDTO } fr
 export class ImoveisRepository {
   constructor(private prisma: PrismaClient) {}
 
-  async create(data: CreateImovelDTO) {
+  async create(data: CreateImovelDTO, tenantId: string) {
     return await this.prisma.imovel.create({
       data: {
+        tenant_id: tenantId,
         codigo: data.codigo || this.generateCodigo(),
         tipo: data.tipo,
         categoria: data.categoria,
@@ -29,12 +30,12 @@ export class ImoveisRepository {
     })
   }
 
-  async findAll(filters: FilterImoveisDTO) {
-    const { 
-      page = 1, 
-      limit = 20, 
-      tipo, 
-      categoria, 
+  async findAll(filters: FilterImoveisDTO, tenantId: string) {
+    const {
+      page = 1,
+      limit = 20,
+      tipo,
+      categoria,
       status,
       preco_min,
       preco_max,
@@ -44,7 +45,9 @@ export class ImoveisRepository {
       orderBy = 'data_desc'
     } = filters
 
-    const where: any = {}
+    const where: any = {
+      tenant_id: tenantId
+    }
 
     if (tipo) where.tipo = tipo
     if (categoria) where.categoria = categoria
@@ -89,9 +92,12 @@ export class ImoveisRepository {
     }
   }
 
-  async findById(id: string) {
-    return await this.prisma.imovel.findUnique({
-      where: { id },
+  async findById(id: string, tenantId: string) {
+    return await this.prisma.imovel.findFirst({
+      where: {
+        id,
+        tenant_id: tenantId
+      },
       include: {
         proprietario: true,
         negociacoes: {
@@ -113,31 +119,37 @@ export class ImoveisRepository {
     })
   }
 
-  async findByCodigo(codigo: string) {
+  async findByCodigo(codigo: string, tenantId: string) {
     return await this.prisma.imovel.findUnique({
-      where: { codigo },
+      where: {
+        tenant_id_codigo: {
+          tenant_id: tenantId,
+          codigo: codigo
+        }
+      }
     })
   }
 
-  async findByProximidade(data: ProximidadeDTO) {
+  async findByProximidade(data: ProximidadeDTO, tenantId: string) {
     const { latitude, longitude, raio_km, limit = 20 } = data
 
     const imoveis = await this.prisma.$queryRaw`
       SELECT * FROM (
-        SELECT 
+        SELECT
           i.*,
           (
             6371 * acos(
-              cos(radians(${latitude})) 
-              * cos(radians((i.endereco->>'latitude')::float)) 
-              * cos(radians((i.endereco->>'longitude')::float) - radians(${longitude})) 
-              + sin(radians(${latitude})) 
+              cos(radians(${latitude}))
+              * cos(radians((i.endereco->>'latitude')::float))
+              * cos(radians((i.endereco->>'longitude')::float) - radians(${longitude}))
+              + sin(radians(${latitude}))
               * sin(radians((i.endereco->>'latitude')::float))
             )
           ) AS distancia_km
         FROM imoveis i
-        WHERE 
-          i.endereco->>'latitude' IS NOT NULL 
+        WHERE
+          i.tenant_id = ${tenantId}
+          AND i.endereco->>'latitude' IS NOT NULL
           AND i.endereco->>'longitude' IS NOT NULL
           AND i.status = 'DISPONIVEL'
       ) AS imoveis_com_distancia
@@ -149,7 +161,7 @@ export class ImoveisRepository {
     return imoveis
   }
 
-  async update(id: string, data: UpdateImovelDTO) {
+  async update(id: string, data: UpdateImovelDTO, tenantId: string) {
     const updateData: any = {}
 
     if (data.codigo) updateData.codigo = data.codigo
@@ -175,9 +187,12 @@ export class ImoveisRepository {
     })
   }
 
-  async delete(id: string) {
-    return await this.prisma.imovel.delete({
-      where: { id },
+  async delete(id: string, tenantId: string) {
+    return await this.prisma.imovel.deleteMany({
+      where: {
+        id,
+        tenant_id: tenantId
+      }
     })
   }
 

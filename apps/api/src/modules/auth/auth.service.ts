@@ -13,9 +13,9 @@ export class AuthService {
     this.repository = new AuthRepository(prisma)
   }
 
-  async register(data: RegisterDTO) {
-    // Verificar se email já existe
-    const userExists = await this.repository.findByEmail(data.email)
+  async register(data: RegisterDTO, tenantId: string) {
+    // Verificar se email já existe no tenant
+    const userExists = await this.repository.findByEmail(data.email, tenantId)
     if (userExists) {
       throw new AppError('Email já cadastrado', 400)
     }
@@ -25,6 +25,7 @@ export class AuthService {
 
     // Criar usuário
     const user = await this.repository.createUser({
+      tenant_id: tenantId,
       nome: data.nome,
       email: data.email,
       senha_hash,
@@ -34,6 +35,7 @@ export class AuthService {
     // Se tipo for CORRETOR, criar registro de corretor
     if (user.tipo === 'CORRETOR') {
       await this.repository.createCorretor({
+        tenant_id: tenantId,
         user_id: user.id,
         creci: data.creci || '',
         telefone: data.telefone,
@@ -56,9 +58,9 @@ export class AuthService {
     }
   }
 
-  async login(data: LoginDTO) {
-    // Buscar usuário
-    const user = await this.repository.findByEmail(data.email)
+  async login(data: LoginDTO, tenantId: string) {
+    // Buscar usuário no tenant
+    const user = await this.repository.findByEmail(data.email, tenantId)
     if (!user) {
       throw new AppError('Email ou senha inválidos', 401)
     }
@@ -106,7 +108,7 @@ export class AuthService {
     }
   }
 
-  async googleLogin(credential: string) {
+  async googleLogin(credential: string, tenantId: string) {
     try {
       // Verify Google token and get user info
       const response = await axios.get(
@@ -119,14 +121,14 @@ export class AuthService {
         throw new AppError('Email não fornecido pelo Google', 400)
       }
 
-      // Check if user exists by google_id
+      // Check if user exists by google_id (busca global primeiro)
       let user = await this.prisma.user.findUnique({
         where: { google_id: googleId }
       })
 
-      // If not found by google_id, check by email
+      // If not found by google_id, check by email no tenant
       if (!user) {
-        user = await this.repository.findByEmail(email)
+        user = await this.repository.findByEmail(email, tenantId)
 
         // If user exists with email but no google_id, link the accounts
         if (user) {
@@ -137,10 +139,11 @@ export class AuthService {
         }
       }
 
-      // If user still doesn't exist, create new user
+      // If user still doesn't exist, create new user no tenant
       if (!user) {
         user = await this.prisma.user.create({
           data: {
+            tenant_id: tenantId,
             nome: name || email.split('@')[0],
             email,
             google_id: googleId,

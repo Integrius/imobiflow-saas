@@ -6,9 +6,9 @@ import axios from 'axios'
 export class ImoveisService {
   constructor(private imoveisRepository: ImoveisRepository) {}
 
-  async create(data: CreateImovelDTO) {
+  async create(data: CreateImovelDTO, tenantId: string) {
     if (data.codigo) {
-      const imovelExists = await this.imoveisRepository.findByCodigo(data.codigo)
+      const imovelExists = await this.imoveisRepository.findByCodigo(data.codigo, tenantId)
       if (imovelExists) {
         throw new AppError('Código já cadastrado', 400, 'CODIGO_DUPLICADO')
       }
@@ -19,15 +19,15 @@ export class ImoveisService {
     return await this.imoveisRepository.create({
       ...data,
       endereco,
-    })
+    }, tenantId)
   }
 
-  async findAll(filters: FilterImoveisDTO) {
-    return await this.imoveisRepository.findAll(filters)
+  async findAll(filters: FilterImoveisDTO, tenantId: string) {
+    return await this.imoveisRepository.findAll(filters, tenantId)
   }
 
-  async findById(id: string) {
-    const imovel = await this.imoveisRepository.findById(id)
+  async findById(id: string, tenantId: string) {
+    const imovel = await this.imoveisRepository.findById(id, tenantId)
 
     if (!imovel) {
       throw new AppError('Imóvel não encontrado', 404, 'IMOVEL_NAO_ENCONTRADO')
@@ -36,15 +36,15 @@ export class ImoveisService {
     return imovel
   }
 
-  async findByProximidade(data: ProximidadeDTO) {
-    return await this.imoveisRepository.findByProximidade(data)
+  async findByProximidade(data: ProximidadeDTO, tenantId: string) {
+    return await this.imoveisRepository.findByProximidade(data, tenantId)
   }
 
-  async update(id: string, data: UpdateImovelDTO) {
-    await this.findById(id)
+  async update(id: string, data: UpdateImovelDTO, tenantId: string) {
+    await this.findById(id, tenantId)
 
     if (data.codigo) {
-      const imovelWithCodigo = await this.imoveisRepository.findByCodigo(data.codigo)
+      const imovelWithCodigo = await this.imoveisRepository.findByCodigo(data.codigo, tenantId)
       if (imovelWithCodigo && imovelWithCodigo.id !== id) {
         throw new AppError('Código já cadastrado para outro imóvel', 400, 'CODIGO_DUPLICADO')
       }
@@ -54,11 +54,11 @@ export class ImoveisService {
       data.endereco = await this.enrichEndereco(data.endereco)
     }
 
-    return await this.imoveisRepository.update(id, data)
+    return await this.imoveisRepository.update(id, data, tenantId)
   }
 
-  async delete(id: string) {
-    const imovel = await this.findById(id)
+  async delete(id: string, tenantId: string) {
+    const imovel = await this.findById(id, tenantId)
 
     if (imovel.negociacoes && imovel.negociacoes.length > 0) {
       const negociacoesAtivas = imovel.negociacoes.filter(
@@ -74,7 +74,7 @@ export class ImoveisService {
       }
     }
 
-    return await this.imoveisRepository.delete(id)
+    return await this.imoveisRepository.delete(id, tenantId)
   }
 
   private async enrichEndereco(endereco: any) {

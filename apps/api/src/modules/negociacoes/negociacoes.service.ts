@@ -17,16 +17,16 @@ export class NegociacoesService {
     this.repository = new NegociacoesRepository(prisma)
   }
 
-  async create(data: CreateNegociacaoDTO) {
-    const lead = await this.prisma.lead.findUnique({
-      where: { id: data.lead_id }
+  async create(data: CreateNegociacaoDTO, tenantId: string) {
+    const lead = await this.prisma.lead.findFirst({
+      where: { id: data.lead_id, tenant_id: tenantId }
     })
     if (!lead) {
       throw new AppError('Lead não encontrado', 404)
     }
 
-    const imovel = await this.prisma.imovel.findUnique({
-      where: { id: data.imovel_id }
+    const imovel = await this.prisma.imovel.findFirst({
+      where: { id: data.imovel_id, tenant_id: tenantId }
     })
     if (!imovel) {
       throw new AppError('Imóvel não encontrado', 404)
@@ -35,14 +35,14 @@ export class NegociacoesService {
       throw new AppError('Imóvel não está disponível', 400)
     }
 
-    const corretor = await this.prisma.corretor.findUnique({
-      where: { id: data.corretor_id }
+    const corretor = await this.prisma.corretor.findFirst({
+      where: { id: data.corretor_id, tenant_id: tenantId }
     })
     if (!corretor) {
       throw new AppError('Corretor não encontrado', 404)
     }
 
-    const negociacao = await this.repository.create(data)
+    const negociacao = await this.repository.create(data, tenantId)
 
     await this.prisma.imovel.update({
       where: { id: data.imovel_id },
@@ -52,20 +52,20 @@ export class NegociacoesService {
     return negociacao
   }
 
-  async findAll(query: QueryNegociacoesDTO) {
-    return await this.repository.findAll(query)
+  async findAll(query: QueryNegociacoesDTO, tenantId: string) {
+    return await this.repository.findAll(query, tenantId)
   }
 
-  async findById(id: string) {
-    const negociacao = await this.repository.findById(id)
+  async findById(id: string, tenantId: string) {
+    const negociacao = await this.repository.findById(id, tenantId)
     if (!negociacao) {
       throw new AppError('Negociação não encontrada', 404)
     }
     return negociacao
   }
 
-  async update(id: string, data: UpdateNegociacaoDTO) {
-    const negociacao = await this.repository.findById(id)
+  async update(id: string, data: UpdateNegociacaoDTO, tenantId: string) {
+    const negociacao = await this.repository.findById(id, tenantId)
     if (!negociacao) {
       throw new AppError('Negociação não encontrada', 404)
     }
@@ -78,19 +78,19 @@ export class NegociacoesService {
           status_anterior: negociacao.status,
           status_novo: data.status
         }
-      })
+      }, tenantId)
 
       if (data.status === 'FECHADO') {
         const categoria = negociacao.imovel.categoria
         const novoStatus = categoria === 'VENDA' ? 'VENDIDO' : 'ALUGADO'
-        
+
         await this.prisma.imovel.update({
           where: { id: negociacao.imovel_id },
           data: { status: novoStatus }
         })
 
         if (data.valor_proposta) {
-          await this.calcularComissoes(id, data.valor_proposta)
+          await this.calcularComissoes(id, data.valor_proposta, tenantId)
         }
       }
 
@@ -102,11 +102,11 @@ export class NegociacoesService {
       }
     }
 
-    return await this.repository.update(id, data)
+    return await this.repository.update(id, data, tenantId)
   }
 
-  async delete(id: string) {
-    const negociacao = await this.repository.findById(id)
+  async delete(id: string, tenantId: string) {
+    const negociacao = await this.repository.findById(id, tenantId)
     if (!negociacao) {
       throw new AppError('Negociação não encontrada', 404)
     }
@@ -118,37 +118,37 @@ export class NegociacoesService {
       })
     }
 
-    return await this.repository.delete(id)
+    return await this.repository.delete(id, tenantId)
   }
 
-  async addTimelineEvent(id: string, evento: AddTimelineEventDTO) {
-    const negociacao = await this.repository.findById(id)
+  async addTimelineEvent(id: string, evento: AddTimelineEventDTO, tenantId: string) {
+    const negociacao = await this.repository.findById(id, tenantId)
     if (!negociacao) {
       throw new AppError('Negociação não encontrada', 404)
     }
 
-    return await this.repository.addTimelineEvent(id, evento)
+    return await this.repository.addTimelineEvent(id, evento, tenantId)
   }
 
-  async addComissao(id: string, comissao: AddComissaoDTO) {
-    const negociacao = await this.repository.findById(id)
+  async addComissao(id: string, comissao: AddComissaoDTO, tenantId: string) {
+    const negociacao = await this.repository.findById(id, tenantId)
     if (!negociacao) {
       throw new AppError('Negociação não encontrada', 404)
     }
 
-    const corretor = await this.prisma.corretor.findUnique({
-      where: { id: comissao.corretor_id }
+    const corretor = await this.prisma.corretor.findFirst({
+      where: { id: comissao.corretor_id, tenant_id: tenantId }
     })
     if (!corretor) {
       throw new AppError('Corretor não encontrado', 404)
     }
 
-    return await this.repository.addComissao(id, comissao)
+    return await this.repository.addComissao(id, comissao, tenantId)
   }
 
-  async getPipeline() {
-    const countByStatus = await this.repository.countByStatus()
-    
+  async getPipeline(tenantId: string) {
+    const countByStatus = await this.repository.countByStatus(tenantId)
+
     return {
       CONTATO: countByStatus['CONTATO'] || 0,
       VISITA: countByStatus['VISITA'] || 0,
@@ -159,8 +159,8 @@ export class NegociacoesService {
     }
   }
 
-  async getByCorretor(corretor_id: string) {
-    return await this.repository.findByCorretor(corretor_id)
+  async getByCorretor(corretor_id: string, tenantId: string) {
+    return await this.repository.findByCorretor(corretor_id, tenantId)
   }
 
   private mapStatusToEventType(status: StatusNegociacao): 'CONTATO' | 'VISITA' | 'PROPOSTA' | 'OBSERVACAO' | 'NEGOCIACAO' | 'FECHAMENTO' {
@@ -178,8 +178,8 @@ export class NegociacoesService {
     return map[status]
   }
 
-  private async calcularComissoes(negociacao_id: string, valor_venda: number) {
-    const negociacao = await this.repository.findById(negociacao_id)
+  private async calcularComissoes(negociacao_id: string, valor_venda: number, tenantId: string) {
+    const negociacao = await this.repository.findById(negociacao_id, tenantId)
     if (!negociacao) return
 
     const corretor = negociacao.corretor
@@ -190,7 +190,7 @@ export class NegociacoesService {
       corretor_id: corretor.id,
       percentual: percentualCorretor,
       valor: valorComissaoCorretor
-    })
+    }, tenantId)
 
     await this.addTimelineEvent(negociacao_id, {
       tipo: 'FECHAMENTO',
@@ -200,6 +200,6 @@ export class NegociacoesService {
         comissao_corretor: valorComissaoCorretor,
         percentual_corretor: percentualCorretor
       }
-    })
+    }, tenantId)
   }
 }

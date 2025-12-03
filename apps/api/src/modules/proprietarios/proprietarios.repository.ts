@@ -4,9 +4,10 @@ import { CreateProprietarioDTO, UpdateProprietarioDTO, FilterProprietariosDTO } 
 export class ProprietariosRepository {
   constructor(private prisma: PrismaClient) {}
 
-  async create(data: CreateProprietarioDTO) {
+  async create(data: CreateProprietarioDTO, tenantId: string) {
     return await this.prisma.proprietario.create({
       data: {
+        tenant_id: tenantId,
         nome: data.nome,
         cpf_cnpj: data.cpf_cnpj,
         tipo_pessoa: data.tipo_pessoa,
@@ -21,10 +22,12 @@ export class ProprietariosRepository {
     })
   }
 
-  async findAll(filters: FilterProprietariosDTO) {
+  async findAll(filters: FilterProprietariosDTO, tenantId: string) {
     const { page = 1, limit = 20, nome, cpf_cnpj, tipo_pessoa } = filters
 
-    const where: any = {}
+    const where: any = {
+      tenant_id: tenantId
+    }
 
     if (nome) {
       where.nome = { contains: nome, mode: 'insensitive' }
@@ -69,9 +72,12 @@ export class ProprietariosRepository {
     }
   }
 
-  async findById(id: string) {
-    return await this.prisma.proprietario.findUnique({
-      where: { id },
+  async findById(id: string, tenantId: string) {
+    return await this.prisma.proprietario.findFirst({
+      where: {
+        id,
+        tenant_id: tenantId
+      },
       include: {
         imoveis: {
           orderBy: { created_at: 'desc' },
@@ -80,13 +86,18 @@ export class ProprietariosRepository {
     })
   }
 
-  async findByCpfCnpj(cpf_cnpj: string) {
+  async findByCpfCnpj(cpf_cnpj: string, tenantId: string) {
     return await this.prisma.proprietario.findUnique({
-      where: { cpf_cnpj },
+      where: {
+        tenant_id_cpf_cnpj: {
+          tenant_id: tenantId,
+          cpf_cnpj: cpf_cnpj
+        }
+      }
     })
   }
 
-  async update(id: string, data: UpdateProprietarioDTO) {
+  async update(id: string, data: UpdateProprietarioDTO, tenantId: string) {
     const updateData: any = {}
 
     if (data.nome) updateData.nome = data.nome
@@ -112,9 +123,12 @@ export class ProprietariosRepository {
     })
   }
 
-  async delete(id: string) {
-    return await this.prisma.proprietario.delete({
-      where: { id },
+  async delete(id: string, tenantId: string) {
+    return await this.prisma.proprietario.deleteMany({
+      where: {
+        id,
+        tenant_id: tenantId
+      }
     })
   }
 }

@@ -4,6 +4,7 @@ import { LeadsService } from './leads.service'
 import { LeadsRepository } from './leads.repository'
 import { prisma } from '../../shared/database/prisma'
 import { authMiddleware } from '../../shared/middlewares/auth.middleware'
+import { tenantMiddleware } from '../../shared/middlewares/tenant.middleware'
 
 export async function leadsRoutes(server: FastifyInstance) {
   const leadsRepository = new LeadsRepository(prisma)
@@ -11,6 +12,7 @@ export async function leadsRoutes(server: FastifyInstance) {
   const leadsController = new LeadsController(leadsService)
 
   server.addHook('onRequest', authMiddleware)
+  server.addHook('onRequest', tenantMiddleware)
 
   server.get('/stats', async (request, reply) => {
     return await leadsController.getStats(request, reply)

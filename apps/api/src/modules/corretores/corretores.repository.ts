@@ -4,9 +4,10 @@ import { CreateCorretorDTO, UpdateCorretorDTO, ListCorretoresQuery } from './cor
 export class CorretoresRepository {
   constructor(private prisma: PrismaClient) {}
 
-  async create(data: CreateCorretorDTO): Promise<Corretor> {
+  async create(data: CreateCorretorDTO, tenantId: string): Promise<Corretor> {
     return await this.prisma.corretor.create({
       data: {
+        tenant_id: tenantId,
         user_id: data.user_id,
         creci: data.creci,
         telefone: data.telefone,
@@ -32,10 +33,12 @@ export class CorretoresRepository {
     })
   }
 
-  async findAll(query: ListCorretoresQuery) {
+  async findAll(query: ListCorretoresQuery, tenantId: string) {
     const { page, limit, especializacao, search, ativo } = query
 
-    const where: Prisma.CorretorWhereInput = {}
+    const where: Prisma.CorretorWhereInput = {
+      tenant_id: tenantId
+    }
 
     if (especializacao) {
       where.especializacoes = {
@@ -96,9 +99,12 @@ export class CorretoresRepository {
     }
   }
 
-  async findById(id: string): Promise<Corretor | null> {
-    return await this.prisma.corretor.findUnique({
-      where: { id },
+  async findById(id: string, tenantId: string): Promise<Corretor | null> {
+    return await this.prisma.corretor.findFirst({
+      where: {
+        id,
+        tenant_id: tenantId
+      },
       include: {
         user: {
           select: {
@@ -155,7 +161,7 @@ export class CorretoresRepository {
     })
   }
 
-  async update(id: string, data: UpdateCorretorDTO): Promise<Corretor> {
+  async update(id: string, data: UpdateCorretorDTO, tenantId: string): Promise<Corretor> {
     return await this.prisma.corretor.update({
       where: { id },
       data: {
@@ -183,18 +189,26 @@ export class CorretoresRepository {
     })
   }
 
-  async delete(id: string): Promise<void> {
-    await this.prisma.corretor.delete({
-      where: { id },
+  async delete(id: string, tenantId: string): Promise<void> {
+    await this.prisma.corretor.deleteMany({
+      where: {
+        id,
+        tenant_id: tenantId
+      }
     })
   }
 
-  async getStats(corretorId: string) {
+  async getStats(corretorId: string, tenantId: string) {
+    const where = {
+      corretor_id: corretorId,
+      tenant_id: tenantId
+    }
+
     const [totalLeads, leadsQuentes, totalNegociacoes, negociacoesFechadas] = await Promise.all([
-      this.prisma.lead.count({ where: { corretor_id: corretorId } }),
-      this.prisma.lead.count({ where: { corretor_id: corretorId, temperatura: 'QUENTE' } }),
-      this.prisma.negociacao.count({ where: { corretor_id: corretorId } }),
-      this.prisma.negociacao.count({ where: { corretor_id: corretorId, status: 'FECHADO' } }),
+      this.prisma.lead.count({ where }),
+      this.prisma.lead.count({ where: { ...where, temperatura: 'QUENTE' } }),
+      this.prisma.negociacao.count({ where }),
+      this.prisma.negociacao.count({ where: { ...where, status: 'FECHADO' } }),
     ])
 
     return {

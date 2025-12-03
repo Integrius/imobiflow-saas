@@ -10,39 +10,45 @@ export class CorretoresController {
   constructor(private corretoresService: CorretoresService) {}
 
   async create(request: FastifyRequest, reply: FastifyReply) {
+    const tenantId = (request as any).tenantId || 'default-tenant-id'
     const data = createCorretorSchema.parse(request.body)
-    const corretor = await this.corretoresService.create(data)
+    const corretor = await this.corretoresService.create(data, tenantId)
     return reply.status(201).send(corretor)
   }
 
   async list(request: FastifyRequest, reply: FastifyReply) {
+    const tenantId = (request as any).tenantId || 'default-tenant-id'
     const query = listCorretoresSchema.parse(request.query)
-    const result = await this.corretoresService.findAll(query)
+    const result = await this.corretoresService.findAll(query, tenantId)
     return reply.send(result)
   }
 
   async getById(request: FastifyRequest, reply: FastifyReply) {
+    const tenantId = (request as any).tenantId || 'default-tenant-id'
     const { id } = request.params as { id: string }
-    const corretor = await this.corretoresService.findById(id)
+    const corretor = await this.corretoresService.findById(id, tenantId)
     return reply.send(corretor)
   }
 
   async update(request: FastifyRequest, reply: FastifyReply) {
+    const tenantId = (request as any).tenantId || 'default-tenant-id'
     const { id } = request.params as { id: string }
     const data = updateCorretorSchema.parse(request.body)
-    const corretor = await this.corretoresService.update(id, data)
+    const corretor = await this.corretoresService.update(id, data, tenantId)
     return reply.send(corretor)
   }
 
   async delete(request: FastifyRequest, reply: FastifyReply) {
+    const tenantId = (request as any).tenantId || 'default-tenant-id'
     const { id } = request.params as { id: string }
-    await this.corretoresService.delete(id)
+    await this.corretoresService.delete(id, tenantId)
     return reply.status(204).send()
   }
 
   async getStats(request: FastifyRequest, reply: FastifyReply) {
+    const tenantId = (request as any).tenantId || 'default-tenant-id'
     const { id } = request.params as { id: string }
-    const stats = await this.corretoresService.getStats(id)
+    const stats = await this.corretoresService.getStats(id, tenantId)
     return reply.send(stats)
   }
 }

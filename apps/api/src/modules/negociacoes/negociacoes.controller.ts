@@ -18,8 +18,9 @@ export class NegociacoesController {
 
   async create(request: FastifyRequest, reply: FastifyReply) {
     try {
+      const tenantId = (request as any).tenantId || 'default-tenant-id'
       const data = createNegociacaoSchema.parse(request.body)
-      const negociacao = await this.service.create(data)
+      const negociacao = await this.service.create(data, tenantId)
       return reply.status(201).send(negociacao)
     } catch (error: any) {
       if (error.name === 'ZodError') {
@@ -36,8 +37,9 @@ export class NegociacoesController {
 
   async findAll(request: FastifyRequest, reply: FastifyReply) {
     try {
+      const tenantId = (request as any).tenantId || 'default-tenant-id'
       const query = queryNegociacoesSchema.parse(request.query)
-      const result = await this.service.findAll(query)
+      const result = await this.service.findAll(query, tenantId)
       return reply.send(result)
     } catch (error: any) {
       return reply.status(error.statusCode || 500).send({
@@ -48,8 +50,9 @@ export class NegociacoesController {
 
   async findById(request: FastifyRequest, reply: FastifyReply) {
     try {
+      const tenantId = (request as any).tenantId || 'default-tenant-id'
       const { id } = request.params as { id: string }
-      const negociacao = await this.service.findById(id)
+      const negociacao = await this.service.findById(id, tenantId)
       return reply.send(negociacao)
     } catch (error: any) {
       return reply.status(error.statusCode || 500).send({
@@ -60,9 +63,10 @@ export class NegociacoesController {
 
   async update(request: FastifyRequest, reply: FastifyReply) {
     try {
+      const tenantId = (request as any).tenantId || 'default-tenant-id'
       const { id } = request.params as { id: string }
       const data = updateNegociacaoSchema.parse(request.body)
-      const negociacao = await this.service.update(id, data)
+      const negociacao = await this.service.update(id, data, tenantId)
       return reply.send(negociacao)
     } catch (error: any) {
       if (error.name === 'ZodError') {
@@ -79,8 +83,9 @@ export class NegociacoesController {
 
   async delete(request: FastifyRequest, reply: FastifyReply) {
     try {
+      const tenantId = (request as any).tenantId || 'default-tenant-id'
       const { id } = request.params as { id: string }
-      await this.service.delete(id)
+      await this.service.delete(id, tenantId)
       return reply.status(204).send()
     } catch (error: any) {
       return reply.status(error.statusCode || 500).send({
@@ -91,9 +96,10 @@ export class NegociacoesController {
 
   async addTimelineEvent(request: FastifyRequest, reply: FastifyReply) {
     try {
+      const tenantId = (request as any).tenantId || 'default-tenant-id'
       const { id } = request.params as { id: string }
       const evento = addTimelineEventSchema.parse(request.body)
-      const negociacao = await this.service.addTimelineEvent(id, evento)
+      const negociacao = await this.service.addTimelineEvent(id, evento, tenantId)
       return reply.send(negociacao)
     } catch (error: any) {
       if (error.name === 'ZodError') {
@@ -110,9 +116,10 @@ export class NegociacoesController {
 
   async addComissao(request: FastifyRequest, reply: FastifyReply) {
     try {
+      const tenantId = (request as any).tenantId || 'default-tenant-id'
       const { id } = request.params as { id: string }
       const comissao = addComissaoSchema.parse(request.body)
-      const negociacao = await this.service.addComissao(id, comissao)
+      const negociacao = await this.service.addComissao(id, comissao, tenantId)
       return reply.send(negociacao)
     } catch (error: any) {
       if (error.name === 'ZodError') {
@@ -129,7 +136,8 @@ export class NegociacoesController {
 
   async getPipeline(request: FastifyRequest, reply: FastifyReply) {
     try {
-      const pipeline = await this.service.getPipeline()
+      const tenantId = (request as any).tenantId || 'default-tenant-id'
+      const pipeline = await this.service.getPipeline(tenantId)
       return reply.send(pipeline)
     } catch (error: any) {
       return reply.status(500).send({
@@ -140,8 +148,9 @@ export class NegociacoesController {
 
   async getByCorretor(request: FastifyRequest, reply: FastifyReply) {
     try {
+      const tenantId = (request as any).tenantId || 'default-tenant-id'
       const { corretor_id } = request.params as { corretor_id: string }
-      const negociacoes = await this.service.getByCorretor(corretor_id)
+      const negociacoes = await this.service.getByCorretor(corretor_id, tenantId)
       return reply.send(negociacoes)
     } catch (error: any) {
       return reply.status(500).send({

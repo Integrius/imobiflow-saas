@@ -105,33 +105,43 @@ ImobiFlow SaaS:
 - ✅ Dashboard básico
 - ⚠️ Módulos não testados (leads, imóveis, negociações)
 
-**Versão Multi-Tenant:**
-- 🚧 Em desenvolvimento
-- Próximos passos:
-  1. Adicionar tabela Tenants
-  2. Adicionar tenant_id em todas as tabelas
-  3. Middleware de isolamento
-  4. Sistema de assinaturas
-  5. Integração de pagamentos
+**Versão Multi-Tenant (v2.0.0):**
+- ✅ Tabela Tenants implementada
+- ✅ tenant_id adicionado em todas as tabelas
+- ✅ Middleware de isolamento implementado
+- ✅ Sistema de planos (BASICO, PRO, ENTERPRISE, CUSTOM)
+- ✅ Sistema de assinaturas
+- ✅ API de gerenciamento de tenants
+- ✅ Migration SQL criada e documentada
+- ✅ Documentação completa (ver [MULTI_TENANT_GUIDE.md](./MULTI_TENANT_GUIDE.md))
+- 🚧 Próximos passos:
+  1. Atualizar repositories para usar tenant_id
+  2. Implementar página de cadastro/onboarding
+  3. Integração de pagamentos (Stripe/Mercado Pago)
+  4. Testes automatizados de isolamento entre tenants
+  5. Dashboard administrativo para gerenciar tenants
 
 ---
 
 ## 📊 Roadmap
 
 ### Q1 2025
-- [ ] Finalizar refatoração multi-tenant
-- [ ] Implementar sistema de planos
+- [x] Finalizar refatoração multi-tenant (Schema + Middleware)
+- [x] Implementar sistema de planos
+- [ ] Atualizar repositories com tenant_id
 - [ ] Integrar gateway de pagamento
 - [ ] Página de cadastro/onboarding
 
 ### Q2 2025
 - [ ] Testar funcionalidades core
+- [ ] Implementar testes automatizados de isolamento
 - [ ] Beta privado
 - [ ] Feedback de clientes piloto
 
 ### Q3 2025
 - [ ] Lançamento público
 - [ ] Marketing e aquisição
+- [ ] Dashboard administrativo
 - [ ] Suporte e iteração
 
 ---

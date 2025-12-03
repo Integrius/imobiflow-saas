@@ -4,9 +4,10 @@ import { CreateNegociacaoDTO, UpdateNegociacaoDTO, QueryNegociacoesDTO } from '.
 export class NegociacoesRepository {
   constructor(private prisma: PrismaClient) {}
 
-  async create(data: CreateNegociacaoDTO) {
+  async create(data: CreateNegociacaoDTO, tenantId: string) {
     return await this.prisma.negociacao.create({
       data: {
+        tenant_id: tenantId,
         lead_id: data.lead_id,
         imovel_id: data.imovel_id,
         corretor_id: data.corretor_id,
@@ -45,11 +46,13 @@ export class NegociacoesRepository {
     })
   }
 
-  async findAll(query: QueryNegociacoesDTO) {
+  async findAll(query: QueryNegociacoesDTO, tenantId: string) {
     const { page, limit, status, corretor_id, lead_id, imovel_id } = query
     const skip = (page - 1) * limit
 
-    const where: any = {}
+    const where: any = {
+      tenant_id: tenantId
+    }
     if (status) where.status = status
     if (corretor_id) where.corretor_id = corretor_id
     if (lead_id) where.lead_id = lead_id
@@ -100,9 +103,12 @@ export class NegociacoesRepository {
     }
   }
 
-  async findById(id: string) {
-    return await this.prisma.negociacao.findUnique({
-      where: { id },
+  async findById(id: string, tenantId: string) {
+    return await this.prisma.negociacao.findFirst({
+      where: {
+        id,
+        tenant_id: tenantId
+      },
       include: {
         lead: true,
         imovel: {
@@ -125,7 +131,7 @@ export class NegociacoesRepository {
     })
   }
 
-  async update(id: string, data: UpdateNegociacaoDTO) {
+  async update(id: string, data: UpdateNegociacaoDTO, tenantId: string) {
     return await this.prisma.negociacao.update({
       where: { id },
       data: {
@@ -150,15 +156,21 @@ export class NegociacoesRepository {
     })
   }
 
-  async delete(id: string) {
-    return await this.prisma.negociacao.delete({
-      where: { id }
+  async delete(id: string, tenantId: string) {
+    return await this.prisma.negociacao.deleteMany({
+      where: {
+        id,
+        tenant_id: tenantId
+      }
     })
   }
 
-  async addTimelineEvent(id: string, evento: any) {
-    const negociacao = await this.prisma.negociacao.findUnique({
-      where: { id },
+  async addTimelineEvent(id: string, evento: any, tenantId: string) {
+    const negociacao = await this.prisma.negociacao.findFirst({
+      where: {
+        id,
+        tenant_id: tenantId
+      },
       select: { timeline: true }
     })
 
@@ -181,9 +193,12 @@ export class NegociacoesRepository {
     })
   }
 
-  async addComissao(id: string, comissao: any) {
-    const negociacao = await this.prisma.negociacao.findUnique({
-      where: { id },
+  async addComissao(id: string, comissao: any, tenantId: string) {
+    const negociacao = await this.prisma.negociacao.findFirst({
+      where: {
+        id,
+        tenant_id: tenantId
+      },
       select: { comissoes: true }
     })
 
@@ -203,9 +218,10 @@ export class NegociacoesRepository {
     })
   }
 
-  async countByStatus() {
+  async countByStatus(tenantId: string) {
     const negociacoes = await this.prisma.negociacao.groupBy({
       by: ['status'],
+      where: { tenant_id: tenantId },
       _count: true
     })
 
@@ -215,9 +231,12 @@ export class NegociacoesRepository {
     }, {} as Record<string, number>)
   }
 
-  async findByCorretor(corretor_id: string, limit: number = 10) {
+  async findByCorretor(corretor_id: string, tenantId: string, limit: number = 10) {
     return await this.prisma.negociacao.findMany({
-      where: { corretor_id },
+      where: {
+        corretor_id,
+        tenant_id: tenantId
+      },
       take: limit,
       orderBy: { updated_at: 'desc' },
       include: {

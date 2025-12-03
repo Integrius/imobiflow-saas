@@ -3,6 +3,8 @@ import { PrismaClient } from '@prisma/client'
 import { CorretoresRepository } from './corretores.repository'
 import { CorretoresService } from './corretores.service'
 import { CorretoresController } from './corretores.controller'
+import { authMiddleware } from '../../shared/middlewares/auth.middleware'
+import { tenantMiddleware } from '../../shared/middlewares/tenant.middleware'
 
 const prisma = new PrismaClient()
 const repository = new CorretoresRepository(prisma)
@@ -10,6 +12,9 @@ const service = new CorretoresService(repository)
 const controller = new CorretoresController(service)
 
 export async function corretoresRoutes(server: FastifyInstance) {
+  server.addHook('preHandler', authMiddleware)
+  server.addHook('preHandler', tenantMiddleware)
+
   server.post('/corretores', async (request, reply) => {
     return controller.create(request, reply)
   })

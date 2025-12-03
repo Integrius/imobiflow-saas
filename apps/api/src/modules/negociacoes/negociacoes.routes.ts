@@ -2,13 +2,15 @@ import { FastifyInstance } from 'fastify'
 import { PrismaClient } from '@prisma/client'
 import { NegociacoesController } from './negociacoes.controller'
 import { authMiddleware } from '../../shared/middlewares/auth.middleware'
+import { tenantMiddleware } from '../../shared/middlewares/tenant.middleware'
 
 export async function negociacoesRoutes(server: FastifyInstance) {
   const prisma = new PrismaClient()
   const controller = new NegociacoesController(prisma)
 
-  // Aplicar middleware de autenticação em todas as rotas
+  // Aplicar middlewares de autenticação e tenant em todas as rotas
   server.addHook('preHandler', authMiddleware)
+  server.addHook('preHandler', tenantMiddleware)
 
   // CRUD básico
   server.post('/', controller.create.bind(controller))

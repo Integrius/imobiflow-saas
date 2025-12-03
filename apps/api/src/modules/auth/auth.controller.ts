@@ -12,8 +12,9 @@ export class AuthController {
 
   async register(request: FastifyRequest, reply: FastifyReply) {
     try {
+      const tenantId = request.tenantId || 'default-tenant-id'
       const data = registerSchema.parse(request.body)
-      const result = await this.service.register(data)
+      const result = await this.service.register(data, tenantId)
       return reply.status(201).send(result)
     } catch (error: any) {
       if (error.name === 'ZodError') {
@@ -30,8 +31,9 @@ export class AuthController {
 
   async login(request: FastifyRequest, reply: FastifyReply) {
     try {
+      const tenantId = request.tenantId || 'default-tenant-id'
       const data = loginSchema.parse(request.body)
-      const result = await this.service.login(data)
+      const result = await this.service.login(data, tenantId)
       return reply.status(200).send(result)
     } catch (error: any) {
       if (error.name === 'ZodError') {
@@ -60,6 +62,7 @@ export class AuthController {
 
   async googleLogin(request: FastifyRequest, reply: FastifyReply) {
     try {
+      const tenantId = request.tenantId || 'default-tenant-id'
       const { credential } = request.body as { credential: string }
 
       if (!credential) {
@@ -68,7 +71,7 @@ export class AuthController {
         })
       }
 
-      const result = await this.service.googleLogin(credential)
+      const result = await this.service.googleLogin(credential, tenantId)
       return reply.status(200).send(result)
     } catch (error: any) {
       return reply.status(error.statusCode || 401).send({

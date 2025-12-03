@@ -4,9 +4,10 @@ import { CreateLeadDTO, UpdateLeadDTO, ListLeadsQuery } from './leads.schema'
 export class LeadsRepository {
   constructor(private prisma: PrismaClient) {}
 
-  async create(data: CreateLeadDTO): Promise<Lead> {
+  async create(data: CreateLeadDTO, tenantId: string): Promise<Lead> {
     return await this.prisma.lead.create({
       data: {
+        tenant_id: tenantId,
         nome: data.nome,
         email: data.email || null,
         telefone: data.telefone,
@@ -34,10 +35,12 @@ export class LeadsRepository {
     })
   }
 
-  async findAll(query: ListLeadsQuery) {
+  async findAll(query: ListLeadsQuery, tenantId: string) {
     const { page, limit, temperatura, origem, corretor_id, search, score_min, score_max } = query
 
-    const where: Prisma.LeadWhereInput = {}
+    const where: Prisma.LeadWhereInput = {
+      tenant_id: tenantId
+    }
 
     if (temperatura) where.temperatura = temperatura
     if (origem) where.origem = origem
@@ -48,7 +51,7 @@ export class LeadsRepository {
         ? { ...(where.score as { gte?: number }), lte: score_max }
         : { lte: score_max }
     }
-    
+
     if (search) {
       where.OR = [
         { nome: { contains: search, mode: 'insensitive' } },
@@ -91,9 +94,12 @@ export class LeadsRepository {
     }
   }
 
-  async findById(id: string): Promise<Lead | null> {
-    return await this.prisma.lead.findUnique({
-      where: { id },
+  async findById(id: string, tenantId: string): Promise<Lead | null> {
+    return await this.prisma.lead.findFirst({
+      where: {
+        id,
+        tenant_id: tenantId
+      },
       include: {
         corretor: {
           include: {
@@ -126,7 +132,7 @@ export class LeadsRepository {
     })
   }
 
-  async update(id: string, data: UpdateLeadDTO): Promise<Lead> {
+  async update(id: string, data: UpdateLeadDTO, tenantId: string): Promise<Lead> {
     return await this.prisma.lead.update({
       where: { id },
       data: {
@@ -156,14 +162,22 @@ export class LeadsRepository {
     })
   }
 
-  async delete(id: string): Promise<void> {
-    await this.prisma.lead.delete({
-      where: { id },
+  async delete(id: string, tenantId: string): Promise<void> {
+    await this.prisma.lead.deleteMany({
+      where: {
+        id,
+        tenant_id: tenantId
+      }
     })
   }
 
-  async addTimelineEvent(id: string, event: any): Promise<Lead> {
-    const lead = await this.prisma.lead.findUnique({ where: { id } })
+  async addTimelineEvent(id: string, event: any, tenantId: string): Promise<Lead> {
+    const lead = await this.prisma.lead.findFirst({
+      where: {
+        id,
+        tenant_id: tenantId
+      }
+    })
     if (!lead) throw new Error('Lead não encontrado')
 
     const timeline = (lead.timeline as any[]) || []
@@ -178,13 +192,15 @@ export class LeadsRepository {
     })
   }
 
-  async getStats() {
+  async getStats(tenantId: string) {
+    const where: Prisma.LeadWhereInput = { tenant_id: tenantId }
+
     const [total, quentes, mornos, frios, semCorretor] = await Promise.all([
-      this.prisma.lead.count(),
-      this.prisma.lead.count({ where: { temperatura: 'QUENTE' } }),
-      this.prisma.lead.count({ where: { temperatura: 'MORNO' } }),
-      this.prisma.lead.count({ where: { temperatura: 'FRIO' } }),
-      this.prisma.lead.count({ where: { corretor_id: null } }),
+      this.prisma.lead.count({ where }),
+      this.prisma.lead.count({ where: { ...where, temperatura: 'QUENTE' } }),
+      this.prisma.lead.count({ where: { ...where, temperatura: 'MORNO' } }),
+      this.prisma.lead.count({ where: { ...where, temperatura: 'FRIO' } }),
+      this.prisma.lead.count({ where: { ...where, corretor_id: null } }),
     ])
 
     return {
