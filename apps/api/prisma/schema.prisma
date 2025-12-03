@@ -18,18 +18,19 @@ model User {
   id            String    @id @default(uuid())
   nome          String
   email         String    @unique
-  senha_hash    String
+  senha_hash    String?
+  google_id     String?   @unique
   tipo          UserType  @default(CORRETOR)
   ativo         Boolean   @default(true)
-  
+
   // Timestamps
   created_at    DateTime  @default(now())
   updated_at    DateTime  @updatedAt
   ultimo_login  DateTime?
-  
+
   // Relacionamentos
   corretor      Corretor?
-  
+
   @@map("users")
 }
 

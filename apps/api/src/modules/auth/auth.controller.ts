@@ -57,4 +57,23 @@ export class AuthController {
       })
     }
   }
+
+  async googleLogin(request: FastifyRequest, reply: FastifyReply) {
+    try {
+      const { credential } = request.body as { credential: string }
+
+      if (!credential) {
+        return reply.status(400).send({
+          error: 'Credencial do Google não fornecida'
+        })
+      }
+
+      const result = await this.service.googleLogin(credential)
+      return reply.status(200).send(result)
+    } catch (error: any) {
+      return reply.status(error.statusCode || 401).send({
+        error: error.message || 'Erro ao fazer login com Google'
+      })
+    }
+  }
 }

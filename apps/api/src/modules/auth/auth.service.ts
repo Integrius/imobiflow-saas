@@ -1,6 +1,7 @@
 import { PrismaClient } from '@prisma/client'
 import bcrypt from 'bcryptjs'
 import jwt from 'jsonwebtoken'
+import axios from 'axios'
 import { AuthRepository } from './auth.repository'
 import { RegisterDTO, LoginDTO } from './auth.schema'
 import { AppError } from '../../shared/errors/AppError'
@@ -97,6 +98,73 @@ export class AuthService {
       email: user.email,
       tipo: user.tipo,
       ativo: user.ativo
+    }
+  }
+
+  async googleLogin(credential: string) {
+    try {
+      // Verify Google token and get user info
+      const response = await axios.get(
+        `https://www.googleapis.com/oauth2/v3/tokeninfo?id_token=${credential}`
+      )
+
+      const { sub: googleId, email, name } = response.data
+
+      if (!email) {
+        throw new AppError('Email não fornecido pelo Google', 400)
+      }
+
+      // Check if user exists by google_id
+      let user = await this.prisma.user.findUnique({
+        where: { google_id: googleId }
+      })
+
+      // If not found by google_id, check by email
+      if (!user) {
+        user = await this.repository.findByEmail(email)
+
+        // If user exists with email but no google_id, link the accounts
+        if (user) {
+          user = await this.prisma.user.update({
+            where: { id: user.id },
+            data: { google_id: googleId }
+          })
+        }
+      }
+
+      // If user still doesn't exist, create new user
+      if (!user) {
+        user = await this.prisma.user.create({
+          data: {
+            nome: name || email.split('@')[0],
+            email,
+            google_id: googleId,
+            tipo: 'CORRETOR',
+            ativo: true
+          }
+        })
+      }
+
+      // Update last login
+      await this.repository.updateLastLogin(user.id)
+
+      // Generate token
+      const token = this.generateToken(user.id)
+
+      return {
+        user: {
+          id: user.id,
+          nome: user.nome,
+          email: user.email,
+          tipo: user.tipo
+        },
+        token
+      }
+    } catch (error: any) {
+      if (error instanceof AppError) {
+        throw error
+      }
+      throw new AppError('Erro ao autenticar com Google', 401)
     }
   }
 

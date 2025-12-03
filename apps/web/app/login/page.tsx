@@ -2,7 +2,9 @@
 
 import { useState, FormEvent } from 'react';
 import { useRouter } from 'next/navigation';
+import { GoogleLogin, CredentialResponse } from '@react-oauth/google';
 import { login } from '@/lib/auth';
+import { api } from '@/lib/api';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -24,6 +26,31 @@ export default function LoginPage() {
     } finally {
       setLoading(false);
     }
+  }
+
+  async function handleGoogleSuccess(credentialResponse: CredentialResponse) {
+    setError('');
+    setLoading(true);
+
+    try {
+      const response = await api.post('/auth/google', {
+        credential: credentialResponse.credential
+      });
+
+      if (response.data.token) {
+        localStorage.setItem('token', response.data.token);
+        localStorage.setItem('user', JSON.stringify(response.data.user));
+        router.push('/dashboard');
+      }
+    } catch (err: any) {
+      setError(err.response?.data?.error || 'Erro ao fazer login com Google');
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  function handleGoogleError() {
+    setError('Erro ao fazer login com Google');
   }
 
   return (
@@ -87,6 +114,24 @@ export default function LoginPage() {
             {loading ? 'Entrando...' : 'Entrar'}
           </button>
         </form>
+
+        <div className="relative">
+          <div className="absolute inset-0 flex items-center">
+            <div className="w-full border-t border-gray-300"></div>
+          </div>
+          <div className="relative flex justify-center text-sm">
+            <span className="px-2 bg-white text-gray-500">Ou continue com</span>
+          </div>
+        </div>
+
+        <div className="flex justify-center">
+          <GoogleLogin
+            onSuccess={handleGoogleSuccess}
+            onError={handleGoogleError}
+            useOneTap
+            locale="pt-BR"
+          />
+        </div>
 
         <div className="text-center text-sm text-gray-500 mt-4">
           <p>Credenciais de teste:</p>
