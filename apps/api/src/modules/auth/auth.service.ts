@@ -63,6 +63,11 @@ export class AuthService {
       throw new AppError('Email ou senha inválidos', 401)
     }
 
+    // Verificar se usuário tem senha (não é OAuth)
+    if (!user.senha_hash) {
+      throw new AppError('Use o login com Google para esta conta', 401)
+    }
+
     // Verificar senha
     const passwordMatch = await bcrypt.compare(data.senha, user.senha_hash)
     if (!passwordMatch) {
