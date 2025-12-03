@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { getMe, logout, getToken } from '@/lib/auth';
+import { logout, getToken } from '@/lib/auth';
 import { api } from '@/lib/api';
 
 interface DashboardData {
@@ -26,13 +26,14 @@ export default function DashboardPage() {
         return;
       }
 
-      try {
-        const [userData, dashboardData] = await Promise.all([
-          getMe(),
-          api.get('/dashboard/overview').then(res => res.data)
-        ]);
+      // Get user from localStorage
+      const userData = localStorage.getItem('user');
+      if (userData) {
+        setUser(JSON.parse(userData));
+      }
 
-        setUser(userData);
+      try {
+        const dashboardData = await api.get('/dashboard/overview').then(res => res.data);
         setData(dashboardData);
       } catch (err: any) {
         setError('Erro ao carregar dados');

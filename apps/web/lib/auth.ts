@@ -22,6 +22,7 @@ export async function login(data: LoginData): Promise<AuthResponse> {
 
   if (response.data.token) {
     localStorage.setItem('token', response.data.token);
+    localStorage.setItem('user', JSON.stringify(response.data.user));
   }
 
   return response.data;
@@ -34,6 +35,7 @@ export async function getMe(): Promise<User> {
 
 export function logout() {
   localStorage.removeItem('token');
+  localStorage.removeItem('user');
   window.location.href = '/login';
 }
 
