@@ -4,16 +4,18 @@ import { useEffect, useState } from 'react';
 import { api } from '@/lib/api';
 
 export default function NegociacoesPage() {
-  const [negociacoes, setNegociacoes] = useState([]);
+  const [negociacoes, setNegociacoes] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
 
   useEffect(() => {
     async function loadNegociacoes() {
       try {
         const response = await api.get('/negociacoes');
-        setNegociacoes(response.data);
-      } catch (error) {
+        setNegociacoes(Array.isArray(response.data) ? response.data : []);
+      } catch (error: any) {
         console.error('Erro ao carregar negociações:', error);
+        setError(error.response?.data?.error || 'Erro ao carregar negociações');
       } finally {
         setLoading(false);
       }
@@ -25,6 +27,17 @@ export default function NegociacoesPage() {
     return (
       <div className="flex justify-center items-center min-h-[400px]">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div>
+        <h2 className="text-2xl font-bold text-gray-900 mb-6">Negociações</h2>
+        <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded">
+          {error}
+        </div>
       </div>
     );
   }
@@ -51,7 +64,7 @@ export default function NegociacoesPage() {
             </tr>
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
-            {negociacoes.length === 0 ? (
+            {!Array.isArray(negociacoes) || negociacoes.length === 0 ? (
               <tr>
                 <td colSpan={6} className="px-6 py-12 text-center text-gray-500">
                   Nenhuma negociação cadastrada
@@ -61,7 +74,7 @@ export default function NegociacoesPage() {
               negociacoes.map((negociacao: any) => (
                 <tr key={negociacao.id}>
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                    {negociacao.codigo}
+                    {negociacao.codigo || 'N/A'}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                     {negociacao.lead?.nome || 'N/A'}
@@ -70,7 +83,7 @@ export default function NegociacoesPage() {
                     {negociacao.imovel?.titulo || 'N/A'}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    R$ {Number(negociacao.valor_final).toLocaleString('pt-BR')}
+                    {negociacao.valor_final ? `R$ ${Number(negociacao.valor_final).toLocaleString('pt-BR')}` : 'N/A'}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <span className={`px-2 py-1 text-xs rounded-full ${
@@ -79,7 +92,7 @@ export default function NegociacoesPage() {
                       negociacao.status === 'EM_ANDAMENTO' ? 'bg-yellow-100 text-yellow-800' :
                       'bg-blue-100 text-blue-800'
                     }`}>
-                      {negociacao.status.replace('_', ' ')}
+                      {negociacao.status ? negociacao.status.replace('_', ' ') : 'N/A'}
                     </span>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
