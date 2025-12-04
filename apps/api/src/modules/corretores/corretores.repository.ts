@@ -44,6 +44,11 @@ export class CorretoresRepository {
       }
     }
 
+    // Garantir que user não é null
+    if (!user) {
+      throw new Error('Erro ao criar ou encontrar usuário')
+    }
+
     // Criar corretor vinculado ao usuário
     const corretor = await this.prisma.corretor.create({
       data: {
