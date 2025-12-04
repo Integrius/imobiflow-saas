@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import Link from 'next/link';
 import { logout, getToken } from '@/lib/auth';
+import ToastContainer from '@/components/ToastContainer';
 
 export default function DashboardLayout({
   children,
@@ -39,6 +40,7 @@ export default function DashboardLayout({
 
   return (
     <div className="min-h-screen bg-gray-50">
+      <ToastContainer />
       {/* Top Navigation */}
       <nav className="bg-white shadow-sm fixed w-full z-10">
         <div className="px-4 sm:px-6 lg:px-8">
