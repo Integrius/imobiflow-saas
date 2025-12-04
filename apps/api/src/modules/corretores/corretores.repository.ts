@@ -14,23 +14,35 @@ export class CorretoresRepository {
       }
     })
 
-    if (existingUser) {
-      throw new Error('Já existe um usuário com este email')
+    let user = existingUser
+
+    // Se o usuário não existe, criar um novo
+    if (!existingUser) {
+      const hashedPassword = await bcrypt.hash('123456', 10) // Senha padrão
+
+      user = await this.prisma.user.create({
+        data: {
+          tenant_id: tenantId,
+          nome: data.nome,
+          email: data.email,
+          senha_hash: hashedPassword,
+          tipo: 'CORRETOR',
+          ativo: true,
+        },
+      })
+    } else {
+      // Se o usuário já existe, verificar se já é um corretor
+      const existingCorretor = await this.prisma.corretor.findFirst({
+        where: {
+          tenant_id: tenantId,
+          user_id: existingUser.id
+        }
+      })
+
+      if (existingCorretor) {
+        throw new Error('Este usuário já está cadastrado como corretor')
+      }
     }
-
-    // Criar usuário primeiro
-    const hashedPassword = await bcrypt.hash('123456', 10) // Senha padrão
-
-    const user = await this.prisma.user.create({
-      data: {
-        tenant_id: tenantId,
-        nome: data.nome,
-        email: data.email,
-        senha_hash: hashedPassword,
-        tipo: 'CORRETOR',
-        ativo: true,
-      },
-    })
 
     // Criar corretor vinculado ao usuário
     const corretor = await this.prisma.corretor.create({
