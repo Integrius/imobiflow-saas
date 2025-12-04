@@ -6,6 +6,18 @@ export class CorretoresRepository {
   constructor(private prisma: PrismaClient) {}
 
   async create(data: CreateCorretorDTO, tenantId: string): Promise<any> {
+    // Verificar se já existe um usuário com esse email no tenant
+    const existingUser = await this.prisma.user.findFirst({
+      where: {
+        tenant_id: tenantId,
+        email: data.email
+      }
+    })
+
+    if (existingUser) {
+      throw new Error('Já existe um usuário com este email')
+    }
+
     // Criar usuário primeiro
     const hashedPassword = await bcrypt.hash('123456', 10) // Senha padrão
 
