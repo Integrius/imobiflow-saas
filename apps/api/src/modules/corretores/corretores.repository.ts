@@ -1,23 +1,36 @@
 import { PrismaClient, Corretor, Prisma } from '@prisma/client'
 import { CreateCorretorDTO, UpdateCorretorDTO, ListCorretoresQuery } from './corretores.schema'
+import * as bcrypt from 'bcryptjs'
 
 export class CorretoresRepository {
   constructor(private prisma: PrismaClient) {}
 
-  async create(data: CreateCorretorDTO, tenantId: string): Promise<Corretor> {
-    return await this.prisma.corretor.create({
+  async create(data: CreateCorretorDTO, tenantId: string): Promise<any> {
+    // Criar usuário primeiro
+    const hashedPassword = await bcrypt.hash('123456', 10) // Senha padrão
+
+    const user = await this.prisma.user.create({
       data: {
         tenant_id: tenantId,
-        user_id: data.user_id,
+        nome: data.nome,
+        email: data.email,
+        password: hashedPassword,
+        tipo: 'CORRETOR',
+        ativo: true,
+      },
+    })
+
+    // Criar corretor vinculado ao usuário
+    const corretor = await this.prisma.corretor.create({
+      data: {
+        tenant_id: tenantId,
+        user_id: user.id,
         creci: data.creci,
         telefone: data.telefone,
-        foto_url: data.foto_url || null,
-        especializacoes: data.especializacoes || [],
-        meta_mensal: data.meta_mensal || null,
-        meta_anual: data.meta_anual || null,
-        comissao_padrao: data.comissao_padrao,
+        especializacoes: data.especialidade ? [data.especialidade] : [],
+        comissao_padrao: data.comissao || 3.0,
         performance_score: 0,
-        disponibilidade: data.disponibilidade as Prisma.JsonObject || {},
+        disponibilidade: {} as Prisma.JsonObject,
       },
       include: {
         user: {
@@ -31,25 +44,23 @@ export class CorretoresRepository {
         },
       },
     })
+
+    return {
+      id: corretor.id,
+      nome: corretor.user.nome,
+      email: corretor.user.email,
+      telefone: corretor.telefone,
+      creci: corretor.creci,
+      especialidade: corretor.especializacoes[0] || null,
+      comissao: Number(corretor.comissao_padrao),
+    }
   }
 
   async findAll(query: ListCorretoresQuery, tenantId: string) {
-    const { page, limit, especializacao, search, ativo } = query
+    const { page, limit, search } = query
 
     const where: Prisma.CorretorWhereInput = {
       tenant_id: tenantId
-    }
-
-    if (especializacao) {
-      where.especializacoes = {
-        has: especializacao,
-      }
-    }
-
-    if (ativo !== undefined) {
-      where.user = {
-        ativo: ativo,
-      }
     }
 
     if (search) {
@@ -61,46 +72,37 @@ export class CorretoresRepository {
       ]
     }
 
-    const [corretores, total] = await Promise.all([
-      this.prisma.corretor.findMany({
-        where,
-        skip: (page - 1) * limit,
-        take: limit,
-        orderBy: { created_at: 'desc' },
-        include: {
-          user: {
-            select: {
-              id: true,
-              nome: true,
-              email: true,
-              tipo: true,
-              ativo: true,
-            },
-          },
-          _count: {
-            select: {
-              leads: true,
-              negociacoes: true,
-            },
+    const corretores = await this.prisma.corretor.findMany({
+      where,
+      skip: (page - 1) * limit,
+      take: limit,
+      orderBy: { created_at: 'desc' },
+      include: {
+        user: {
+          select: {
+            id: true,
+            nome: true,
+            email: true,
+            tipo: true,
+            ativo: true,
           },
         },
-      }),
-      this.prisma.corretor.count({ where }),
-    ])
-
-    return {
-      data: corretores,
-      meta: {
-        total,
-        page,
-        limit,
-        totalPages: Math.ceil(total / limit),
       },
-    }
+    })
+
+    return corretores.map(corretor => ({
+      id: corretor.id,
+      nome: corretor.user.nome,
+      email: corretor.user.email,
+      telefone: corretor.telefone,
+      creci: corretor.creci,
+      especialidade: corretor.especializacoes[0] || null,
+      comissao: Number(corretor.comissao_padrao),
+    }))
   }
 
-  async findById(id: string, tenantId: string): Promise<Corretor | null> {
-    return await this.prisma.corretor.findFirst({
+  async findById(id: string, tenantId: string): Promise<any | null> {
+    const corretor = await this.prisma.corretor.findFirst({
       where: {
         id,
         tenant_id: tenantId
@@ -113,67 +115,51 @@ export class CorretoresRepository {
             email: true,
             tipo: true,
             ativo: true,
-            created_at: true,
-          },
-        },
-        leads: {
-          select: {
-            id: true,
-            nome: true,
-            telefone: true,
-            temperatura: true,
-            score: true,
-            created_at: true,
-          },
-          take: 10,
-          orderBy: { created_at: 'desc' },
-        },
-        negociacoes: {
-          select: {
-            id: true,
-            status: true,
-            valor_proposta: true,
-            created_at: true,
-            lead: {
-              select: {
-                id: true,
-                nome: true,
-              },
-            },
-            imovel: {
-              select: {
-                id: true,
-                codigo: true,
-                tipo: true,
-              },
-            },
-          },
-          take: 10,
-          orderBy: { created_at: 'desc' },
-        },
-        _count: {
-          select: {
-            leads: true,
-            negociacoes: true,
           },
         },
       },
     })
+
+    if (!corretor) return null
+
+    return {
+      id: corretor.id,
+      nome: corretor.user.nome,
+      email: corretor.user.email,
+      telefone: corretor.telefone,
+      creci: corretor.creci,
+      especialidade: corretor.especializacoes[0] || null,
+      comissao: Number(corretor.comissao_padrao),
+    }
   }
 
-  async update(id: string, data: UpdateCorretorDTO, tenantId: string): Promise<Corretor> {
-    return await this.prisma.corretor.update({
+  async update(id: string, data: UpdateCorretorDTO, tenantId: string): Promise<any> {
+    const corretor = await this.prisma.corretor.findFirst({
+      where: { id, tenant_id: tenantId },
+      include: { user: true }
+    })
+
+    if (!corretor) throw new Error('Corretor não encontrado')
+
+    // Atualizar usuário se nome ou email foram alterados
+    if (data.nome || data.email) {
+      await this.prisma.user.update({
+        where: { id: corretor.user_id },
+        data: {
+          ...(data.nome && { nome: data.nome }),
+          ...(data.email && { email: data.email }),
+        },
+      })
+    }
+
+    // Atualizar corretor
+    const updatedCorretor = await this.prisma.corretor.update({
       where: { id },
       data: {
-        ...(data.creci && { creci: data.creci }),
         ...(data.telefone && { telefone: data.telefone }),
-        ...(data.foto_url !== undefined && { foto_url: data.foto_url }),
-        ...(data.especializacoes && { especializacoes: data.especializacoes }),
-        ...(data.meta_mensal !== undefined && { meta_mensal: data.meta_mensal }),
-        ...(data.meta_anual !== undefined && { meta_anual: data.meta_anual }),
-        ...(data.comissao_padrao !== undefined && { comissao_padrao: data.comissao_padrao }),
-        ...(data.performance_score !== undefined && { performance_score: data.performance_score }),
-        ...(data.disponibilidade && { disponibilidade: data.disponibilidade as Prisma.JsonObject }),
+        ...(data.creci && { creci: data.creci }),
+        ...(data.especialidade && { especializacoes: [data.especialidade] }),
+        ...(data.comissao !== undefined && { comissao_padrao: data.comissao }),
       },
       include: {
         user: {
@@ -187,36 +173,33 @@ export class CorretoresRepository {
         },
       },
     })
+
+    return {
+      id: updatedCorretor.id,
+      nome: updatedCorretor.user.nome,
+      email: updatedCorretor.user.email,
+      telefone: updatedCorretor.telefone,
+      creci: updatedCorretor.creci,
+      especialidade: updatedCorretor.especializacoes[0] || null,
+      comissao: Number(updatedCorretor.comissao_padrao),
+    }
   }
 
   async delete(id: string, tenantId: string): Promise<void> {
-    await this.prisma.corretor.deleteMany({
-      where: {
-        id,
-        tenant_id: tenantId
-      }
+    const corretor = await this.prisma.corretor.findFirst({
+      where: { id, tenant_id: tenantId }
     })
-  }
 
-  async getStats(corretorId: string, tenantId: string) {
-    const where = {
-      corretor_id: corretorId,
-      tenant_id: tenantId
-    }
+    if (!corretor) throw new Error('Corretor não encontrado')
 
-    const [totalLeads, leadsQuentes, totalNegociacoes, negociacoesFechadas] = await Promise.all([
-      this.prisma.lead.count({ where }),
-      this.prisma.lead.count({ where: { ...where, temperatura: 'QUENTE' } }),
-      this.prisma.negociacao.count({ where }),
-      this.prisma.negociacao.count({ where: { ...where, status: 'FECHADO' } }),
-    ])
-
-    return {
-      total_leads: totalLeads,
-      leads_quentes: leadsQuentes,
-      total_negociacoes: totalNegociacoes,
-      negociacoes_fechadas: negociacoesFechadas,
-      taxa_conversao: totalLeads > 0 ? (negociacoesFechadas / totalLeads) * 100 : 0,
-    }
+    // Deletar corretor primeiro
+    await this.prisma.corretor.delete({
+      where: { id }
+    })
+    
+    // Deletar usuário
+    await this.prisma.user.delete({
+      where: { id: corretor.user_id }
+    })
   }
 }
