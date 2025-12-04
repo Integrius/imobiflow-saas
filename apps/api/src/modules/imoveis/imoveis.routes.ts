@@ -15,27 +15,27 @@ export async function imoveisRoutes(server: FastifyInstance) {
   server.addHook('preHandler', authMiddleware)
   server.addHook('preHandler', tenantMiddleware)
 
-  server.post('/imoveis', async (request, reply) => {
+  server.post('/', async (request, reply) => {
     return controller.create(request, reply)
   })
 
-  server.get('/imoveis', async (request, reply) => {
+  server.get('/', async (request, reply) => {
     return controller.list(request, reply)
   })
 
-  server.get('/imoveis/proximidade', async (request, reply) => {
+  server.get('/proximidade', async (request, reply) => {
     return controller.findByProximidade(request, reply)
   })
 
-  server.get('/imoveis/:id', async (request, reply) => {
+  server.get('/:id', async (request, reply) => {
     return controller.getById(request, reply)
   })
 
-  server.put('/imoveis/:id', async (request, reply) => {
+  server.put('/:id', async (request, reply) => {
     return controller.update(request, reply)
   })
 
-  server.delete('/imoveis/:id', async (request, reply) => {
+  server.delete('/:id', async (request, reply) => {
     return controller.delete(request, reply)
   })
 }

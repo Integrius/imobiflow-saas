@@ -15,28 +15,28 @@ export async function corretoresRoutes(server: FastifyInstance) {
   server.addHook('preHandler', authMiddleware)
   server.addHook('preHandler', tenantMiddleware)
 
-  server.post('/corretores', async (request, reply) => {
+  server.post('/', async (request, reply) => {
     return controller.create(request, reply)
   })
 
-  server.get('/corretores', async (request, reply) => {
+  server.get('/', async (request, reply) => {
     return controller.list(request, reply)
   })
 
-  server.get('/corretores/:id', async (request, reply) => {
+  server.get('/:id', async (request, reply) => {
     return controller.getById(request, reply)
   })
 
   // TODO: Implement performance endpoint
-  // server.get('/corretores/:id/performance', async (request, reply) => {
+  // server.get('/:id/performance', async (request, reply) => {
   //   return controller.getPerformance(request, reply)
   // })
 
-  server.put('/corretores/:id', async (request, reply) => {
+  server.put('/:id', async (request, reply) => {
     return controller.update(request, reply)
   })
 
-  server.delete('/corretores/:id', async (request, reply) => {
+  server.delete('/:id', async (request, reply) => {
     return controller.delete(request, reply)
   })
 }

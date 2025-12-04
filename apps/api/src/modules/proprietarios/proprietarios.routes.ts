@@ -15,23 +15,23 @@ export async function proprietariosRoutes(server: FastifyInstance) {
   server.addHook('preHandler', authMiddleware)
   server.addHook('preHandler', tenantMiddleware)
 
-  server.post('/proprietarios', async (request, reply) => {
+  server.post('/', async (request, reply) => {
     return controller.create(request, reply)
   })
 
-  server.get('/proprietarios', async (request, reply) => {
+  server.get('/', async (request, reply) => {
     return controller.list(request, reply)
   })
 
-  server.get('/proprietarios/:id', async (request, reply) => {
+  server.get('/:id', async (request, reply) => {
     return controller.getById(request, reply)
   })
 
-  server.put('/proprietarios/:id', async (request, reply) => {
+  server.put('/:id', async (request, reply) => {
     return controller.update(request, reply)
   })
 
-  server.delete('/proprietarios/:id', async (request, reply) => {
+  server.delete('/:id', async (request, reply) => {
     return controller.delete(request, reply)
   })
 }
