@@ -74,27 +74,34 @@ export default function DashboardLayout({
       <div className="flex pt-16">
         {/* Sidebar - Desktop */}
         <aside className="hidden md:flex md:flex-shrink-0">
-          <div className="flex flex-col w-64 bg-white border-r border-gray-200">
+          <div className="flex flex-col w-64 bg-gradient-to-b from-blue-900 via-blue-800 to-blue-900 shadow-xl">
             <div className="flex-1 flex flex-col pt-5 pb-4 overflow-y-auto">
-              <nav className="mt-5 flex-1 px-2 space-y-1">
+              <nav className="mt-5 flex-1 px-3 space-y-2">
                 {navigation.map((item) => {
                   const isActive = pathname === item.href;
                   return (
                     <Link
                       key={item.name}
                       href={item.href}
-                      className={`group flex items-center px-3 py-2 text-sm font-medium rounded-md transition-colors ${
+                      className={`group flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-all duration-200 ${
                         isActive
-                          ? 'bg-blue-50 text-blue-600'
-                          : 'text-gray-700 hover:bg-gray-50 hover:text-gray-900'
+                          ? 'bg-white text-blue-900 shadow-lg scale-105'
+                          : 'text-blue-100 hover:bg-blue-700 hover:text-white hover:shadow-md hover:scale-102'
                       }`}
                     >
-                      <span className="mr-3 text-xl">{item.icon}</span>
-                      {item.name}
+                      <span className="mr-3 text-2xl">{item.icon}</span>
+                      <span className="font-semibold">{item.name}</span>
                     </Link>
                   );
                 })}
               </nav>
+            </div>
+            {/* Footer da Sidebar */}
+            <div className="px-3 pb-4">
+              <div className="bg-blue-700 bg-opacity-50 rounded-lg p-3 text-center">
+                <p className="text-xs text-blue-200 font-medium">ImobiFlow SaaS</p>
+                <p className="text-xs text-blue-300 mt-1">v1.0.0</p>
+              </div>
             </div>
           </div>
         </aside>
@@ -106,11 +113,11 @@ export default function DashboardLayout({
               className="fixed inset-0 bg-gray-600 bg-opacity-75"
               onClick={() => setSidebarOpen(false)}
             />
-            <div className="relative flex-1 flex flex-col max-w-xs w-full bg-white">
+            <div className="relative flex-1 flex flex-col max-w-xs w-full bg-gradient-to-b from-blue-900 via-blue-800 to-blue-900">
               <div className="absolute top-0 right-0 -mr-12 pt-2">
                 <button
                   onClick={() => setSidebarOpen(false)}
-                  className="ml-1 flex items-center justify-center h-10 w-10 rounded-full focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white"
+                  className="ml-1 flex items-center justify-center h-10 w-10 rounded-full focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white bg-blue-600"
                 >
                   <span className="sr-only">Fechar sidebar</span>
                   <svg className="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -120,7 +127,7 @@ export default function DashboardLayout({
               </div>
 
               <div className="flex-1 h-0 pt-5 pb-4 overflow-y-auto">
-                <nav className="mt-5 px-2 space-y-1">
+                <nav className="mt-5 px-3 space-y-2">
                   {navigation.map((item) => {
                     const isActive = pathname === item.href;
                     return (
@@ -128,14 +135,14 @@ export default function DashboardLayout({
                         key={item.name}
                         href={item.href}
                         onClick={() => setSidebarOpen(false)}
-                        className={`group flex items-center px-3 py-2 text-base font-medium rounded-md ${
+                        className={`group flex items-center px-4 py-3 text-base font-medium rounded-lg transition-all ${
                           isActive
-                            ? 'bg-blue-50 text-blue-600'
-                            : 'text-gray-700 hover:bg-gray-50 hover:text-gray-900'
+                            ? 'bg-white text-blue-900 shadow-lg'
+                            : 'text-blue-100 hover:bg-blue-700 hover:text-white'
                         }`}
                       >
-                        <span className="mr-3 text-xl">{item.icon}</span>
-                        {item.name}
+                        <span className="mr-3 text-2xl">{item.icon}</span>
+                        <span className="font-semibold">{item.name}</span>
                       </Link>
                     );
                   })}
