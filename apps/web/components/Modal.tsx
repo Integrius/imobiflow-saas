@@ -18,7 +18,7 @@ export default function Modal({ isOpen, onClose, title, children, size = 'md' }:
 
   return (
     <div className="fixed inset-0 z-50 overflow-y-auto">
-      <div className="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
+      <div className="flex items-center justify-center min-h-screen px-4 py-6 text-center sm:block sm:p-0">
         {/* Overlay */}
         <div
           className="fixed inset-0 transition-opacity bg-gray-500 bg-opacity-75"
@@ -26,10 +26,10 @@ export default function Modal({ isOpen, onClose, title, children, size = 'md' }:
         />
 
         {/* Modal */}
-        <div className={`inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle ${sizeClasses[size]} w-full`}>
-          {/* Header */}
-          <div className="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
-            <div className="flex items-center justify-between mb-4">
+        <div className={`inline-block align-middle bg-white rounded-lg text-left shadow-xl transform transition-all sm:my-8 ${sizeClasses[size]} w-full max-h-[90vh] flex flex-col`}>
+          {/* Header - Fixed */}
+          <div className="bg-white px-4 pt-5 pb-4 sm:px-6 border-b border-gray-200 flex-shrink-0">
+            <div className="flex items-center justify-between">
               <h3 className="text-lg font-medium text-gray-900">{title}</h3>
               <button
                 onClick={onClose}
@@ -40,10 +40,10 @@ export default function Modal({ isOpen, onClose, title, children, size = 'md' }:
                 </svg>
               </button>
             </div>
-
-            {/* Content */}
-            <div>{children}</div>
           </div>
+
+          {/* Content - Scrollable */}
+          <div className="overflow-y-auto flex-1 px-4 py-5 sm:px-6">{children}</div>
         </div>
       </div>
     </div>
