@@ -145,77 +145,91 @@ export default function CorretoresPage() {
 
   return (
     <div>
-      <div className="flex justify-between items-center mb-6">
+      <div className="flex justify-between items-center mb-8">
         <div>
-          <h2 className="text-2xl font-bold text-gray-900">Corretores</h2>
-          <p className="text-sm text-gray-600 mt-1">{corretores.length} corretores cadastrados</p>
+          <h2 className="text-3xl font-bold text-gray-900 tracking-tight">Corretores</h2>
+          <p className="text-sm text-gray-600 mt-2 font-medium">
+            <span className="text-blue-600 text-lg font-bold">{corretores.length}</span> corretores cadastrados
+          </p>
         </div>
         <button
           onClick={openCreateModal}
-          className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+          className="px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl hover:from-blue-700 hover:to-indigo-700 transition-all duration-300 font-bold shadow-lg hover:shadow-xl hover:scale-105 border-2 border-blue-500"
+          style={{
+            boxShadow: 'inset 0 -2px 4px rgba(0, 0, 0, 0.2), 0 4px 8px rgba(0, 0, 0, 0.2)'
+          }}
         >
           + Novo Corretor
         </button>
       </div>
 
       {/* Busca */}
-      <div className="mb-4">
+      <div className="mb-6">
         <input
           type="text"
-          placeholder="Buscar por nome, email ou CRECI..."
+          placeholder="🔍 Buscar por nome, email ou CRECI..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          className="w-full px-5 py-3 border-2 border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 shadow-sm text-base"
         />
       </div>
 
       {/* Tabela */}
-      <div className="bg-white shadow rounded-lg overflow-hidden">
+      <div className="bg-white shadow-xl rounded-2xl overflow-hidden border-2 border-gray-200">
         <table className="min-w-full divide-y divide-gray-200">
-          <thead className="bg-gray-50">
+          <thead className="bg-gradient-to-r from-gray-50 to-gray-100">
             <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Nome</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Email</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">CRECI</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Telefone</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Comissão</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Ações</th>
+              <th className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Nome</th>
+              <th className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Email</th>
+              <th className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">CRECI</th>
+              <th className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Telefone</th>
+              <th className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Comissão</th>
+              <th className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Ações</th>
             </tr>
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
             {filteredCorretores.length === 0 ? (
               <tr>
                 <td colSpan={6} className="px-6 py-12 text-center text-gray-500">
-                  {searchTerm ? 'Nenhum corretor encontrado' : 'Nenhum corretor cadastrado'}
+                  <div className="text-lg font-medium">{searchTerm ? 'Nenhum corretor encontrado' : 'Nenhum corretor cadastrado'}</div>
+                  <p className="text-sm text-gray-400 mt-2">Clique em "+ Novo Corretor" para adicionar</p>
                 </td>
               </tr>
             ) : (
-              filteredCorretores.map((corretor) => (
-                <tr key={corretor.id} className="hover:bg-gray-50">
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+              filteredCorretores.map((corretor, index) => (
+                <tr key={corretor.id} className={`hover:bg-blue-50 transition-colors ${index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}`}>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm font-bold text-gray-900">
                     {corretor.nome}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{corretor.email}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{corretor.creci}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{corretor.telefone}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {corretor.comissao ? `${corretor.comissao}%` : '-'}
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">{corretor.email}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                    <span className="px-2 py-1 bg-blue-100 text-blue-800 rounded-md font-mono text-xs font-bold">{corretor.creci}</span>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600 font-medium">{corretor.telefone}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                    {corretor.comissao ? (
+                      <span className="px-3 py-1 bg-green-100 text-green-800 rounded-full font-bold text-xs border-2 border-green-200">
+                        {corretor.comissao}%
+                      </span>
+                    ) : (
+                      <span className="text-gray-400">-</span>
+                    )}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm">
                     <button
                       onClick={() => openEditModal(corretor)}
-                      className="text-blue-600 hover:text-blue-900 mr-3 font-medium"
+                      className="text-blue-600 hover:text-blue-900 mr-4 font-bold hover:underline transition-all"
                     >
-                      Editar
+                      ✏️ Editar
                     </button>
                     <button
                       onClick={() => {
                         setDeletingCorretor(corretor);
                         setDeleteModalOpen(true);
                       }}
-                      className="text-red-600 hover:text-red-900 font-medium"
+                      className="text-red-600 hover:text-red-900 font-bold hover:underline transition-all"
                     >
-                      Excluir
+                      🗑️ Excluir
                     </button>
                   </td>
                 </tr>

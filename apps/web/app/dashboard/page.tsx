@@ -56,62 +56,95 @@ export default function DashboardPage() {
 
   return (
     <div>
-      <h2 className="text-2xl font-bold text-gray-900 mb-6">Dashboard</h2>
+      <div className="mb-8">
+        <h2 className="text-3xl font-bold text-gray-900 tracking-tight">Dashboard</h2>
+        <p className="text-gray-600 mt-2">Visão geral do seu negócio imobiliário</p>
+      </div>
 
       {data && (
-        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
-          <div className="bg-white overflow-hidden shadow rounded-lg">
-            <div className="p-5">
-              <div className="flex items-center">
-                <div className="flex-1">
-                  <dt className="text-sm font-medium text-gray-500 truncate">
-                    Total de Leads
-                  </dt>
-                  <dd className="mt-1 text-3xl font-semibold text-gray-900">
-                    {data.leads.total}
-                  </dd>
-                  <dd className="mt-1 text-sm text-gray-600">
-                    {data.leads.quentes} quentes
-                  </dd>
+        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          {/* Card de Leads */}
+          <div className="bg-gradient-to-br from-blue-50 to-indigo-50 overflow-hidden rounded-2xl border-2 border-blue-200 shadow-lg hover:shadow-2xl transition-all duration-300 hover:scale-105 group">
+            <div className="p-6">
+              <div className="flex items-center justify-between mb-4">
+                <div className="p-3 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl shadow-lg">
+                  <span className="text-3xl">👥</span>
+                </div>
+                <div className="text-right">
+                  <div className="text-sm font-semibold text-blue-700 uppercase tracking-wider">
+                    Leads
+                  </div>
+                </div>
+              </div>
+              <div className="mt-4">
+                <div className="text-4xl font-bold text-gray-900 mb-2">
+                  {data.leads.total}
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="px-3 py-1 bg-red-100 text-red-700 rounded-full text-sm font-bold border-2 border-red-200">
+                    🔥 {data.leads.quentes} quentes
+                  </span>
                 </div>
               </div>
             </div>
+            <div className="h-2 bg-gradient-to-r from-blue-500 to-indigo-600"></div>
           </div>
 
-          <div className="bg-white overflow-hidden shadow rounded-lg">
-            <div className="p-5">
-              <div className="flex items-center">
-                <div className="flex-1">
-                  <dt className="text-sm font-medium text-gray-500 truncate">
+          {/* Card de Imóveis */}
+          <div className="bg-gradient-to-br from-emerald-50 to-teal-50 overflow-hidden rounded-2xl border-2 border-emerald-200 shadow-lg hover:shadow-2xl transition-all duration-300 hover:scale-105 group">
+            <div className="p-6">
+              <div className="flex items-center justify-between mb-4">
+                <div className="p-3 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-xl shadow-lg">
+                  <span className="text-3xl">🏘️</span>
+                </div>
+                <div className="text-right">
+                  <div className="text-sm font-semibold text-emerald-700 uppercase tracking-wider">
                     Imóveis
-                  </dt>
-                  <dd className="mt-1 text-3xl font-semibold text-gray-900">
-                    {data.imoveis.total}
-                  </dd>
-                  <dd className="mt-1 text-sm text-gray-600">
-                    {data.imoveis.disponiveis} disponíveis
-                  </dd>
+                  </div>
+                </div>
+              </div>
+              <div className="mt-4">
+                <div className="text-4xl font-bold text-gray-900 mb-2">
+                  {data.imoveis.total}
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="px-3 py-1 bg-emerald-100 text-emerald-700 rounded-full text-sm font-bold border-2 border-emerald-200">
+                    ✓ {data.imoveis.disponiveis} disponíveis
+                  </span>
                 </div>
               </div>
             </div>
+            <div className="h-2 bg-gradient-to-r from-emerald-500 to-teal-600"></div>
           </div>
 
-          <div className="bg-white overflow-hidden shadow rounded-lg">
-            <div className="p-5">
-              <div className="flex items-center">
-                <div className="flex-1">
-                  <dt className="text-sm font-medium text-gray-500 truncate">
+          {/* Card de Negociações */}
+          <div className="bg-gradient-to-br from-amber-50 to-orange-50 overflow-hidden rounded-2xl border-2 border-amber-200 shadow-lg hover:shadow-2xl transition-all duration-300 hover:scale-105 group">
+            <div className="p-6">
+              <div className="flex items-center justify-between mb-4">
+                <div className="p-3 bg-gradient-to-br from-amber-500 to-orange-600 rounded-xl shadow-lg">
+                  <span className="text-3xl">💼</span>
+                </div>
+                <div className="text-right">
+                  <div className="text-sm font-semibold text-amber-700 uppercase tracking-wider">
                     Negociações
-                  </dt>
-                  <dd className="mt-1 text-3xl font-semibold text-gray-900">
-                    {data.negociacoes.total}
-                  </dd>
-                  <dd className="mt-1 text-sm text-gray-600">
-                    {data.negociacoes.fechadas} fechadas ({data.negociacoes.taxaConversao}% conversão)
-                  </dd>
+                  </div>
+                </div>
+              </div>
+              <div className="mt-4">
+                <div className="text-4xl font-bold text-gray-900 mb-2">
+                  {data.negociacoes.total}
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="px-3 py-1 bg-green-100 text-green-700 rounded-full text-sm font-bold border-2 border-green-200">
+                    ✓ {data.negociacoes.fechadas} fechadas
+                  </span>
+                  <span className="px-3 py-1 bg-amber-100 text-amber-700 rounded-full text-sm font-bold border-2 border-amber-200">
+                    {data.negociacoes.taxaConversao}%
+                  </span>
                 </div>
               </div>
             </div>
+            <div className="h-2 bg-gradient-to-r from-amber-500 to-orange-600"></div>
           </div>
         </div>
       )}

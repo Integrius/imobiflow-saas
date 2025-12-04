@@ -237,75 +237,81 @@ export default function NegociacoesPage() {
 
   return (
     <div>
-      <div className="flex justify-between items-center mb-6">
+      <div className="flex justify-between items-center mb-8">
         <div>
-          <h2 className="text-2xl font-bold text-gray-900">Negociações</h2>
-          <p className="text-sm text-gray-600 mt-1">{negociacoes.length} negociações cadastradas</p>
+          <h2 className="text-3xl font-bold text-gray-900 tracking-tight">Negociações</h2>
+          <p className="text-sm text-gray-600 mt-2 font-medium">
+            <span className="text-blue-600 text-lg font-bold">{negociacoes.length}</span> negociações cadastradas
+          </p>
         </div>
         <button
           onClick={openCreateModal}
-          className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+          className="px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl hover:from-blue-700 hover:to-indigo-700 transition-all duration-300 font-bold shadow-lg hover:shadow-xl hover:scale-105 border-2 border-blue-500"
+          style={{
+            boxShadow: 'inset 0 -2px 4px rgba(0, 0, 0, 0.2), 0 4px 8px rgba(0, 0, 0, 0.2)'
+          }}
         >
           + Nova Negociação
         </button>
       </div>
 
       {/* Busca */}
-      <div className="mb-4">
+      <div className="mb-6">
         <input
           type="text"
-          placeholder="Buscar por código, cliente ou imóvel..."
+          placeholder="🔍 Buscar por código, cliente ou imóvel..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          className="w-full px-5 py-3 border-2 border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 shadow-sm text-base"
         />
       </div>
 
       {/* Tabela */}
-      <div className="bg-white shadow rounded-lg overflow-hidden">
+      <div className="bg-white shadow-xl rounded-2xl overflow-hidden border-2 border-gray-200">
         <table className="min-w-full divide-y divide-gray-200">
-          <thead className="bg-gray-50">
+          <thead className="bg-gradient-to-r from-gray-50 to-gray-100">
             <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Código</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Cliente</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Imóvel</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Corretor</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Valor Proposta</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Ações</th>
+              <th className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Código</th>
+              <th className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Cliente</th>
+              <th className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Imóvel</th>
+              <th className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Corretor</th>
+              <th className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Valor Proposta</th>
+              <th className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Status</th>
+              <th className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Ações</th>
             </tr>
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
             {filteredNegociacoes.length === 0 ? (
               <tr>
                 <td colSpan={7} className="px-6 py-12 text-center text-gray-500">
-                  {searchTerm ? 'Nenhuma negociação encontrada' : 'Nenhuma negociação cadastrada'}
+                  <div className="text-lg font-medium">{searchTerm ? 'Nenhuma negociação encontrada' : 'Nenhuma negociação cadastrada'}</div>
+                  <p className="text-sm text-gray-400 mt-2">Clique em "+ Nova Negociação" para adicionar</p>
                 </td>
               </tr>
             ) : (
-              filteredNegociacoes.map((negociacao) => (
-                <tr key={negociacao.id} className="hover:bg-gray-50">
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                    {negociacao.codigo}
+              filteredNegociacoes.map((negociacao, index) => (
+                <tr key={negociacao.id} className={`hover:bg-blue-50 transition-colors ${index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}`}>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm font-bold text-gray-900">
+                    <span className="px-2 py-1 bg-blue-100 text-blue-800 rounded-md font-mono text-xs">{negociacao.codigo}</span>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {negociacao.lead?.nome || 'N/A'}
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600 font-medium">
+                    👤 {negociacao.lead?.nome || 'N/A'}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {negociacao.imovel?.titulo || 'N/A'}
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600 font-medium">
+                    🏠 {negociacao.imovel?.titulo || 'N/A'}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
                     {negociacao.corretor?.nome || '-'}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 font-bold">
                     R$ {Number(negociacao.valor_proposta).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <span className={`px-2 py-1 text-xs rounded-full ${
-                      negociacao.status === 'FECHADA' ? 'bg-green-100 text-green-800' :
-                      negociacao.status === 'CANCELADA' ? 'bg-red-100 text-red-800' :
-                      negociacao.status === 'EM_ANDAMENTO' ? 'bg-yellow-100 text-yellow-800' :
-                      'bg-blue-100 text-blue-800'
+                    <span className={`px-3 py-1.5 text-xs font-bold rounded-full border-2 ${
+                      negociacao.status === 'FECHADA' ? 'bg-green-100 text-green-800 border-green-300' :
+                      negociacao.status === 'CANCELADA' ? 'bg-red-100 text-red-800 border-red-300' :
+                      negociacao.status === 'EM_ANDAMENTO' ? 'bg-yellow-100 text-yellow-800 border-yellow-300' :
+                      'bg-blue-100 text-blue-800 border-blue-300'
                     }`}>
                       {getStatusLabel(negociacao.status)}
                     </span>
@@ -313,18 +319,18 @@ export default function NegociacoesPage() {
                   <td className="px-6 py-4 whitespace-nowrap text-sm">
                     <button
                       onClick={() => openEditModal(negociacao)}
-                      className="text-blue-600 hover:text-blue-900 mr-3 font-medium"
+                      className="text-blue-600 hover:text-blue-900 mr-4 font-bold hover:underline transition-all"
                     >
-                      Editar
+                      ✏️ Editar
                     </button>
                     <button
                       onClick={() => {
                         setDeletingNegociacao(negociacao);
                         setDeleteModalOpen(true);
                       }}
-                      className="text-red-600 hover:text-red-900 font-medium"
+                      className="text-red-600 hover:text-red-900 font-bold hover:underline transition-all"
                     >
-                      Excluir
+                      🗑️ Excluir
                     </button>
                   </td>
                 </tr>

@@ -214,40 +214,46 @@ export default function ImoveisPage() {
 
   return (
     <div>
-      <div className="flex justify-between items-center mb-6">
+      <div className="flex justify-between items-center mb-8">
         <div>
-          <h2 className="text-2xl font-bold text-gray-900">Imóveis</h2>
-          <p className="text-sm text-gray-600 mt-1">{imoveis.length} imóveis cadastrados</p>
+          <h2 className="text-3xl font-bold text-gray-900 tracking-tight">Imóveis</h2>
+          <p className="text-sm text-gray-600 mt-2 font-medium">
+            <span className="text-blue-600 text-lg font-bold">{imoveis.length}</span> imóveis cadastrados
+          </p>
         </div>
         <button
           onClick={openCreateModal}
-          className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+          className="px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl hover:from-blue-700 hover:to-indigo-700 transition-all duration-300 font-bold shadow-lg hover:shadow-xl hover:scale-105 border-2 border-blue-500"
+          style={{
+            boxShadow: 'inset 0 -2px 4px rgba(0, 0, 0, 0.2), 0 4px 8px rgba(0, 0, 0, 0.2)'
+          }}
         >
           + Novo Imóvel
         </button>
       </div>
 
       {/* Busca */}
-      <div className="mb-4">
+      <div className="mb-6">
         <input
           type="text"
-          placeholder="Buscar por título, endereço ou cidade..."
+          placeholder="🔍 Buscar por título, endereço ou cidade..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          className="w-full px-5 py-3 border-2 border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 shadow-sm text-base"
         />
       </div>
 
       {/* Grid de Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {filteredImoveis.length === 0 ? (
-          <div className="col-span-full bg-white shadow rounded-lg p-12 text-center text-gray-500">
-            {searchTerm ? 'Nenhum imóvel encontrado' : 'Nenhum imóvel cadastrado'}
+          <div className="col-span-full bg-white shadow-xl rounded-2xl p-12 text-center text-gray-500 border-2 border-gray-200">
+            <div className="text-lg font-medium">{searchTerm ? 'Nenhum imóvel encontrado' : 'Nenhum imóvel cadastrado'}</div>
+            <p className="text-sm text-gray-400 mt-2">Clique em "+ Novo Imóvel" para adicionar</p>
           </div>
         ) : (
           filteredImoveis.map((imovel) => (
-            <div key={imovel.id} className="bg-white shadow rounded-lg overflow-hidden hover:shadow-lg transition-shadow">
-              <div className="h-48 bg-gray-200 flex items-center justify-center overflow-hidden">
+            <div key={imovel.id} className="bg-white shadow-xl rounded-2xl overflow-hidden hover:shadow-2xl transition-all duration-300 hover:scale-105 border-2 border-gray-200">
+              <div className="h-56 bg-gradient-to-br from-gray-200 to-gray-300 flex items-center justify-center overflow-hidden relative">
                 {imovel.fotos && imovel.fotos.length > 0 ? (
                   <img
                     src={imovel.fotos[0]}
@@ -256,62 +262,77 @@ export default function ImoveisPage() {
                     onError={(e) => {
                       e.currentTarget.src = '';
                       e.currentTarget.style.display = 'none';
-                      e.currentTarget.parentElement!.innerHTML = '<span class="text-gray-400">Imagem indisponível</span>';
+                      e.currentTarget.parentElement!.innerHTML = '<div class="flex flex-col items-center justify-center h-full"><span class="text-6xl mb-2">🏠</span><span class="text-gray-500 font-semibold">Imagem indisponível</span></div>';
                     }}
                   />
                 ) : (
-                  <span className="text-gray-400">Sem imagem</span>
+                  <div className="flex flex-col items-center justify-center">
+                    <span className="text-7xl mb-3">🏠</span>
+                    <span className="text-gray-500 font-semibold">Sem imagem</span>
+                  </div>
                 )}
-              </div>
-              <div className="p-4">
-                <h3 className="text-lg font-semibold text-gray-900 mb-1">
-                  {imovel.titulo}
-                </h3>
-                <p className="text-xs text-gray-500 mb-2">{imovel.tipo}</p>
-                <p className="text-sm text-gray-600 mb-2">{imovel.endereco}</p>
-                <p className="text-xs text-gray-500 mb-3">{imovel.cidade} - {imovel.estado}</p>
-
-                <div className="flex gap-3 text-xs text-gray-600 mb-3">
-                  {imovel.area && <span>{imovel.area}m²</span>}
-                  {imovel.quartos && <span>{imovel.quartos} quartos</span>}
-                  {imovel.banheiros && <span>{imovel.banheiros} banheiros</span>}
-                  {imovel.vagas && <span>{imovel.vagas} vagas</span>}
-                </div>
-
-                <div className="flex justify-between items-center mb-3">
-                  <span className="text-xl font-bold text-blue-600">
-                    R$ {Number(imovel.valor).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
-                  </span>
-                  <span className={`px-2 py-1 text-xs rounded-full ${
-                    imovel.status === 'DISPONIVEL' ? 'bg-green-100 text-green-800' :
-                    imovel.status === 'VENDIDO' ? 'bg-gray-100 text-gray-800' :
-                    'bg-yellow-100 text-yellow-800'
+                <div className="absolute top-3 right-3">
+                  <span className={`px-3 py-1.5 text-xs font-bold rounded-full border-2 backdrop-blur-sm ${
+                    imovel.status === 'DISPONIVEL' ? 'bg-green-100/90 text-green-800 border-green-300' :
+                    imovel.status === 'VENDIDO' ? 'bg-gray-100/90 text-gray-800 border-gray-300' :
+                    'bg-yellow-100/90 text-yellow-800 border-yellow-300'
                   }`}>
                     {imovel.status}
                   </span>
                 </div>
+              </div>
+              <div className="p-5">
+                <div className="mb-3">
+                  <h3 className="text-xl font-bold text-gray-900 mb-1">
+                    {imovel.titulo}
+                  </h3>
+                  <p className="text-xs font-semibold text-blue-600 uppercase tracking-wider bg-blue-50 px-2 py-1 rounded-md inline-block">{imovel.tipo}</p>
+                </div>
+                <p className="text-sm text-gray-700 mb-1 font-medium">📍 {imovel.endereco}</p>
+                <p className="text-xs text-gray-500 mb-4">{imovel.cidade} - {imovel.estado}</p>
+
+                <div className="flex flex-wrap gap-2 text-xs text-gray-700 mb-4">
+                  {imovel.area && (
+                    <span className="px-2 py-1 bg-gray-100 rounded-md font-bold border border-gray-200">📐 {imovel.area}m²</span>
+                  )}
+                  {imovel.quartos && (
+                    <span className="px-2 py-1 bg-gray-100 rounded-md font-bold border border-gray-200">🛏️ {imovel.quartos} quartos</span>
+                  )}
+                  {imovel.banheiros && (
+                    <span className="px-2 py-1 bg-gray-100 rounded-md font-bold border border-gray-200">🚿 {imovel.banheiros} banheiros</span>
+                  )}
+                  {imovel.vagas && (
+                    <span className="px-2 py-1 bg-gray-100 rounded-md font-bold border border-gray-200">🚗 {imovel.vagas} vagas</span>
+                  )}
+                </div>
+
+                <div className="mb-4">
+                  <span className="text-2xl font-bold text-blue-600">
+                    R$ {Number(imovel.valor).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                  </span>
+                </div>
 
                 {imovel.proprietario && (
-                  <p className="text-xs text-gray-500 mb-3">
-                    Proprietário: {imovel.proprietario.nome}
+                  <p className="text-xs text-gray-500 mb-4 font-medium">
+                    👤 Proprietário: <span className="font-bold text-gray-700">{imovel.proprietario.nome}</span>
                   </p>
                 )}
 
                 <div className="flex gap-2">
                   <button
                     onClick={() => openEditModal(imovel)}
-                    className="flex-1 px-3 py-2 text-sm bg-blue-50 text-blue-600 rounded hover:bg-blue-100 font-medium"
+                    className="flex-1 px-4 py-2.5 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-bold transition-all shadow-md hover:shadow-lg"
                   >
-                    Editar
+                    ✏️ Editar
                   </button>
                   <button
                     onClick={() => {
                       setDeletingImovel(imovel);
                       setDeleteModalOpen(true);
                     }}
-                    className="flex-1 px-3 py-2 text-sm bg-red-50 text-red-600 rounded hover:bg-red-100 font-medium"
+                    className="flex-1 px-4 py-2.5 text-sm bg-red-600 text-white rounded-lg hover:bg-red-700 font-bold transition-all shadow-md hover:shadow-lg"
                   >
-                    Excluir
+                    🗑️ Excluir
                   </button>
                 </div>
               </div>
