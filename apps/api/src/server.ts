@@ -15,10 +15,16 @@ const server = Fastify({
 })
 
 server.register(cors, {
-  origin: true
+  origin: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: true
 })
 
-server.register(helmet)
+server.register(helmet, {
+  contentSecurityPolicy: false,
+  crossOriginEmbedderPolicy: false
+})
 
 // Health check
 server.get('/health', async () => {

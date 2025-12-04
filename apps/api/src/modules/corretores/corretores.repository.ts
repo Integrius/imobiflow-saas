@@ -170,6 +170,21 @@ export class CorretoresRepository {
 
     if (!corretor) throw new Error('Corretor não encontrado')
 
+    // Se email está sendo alterado, verificar se já existe
+    if (data.email && data.email !== corretor.user.email) {
+      const existingEmail = await this.prisma.user.findFirst({
+        where: {
+          tenant_id: tenantId,
+          email: data.email,
+          id: { not: corretor.user_id } // Excluir o próprio usuário
+        }
+      })
+
+      if (existingEmail) {
+        throw new Error('Já existe um usuário com este email')
+      }
+    }
+
     // Atualizar usuário se nome ou email foram alterados
     if (data.nome || data.email) {
       await this.prisma.user.update({
