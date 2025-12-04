@@ -74,33 +74,38 @@ export default function DashboardLayout({
       <div className="flex pt-16">
         {/* Sidebar - Desktop */}
         <aside className="hidden md:flex md:flex-shrink-0">
-          <div className="flex flex-col w-64 bg-gradient-to-b from-blue-900 via-blue-800 to-blue-900 shadow-xl">
-            <div className="flex-1 flex flex-col pt-5 pb-4 overflow-y-auto">
-              <nav className="mt-5 flex-1 px-3 space-y-2">
+          <div className="flex flex-col w-72 bg-gradient-to-br from-blue-900 via-blue-800 to-indigo-900 shadow-2xl h-[calc(100vh-4rem)]">
+            <div className="flex-1 flex flex-col pt-8 pb-6 overflow-y-auto">
+              <nav className="mt-2 flex-1 px-4 space-y-3">
                 {navigation.map((item) => {
                   const isActive = pathname === item.href;
                   return (
                     <Link
                       key={item.name}
                       href={item.href}
-                      className={`group flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-all duration-200 ${
+                      className={`group flex items-center px-5 py-4 text-sm font-bold rounded-xl transition-all duration-300 ${
                         isActive
-                          ? 'bg-white text-blue-900 shadow-lg scale-105'
-                          : 'text-blue-100 hover:bg-blue-700 hover:text-white hover:shadow-md hover:scale-102'
-                      }`}
+                          ? 'bg-gradient-to-r from-white to-blue-50 text-blue-900 shadow-2xl shadow-blue-900/30 border-2 border-blue-200 transform scale-105'
+                          : 'bg-gradient-to-r from-blue-800/40 to-blue-700/40 text-blue-50 hover:from-blue-700 hover:to-blue-600 hover:shadow-xl hover:scale-102 border-2 border-blue-700/50 hover:border-blue-500'
+                      } backdrop-blur-sm`}
+                      style={{
+                        boxShadow: isActive
+                          ? '0 10px 25px -5px rgba(0, 0, 0, 0.3), inset 0 2px 4px rgba(255, 255, 255, 0.3)'
+                          : 'inset 0 -2px 4px rgba(0, 0, 0, 0.2), 0 4px 8px rgba(0, 0, 0, 0.2)'
+                      }}
                     >
-                      <span className="mr-3 text-2xl">{item.icon}</span>
-                      <span className="font-semibold">{item.name}</span>
+                      <span className="mr-4 text-3xl drop-shadow-lg">{item.icon}</span>
+                      <span className="font-bold tracking-wide drop-shadow">{item.name}</span>
                     </Link>
                   );
                 })}
               </nav>
             </div>
             {/* Footer da Sidebar */}
-            <div className="px-3 pb-4">
-              <div className="bg-blue-700 bg-opacity-50 rounded-lg p-3 text-center">
-                <p className="text-xs text-blue-200 font-medium">ImobiFlow SaaS</p>
-                <p className="text-xs text-blue-300 mt-1">v1.0.0</p>
+            <div className="px-4 pb-6 mt-auto">
+              <div className="bg-gradient-to-r from-blue-800/60 to-indigo-800/60 backdrop-blur-sm rounded-xl p-4 text-center border-2 border-blue-700/50 shadow-inner">
+                <p className="text-sm text-blue-100 font-bold tracking-wider">ImobiFlow SaaS</p>
+                <p className="text-xs text-blue-300 mt-1 font-semibold">versão 1.0.0</p>
               </div>
             </div>
           </div>
@@ -113,11 +118,11 @@ export default function DashboardLayout({
               className="fixed inset-0 bg-gray-600 bg-opacity-75"
               onClick={() => setSidebarOpen(false)}
             />
-            <div className="relative flex-1 flex flex-col max-w-xs w-full bg-gradient-to-b from-blue-900 via-blue-800 to-blue-900">
+            <div className="relative flex-1 flex flex-col max-w-xs w-full bg-gradient-to-br from-blue-900 via-blue-800 to-indigo-900 h-full">
               <div className="absolute top-0 right-0 -mr-12 pt-2">
                 <button
                   onClick={() => setSidebarOpen(false)}
-                  className="ml-1 flex items-center justify-center h-10 w-10 rounded-full focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white bg-blue-600"
+                  className="ml-1 flex items-center justify-center h-12 w-12 rounded-full focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white bg-blue-600 shadow-xl"
                 >
                   <span className="sr-only">Fechar sidebar</span>
                   <svg className="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -126,8 +131,8 @@ export default function DashboardLayout({
                 </button>
               </div>
 
-              <div className="flex-1 h-0 pt-5 pb-4 overflow-y-auto">
-                <nav className="mt-5 px-3 space-y-2">
+              <div className="flex-1 h-0 pt-8 pb-6 overflow-y-auto">
+                <nav className="mt-2 px-4 space-y-3">
                   {navigation.map((item) => {
                     const isActive = pathname === item.href;
                     return (
@@ -135,14 +140,19 @@ export default function DashboardLayout({
                         key={item.name}
                         href={item.href}
                         onClick={() => setSidebarOpen(false)}
-                        className={`group flex items-center px-4 py-3 text-base font-medium rounded-lg transition-all ${
+                        className={`group flex items-center px-5 py-4 text-base font-bold rounded-xl transition-all ${
                           isActive
-                            ? 'bg-white text-blue-900 shadow-lg'
-                            : 'text-blue-100 hover:bg-blue-700 hover:text-white'
-                        }`}
+                            ? 'bg-gradient-to-r from-white to-blue-50 text-blue-900 shadow-2xl border-2 border-blue-200'
+                            : 'bg-gradient-to-r from-blue-800/40 to-blue-700/40 text-blue-50 hover:from-blue-700 hover:to-blue-600 border-2 border-blue-700/50'
+                        } backdrop-blur-sm`}
+                        style={{
+                          boxShadow: isActive
+                            ? '0 10px 25px -5px rgba(0, 0, 0, 0.3), inset 0 2px 4px rgba(255, 255, 255, 0.3)'
+                            : 'inset 0 -2px 4px rgba(0, 0, 0, 0.2), 0 4px 8px rgba(0, 0, 0, 0.2)'
+                        }}
                       >
-                        <span className="mr-3 text-2xl">{item.icon}</span>
-                        <span className="font-semibold">{item.name}</span>
+                        <span className="mr-4 text-3xl drop-shadow-lg">{item.icon}</span>
+                        <span className="font-bold tracking-wide">{item.name}</span>
                       </Link>
                     );
                   })}
