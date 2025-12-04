@@ -14,7 +14,7 @@ export class CorretoresRepository {
         tenant_id: tenantId,
         nome: data.nome,
         email: data.email,
-        password: hashedPassword,
+        senha_hash: hashedPassword,
         tipo: 'CORRETOR',
         ativo: true,
       },
