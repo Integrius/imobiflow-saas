@@ -192,7 +192,7 @@ export default function CorretoresPage() {
               <tr>
                 <td colSpan={6} className="px-6 py-12 text-center text-gray-500">
                   <div className="text-lg font-medium">{searchTerm ? 'Nenhum corretor encontrado' : 'Nenhum corretor cadastrado'}</div>
-                  <p className="text-sm text-gray-400 mt-2">Clique em "+ Novo Corretor" para adicionar</p>
+                  <p className="text-sm text-gray-400 mt-2">Clique em &ldquo;+ Novo Corretor&rdquo; para adicionar</p>
                 </td>
               </tr>
             ) : (

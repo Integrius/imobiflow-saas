@@ -187,7 +187,7 @@ export default function ProprietariosPage() {
               <tr>
                 <td colSpan={6} className="px-6 py-12 text-center text-gray-500">
                   <div className="text-lg font-medium">{searchTerm ? 'Nenhum proprietário encontrado' : 'Nenhum proprietário cadastrado'}</div>
-                  <p className="text-sm text-gray-400 mt-2">Clique em "+ Novo Proprietário" para adicionar</p>
+                  <p className="text-sm text-gray-400 mt-2">Clique em &ldquo;+ Novo Proprietário&rdquo; para adicionar</p>
                 </td>
               </tr>
             ) : (

@@ -248,7 +248,7 @@ export default function ImoveisPage() {
         {filteredImoveis.length === 0 ? (
           <div className="col-span-full bg-white shadow-xl rounded-2xl p-12 text-center text-gray-500 border-2 border-gray-200">
             <div className="text-lg font-medium">{searchTerm ? 'Nenhum imóvel encontrado' : 'Nenhum imóvel cadastrado'}</div>
-            <p className="text-sm text-gray-400 mt-2">Clique em "+ Novo Imóvel" para adicionar</p>
+            <p className="text-sm text-gray-400 mt-2">Clique em &ldquo;+ Novo Imóvel&rdquo; para adicionar</p>
           </div>
         ) : (
           filteredImoveis.map((imovel) => (
