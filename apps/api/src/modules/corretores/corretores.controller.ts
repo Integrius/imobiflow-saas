@@ -44,11 +44,4 @@ export class CorretoresController {
     await this.corretoresService.delete(id, tenantId)
     return reply.status(204).send()
   }
-
-  async getStats(request: FastifyRequest, reply: FastifyReply) {
-    const tenantId = (request as any).tenantId || 'default-tenant-id'
-    const { id } = request.params as { id: string }
-    const stats = await this.corretoresService.getStats(id, tenantId)
-    return reply.send(stats)
-  }
 }

@@ -32,9 +32,4 @@ export class CorretoresService {
     await this.findById(id, tenantId)
     await this.corretoresRepository.delete(id, tenantId)
   }
-
-  async getStats(id: string, tenantId: string) {
-    await this.findById(id, tenantId)
-    return await this.corretoresRepository.getStats(id, tenantId)
-  }
 }
