@@ -57,31 +57,31 @@ export default function DashboardPage() {
   return (
     <div>
       <div className="mb-8">
-        <h2 className="text-3xl font-bold text-gray-900 tracking-tight">Dashboard</h2>
-        <p className="text-gray-600 mt-2">Visão geral do seu negócio imobiliário</p>
+        <h2 className="text-3xl font-bold text-slate-100 tracking-tight">Dashboard</h2>
+        <p className="text-slate-300 mt-2">Visão geral do seu negócio imobiliário</p>
       </div>
 
       {data && (
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {/* Card de Leads */}
-          <div className="bg-gradient-to-br from-blue-50 to-indigo-50 overflow-hidden rounded-2xl border-2 border-blue-200 shadow-lg hover:shadow-2xl transition-all duration-300 hover:scale-105 group">
+          <div className="bg-gradient-to-br from-slate-700 to-slate-600 overflow-hidden rounded-2xl border-2 border-blue-500/30 shadow-lg hover:shadow-2xl transition-all duration-300 hover:scale-105 group">
             <div className="p-6">
               <div className="flex items-center justify-between mb-4">
                 <div className="p-3 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl shadow-lg">
                   <span className="text-3xl">👥</span>
                 </div>
                 <div className="text-right">
-                  <div className="text-sm font-semibold text-blue-700 uppercase tracking-wider">
+                  <div className="text-sm font-semibold text-blue-300 uppercase tracking-wider">
                     Leads
                   </div>
                 </div>
               </div>
               <div className="mt-4">
-                <div className="text-4xl font-bold text-gray-900 mb-2">
+                <div className="text-4xl font-bold text-slate-100 mb-2">
                   {data.leads.total}
                 </div>
                 <div className="flex items-center gap-2">
-                  <span className="px-3 py-1 bg-red-100 text-red-700 rounded-full text-sm font-bold border-2 border-red-200">
+                  <span className="px-3 py-1 bg-red-900/60 text-red-200 rounded-full text-sm font-bold border-2 border-red-500/50">
                     🔥 {data.leads.quentes} quentes
                   </span>
                 </div>
@@ -91,24 +91,24 @@ export default function DashboardPage() {
           </div>
 
           {/* Card de Imóveis */}
-          <div className="bg-gradient-to-br from-emerald-50 to-teal-50 overflow-hidden rounded-2xl border-2 border-emerald-200 shadow-lg hover:shadow-2xl transition-all duration-300 hover:scale-105 group">
+          <div className="bg-gradient-to-br from-slate-700 to-slate-600 overflow-hidden rounded-2xl border-2 border-emerald-500/30 shadow-lg hover:shadow-2xl transition-all duration-300 hover:scale-105 group">
             <div className="p-6">
               <div className="flex items-center justify-between mb-4">
                 <div className="p-3 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-xl shadow-lg">
                   <span className="text-3xl">🏘️</span>
                 </div>
                 <div className="text-right">
-                  <div className="text-sm font-semibold text-emerald-700 uppercase tracking-wider">
+                  <div className="text-sm font-semibold text-emerald-300 uppercase tracking-wider">
                     Imóveis
                   </div>
                 </div>
               </div>
               <div className="mt-4">
-                <div className="text-4xl font-bold text-gray-900 mb-2">
+                <div className="text-4xl font-bold text-slate-100 mb-2">
                   {data.imoveis.total}
                 </div>
                 <div className="flex items-center gap-2">
-                  <span className="px-3 py-1 bg-emerald-100 text-emerald-700 rounded-full text-sm font-bold border-2 border-emerald-200">
+                  <span className="px-3 py-1 bg-emerald-900/60 text-emerald-200 rounded-full text-sm font-bold border-2 border-emerald-500/50">
                     ✓ {data.imoveis.disponiveis} disponíveis
                   </span>
                 </div>
@@ -118,27 +118,27 @@ export default function DashboardPage() {
           </div>
 
           {/* Card de Negociações */}
-          <div className="bg-gradient-to-br from-amber-50 to-orange-50 overflow-hidden rounded-2xl border-2 border-amber-200 shadow-lg hover:shadow-2xl transition-all duration-300 hover:scale-105 group">
+          <div className="bg-gradient-to-br from-slate-700 to-slate-600 overflow-hidden rounded-2xl border-2 border-amber-500/30 shadow-lg hover:shadow-2xl transition-all duration-300 hover:scale-105 group">
             <div className="p-6">
               <div className="flex items-center justify-between mb-4">
                 <div className="p-3 bg-gradient-to-br from-amber-500 to-orange-600 rounded-xl shadow-lg">
                   <span className="text-3xl">💼</span>
                 </div>
                 <div className="text-right">
-                  <div className="text-sm font-semibold text-amber-700 uppercase tracking-wider">
+                  <div className="text-sm font-semibold text-amber-300 uppercase tracking-wider">
                     Negociações
                   </div>
                 </div>
               </div>
               <div className="mt-4">
-                <div className="text-4xl font-bold text-gray-900 mb-2">
+                <div className="text-4xl font-bold text-slate-100 mb-2">
                   {data.negociacoes.total}
                 </div>
                 <div className="flex items-center gap-2">
-                  <span className="px-3 py-1 bg-green-100 text-green-700 rounded-full text-sm font-bold border-2 border-green-200">
+                  <span className="px-3 py-1 bg-green-900/60 text-green-200 rounded-full text-sm font-bold border-2 border-green-500/50">
                     ✓ {data.negociacoes.fechadas} fechadas
                   </span>
-                  <span className="px-3 py-1 bg-amber-100 text-amber-700 rounded-full text-sm font-bold border-2 border-amber-200">
+                  <span className="px-3 py-1 bg-amber-900/60 text-amber-200 rounded-full text-sm font-bold border-2 border-amber-500/50">
                     {data.negociacoes.taxaConversao}%
                   </span>
                 </div>

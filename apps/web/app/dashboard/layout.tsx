@@ -39,30 +39,30 @@ export default function DashboardLayout({
   ];
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-slate-800">
       <ToastContainer />
       {/* Top Navigation */}
-      <nav className="bg-white shadow-sm fixed w-full z-10">
+      <nav className="bg-slate-900 shadow-lg fixed w-full z-10 border-b border-slate-700">
         <div className="px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between h-16">
             <div className="flex items-center">
               <button
                 onClick={() => setSidebarOpen(!sidebarOpen)}
-                className="md:hidden text-gray-600 hover:text-gray-900 mr-4"
+                className="md:hidden text-slate-300 hover:text-white mr-4"
               >
                 <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
                 </svg>
               </button>
-              <h1 className="text-xl font-bold text-blue-600">ImobiFlow</h1>
+              <h1 className="text-xl font-bold text-blue-400">ImobiFlow</h1>
             </div>
             <div className="flex items-center gap-4">
-              <span className="text-sm text-gray-700">
+              <span className="text-sm text-slate-300">
                 Olá, {user?.nome || 'Usuário'}
               </span>
               <button
                 onClick={logout}
-                className="text-sm text-red-600 hover:text-red-700 font-medium"
+                className="text-sm text-red-400 hover:text-red-300 font-medium"
               >
                 Sair
               </button>

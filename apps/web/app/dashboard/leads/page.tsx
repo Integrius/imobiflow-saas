@@ -159,9 +159,9 @@ export default function LeadsPage() {
     <div>
       <div className="flex justify-between items-center mb-8">
         <div>
-          <h2 className="text-3xl font-bold text-gray-900 tracking-tight">Leads</h2>
-          <p className="text-sm text-gray-600 mt-2 font-medium">
-            <span className="text-blue-600 text-lg font-bold">{leads.length}</span> leads cadastrados
+          <h2 className="text-3xl font-bold text-slate-100 tracking-tight">Leads</h2>
+          <p className="text-sm text-slate-300 mt-2 font-medium">
+            <span className="text-blue-400 text-lg font-bold">{leads.length}</span> leads cadastrados
           </p>
         </div>
         <button
@@ -182,38 +182,38 @@ export default function LeadsPage() {
           placeholder="🔍 Buscar por nome, email ou telefone..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          className="w-full px-5 py-3 border-2 border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 shadow-sm text-base"
+          className="w-full px-5 py-3 bg-slate-700 border-2 border-slate-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 shadow-sm text-base text-slate-100 placeholder:text-slate-400"
         />
       </div>
 
       {/* Tabela */}
-      <div className="bg-white shadow-xl rounded-2xl overflow-hidden border-2 border-gray-200">
-        <table className="min-w-full divide-y divide-gray-200">
-          <thead className="bg-gradient-to-r from-gray-50 to-gray-100">
+      <div className="bg-slate-700 shadow-xl rounded-2xl overflow-hidden border-2 border-slate-600">
+        <table className="min-w-full divide-y divide-slate-600">
+          <thead className="bg-gradient-to-r from-slate-800 to-slate-700">
             <tr>
-              <th className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Nome</th>
-              <th className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Email</th>
-              <th className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Telefone</th>
-              <th className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Status</th>
-              <th className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Ações</th>
+              <th className="px-6 py-4 text-left text-xs font-bold text-slate-300 uppercase tracking-wider">Nome</th>
+              <th className="px-6 py-4 text-left text-xs font-bold text-slate-300 uppercase tracking-wider">Email</th>
+              <th className="px-6 py-4 text-left text-xs font-bold text-slate-300 uppercase tracking-wider">Telefone</th>
+              <th className="px-6 py-4 text-left text-xs font-bold text-slate-300 uppercase tracking-wider">Status</th>
+              <th className="px-6 py-4 text-left text-xs font-bold text-slate-300 uppercase tracking-wider">Ações</th>
             </tr>
           </thead>
-          <tbody className="bg-white divide-y divide-gray-200">
+          <tbody className="bg-slate-700 divide-y divide-slate-600">
             {filteredLeads.length === 0 ? (
               <tr>
-                <td colSpan={5} className="px-6 py-12 text-center text-gray-500">
+                <td colSpan={5} className="px-6 py-12 text-center text-slate-400">
                   <div className="text-lg font-medium">{searchTerm ? 'Nenhum lead encontrado' : 'Nenhum lead cadastrado'}</div>
-                  <p className="text-sm text-gray-400 mt-2">Clique em &ldquo;+ Novo Lead&rdquo; para adicionar</p>
+                  <p className="text-sm text-slate-500 mt-2">Clique em &ldquo;+ Novo Lead&rdquo; para adicionar</p>
                 </td>
               </tr>
             ) : (
               filteredLeads.map((lead, index) => (
-                <tr key={lead.id} className={`hover:bg-blue-50 transition-colors ${index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}`}>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-bold text-gray-900">
+                <tr key={lead.id} className={`hover:bg-slate-600 transition-colors ${index % 2 === 0 ? 'bg-slate-700' : 'bg-slate-700/70'}`}>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm font-bold text-slate-100">
                     {lead.nome}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">{lead.email}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600 font-medium">{lead.telefone}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-300">{lead.email}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-300 font-medium">{lead.telefone}</td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <span
                       className={`px-3 py-1.5 text-xs font-bold rounded-full border-2 ${
@@ -230,7 +230,7 @@ export default function LeadsPage() {
                   <td className="px-6 py-4 whitespace-nowrap text-sm">
                     <button
                       onClick={() => openEditModal(lead)}
-                      className="text-blue-600 hover:text-blue-900 mr-4 font-bold hover:underline transition-all"
+                      className="text-blue-400 hover:text-blue-300 mr-4 font-bold hover:underline transition-all"
                     >
                       ✏️ Editar
                     </button>
@@ -239,7 +239,7 @@ export default function LeadsPage() {
                         setDeletingLead(lead);
                         setDeleteModalOpen(true);
                       }}
-                      className="text-red-600 hover:text-red-900 font-bold hover:underline transition-all"
+                      className="text-red-400 hover:text-red-300 font-bold hover:underline transition-all"
                     >
                       🗑️ Excluir
                     </button>

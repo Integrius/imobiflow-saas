@@ -216,9 +216,9 @@ export default function ImoveisPage() {
     <div>
       <div className="flex justify-between items-center mb-8">
         <div>
-          <h2 className="text-3xl font-bold text-gray-900 tracking-tight">Imóveis</h2>
-          <p className="text-sm text-gray-600 mt-2 font-medium">
-            <span className="text-blue-600 text-lg font-bold">{imoveis.length}</span> imóveis cadastrados
+          <h2 className="text-3xl font-bold text-slate-100 tracking-tight">Imóveis</h2>
+          <p className="text-sm text-slate-300 mt-2 font-medium">
+            <span className="text-blue-400 text-lg font-bold">{imoveis.length}</span> imóveis cadastrados
           </p>
         </div>
         <button
@@ -239,21 +239,21 @@ export default function ImoveisPage() {
           placeholder="🔍 Buscar por título, endereço ou cidade..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          className="w-full px-5 py-3 border-2 border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 shadow-sm text-base"
+          className="w-full px-5 py-3 bg-slate-700 border-2 border-slate-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 shadow-sm text-base text-slate-100 placeholder:text-slate-400"
         />
       </div>
 
       {/* Grid de Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {filteredImoveis.length === 0 ? (
-          <div className="col-span-full bg-white shadow-xl rounded-2xl p-12 text-center text-gray-500 border-2 border-gray-200">
+          <div className="col-span-full bg-slate-700 shadow-xl rounded-2xl p-12 text-center text-slate-400 border-2 border-slate-600">
             <div className="text-lg font-medium">{searchTerm ? 'Nenhum imóvel encontrado' : 'Nenhum imóvel cadastrado'}</div>
-            <p className="text-sm text-gray-400 mt-2">Clique em &ldquo;+ Novo Imóvel&rdquo; para adicionar</p>
+            <p className="text-sm text-slate-500 mt-2">Clique em &ldquo;+ Novo Imóvel&rdquo; para adicionar</p>
           </div>
         ) : (
           filteredImoveis.map((imovel) => (
-            <div key={imovel.id} className="bg-white shadow-xl rounded-2xl overflow-hidden hover:shadow-2xl transition-all duration-300 hover:scale-105 border-2 border-gray-200">
-              <div className="h-56 bg-gradient-to-br from-gray-200 to-gray-300 flex items-center justify-center overflow-hidden relative">
+            <div key={imovel.id} className="bg-slate-700 shadow-xl rounded-2xl overflow-hidden hover:shadow-2xl transition-all duration-300 hover:scale-105 border-2 border-slate-600">
+              <div className="h-56 bg-gradient-to-br from-slate-600 to-slate-500 flex items-center justify-center overflow-hidden relative">
                 {imovel.fotos && imovel.fotos.length > 0 ? (
                   <img
                     src={imovel.fotos[0]}
@@ -283,38 +283,38 @@ export default function ImoveisPage() {
               </div>
               <div className="p-5">
                 <div className="mb-3">
-                  <h3 className="text-xl font-bold text-gray-900 mb-1">
+                  <h3 className="text-xl font-bold text-slate-100 mb-1">
                     {imovel.titulo}
                   </h3>
-                  <p className="text-xs font-semibold text-blue-600 uppercase tracking-wider bg-blue-50 px-2 py-1 rounded-md inline-block">{imovel.tipo}</p>
+                  <p className="text-xs font-semibold text-blue-300 uppercase tracking-wider bg-blue-900/60 px-2 py-1 rounded-md inline-block border border-blue-500/50">{imovel.tipo}</p>
                 </div>
-                <p className="text-sm text-gray-700 mb-1 font-medium">📍 {imovel.endereco}</p>
-                <p className="text-xs text-gray-500 mb-4">{imovel.cidade} - {imovel.estado}</p>
+                <p className="text-sm text-slate-200 mb-1 font-medium">📍 {imovel.endereco}</p>
+                <p className="text-xs text-slate-400 mb-4">{imovel.cidade} - {imovel.estado}</p>
 
-                <div className="flex flex-wrap gap-2 text-xs text-gray-700 mb-4">
+                <div className="flex flex-wrap gap-2 text-xs text-slate-200 mb-4">
                   {imovel.area && (
-                    <span className="px-2 py-1 bg-gray-100 rounded-md font-bold border border-gray-200">📐 {imovel.area}m²</span>
+                    <span className="px-2 py-1 bg-slate-600 rounded-md font-bold border border-slate-500">📐 {imovel.area}m²</span>
                   )}
                   {imovel.quartos && (
-                    <span className="px-2 py-1 bg-gray-100 rounded-md font-bold border border-gray-200">🛏️ {imovel.quartos} quartos</span>
+                    <span className="px-2 py-1 bg-slate-600 rounded-md font-bold border border-slate-500">🛏️ {imovel.quartos} quartos</span>
                   )}
                   {imovel.banheiros && (
-                    <span className="px-2 py-1 bg-gray-100 rounded-md font-bold border border-gray-200">🚿 {imovel.banheiros} banheiros</span>
+                    <span className="px-2 py-1 bg-slate-600 rounded-md font-bold border border-slate-500">🚿 {imovel.banheiros} banheiros</span>
                   )}
                   {imovel.vagas && (
-                    <span className="px-2 py-1 bg-gray-100 rounded-md font-bold border border-gray-200">🚗 {imovel.vagas} vagas</span>
+                    <span className="px-2 py-1 bg-slate-600 rounded-md font-bold border border-slate-500">🚗 {imovel.vagas} vagas</span>
                   )}
                 </div>
 
                 <div className="mb-4">
-                  <span className="text-2xl font-bold text-blue-600">
+                  <span className="text-2xl font-bold text-blue-400">
                     R$ {Number(imovel.valor).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
                   </span>
                 </div>
 
                 {imovel.proprietario && (
-                  <p className="text-xs text-gray-500 mb-4 font-medium">
-                    👤 Proprietário: <span className="font-bold text-gray-700">{imovel.proprietario.nome}</span>
+                  <p className="text-xs text-slate-400 mb-4 font-medium">
+                    👤 Proprietário: <span className="font-bold text-slate-200">{imovel.proprietario.nome}</span>
                   </p>
                 )}
 

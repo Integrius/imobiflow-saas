@@ -142,9 +142,9 @@ export default function ProprietariosPage() {
     <div>
       <div className="flex justify-between items-center mb-8">
         <div>
-          <h2 className="text-3xl font-bold text-gray-900 tracking-tight">Proprietários</h2>
-          <p className="text-sm text-gray-600 mt-2 font-medium">
-            <span className="text-blue-600 text-lg font-bold">{proprietarios.length}</span> proprietários cadastrados
+          <h2 className="text-3xl font-bold text-slate-100 tracking-tight">Proprietários</h2>
+          <p className="text-sm text-slate-300 mt-2 font-medium">
+            <span className="text-blue-400 text-lg font-bold">{proprietarios.length}</span> proprietários cadastrados
           </p>
         </div>
         <button
@@ -165,55 +165,55 @@ export default function ProprietariosPage() {
           placeholder="🔍 Buscar por nome, email ou CPF/CNPJ..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          className="w-full px-5 py-3 border-2 border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 shadow-sm text-base"
+          className="w-full px-5 py-3 bg-slate-700 border-2 border-slate-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 shadow-sm text-base text-slate-100 placeholder:text-slate-400"
         />
       </div>
 
       {/* Tabela */}
-      <div className="bg-white shadow-xl rounded-2xl overflow-hidden border-2 border-gray-200">
-        <table className="min-w-full divide-y divide-gray-200">
-          <thead className="bg-gradient-to-r from-gray-50 to-gray-100">
+      <div className="bg-slate-700 shadow-xl rounded-2xl overflow-hidden border-2 border-slate-600">
+        <table className="min-w-full divide-y divide-slate-600">
+          <thead className="bg-gradient-to-r from-slate-800 to-slate-700">
             <tr>
-              <th className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Nome</th>
-              <th className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Email</th>
-              <th className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">CPF/CNPJ</th>
-              <th className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Tipo</th>
-              <th className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Telefone</th>
-              <th className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Ações</th>
+              <th className="px-6 py-4 text-left text-xs font-bold text-slate-300 uppercase tracking-wider">Nome</th>
+              <th className="px-6 py-4 text-left text-xs font-bold text-slate-300 uppercase tracking-wider">Email</th>
+              <th className="px-6 py-4 text-left text-xs font-bold text-slate-300 uppercase tracking-wider">CPF/CNPJ</th>
+              <th className="px-6 py-4 text-left text-xs font-bold text-slate-300 uppercase tracking-wider">Tipo</th>
+              <th className="px-6 py-4 text-left text-xs font-bold text-slate-300 uppercase tracking-wider">Telefone</th>
+              <th className="px-6 py-4 text-left text-xs font-bold text-slate-300 uppercase tracking-wider">Ações</th>
             </tr>
           </thead>
-          <tbody className="bg-white divide-y divide-gray-200">
+          <tbody className="bg-slate-700 divide-y divide-slate-600">
             {filteredProprietarios.length === 0 ? (
               <tr>
-                <td colSpan={6} className="px-6 py-12 text-center text-gray-500">
+                <td colSpan={6} className="px-6 py-12 text-center text-slate-400">
                   <div className="text-lg font-medium">{searchTerm ? 'Nenhum proprietário encontrado' : 'Nenhum proprietário cadastrado'}</div>
-                  <p className="text-sm text-gray-400 mt-2">Clique em &ldquo;+ Novo Proprietário&rdquo; para adicionar</p>
+                  <p className="text-sm text-slate-500 mt-2">Clique em &ldquo;+ Novo Proprietário&rdquo; para adicionar</p>
                 </td>
               </tr>
             ) : (
               filteredProprietarios.map((proprietario, index) => (
-                <tr key={proprietario.id} className={`hover:bg-blue-50 transition-colors ${index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}`}>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-bold text-gray-900">
+                <tr key={proprietario.id} className={`hover:bg-slate-600 transition-colors ${index % 2 === 0 ? 'bg-slate-700' : 'bg-slate-700/70'}`}>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm font-bold text-slate-100">
                     {proprietario.nome}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">{proprietario.email}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
-                    <span className="px-2 py-1 bg-gray-100 text-gray-800 rounded-md font-mono text-xs font-bold">{proprietario.cpf_cnpj}</span>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-300">{proprietario.email}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-300">
+                    <span className="px-2 py-1 bg-slate-600 text-slate-200 rounded-md font-mono text-xs font-bold border border-slate-500">{proprietario.cpf_cnpj}</span>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-300">
                     <span className={`px-3 py-1.5 text-xs font-bold rounded-full border-2 ${
                       proprietario.tipo === 'PESSOA_FISICA'
-                        ? 'bg-blue-100 text-blue-800 border-blue-300'
-                        : 'bg-purple-100 text-purple-800 border-purple-300'
+                        ? 'bg-blue-900/60 text-blue-200 border-blue-500/50'
+                        : 'bg-purple-900/60 text-purple-200 border-purple-500/50'
                     }`}>
                       {proprietario.tipo === 'PESSOA_FISICA' ? '👤 Pessoa Física' : '🏢 Pessoa Jurídica'}
                     </span>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600 font-medium">{proprietario.telefone}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-300 font-medium">{proprietario.telefone}</td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm">
                     <button
                       onClick={() => openEditModal(proprietario)}
-                      className="text-blue-600 hover:text-blue-900 mr-4 font-bold hover:underline transition-all"
+                      className="text-blue-400 hover:text-blue-300 mr-4 font-bold hover:underline transition-all"
                     >
                       ✏️ Editar
                     </button>
@@ -222,7 +222,7 @@ export default function ProprietariosPage() {
                         setDeletingProprietario(proprietario);
                         setDeleteModalOpen(true);
                       }}
-                      className="text-red-600 hover:text-red-900 font-bold hover:underline transition-all"
+                      className="text-red-400 hover:text-red-300 font-bold hover:underline transition-all"
                     >
                       🗑️ Excluir
                     </button>
