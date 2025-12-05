@@ -63,7 +63,7 @@ export default function LeadsPage() {
   const loadLeads = async () => {
     try {
       const response = await api.get('/leads');
-      setLeads(Array.isArray(response.data) ? response.data : []);
+      setLeads(Array.isArray(response.data.data) ? response.data.data : []);
     } catch (error: any) {
       console.error('Erro ao carregar leads:', error);
       toast.error('Erro ao carregar leads');
