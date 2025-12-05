@@ -8,7 +8,7 @@ export const metadata: Metadata = {
   keywords: ["imobiliária", "gestão", "CRM", "leads", "imóveis", "corretores"],
   authors: [{ name: "Vivoly" }],
   icons: {
-    icon: '/logo.png',
+    icon: '/logo.svg',
   },
 };
 

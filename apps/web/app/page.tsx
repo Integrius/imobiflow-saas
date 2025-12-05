@@ -36,7 +36,7 @@ export default function Home() {
             <div className="flex items-center">
               <Link href="/" className="flex items-center">
                 <Image
-                  src="/logo.png"
+                  src="/logo.svg"
                   alt="Vivoly"
                   width={302}
                   height={74}
@@ -454,7 +454,7 @@ export default function Home() {
             <div>
               <div className="mb-4">
                 <Image
-                  src="/logo.png"
+                  src="/logo.svg"
                   alt="Vivoly"
                   width={269}
                   height={66}

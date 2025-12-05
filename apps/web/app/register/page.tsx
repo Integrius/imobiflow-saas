@@ -172,7 +172,7 @@ export default function RegisterPage() {
           <div className="mb-6 flex justify-center">
             <Link href="/">
               <Image
-                src="/logo.png"
+                src="/logo.svg"
                 alt="Vivoly"
                 width={370}
                 height={91}

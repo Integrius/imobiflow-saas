@@ -68,7 +68,7 @@ export default function LoginPage() {
         <div className="relative z-10">
           <Link href="/" className="group">
             <Image
-              src="/logo.png"
+              src="/logo.svg"
               alt="Vivoly"
               width={336}
               height={83}
@@ -137,7 +137,7 @@ export default function LoginPage() {
           <div className="lg:hidden mb-8 text-center">
             <Link href="/" className="inline-block group">
               <Image
-                src="/logo.png"
+                src="/logo.svg"
                 alt="Vivoly"
                 width={302}
                 height={74}
