@@ -3,6 +3,7 @@
 import { useState, FormEvent } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import Image from 'next/image';
 import { GoogleLogin, CredentialResponse } from '@react-oauth/google';
 import { login } from '@/lib/auth';
 import { api } from '@/lib/api';
@@ -65,14 +66,14 @@ export default function LoginPage() {
         </div>
 
         <div className="relative z-10">
-          <Link href="/" className="flex items-center space-x-3 group">
-            <div className="w-12 h-12 bg-white/20 backdrop-blur-sm rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
-              <span className="text-3xl">🏘️</span>
-            </div>
-            <div>
-              <h1 className="text-3xl font-bold text-white">Vivoly</h1>
-              <p className="text-blue-100 text-sm">Gestão Imobiliária Inteligente</p>
-            </div>
+          <Link href="/" className="group">
+            <Image
+              src="/logo.png"
+              alt="Vivoly"
+              width={200}
+              height={49}
+              className="h-12 w-auto group-hover:scale-105 transition-transform filter brightness-0 invert"
+            />
           </Link>
         </div>
 
@@ -134,14 +135,14 @@ export default function LoginPage() {
         <div className="max-w-md w-full">
           {/* Mobile Logo */}
           <div className="lg:hidden mb-8 text-center">
-            <Link href="/" className="inline-flex items-center space-x-3 group">
-              <div className="w-12 h-12 bg-blue-600 rounded-xl flex items-center justify-center">
-                <span className="text-3xl">🏘️</span>
-              </div>
-              <div className="text-left">
-                <h1 className="text-2xl font-bold text-slate-100">Vivoly</h1>
-                <p className="text-slate-400 text-sm">Gestão Imobiliária</p>
-              </div>
+            <Link href="/" className="inline-block group">
+              <Image
+                src="/logo.png"
+                alt="Vivoly"
+                width={180}
+                height={44}
+                className="h-11 w-auto group-hover:scale-105 transition-transform"
+              />
             </Link>
           </div>
 

@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import Image from 'next/image';
 import { getToken } from '@/lib/auth';
 
 export default function Home() {
@@ -32,14 +33,17 @@ export default function Home() {
       <nav className="fixed w-full z-50 bg-slate-900/95 backdrop-blur-sm border-b border-slate-700 shadow-2xl">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between h-16">
-            <div className="flex items-center space-x-3">
-              <div className="w-10 h-10 bg-gradient-to-br from-blue-600 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg">
-                <span className="text-2xl">🏘️</span>
-              </div>
-              <div>
-                <h1 className="text-xl font-bold text-white">Vivoly</h1>
-                <p className="text-xs text-blue-300">Gestão Imobiliária Inteligente</p>
-              </div>
+            <div className="flex items-center">
+              <Link href="/" className="flex items-center">
+                <Image
+                  src="/logo.png"
+                  alt="Vivoly"
+                  width={180}
+                  height={44}
+                  priority
+                  className="h-11 w-auto"
+                />
+              </Link>
             </div>
             <div className="flex items-center space-x-4">
               <a href="#features" className="text-slate-300 hover:text-white transition-colors font-medium hidden md:block">
@@ -448,11 +452,14 @@ export default function Home() {
         <div className="max-w-7xl mx-auto">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
             <div>
-              <div className="flex items-center space-x-2 mb-4">
-                <div className="w-8 h-8 bg-gradient-to-br from-blue-600 to-indigo-600 rounded-lg flex items-center justify-center">
-                  <span className="text-xl">🏘️</span>
-                </div>
-                <span className="text-xl font-bold text-white">Vivoly</span>
+              <div className="mb-4">
+                <Image
+                  src="/logo.png"
+                  alt="Vivoly"
+                  width={160}
+                  height={39}
+                  className="h-10 w-auto"
+                />
               </div>
               <p className="text-slate-400 text-sm">
                 Gestão Imobiliária Inteligente para transformar seu negócio.

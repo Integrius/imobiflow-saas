@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import Image from 'next/image';
 import axios from 'axios';
 
 const api = axios.create({
@@ -168,6 +169,17 @@ export default function RegisterPage() {
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 py-12 px-4">
       <div className="max-w-2xl w-full">
         <div className="text-center mb-8">
+          <div className="mb-6 flex justify-center">
+            <Link href="/">
+              <Image
+                src="/logo.png"
+                alt="Vivoly"
+                width={220}
+                height={54}
+                className="h-14 w-auto"
+              />
+            </Link>
+          </div>
           <h1 className="text-4xl font-bold text-white mb-2">
             Crie sua conta no Vivoly
           </h1>

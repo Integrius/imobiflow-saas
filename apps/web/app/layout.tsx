@@ -3,8 +3,13 @@ import { GoogleOAuthProvider } from '@react-oauth/google';
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "ImobiFlow - Gestão Imobiliária",
-  description: "Sistema de gestão imobiliária",
+  title: "Vivoly - Gestão Imobiliária Inteligente",
+  description: "Sistema completo de gestão imobiliária com CRM integrado. Gerencie leads, imóveis e negociações de forma simples e eficiente.",
+  keywords: ["imobiliária", "gestão", "CRM", "leads", "imóveis", "corretores"],
+  authors: [{ name: "Vivoly" }],
+  icons: {
+    icon: '/logo.png',
+  },
 };
 
 export default function RootLayout({
