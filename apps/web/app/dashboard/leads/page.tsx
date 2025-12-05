@@ -41,6 +41,16 @@ export default function LeadsPage() {
   const [submitting, setSubmitting] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
 
+  const formatPhone = (phone: string) => {
+    const cleaned = phone.replace(/\D/g, '');
+    if (cleaned.length === 11) {
+      return `(${cleaned.slice(0, 2)}) ${cleaned.slice(2, 7)}-${cleaned.slice(7)}`;
+    } else if (cleaned.length === 10) {
+      return `(${cleaned.slice(0, 2)}) ${cleaned.slice(2, 6)}-${cleaned.slice(6)}`;
+    }
+    return phone;
+  };
+
   const [formData, setFormData] = useState<LeadForm>({
     nome: '',
     email: '',
@@ -221,7 +231,7 @@ export default function LeadsPage() {
                     {lead.nome}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-300">{lead.email}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-300 font-medium">{lead.telefone}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-300 font-medium">{formatPhone(lead.telefone)}</td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <span
                       className={`px-3 py-1.5 text-xs font-bold rounded-full border-2 ${

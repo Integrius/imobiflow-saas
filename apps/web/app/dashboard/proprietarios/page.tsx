@@ -34,6 +34,16 @@ export default function ProprietariosPage() {
   const [submitting, setSubmitting] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
 
+  const formatPhone = (phone: string) => {
+    const cleaned = phone.replace(/\D/g, '');
+    if (cleaned.length === 11) {
+      return `(${cleaned.slice(0, 2)}) ${cleaned.slice(2, 7)}-${cleaned.slice(7)}`;
+    } else if (cleaned.length === 10) {
+      return `(${cleaned.slice(0, 2)}) ${cleaned.slice(2, 6)}-${cleaned.slice(6)}`;
+    }
+    return phone;
+  };
+
   const [formData, setFormData] = useState<ProprietarioForm>({
     nome: '',
     email: '',
@@ -209,7 +219,7 @@ export default function ProprietariosPage() {
                       {proprietario.tipo === 'PESSOA_FISICA' ? '👤 Pessoa Física' : '🏢 Pessoa Jurídica'}
                     </span>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-300 font-medium">{proprietario.telefone}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-300 font-medium">{formatPhone(proprietario.telefone)}</td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm">
                     <button
                       onClick={() => openEditModal(proprietario)}

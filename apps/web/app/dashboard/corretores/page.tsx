@@ -34,6 +34,16 @@ export default function CorretoresPage() {
   const [submitting, setSubmitting] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
 
+  const formatPhone = (phone: string) => {
+    const cleaned = phone.replace(/\D/g, '');
+    if (cleaned.length === 11) {
+      return `(${cleaned.slice(0, 2)}) ${cleaned.slice(2, 7)}-${cleaned.slice(7)}`;
+    } else if (cleaned.length === 10) {
+      return `(${cleaned.slice(0, 2)}) ${cleaned.slice(2, 6)}-${cleaned.slice(6)}`;
+    }
+    return phone;
+  };
+
   const [formData, setFormData] = useState<CorretorForm>({
     nome: '',
     email: '',
@@ -205,7 +215,7 @@ export default function CorretoresPage() {
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-300">
                     <span className="px-2 py-1 bg-blue-900/60 text-blue-200 rounded-md font-mono text-xs font-bold border border-blue-500/50">{corretor.creci}</span>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-300 font-medium">{corretor.telefone}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-300 font-medium">{formatPhone(corretor.telefone)}</td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-300">
                     {corretor.comissao ? (
                       <span className="px-3 py-1 bg-green-900/60 text-green-200 rounded-full font-bold text-xs border-2 border-green-500/50">
