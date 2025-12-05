@@ -70,9 +70,9 @@ export default function LoginPage() {
             <Image
               src="/logo.png"
               alt="Vivoly"
-              width={240}
-              height={59}
-              className="h-[57px] w-auto group-hover:scale-105 transition-transform filter brightness-0 invert"
+              width={336}
+              height={83}
+              className="h-[80px] w-auto group-hover:scale-105 transition-transform filter brightness-0 invert"
             />
           </Link>
         </div>
@@ -139,9 +139,9 @@ export default function LoginPage() {
               <Image
                 src="/logo.png"
                 alt="Vivoly"
-                width={216}
-                height={53}
-                className="h-[52px] w-auto group-hover:scale-105 transition-transform"
+                width={302}
+                height={74}
+                className="h-[73px] w-auto group-hover:scale-105 transition-transform"
               />
             </Link>
           </div>
