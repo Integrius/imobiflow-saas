@@ -103,17 +103,18 @@ export default function LeadsPage() {
 
   const openEditModal = (lead: Lead) => {
     setEditingLead(lead);
+    const interesseData = typeof lead.interesse === 'string' ? JSON.parse(lead.interesse) : (lead.interesse || {});
     setFormData({
       nome: lead.nome,
       email: lead.email,
       telefone: lead.telefone,
       status: lead.status,
       origem: lead.origem || 'SITE',
-      perfil: lead.interesse?.perfil || 'INTERESSADO',
-      interesse: lead.interesse || {
-        tipo_imovel: [],
-        finalidade: 'VENDA',
-        forma_pagamento: [],
+      perfil: interesseData.perfil || 'INTERESSADO',
+      interesse: {
+        tipo_imovel: interesseData.tipo_imovel || [],
+        finalidade: interesseData.finalidade || 'VENDA',
+        forma_pagamento: interesseData.forma_pagamento || [],
       },
       observacoes: lead.observacoes || '',
     });
