@@ -29,41 +29,43 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
-      {/* Navigation */}
-      <nav className="fixed w-full z-50 bg-slate-900/95 backdrop-blur-sm border-b border-slate-700 shadow-2xl">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between h-20">
+      {/* Navigation - Modernizado com glassmorphism */}
+      <nav className="fixed w-full z-50 glass-effect border-b border-slate-800/50 shadow-2xl">
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="flex justify-between items-center h-20">
             <div className="flex items-center">
-              <Link href="/" className="flex items-center">
+              <Link href="/" className="flex items-center hover:opacity-90 transition-opacity">
                 <Image
                   src="/logo.svg"
                   alt="Vivoly"
                   width={302}
                   height={74}
                   priority
-                  className="h-[73px] w-auto"
+                  className="h-16 w-auto"
                 />
               </Link>
             </div>
-            <div className="flex items-center space-x-4">
-              <a href="#features" className="text-slate-300 hover:text-white transition-colors font-medium hidden md:block">
+            <div className="hidden md:flex items-center gap-8">
+              <a href="#features" className="text-slate-300 hover:text-white transition-colors font-medium text-sm">
                 Recursos
               </a>
-              <a href="#pricing" className="text-slate-300 hover:text-white transition-colors font-medium hidden md:block">
+              <a href="#pricing" className="text-slate-300 hover:text-white transition-colors font-medium text-sm">
                 Planos
               </a>
-              <a href="#contact" className="text-slate-300 hover:text-white transition-colors font-medium hidden md:block">
+              <a href="#contact" className="text-slate-300 hover:text-white transition-colors font-medium text-sm">
                 Contato
               </a>
+            </div>
+            <div className="flex items-center gap-4">
               <Link
                 href="/login"
-                className="px-4 py-2 text-blue-400 hover:text-blue-300 transition-colors font-bold"
+                className="text-slate-300 hover:text-white transition-colors font-medium text-sm"
               >
                 Entrar
               </Link>
               <Link
-                href="/login"
-                className="px-4 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-lg hover:from-blue-700 hover:to-indigo-700 transition-all font-bold shadow-lg hover:shadow-xl"
+                href="/register"
+                className="px-6 py-2.5 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl font-semibold text-sm hover:shadow-lg hover:shadow-blue-500/50 transition-all duration-300 hover:scale-105"
               >
                 Começar Grátis
               </Link>
@@ -72,55 +74,150 @@ export default function Home() {
         </div>
       </nav>
 
-      {/* Hero Section */}
-      <section className="pt-32 pb-20 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
-        {/* Background Effects */}
-        <div className="absolute inset-0 opacity-20">
-          <div className="absolute top-20 left-1/4 w-96 h-96 bg-blue-600 rounded-full blur-3xl"></div>
-          <div className="absolute bottom-20 right-1/4 w-96 h-96 bg-indigo-600 rounded-full blur-3xl"></div>
+      {/* Hero Section - Two Column Layout */}
+      <section className="relative min-h-screen flex items-center pt-20 pb-16 px-6">
+        {/* Background com gradiente + pattern */}
+        <div className="absolute inset-0 bg-gradient-to-br from-slate-950 via-slate-900 to-blue-950">
+          <div className="absolute top-20 left-1/4 w-96 h-96 bg-blue-600/20 rounded-full blur-3xl"></div>
+          <div className="absolute bottom-20 right-1/4 w-96 h-96 bg-purple-600/20 rounded-full blur-3xl"></div>
         </div>
 
-        <div className="max-w-7xl mx-auto relative z-10">
-          <div className="text-center">
-            <h1 className="text-5xl md:text-7xl font-bold text-white mb-6 leading-tight">
-              Transforme sua
-              <span className="bg-gradient-to-r from-blue-400 to-indigo-400 text-transparent bg-clip-text"> Gestão Imobiliária</span>
-            </h1>
-            <p className="text-xl md:text-2xl text-slate-300 mb-8 max-w-3xl mx-auto">
-              Sistema completo para gerenciar leads, imóveis, negociações e muito mais.
-              Tudo em um só lugar, de forma simples e eficiente.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-              <Link
-                href="/login"
-                className="px-8 py-4 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl hover:from-blue-700 hover:to-indigo-700 transition-all font-bold text-lg shadow-2xl hover:shadow-blue-900/50 hover:scale-105 transform"
-              >
-                Começar Agora - Grátis
-              </Link>
-              <a
-                href="#features"
-                className="px-8 py-4 bg-slate-700 text-white rounded-xl hover:bg-slate-600 transition-all font-bold text-lg border-2 border-slate-600 hover:border-slate-500"
-              >
-                Conhecer Recursos
-              </a>
-            </div>
-            <p className="text-sm text-slate-400 mt-4">
-              ✓ Sem cartão de crédito • ✓ 14 dias grátis • ✓ Cancele quando quiser
-            </p>
-          </div>
+        <div className="relative max-w-7xl mx-auto w-full">
+          <div className="grid md:grid-cols-2 gap-12 items-center">
 
-          {/* Stats */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-20 max-w-4xl mx-auto">
-            <div className="text-center p-6 bg-slate-800/50 backdrop-blur-sm rounded-2xl border-2 border-slate-700">
-              <div className="text-4xl font-bold text-blue-400 mb-2">100+</div>
+            {/* Coluna Esquerda - Copy */}
+            <div className="space-y-8">
+              {/* Badge de Novidade */}
+              <div className="inline-flex items-center gap-2 px-4 py-2 bg-blue-500/10 border border-blue-500/20 rounded-full text-blue-400 text-sm font-medium">
+                <span className="w-2 h-2 bg-blue-400 rounded-full animate-pulse"></span>
+                Novo: Sistema Multi-Tenant com Subdomínios
+              </div>
+
+              {/* Headline com Gradient */}
+              <h1 className="text-5xl md:text-6xl font-bold text-white leading-tight">
+                Gestão Imobiliária
+                <span className="block text-gradient">
+                  Simples e Inteligente
+                </span>
+              </h1>
+
+              {/* Subtitle */}
+              <p className="text-xl text-slate-300 leading-relaxed">
+                Centralize leads, imóveis, negociações e mais em uma plataforma
+                moderna. Aumente suas vendas em até 300% com automação inteligente.
+              </p>
+
+              {/* CTAs */}
+              <div className="flex flex-col sm:flex-row gap-4">
+                <Link
+                  href="/register"
+                  className="group px-8 py-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl font-bold text-lg hover:shadow-2xl hover:shadow-blue-500/50 hover:scale-105 transition-all duration-300 flex items-center justify-center gap-2"
+                >
+                  Começar Grátis
+                  <svg className="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                  </svg>
+                </Link>
+
+                <a
+                  href="#features"
+                  className="px-8 py-4 bg-slate-800 text-white rounded-xl font-bold text-lg border-2 border-slate-700 hover:bg-slate-700 hover:border-slate-600 transition-all duration-300 flex items-center justify-center gap-2"
+                >
+                  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  Ver Demo
+                </a>
+              </div>
+
+              {/* Social Proof Inline */}
+              <div className="flex items-center gap-6 pt-4">
+                <div className="flex -space-x-3">
+                  <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-500 border-2 border-slate-900"></div>
+                  <div className="w-10 h-10 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 border-2 border-slate-900"></div>
+                  <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-400 to-cyan-400 border-2 border-slate-900"></div>
+                  <div className="w-10 h-10 rounded-full bg-gradient-to-br from-green-500 to-emerald-500 border-2 border-slate-900"></div>
+                  <div className="w-10 h-10 rounded-full bg-gradient-to-br from-amber-500 to-orange-500 border-2 border-slate-900"></div>
+                </div>
+                <div>
+                  <div className="text-white font-semibold">500+ imobiliárias</div>
+                  <div className="text-slate-400 text-sm">confiam no Vivoly</div>
+                </div>
+              </div>
+
+              {/* Trust Badges */}
+              <div className="flex flex-wrap gap-4 text-sm text-slate-400">
+                <div className="flex items-center gap-2">
+                  <svg className="w-5 h-5 text-green-400" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                  </svg>
+                  Sem cartão de crédito
+                </div>
+                <div className="flex items-center gap-2">
+                  <svg className="w-5 h-5 text-green-400" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                  </svg>
+                  14 dias grátis
+                </div>
+                <div className="flex items-center gap-2">
+                  <svg className="w-5 h-5 text-green-400" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                  </svg>
+                  Cancele quando quiser
+                </div>
+              </div>
+            </div>
+
+            {/* Coluna Direita - Placeholder para Screenshot */}
+            <div className="relative hidden md:block">
+              <div className="relative rounded-2xl overflow-hidden shadow-2xl shadow-blue-500/20 border border-slate-800 bg-gradient-to-br from-slate-800 to-slate-900">
+                {/* Placeholder para screenshot do dashboard */}
+                <div className="aspect-[4/3] flex items-center justify-center">
+                  <div className="text-center p-12">
+                    <div className="w-20 h-20 mx-auto mb-4 bg-gradient-to-br from-blue-600 to-purple-600 rounded-2xl flex items-center justify-center">
+                      <svg className="w-10 h-10 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                      </svg>
+                    </div>
+                    <h3 className="text-white font-semibold text-lg mb-2">Dashboard Inteligente</h3>
+                    <p className="text-slate-400 text-sm">Métricas em tempo real para decisões mais inteligentes</p>
+                  </div>
+                </div>
+
+                {/* Floating Stats Cards */}
+                <div className="absolute top-4 -left-4 bg-slate-800/90 backdrop-blur rounded-xl p-4 shadow-xl border border-slate-700">
+                  <div className="text-green-400 text-sm font-semibold">↑ 247%</div>
+                  <div className="text-slate-300 text-xs">Conversão</div>
+                </div>
+
+                <div className="absolute bottom-4 -right-4 bg-slate-800/90 backdrop-blur rounded-xl p-4 shadow-xl border border-slate-700">
+                  <div className="text-blue-400 text-sm font-semibold">1,234</div>
+                  <div className="text-slate-300 text-xs">Leads ativos</div>
+                </div>
+              </div>
+
+              {/* Glow effect */}
+              <div className="absolute inset-0 bg-gradient-to-tr from-blue-600/20 to-purple-600/20 rounded-2xl blur-3xl -z-10"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Stats Row Abaixo do Hero */}
+      <section className="py-12 px-6 bg-slate-900/50 border-y border-slate-800">
+        <div className="max-w-7xl mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div className="text-center p-6 bg-slate-800/50 backdrop-blur-sm rounded-2xl border border-slate-700">
+              <div className="text-4xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 text-transparent bg-clip-text mb-2">500+</div>
               <div className="text-slate-300 font-medium">Imobiliárias Atendidas</div>
             </div>
-            <div className="text-center p-6 bg-slate-800/50 backdrop-blur-sm rounded-2xl border-2 border-slate-700">
-              <div className="text-4xl font-bold text-blue-400 mb-2">5.000+</div>
+            <div className="text-center p-6 bg-slate-800/50 backdrop-blur-sm rounded-2xl border border-slate-700">
+              <div className="text-4xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 text-transparent bg-clip-text mb-2">10.000+</div>
               <div className="text-slate-300 font-medium">Negócios Fechados</div>
             </div>
-            <div className="text-center p-6 bg-slate-800/50 backdrop-blur-sm rounded-2xl border-2 border-slate-700">
-              <div className="text-4xl font-bold text-blue-400 mb-2">98%</div>
+            <div className="text-center p-6 bg-slate-800/50 backdrop-blur-sm rounded-2xl border border-slate-700">
+              <div className="text-4xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 text-transparent bg-clip-text mb-2">98%</div>
               <div className="text-slate-300 font-medium">Satisfação dos Clientes</div>
             </div>
           </div>
