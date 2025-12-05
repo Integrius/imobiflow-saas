@@ -169,7 +169,7 @@ export default function RegisterPage() {
       <div className="max-w-2xl w-full">
         <div className="text-center mb-8">
           <h1 className="text-4xl font-bold text-white mb-2">
-            Crie sua conta no ImobiFlow
+            Crie sua conta no Vivoly
           </h1>
           <p className="text-slate-400">
             Experimente grátis por 14 dias. Não é necessário cartão de crédito.

@@ -1,4 +1,4 @@
-# ImobiFlow 🏢
+# Vivoly 🏢
 
 Sistema completo de gestão imobiliária com CRM integrado para imobiliárias.
 
@@ -28,7 +28,7 @@ Sistema completo de gestão imobiliária com CRM integrado para imobiliárias.
 ## 📦 Estrutura do Projeto
 
 ```
-imobiflow/
+vivoly/
 ├── apps/
 │   ├── api/          # Backend (Fastify + Prisma)
 │   └── web/          # Frontend (Next.js)
@@ -86,7 +86,7 @@ imobiflow/
 ```bash
 # Clonar repositório
 git clone <repo-url>
-cd imobiflow
+cd vivoly
 
 # Instalar dependências
 pnpm install
@@ -98,11 +98,11 @@ pnpm install
 # OU manualmente:
 # 1. Certifique-se de que PostgreSQL está instalado e rodando
 # 2. O arquivo apps/api/.env já está configurado com:
-#    DATABASE_URL="postgresql://imobiflow:imobiflow123@localhost:5432/imobiflow"
+#    DATABASE_URL="postgresql://vivoly:vivoly123@localhost:5432/vivoly"
 # 3. Criar banco e usuário:
-sudo -u postgres psql -c "CREATE DATABASE imobiflow;"
-sudo -u postgres psql -c "CREATE USER imobiflow WITH ENCRYPTED PASSWORD 'imobiflow123';"
-sudo -u postgres psql -c "GRANT ALL PRIVILEGES ON DATABASE imobiflow TO imobiflow;"
+sudo -u postgres psql -c "CREATE DATABASE vivoly;"
+sudo -u postgres psql -c "CREATE USER vivoly WITH ENCRYPTED PASSWORD 'vivoly123';"
+sudo -u postgres psql -c "GRANT ALL PRIVILEGES ON DATABASE vivoly TO vivoly;"
 
 # 4. Executar migrations:
 cd apps/api
@@ -186,7 +186,7 @@ NEXT_PUBLIC_API_URL=http://localhost:3333
 
 **Backend (apps/api/.env)**
 ```env
-DATABASE_URL=postgresql://user:password@localhost:5432/imobiflow
+DATABASE_URL=postgresql://user:password@localhost:5432/vivoly
 PORT=3333
 JWT_SECRET=seu-secret-aqui
 ```
@@ -216,8 +216,8 @@ Desenvolvido com ❤️ por [Seu Nome/Empresa]
 
 ## 📞 Suporte
 
-- Issues: [GitHub Issues](https://github.com/seu-usuario/imobiflow/issues)
-- Email: contato@imobiflow.com
+- Issues: [GitHub Issues](https://github.com/seu-usuario/vivoly/issues)
+- Email: contato@vivoly.com
 
 ---
 

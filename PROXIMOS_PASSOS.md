@@ -1,4 +1,4 @@
-# Próximos Passos - Sistema Multi-Tenant ImobiFlow
+# Próximos Passos - Sistema Multi-Tenant Vivoly
 
 ## ✅ O que foi implementado
 
@@ -28,12 +28,12 @@
 O deploy foi disparado. Aguarde o Render fazer o build e deploy.
 
 Verificar status:
-- Frontend: https://dashboard.render.com/web/imobiflow-web
-- Backend: https://dashboard.render.com/web/imobiflow-saas
+- Frontend: https://dashboard.render.com/web/vivoly-web
+- Backend: https://dashboard.render.com/web/vivoly-saas
 
 ### 2. Aguardar Validação DNS no Render (2-10 minutos)
 
-Acesse: https://dashboard.render.com/web/imobiflow-web → Settings → Custom Domains
+Acesse: https://dashboard.render.com/web/vivoly-web → Settings → Custom Domains
 
 Os domínios devem mudar de:
 ```
@@ -46,7 +46,7 @@ Para:
 
 ### 3. Testar Landing Page
 
-Acesse: https://imobiflow.integrius.com.br
+Acesse: https://vivoly.integrius.com.br
 
 Deve carregar a landing page com:
 - Header com "Entrar" e "Começar Grátis"
@@ -57,7 +57,7 @@ Deve carregar a landing page com:
 
 ### 4. Testar Página de Registro
 
-Acesse: https://imobiflow.integrius.com.br/register
+Acesse: https://vivoly.integrius.com.br/register
 
 Teste o fluxo:
 1. Preencha nome da imobiliária (ex: "Imobiliária Teste")
@@ -104,7 +104,7 @@ Possíveis motivos:
 **Solução**:
 1. Verifique se o tenant foi criado na API:
    ```bash
-   curl https://imobiflow-saas.onrender.com/api/tenants
+   curl https://vivoly-saas.onrender.com/api/tenants
    ```
 
 2. Verifique se o subdomínio está correto no banco:
@@ -114,7 +114,7 @@ Possíveis motivos:
 
 3. Teste a API diretamente:
    ```bash
-   curl https://imobiflow-saas.onrender.com/api/tenants/by-subdomain/seu-slug
+   curl https://vivoly-saas.onrender.com/api/tenants/by-subdomain/seu-slug
    ```
 
 ### Problema: DNS não resolve
@@ -136,7 +136,7 @@ nslookup seu-slug.integrius.com.br 8.8.8.8
 ### Problema: Página em branco ou erro 500
 
 **Verificar**:
-1. Logs do Render: https://dashboard.render.com/web/imobiflow-web → Logs
+1. Logs do Render: https://dashboard.render.com/web/vivoly-web → Logs
 2. Variáveis de ambiente estão corretas
 3. Build foi concluído com sucesso
 
@@ -144,8 +144,8 @@ nslookup seu-slug.integrius.com.br 8.8.8.8
 
 - [ ] Deploy concluído no Render (frontend + backend)
 - [ ] DNS validado no Render (✅ Verified)
-- [ ] Landing page carrega: `https://imobiflow.integrius.com.br`
-- [ ] Página de registro carrega: `https://imobiflow.integrius.com.br/register`
+- [ ] Landing page carrega: `https://vivoly.integrius.com.br`
+- [ ] Página de registro carrega: `https://vivoly.integrius.com.br/register`
 - [ ] Criar tenant de teste via registro
 - [ ] Acessar subdomínio do tenant: `https://teste.integrius.com.br/login`
 - [ ] Login funciona no subdomínio
@@ -210,7 +210,7 @@ nslookup seu-slug.integrius.com.br 8.8.8.8
 9. **White Label Completo**
    - Tenant pode personalizar completamente
    - Logo, cores, fonts
-   - Remover branding "ImobiFlow" (plano Enterprise)
+   - Remover branding "Vivoly" (plano Enterprise)
 
 ## 📊 Monitoramento
 

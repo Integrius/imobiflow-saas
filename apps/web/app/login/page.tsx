@@ -70,7 +70,7 @@ export default function LoginPage() {
               <span className="text-3xl">🏘️</span>
             </div>
             <div>
-              <h1 className="text-3xl font-bold text-white">ImobiFlow</h1>
+              <h1 className="text-3xl font-bold text-white">Vivoly</h1>
               <p className="text-blue-100 text-sm">Gestão Imobiliária Inteligente</p>
             </div>
           </Link>
@@ -125,7 +125,7 @@ export default function LoginPage() {
         </div>
 
         <div className="relative z-10 text-blue-100 text-sm">
-          © 2025 ImobiFlow. Todos os direitos reservados.
+          © 2025 Vivoly. Todos os direitos reservados.
         </div>
       </div>
 
@@ -139,7 +139,7 @@ export default function LoginPage() {
                 <span className="text-3xl">🏘️</span>
               </div>
               <div className="text-left">
-                <h1 className="text-2xl font-bold text-slate-100">ImobiFlow</h1>
+                <h1 className="text-2xl font-bold text-slate-100">Vivoly</h1>
                 <p className="text-slate-400 text-sm">Gestão Imobiliária</p>
               </div>
             </Link>
@@ -229,7 +229,7 @@ export default function LoginPage() {
 
             <div className="mt-6 p-4 bg-slate-700/50 rounded-lg border border-slate-600">
               <p className="text-xs text-slate-400 text-center mb-2">Credenciais de teste:</p>
-              <p className="font-mono text-sm text-slate-300 text-center">admin@imobiflow.com</p>
+              <p className="font-mono text-sm text-slate-300 text-center">admin@vivoly.com.br</p>
               <p className="font-mono text-sm text-slate-300 text-center">admin123</p>
             </div>
           </div>

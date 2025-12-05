@@ -37,7 +37,7 @@ export default function Home() {
                 <span className="text-2xl">🏘️</span>
               </div>
               <div>
-                <h1 className="text-xl font-bold text-white">ImobiFlow</h1>
+                <h1 className="text-xl font-bold text-white">Vivoly</h1>
                 <p className="text-xs text-blue-300">Gestão Imobiliária Inteligente</p>
               </div>
             </div>
@@ -400,7 +400,7 @@ export default function Home() {
               Pronto para Revolucionar Sua Gestão?
             </h2>
             <p className="text-xl text-blue-100 mb-8">
-              Junte-se a centenas de imobiliárias que já transformaram seus resultados com o ImobiFlow
+              Junte-se a centenas de imobiliárias que já transformaram seus resultados com o Vivoly
             </p>
             <Link
               href="/login"
@@ -426,10 +426,10 @@ export default function Home() {
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <a
-              href="mailto:contato@imobiflow.com"
+              href="mailto:contato@vivoly.com.br"
               className="px-6 py-3 bg-slate-700 text-white rounded-lg hover:bg-slate-600 transition-all font-medium"
             >
-              📧 contato@imobiflow.com
+              📧 contato@vivoly.com.br
             </a>
             <a
               href="https://wa.me/5511999999999"
@@ -452,7 +452,7 @@ export default function Home() {
                 <div className="w-8 h-8 bg-gradient-to-br from-blue-600 to-indigo-600 rounded-lg flex items-center justify-center">
                   <span className="text-xl">🏘️</span>
                 </div>
-                <span className="text-xl font-bold text-white">ImobiFlow</span>
+                <span className="text-xl font-bold text-white">Vivoly</span>
               </div>
               <p className="text-slate-400 text-sm">
                 Gestão Imobiliária Inteligente para transformar seu negócio.
@@ -487,7 +487,7 @@ export default function Home() {
           </div>
 
           <div className="border-t border-slate-700 pt-8 text-center text-slate-400 text-sm">
-            <p>© 2025 ImobiFlow. Todos os direitos reservados.</p>
+            <p>© 2025 Vivoly. Todos os direitos reservados.</p>
           </div>
         </div>
       </footer>

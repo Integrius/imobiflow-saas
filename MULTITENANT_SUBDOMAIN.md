@@ -1,23 +1,23 @@
-# Sistema Multi-Tenant com Subdomínios - ImobiFlow
+# Sistema Multi-Tenant com Subdomínios - Vivoly
 
 ## Visão Geral
 
-O ImobiFlow implementa um sistema de **multi-tenancy baseado em subdomínios**, onde cada imobiliária (tenant) possui seu próprio subdomínio exclusivo.
+O Vivoly implementa um sistema de **multi-tenancy baseado em subdomínios**, onde cada imobiliária (tenant) possui seu próprio subdomínio exclusivo.
 
 **Exemplo**:
-- Imobiliária ACME → `acme.imobiflow.com.br`
-- Imobiliária Remax → `remax.imobiflow.com.br`
-- Imobiliária Lopes → `lopes.imobiflow.com.br`
+- Imobiliária ACME → `acme.vivoly.com.br`
+- Imobiliária Remax → `remax.vivoly.com.br`
+- Imobiliária Lopes → `lopes.vivoly.com.br`
 
 ## Arquitetura
 
 ### 1. Fluxo de Requisição
 
 ```
-Cliente acessa: acme.imobiflow.com.br/dashboard/leads
+Cliente acessa: acme.vivoly.com.br/dashboard/leads
 
 ↓ [DNS Wildcard]
-*.imobiflow.com.br → Servidor (IP ou CNAME)
+*.vivoly.com.br → Servidor (IP ou CNAME)
 
 ↓ [Middleware Next.js] (apps/web/middleware.ts)
 - Detecta subdomain "acme"
@@ -80,16 +80,16 @@ Exibida quando:
 
 ```bash
 # Domínio base da aplicação
-NEXT_PUBLIC_BASE_DOMAIN=imobiflow.com.br
+NEXT_PUBLIC_BASE_DOMAIN=vivoly.com.br
 
 # URL da API
-NEXT_PUBLIC_API_URL=https://api.imobiflow.com.br
+NEXT_PUBLIC_API_URL=https://api.vivoly.com.br
 ```
 
 #### Backend (apps/api/.env)
 
 ```bash
-DATABASE_URL="postgresql://user:pass@localhost:5432/imobiflow"
+DATABASE_URL="postgresql://user:pass@localhost:5432/vivoly"
 ```
 
 ### 2. Configuração DNS
@@ -127,12 +127,12 @@ Proxy: Proxied
 
 Adicione um registro wildcard:
 ```
-*.imobiflow.com.br  A  123.456.789.10
+*.vivoly.com.br  A  123.456.789.10
 ```
 
 ou
 ```
-*.imobiflow.com.br  CNAME  seu-app.onrender.com
+*.vivoly.com.br  CNAME  seu-app.onrender.com
 ```
 
 ### 3. Subdomínios Reservados
@@ -220,7 +220,7 @@ Criar página de registro onde o usuário:
 2. Escolhe o slug/subdomínio (ex: "acme")
 3. Sistema valida se está disponível
 4. Cria conta com 14 dias de trial
-5. Redireciona para: `acme.imobiflow.com.br/dashboard`
+5. Redireciona para: `acme.vivoly.com.br/dashboard`
 
 ## Planos e Limites
 
@@ -265,8 +265,8 @@ dominio_custom String? @unique
 - `sistema.acmeimoveis.com.br` (domínio próprio)
 
 **Configuração necessária**:
-1. Cliente cria registro CNAME apontando para ImobiFlow
-2. ImobiFlow valida propriedade do domínio
+1. Cliente cria registro CNAME apontando para Vivoly
+2. Vivoly valida propriedade do domínio
 3. Configura certificado SSL (Let's Encrypt)
 4. Ativa domínio personalizado
 
@@ -313,11 +313,11 @@ dominio_custom String? @unique
 **Solução**:
 ```bash
 # Verificar se tenant existe
-curl https://api.imobiflow.com.br/api/tenants/by-subdomain/acme
+curl https://api.vivoly.com.br/api/tenants/by-subdomain/acme
 
 # Verificar DNS
-nslookup acme.imobiflow.com.br
-dig acme.imobiflow.com.br
+nslookup acme.vivoly.com.br
+dig acme.vivoly.com.br
 ```
 
 ### Problema: Dados de outro tenant aparecem
