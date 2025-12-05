@@ -14,6 +14,9 @@ export async function tenantRoutes(server: FastifyInstance) {
   // Rota pública para buscar tenant por slug
   server.get('/tenants/slug/:slug', controller.findBySlug.bind(controller))
 
+  // Rota pública para buscar tenant por subdomínio (usada pelo middleware Next.js)
+  server.get('/tenants/by-subdomain/:subdomain', controller.findBySubdominio.bind(controller))
+
   // Rotas protegidas (requerem autenticação)
   server.get('/tenants/current', {
     preHandler: [authMiddleware, tenantMiddleware]

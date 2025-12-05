@@ -57,6 +57,19 @@ export class TenantController {
     }
   }
 
+  async findBySubdominio(request: FastifyRequest, reply: FastifyReply) {
+    try {
+      const { subdomain } = request.params as { subdomain: string }
+      const tenant = await this.service.findBySubdominio(subdomain)
+
+      return reply.send(tenant)
+    } catch (error: any) {
+      return reply.status(error.statusCode || 500).send({
+        error: error.message || 'Erro ao buscar tenant por subdomínio'
+      })
+    }
+  }
+
   async update(request: FastifyRequest, reply: FastifyReply) {
     try {
       const { id } = request.params as { id: string }

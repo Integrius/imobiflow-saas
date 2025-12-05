@@ -55,6 +55,16 @@ export class TenantService {
     return tenant
   }
 
+  async findBySubdominio(subdominio: string) {
+    const tenant = await this.repository.findBySubdominio(subdominio)
+
+    if (!tenant) {
+      throw new AppError('Tenant não encontrado', 404)
+    }
+
+    return tenant
+  }
+
   async update(id: string, data: UpdateTenantDTO) {
     // Verificar se tenant existe
     await this.findById(id)
