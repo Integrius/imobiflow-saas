@@ -174,9 +174,9 @@ export default function RegisterPage() {
               <Image
                 src="/logo.png"
                 alt="Vivoly"
-                width={220}
-                height={54}
-                className="h-14 w-auto"
+                width={264}
+                height={65}
+                className="h-[67px] w-auto"
               />
             </Link>
           </div>

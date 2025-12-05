@@ -38,10 +38,10 @@ export default function Home() {
                 <Image
                   src="/logo.png"
                   alt="Vivoly"
-                  width={180}
-                  height={44}
+                  width={216}
+                  height={53}
                   priority
-                  className="h-11 w-auto"
+                  className="h-[52px] w-auto"
                 />
               </Link>
             </div>
@@ -456,9 +456,9 @@ export default function Home() {
                 <Image
                   src="/logo.png"
                   alt="Vivoly"
-                  width={160}
-                  height={39}
-                  className="h-10 w-auto"
+                  width={192}
+                  height={47}
+                  className="h-12 w-auto"
                 />
               </div>
               <p className="text-slate-400 text-sm">
