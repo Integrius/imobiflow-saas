@@ -31,9 +31,9 @@ export default function DashboardLayout({
   }, [router]);
 
   const navigation = [
-    { name: 'Dashboard', href: '/dashboard', icon: '📊' },
-    { name: 'Leads', href: '/dashboard/leads', icon: '👥' },
-    { name: 'Corretores', href: '/dashboard/corretores', icon: '🏢' },
+    { name: 'Dashboard', href: '/dashboard', icon: '📊', iconImage: '/ico-dashboard.png' },
+    { name: 'Leads', href: '/dashboard/leads', icon: '👥', iconImage: '/ico-Leads.png' },
+    { name: 'Corretores', href: '/dashboard/corretores', icon: '🏢', iconImage: '/ico-corretores.png' },
     { name: 'Proprietários', href: '/dashboard/proprietarios', icon: '🏠' },
     { name: 'Imóveis', href: '/dashboard/imoveis', icon: '🏘️' },
     { name: 'Negociações', href: '/dashboard/negociacoes', icon: '💼' },
@@ -99,7 +99,17 @@ export default function DashboardLayout({
                           : 'bg-white text-[#2C2C2C] hover:bg-[#DFF9C7] hover:shadow-lg hover:scale-102 border-2 border-[rgba(169,126,111,0.15)] hover:border-[#8FD14F]/50'
                       } backdrop-blur-sm`}
                     >
-                      <span className="mr-4 text-3xl drop-shadow">{item.icon}</span>
+                      {item.iconImage ? (
+                        <Image
+                          src={item.iconImage}
+                          alt={item.name}
+                          width={32}
+                          height={32}
+                          className="mr-4 drop-shadow"
+                        />
+                      ) : (
+                        <span className="mr-4 text-3xl drop-shadow">{item.icon}</span>
+                      )}
                       <span className="font-bold tracking-wide">{item.name}</span>
                     </Link>
                   );
@@ -151,7 +161,17 @@ export default function DashboardLayout({
                             : 'bg-white text-[#2C2C2C] hover:bg-[#DFF9C7] hover:shadow-lg border-2 border-[rgba(169,126,111,0.15)] hover:border-[#8FD14F]/50'
                         } backdrop-blur-sm`}
                       >
-                        <span className="mr-4 text-3xl drop-shadow">{item.icon}</span>
+                        {item.iconImage ? (
+                          <Image
+                            src={item.iconImage}
+                            alt={item.name}
+                            width={32}
+                            height={32}
+                            className="mr-4 drop-shadow"
+                          />
+                        ) : (
+                          <span className="mr-4 text-3xl drop-shadow">{item.icon}</span>
+                        )}
                         <span className="font-bold tracking-wide">{item.name}</span>
                       </Link>
                     );
