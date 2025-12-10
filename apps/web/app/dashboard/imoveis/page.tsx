@@ -207,7 +207,7 @@ export default function ImoveisPage() {
   if (loading) {
     return (
       <div className="flex justify-center items-center min-h-[400px]">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#8FD14F]"></div>
       </div>
     );
   }
@@ -216,17 +216,14 @@ export default function ImoveisPage() {
     <div>
       <div className="flex justify-between items-center mb-8">
         <div>
-          <h2 className="text-3xl font-bold text-slate-100 tracking-tight">Imóveis</h2>
-          <p className="text-sm text-slate-300 mt-2 font-medium">
-            <span className="text-blue-400 text-lg font-bold">{imoveis.length}</span> imóveis cadastrados
+          <h2 className="text-4xl font-bold text-[#2C2C2C] tracking-tight">Imóveis</h2>
+          <p className="text-sm text-[#8B7F76] mt-2 font-medium">
+            <span className="text-[#7FB344] text-lg font-bold">{imoveis.length}</span> imóveis cadastrados
           </p>
         </div>
         <button
           onClick={openCreateModal}
-          className="px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl hover:from-blue-700 hover:to-indigo-700 transition-all duration-300 font-bold shadow-lg hover:shadow-xl hover:scale-105 border-2 border-blue-500"
-          style={{
-            boxShadow: 'inset 0 -2px 4px rgba(0, 0, 0, 0.2), 0 4px 8px rgba(0, 0, 0, 0.2)'
-          }}
+          className="btn-primary"
         >
           + Novo Imóvel
         </button>
@@ -239,20 +236,20 @@ export default function ImoveisPage() {
           placeholder="🔍 Buscar por título, endereço ou cidade..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          className="w-full px-5 py-3 bg-slate-700 border-2 border-slate-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 shadow-sm text-base text-slate-100 placeholder:text-slate-400"
+          className="input-modern"
         />
       </div>
 
       {/* Grid de Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {filteredImoveis.length === 0 ? (
-          <div className="col-span-full bg-slate-700 shadow-xl rounded-2xl p-12 text-center text-slate-400 border-2 border-slate-600">
+          <div className="col-span-full card-warm p-12 text-center text-[#8B7F76]">
             <div className="text-lg font-medium">{searchTerm ? 'Nenhum imóvel encontrado' : 'Nenhum imóvel cadastrado'}</div>
-            <p className="text-sm text-slate-500 mt-2">Clique em &ldquo;+ Novo Imóvel&rdquo; para adicionar</p>
+            <p className="text-sm text-[#8B7F76] mt-2">Clique em &ldquo;+ Novo Imóvel&rdquo; para adicionar</p>
           </div>
         ) : (
           filteredImoveis.map((imovel) => (
-            <div key={imovel.id} className="bg-slate-700 shadow-xl rounded-2xl overflow-hidden hover:shadow-2xl transition-all duration-300 hover:scale-105 border-2 border-slate-600">
+            <div key={imovel.id} className="card-warm overflow-hidden hover:shadow-2xl transition-all duration-300 hover:scale-105">
               <div className="h-56 bg-gradient-to-br from-slate-600 to-slate-500 flex items-center justify-center overflow-hidden relative">
                 {imovel.fotos && imovel.fotos.length > 0 ? (
                   <img
@@ -283,45 +280,45 @@ export default function ImoveisPage() {
               </div>
               <div className="p-5">
                 <div className="mb-3">
-                  <h3 className="text-xl font-bold text-slate-100 mb-1">
+                  <h3 className="text-xl font-bold text-[#2C2C2C] mb-1">
                     {imovel.titulo}
                   </h3>
-                  <p className="text-xs font-semibold text-blue-300 uppercase tracking-wider bg-blue-900/60 px-2 py-1 rounded-md inline-block border border-blue-500/50">{imovel.tipo}</p>
+                  <p className="text-xs font-semibold text-[#7FB344] uppercase tracking-wider bg-[#8FD14F]/20 px-2 py-1 rounded-md inline-block border border-[#8FD14F]/50">{imovel.tipo}</p>
                 </div>
-                <p className="text-sm text-slate-200 mb-1 font-medium">📍 {imovel.endereco}</p>
-                <p className="text-xs text-slate-400 mb-4">{imovel.cidade} - {imovel.estado}</p>
+                <p className="text-sm text-[#8B7F76] mb-1 font-medium">📍 {imovel.endereco}</p>
+                <p className="text-xs text-[#8B7F76] mb-4">{imovel.cidade} - {imovel.estado}</p>
 
-                <div className="flex flex-wrap gap-2 text-xs text-slate-200 mb-4">
+                <div className="flex flex-wrap gap-2 text-xs text-[#2C2C2C] mb-4">
                   {imovel.area && (
-                    <span className="px-2 py-1 bg-slate-600 rounded-md font-bold border border-slate-500">📐 {imovel.area}m²</span>
+                    <span className="px-2 py-1 bg-[#A97E6F]/20 rounded-md font-bold border border-[#A97E6F]/50">📐 {imovel.area}m²</span>
                   )}
                   {imovel.quartos && (
-                    <span className="px-2 py-1 bg-slate-600 rounded-md font-bold border border-slate-500">🛏️ {imovel.quartos} quartos</span>
+                    <span className="px-2 py-1 bg-[#A97E6F]/20 rounded-md font-bold border border-[#A97E6F]/50">🛏️ {imovel.quartos} quartos</span>
                   )}
                   {imovel.banheiros && (
-                    <span className="px-2 py-1 bg-slate-600 rounded-md font-bold border border-slate-500">🚿 {imovel.banheiros} banheiros</span>
+                    <span className="px-2 py-1 bg-[#A97E6F]/20 rounded-md font-bold border border-[#A97E6F]/50">🚿 {imovel.banheiros} banheiros</span>
                   )}
                   {imovel.vagas && (
-                    <span className="px-2 py-1 bg-slate-600 rounded-md font-bold border border-slate-500">🚗 {imovel.vagas} vagas</span>
+                    <span className="px-2 py-1 bg-[#A97E6F]/20 rounded-md font-bold border border-[#A97E6F]/50">🚗 {imovel.vagas} vagas</span>
                   )}
                 </div>
 
                 <div className="mb-4">
-                  <span className="text-2xl font-bold text-blue-400">
+                  <span className="text-2xl font-bold text-[#7FB344]">
                     R$ {Number(imovel.valor).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
                   </span>
                 </div>
 
                 {imovel.proprietario && (
-                  <p className="text-xs text-slate-400 mb-4 font-medium">
-                    👤 Proprietário: <span className="font-bold text-slate-200">{imovel.proprietario.nome}</span>
+                  <p className="text-xs text-[#8B7F76] mb-4 font-medium">
+                    👤 Proprietário: <span className="font-bold text-[#2C2C2C]">{imovel.proprietario.nome}</span>
                   </p>
                 )}
 
                 <div className="flex gap-2">
                   <button
                     onClick={() => openEditModal(imovel)}
-                    className="flex-1 px-4 py-2.5 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-bold transition-all shadow-md hover:shadow-lg"
+                    className="flex-1 px-4 py-2.5 text-sm bg-gradient-to-r from-[#8FD14F] to-[#006D77] text-white rounded-lg hover:shadow-lg font-bold transition-all"
                   >
                     ✏️ Editar
                   </button>
@@ -330,7 +327,7 @@ export default function ImoveisPage() {
                       setDeletingImovel(imovel);
                       setDeleteModalOpen(true);
                     }}
-                    className="flex-1 px-4 py-2.5 text-sm bg-red-600 text-white rounded-lg hover:bg-red-700 font-bold transition-all shadow-md hover:shadow-lg"
+                    className="flex-1 px-4 py-2.5 text-sm bg-[#FF6B6B] text-white rounded-lg hover:bg-[#FF006E] font-bold transition-all"
                   >
                     🗑️ Excluir
                   </button>

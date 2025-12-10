@@ -231,7 +231,7 @@ export default function NegociacoesPage() {
   if (loading) {
     return (
       <div className="flex justify-center items-center min-h-[400px]">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#8FD14F]"></div>
       </div>
     );
   }
@@ -240,14 +240,14 @@ export default function NegociacoesPage() {
     <div>
       <div className="flex justify-between items-center mb-8">
         <div>
-          <h2 className="text-3xl font-bold text-slate-100 tracking-tight">Negociações</h2>
-          <p className="text-sm text-slate-300 mt-2 font-medium">
-            <span className="text-blue-400 text-lg font-bold">{negociacoes.length}</span> negociações cadastradas
+          <h2 className="text-4xl font-bold text-[#2C2C2C] tracking-tight">Negociações</h2>
+          <p className="text-sm text-[#8B7F76] mt-2 font-medium">
+            <span className="text-[#7FB344] text-lg font-bold">{negociacoes.length}</span> negociações cadastradas
           </p>
         </div>
         <button
           onClick={openCreateModal}
-          className="px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl hover:from-blue-700 hover:to-indigo-700 transition-all duration-300 font-bold shadow-lg hover:shadow-xl hover:scale-105 border-2 border-blue-500"
+          className="px-6 py-3 btn-primary"
           style={{
             boxShadow: 'inset 0 -2px 4px rgba(0, 0, 0, 0.2), 0 4px 8px rgba(0, 0, 0, 0.2)'
           }}
@@ -263,45 +263,45 @@ export default function NegociacoesPage() {
           placeholder="🔍 Buscar por código, cliente ou imóvel..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          className="w-full px-5 py-3 bg-slate-700 border-2 border-slate-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 shadow-sm text-base text-slate-100 placeholder:text-slate-400"
+          className="input-modern"
         />
       </div>
 
       {/* Tabela */}
-      <div className="bg-slate-700 shadow-xl rounded-2xl overflow-hidden border-2 border-slate-600">
+      <div className="card-warm shadow-xl overflow-hidden">
         <table className="min-w-full divide-y divide-slate-600">
-          <thead className="bg-gradient-to-r from-slate-800 to-slate-700">
+          <thead className="bg-gradient-to-r from-[#A97E6F] to-[#8B6F5C]">
             <tr>
-              <th className="px-6 py-4 text-left text-xs font-bold text-slate-300 uppercase tracking-wider">Código</th>
-              <th className="px-6 py-4 text-left text-xs font-bold text-slate-300 uppercase tracking-wider">Cliente</th>
-              <th className="px-6 py-4 text-left text-xs font-bold text-slate-300 uppercase tracking-wider">Imóvel</th>
-              <th className="px-6 py-4 text-left text-xs font-bold text-slate-300 uppercase tracking-wider">Corretor</th>
-              <th className="px-6 py-4 text-left text-xs font-bold text-slate-300 uppercase tracking-wider">Valor Proposta</th>
-              <th className="px-6 py-4 text-left text-xs font-bold text-slate-300 uppercase tracking-wider">Status</th>
-              <th className="px-6 py-4 text-left text-xs font-bold text-slate-300 uppercase tracking-wider">Ações</th>
+              <th className="px-6 py-4 text-left text-xs font-bold text-white uppercase tracking-wider">Código</th>
+              <th className="px-6 py-4 text-left text-xs font-bold text-white uppercase tracking-wider">Cliente</th>
+              <th className="px-6 py-4 text-left text-xs font-bold text-white uppercase tracking-wider">Imóvel</th>
+              <th className="px-6 py-4 text-left text-xs font-bold text-white uppercase tracking-wider">Corretor</th>
+              <th className="px-6 py-4 text-left text-xs font-bold text-white uppercase tracking-wider">Valor Proposta</th>
+              <th className="px-6 py-4 text-left text-xs font-bold text-white uppercase tracking-wider">Status</th>
+              <th className="px-6 py-4 text-left text-xs font-bold text-white uppercase tracking-wider">Ações</th>
             </tr>
           </thead>
-          <tbody className="bg-slate-700 divide-y divide-slate-600">
+          <tbody className="bg-white divide-y divide-[rgba(169,126,111,0.1)]">
             {filteredNegociacoes.length === 0 ? (
               <tr>
-                <td colSpan={7} className="px-6 py-12 text-center text-slate-400">
+                <td colSpan={7} className="px-6 py-12 text-center text-[#8B7F76]">
                   <div className="text-lg font-medium">{searchTerm ? 'Nenhuma negociação encontrada' : 'Nenhuma negociação cadastrada'}</div>
-                  <p className="text-sm text-slate-500 mt-2">Clique em &ldquo;+ Nova Negociação&rdquo; para adicionar</p>
+                  <p className="text-sm text-[#8B7F76] mt-2">Clique em &ldquo;+ Nova Negociação&rdquo; para adicionar</p>
                 </td>
               </tr>
             ) : (
               filteredNegociacoes.map((negociacao, index) => (
-                <tr key={negociacao.id} className={`hover:bg-slate-600 transition-colors ${index % 2 === 0 ? 'bg-slate-700' : 'bg-slate-700/70'}`}>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-bold text-slate-100">
+                <tr key={negociacao.id} className={`hover:bg-[#F4E2CE] transition-colors ${index % 2 === 0 ? 'bg-white' : 'bg-white/70'}`}>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm font-bold text-[#2C2C2C]">
                     <span className="px-2 py-1 bg-blue-900/60 text-blue-200 rounded-md font-mono text-xs border border-blue-500/50">{negociacao.codigo}</span>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-300 font-medium">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-[#8B7F76] font-medium">
                     👤 {negociacao.lead?.nome || 'N/A'}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-300 font-medium">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-[#8B7F76] font-medium">
                     🏠 {negociacao.imovel?.titulo || 'N/A'}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-300">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-[#8B7F76]">
                     {negociacao.corretor?.nome || '-'}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-100 font-bold">
@@ -320,7 +320,7 @@ export default function NegociacoesPage() {
                   <td className="px-6 py-4 whitespace-nowrap text-sm">
                     <button
                       onClick={() => openEditModal(negociacao)}
-                      className="text-blue-400 hover:text-blue-300 mr-4 font-bold hover:underline transition-all"
+                      className="text-[#7FB344] hover:text-[#006D77] mr-4 font-bold hover:underline transition-all"
                     >
                       ✏️ Editar
                     </button>
@@ -329,7 +329,7 @@ export default function NegociacoesPage() {
                         setDeletingNegociacao(negociacao);
                         setDeleteModalOpen(true);
                       }}
-                      className="text-red-400 hover:text-red-300 font-bold hover:underline transition-all"
+                      className="text-[#FF6B6B] hover:text-[#FF006E] font-bold hover:underline transition-all"
                     >
                       🗑️ Excluir
                     </button>
