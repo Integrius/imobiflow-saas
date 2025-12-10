@@ -39,30 +39,30 @@ export default function DashboardLayout({
   ];
 
   return (
-    <div className="min-h-screen bg-slate-800">
+    <div className="min-h-screen bg-[#FAF8F5]">
       <ToastContainer />
       {/* Top Navigation */}
-      <nav className="bg-slate-900 shadow-lg fixed w-full z-10 border-b border-slate-700">
+      <nav className="bg-gradient-to-r from-[#6F5A4A] to-[#8B6F5C] shadow-lg fixed w-full z-10 border-b border-[rgba(169,126,111,0.3)]">
         <div className="px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between h-16">
             <div className="flex items-center">
               <button
                 onClick={() => setSidebarOpen(!sidebarOpen)}
-                className="md:hidden text-slate-300 hover:text-white mr-4"
+                className="md:hidden text-[#F4EFE9] hover:text-white mr-4"
               >
                 <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
                 </svg>
               </button>
-              <h1 className="text-xl font-bold text-blue-400">ImobiFlow</h1>
+              <h1 className="text-xl font-bold text-gradient-accent pb-0">ImobiFlow</h1>
             </div>
             <div className="flex items-center gap-4">
-              <span className="text-sm text-slate-300">
+              <span className="text-sm text-[#F4EFE9]">
                 Olá, {user?.nome || 'Usuário'}
               </span>
               <button
                 onClick={logout}
-                className="text-sm text-red-400 hover:text-red-300 font-medium"
+                className="text-sm text-[#FF6B6B] hover:text-[#FF3390] font-medium"
               >
                 Sair
               </button>
@@ -74,7 +74,7 @@ export default function DashboardLayout({
       <div className="flex pt-16">
         {/* Sidebar - Desktop */}
         <aside className="hidden md:flex md:flex-shrink-0">
-          <div className="flex flex-col w-72 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 shadow-2xl h-[calc(100vh-4rem)] border-r border-slate-700">
+          <div className="flex flex-col w-72 bg-gradient-to-br from-[#F4EFE9] to-[#F4E2CE] shadow-2xl h-[calc(100vh-4rem)] border-r border-[rgba(169,126,111,0.2)]">
             <div className="flex-1 flex flex-col pt-8 pb-6 overflow-y-auto">
               <nav className="mt-2 flex-1 px-4 space-y-3">
                 {navigation.map((item) => {
@@ -85,17 +85,12 @@ export default function DashboardLayout({
                       href={item.href}
                       className={`group flex items-center px-5 py-4 text-sm font-bold rounded-xl transition-all duration-300 ${
                         isActive
-                          ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-2xl shadow-blue-900/50 border-2 border-blue-500 transform scale-105'
-                          : 'bg-gradient-to-r from-slate-700 to-slate-600 text-slate-200 hover:from-slate-600 hover:to-slate-500 hover:shadow-xl hover:scale-102 border-2 border-slate-600 hover:border-slate-500'
+                          ? 'bg-gradient-to-r from-[#8FD14F] to-[#006D77] text-white shadow-xl glow-green border-2 border-[#8FD14F] transform scale-105'
+                          : 'bg-white text-[#2C2C2C] hover:bg-[#DFF9C7] hover:shadow-lg hover:scale-102 border-2 border-[rgba(169,126,111,0.15)] hover:border-[#8FD14F]/50'
                       } backdrop-blur-sm`}
-                      style={{
-                        boxShadow: isActive
-                          ? '0 10px 25px -5px rgba(0, 0, 0, 0.5), inset 0 2px 4px rgba(255, 255, 255, 0.1)'
-                          : 'inset 0 -2px 4px rgba(0, 0, 0, 0.3), 0 4px 8px rgba(0, 0, 0, 0.3)'
-                      }}
                     >
-                      <span className="mr-4 text-3xl drop-shadow-lg">{item.icon}</span>
-                      <span className="font-bold tracking-wide drop-shadow">{item.name}</span>
+                      <span className="mr-4 text-3xl drop-shadow">{item.icon}</span>
+                      <span className="font-bold tracking-wide">{item.name}</span>
                     </Link>
                   );
                 })}
@@ -103,9 +98,9 @@ export default function DashboardLayout({
             </div>
             {/* Footer da Sidebar */}
             <div className="px-4 pb-6 mt-auto">
-              <div className="bg-gradient-to-r from-slate-800 to-slate-700 backdrop-blur-sm rounded-xl p-4 text-center border-2 border-slate-600 shadow-inner">
-                <p className="text-sm text-slate-200 font-bold tracking-wider">ImobiFlow SaaS</p>
-                <p className="text-xs text-slate-400 mt-1 font-semibold">versão 1.0.0</p>
+              <div className="bg-gradient-to-r from-[#C7A695] to-[#A97E6F] rounded-xl p-4 text-center border-2 border-[#A97E6F] shadow-md">
+                <p className="text-sm text-white font-bold tracking-wider">ImobiFlow SaaS</p>
+                <p className="text-xs text-[#F4E2CE] mt-1 font-semibold">versão 1.0.0</p>
               </div>
             </div>
           </div>
@@ -115,14 +110,14 @@ export default function DashboardLayout({
         {sidebarOpen && (
           <div className="md:hidden fixed inset-0 z-40 flex">
             <div
-              className="fixed inset-0 bg-slate-900 bg-opacity-75"
+              className="fixed inset-0 bg-[#2C2C2C] bg-opacity-75"
               onClick={() => setSidebarOpen(false)}
             />
-            <div className="relative flex-1 flex flex-col max-w-xs w-full bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 h-full border-r border-slate-700">
+            <div className="relative flex-1 flex flex-col max-w-xs w-full bg-gradient-to-br from-[#F4EFE9] to-[#F4E2CE] h-full border-r border-[rgba(169,126,111,0.2)]">
               <div className="absolute top-0 right-0 -mr-12 pt-2">
                 <button
                   onClick={() => setSidebarOpen(false)}
-                  className="ml-1 flex items-center justify-center h-12 w-12 rounded-full focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white bg-slate-700 shadow-xl"
+                  className="ml-1 flex items-center justify-center h-12 w-12 rounded-full focus:outline-none focus:ring-2 focus:ring-inset focus:ring-[#8FD14F] bg-[#A97E6F] shadow-xl"
                 >
                   <span className="sr-only">Fechar sidebar</span>
                   <svg className="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -142,16 +137,11 @@ export default function DashboardLayout({
                         onClick={() => setSidebarOpen(false)}
                         className={`group flex items-center px-5 py-4 text-base font-bold rounded-xl transition-all ${
                           isActive
-                            ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-2xl border-2 border-blue-500'
-                            : 'bg-gradient-to-r from-slate-700 to-slate-600 text-slate-200 hover:from-slate-600 hover:to-slate-500 border-2 border-slate-600'
+                            ? 'bg-gradient-to-r from-[#8FD14F] to-[#006D77] text-white shadow-xl glow-green border-2 border-[#8FD14F]'
+                            : 'bg-white text-[#2C2C2C] hover:bg-[#DFF9C7] hover:shadow-lg border-2 border-[rgba(169,126,111,0.15)] hover:border-[#8FD14F]/50'
                         } backdrop-blur-sm`}
-                        style={{
-                          boxShadow: isActive
-                            ? '0 10px 25px -5px rgba(0, 0, 0, 0.5), inset 0 2px 4px rgba(255, 255, 255, 0.1)'
-                            : 'inset 0 -2px 4px rgba(0, 0, 0, 0.3), 0 4px 8px rgba(0, 0, 0, 0.3)'
-                        }}
                       >
-                        <span className="mr-4 text-3xl drop-shadow-lg">{item.icon}</span>
+                        <span className="mr-4 text-3xl drop-shadow">{item.icon}</span>
                         <span className="font-bold tracking-wide">{item.name}</span>
                       </Link>
                     );
