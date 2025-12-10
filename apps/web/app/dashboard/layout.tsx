@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import Link from 'next/link';
+import Image from 'next/image';
 import { logout, getToken } from '@/lib/auth';
 import ToastContainer from '@/components/ToastContainer';
 
@@ -54,7 +55,16 @@ export default function DashboardLayout({
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
                 </svg>
               </button>
-              <h1 className="text-xl font-bold text-gradient-accent pb-0">ImobiFlow</h1>
+              <Link href="/dashboard" className="flex items-center">
+                <Image
+                  src="/logo.svg"
+                  alt="Vivoly"
+                  width={120}
+                  height={32}
+                  className="h-8 w-auto"
+                  priority
+                />
+              </Link>
             </div>
             <div className="flex items-center gap-4">
               <span className="text-sm text-[#F4EFE9]">
@@ -99,7 +109,7 @@ export default function DashboardLayout({
             {/* Footer da Sidebar */}
             <div className="px-4 pb-6 mt-auto">
               <div className="bg-gradient-to-r from-[#C7A695] to-[#A97E6F] rounded-xl p-4 text-center border-2 border-[#A97E6F] shadow-md">
-                <p className="text-sm text-white font-bold tracking-wider">ImobiFlow SaaS</p>
+                <p className="text-sm text-white font-bold tracking-wider">Vivoly</p>
                 <p className="text-xs text-[#F4E2CE] mt-1 font-semibold">versão 1.0.0</p>
               </div>
             </div>
