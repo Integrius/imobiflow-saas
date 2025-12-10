@@ -59,9 +59,9 @@ export default function DashboardLayout({
                 <Image
                   src="/logo.svg"
                   alt="Vivoly"
-                  width={120}
-                  height={32}
-                  className="h-8 w-auto"
+                  width={240}
+                  height={64}
+                  className="h-16 w-auto"
                   priority
                 />
               </Link>
