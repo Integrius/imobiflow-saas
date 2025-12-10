@@ -66,7 +66,7 @@ export default function LoginPage() {
       <div className="absolute top-1/2 left-1/3 w-24 h-24 bg-[#CBEFA9] rounded-full blur-2xl opacity-40"></div>
 
       {/* Left side - Branding */}
-      <div className="hidden lg:flex lg:w-1/2 p-12 flex-col justify-between relative z-10">
+      <div className="hidden lg:flex lg:w-1/2 pl-16 pr-12 py-12 flex-col justify-between relative z-10">
         {/* Logo */}
         <div>
           <Link href="/" className="inline-block group">
