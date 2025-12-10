@@ -38,4 +38,14 @@ export async function imoveisRoutes(server: FastifyInstance) {
   server.delete('/:id', async (request, reply) => {
     return controller.delete(request, reply)
   })
+
+  // Upload de foto
+  server.post('/:id/upload-foto', async (request, reply) => {
+    return controller.uploadFoto(request, reply)
+  })
+
+  // Deletar foto
+  server.delete('/:id/fotos/:fotoIndex', async (request, reply) => {
+    return controller.deleteFoto(request, reply)
+  })
 }

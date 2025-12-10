@@ -1,11 +1,12 @@
 import { FastifyRequest, FastifyReply } from 'fastify'
 import { ImoveisService } from './imoveis.service'
-import { 
-  createImovelSchema, 
+import {
+  createImovelSchema,
   updateImovelSchema,
   filterImoveisSchema,
   proximidadeSchema
 } from './imoveis.schema'
+import { uploadService } from '../../services/upload.service'
 
 export class ImoveisController {
   constructor(private imoveisService: ImoveisService) {}
@@ -51,5 +52,102 @@ export class ImoveisController {
     const { id } = request.params as { id: string }
     await this.imoveisService.delete(id, tenantId)
     return reply.status(204).send()
+  }
+
+  async uploadFoto(request: FastifyRequest, reply: FastifyReply) {
+    try {
+      const tenantId = (request as any).tenantId || 'default-tenant-id'
+      const { id } = request.params as { id: string }
+
+      // Verifica se o imóvel existe
+      const imovel = await this.imoveisService.findById(id, tenantId)
+      if (!imovel) {
+        return reply.status(404).send({ error: 'Imóvel não encontrado' })
+      }
+
+      // Recebe o arquivo via multipart
+      const data = await request.file()
+      if (!data) {
+        return reply.status(400).send({ error: 'Nenhum arquivo enviado' })
+      }
+
+      // Valida tipo de arquivo
+      const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp']
+      if (!allowedTypes.includes(data.mimetype)) {
+        return reply.status(400).send({ error: 'Tipo de arquivo inválido. Use JPG, PNG ou WebP' })
+      }
+
+      // Valida tamanho (max 5MB)
+      const buffer = await data.toBuffer()
+      const maxSize = 5 * 1024 * 1024 // 5MB
+      if (buffer.length > maxSize) {
+        return reply.status(400).send({ error: 'Arquivo muito grande. Tamanho máximo: 5MB' })
+      }
+
+      // Upload para Cloudinary
+      const url = await uploadService.uploadImage(
+        buffer,
+        tenantId,
+        id,
+        data.filename
+      )
+
+      // Adiciona URL ao array de fotos do imóvel
+      const updatedImovel = await this.imoveisService.addFoto(id, url, tenantId)
+
+      return reply.status(200).send({
+        message: 'Foto enviada com sucesso',
+        url,
+        imovel: updatedImovel
+      })
+    } catch (error: any) {
+      console.error('Erro ao fazer upload da foto:', error)
+      return reply.status(500).send({ error: 'Erro ao fazer upload da foto' })
+    }
+  }
+
+  async deleteFoto(request: FastifyRequest, reply: FastifyReply) {
+    try {
+      const tenantId = (request as any).tenantId || 'default-tenant-id'
+      const { id, fotoIndex } = request.params as { id: string; fotoIndex: string }
+
+      const index = parseInt(fotoIndex, 10)
+      if (isNaN(index)) {
+        return reply.status(400).send({ error: 'Índice de foto inválido' })
+      }
+
+      // Busca o imóvel
+      const imovel = await this.imoveisService.findById(id, tenantId)
+      if (!imovel) {
+        return reply.status(404).send({ error: 'Imóvel não encontrado' })
+      }
+
+      if (!imovel.fotos || imovel.fotos.length === 0) {
+        return reply.status(404).send({ error: 'Imóvel não possui fotos' })
+      }
+
+      if (index < 0 || index >= imovel.fotos.length) {
+        return reply.status(404).send({ error: 'Foto não encontrada' })
+      }
+
+      const fotoUrl = imovel.fotos[index]
+
+      // Remove da Cloudinary
+      const publicId = uploadService.extractPublicIdFromUrl(fotoUrl)
+      if (publicId) {
+        await uploadService.deleteImage(publicId)
+      }
+
+      // Remove do array de fotos
+      const updatedImovel = await this.imoveisService.removeFoto(id, index, tenantId)
+
+      return reply.status(200).send({
+        message: 'Foto removida com sucesso',
+        imovel: updatedImovel
+      })
+    } catch (error: any) {
+      console.error('Erro ao excluir foto:', error)
+      return reply.status(500).send({ error: 'Erro ao excluir foto' })
+    }
   }
 }

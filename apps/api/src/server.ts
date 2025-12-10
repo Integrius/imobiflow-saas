@@ -1,6 +1,7 @@
 import Fastify from 'fastify'
 import cors from '@fastify/cors'
 import helmet from '@fastify/helmet'
+import multipart from '@fastify/multipart'
 import { authRoutes } from './modules/auth/auth.routes'
 import { tenantRoutes } from './modules/tenants/tenant.routes'
 import { leadsRoutes } from './modules/leads/leads.routes'
@@ -24,6 +25,13 @@ server.register(cors, {
 server.register(helmet, {
   contentSecurityPolicy: false,
   crossOriginEmbedderPolicy: false
+})
+
+// Multipart para upload de arquivos
+server.register(multipart, {
+  limits: {
+    fileSize: 5 * 1024 * 1024, // 5MB
+  }
 })
 
 // Health check

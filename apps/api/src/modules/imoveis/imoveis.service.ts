@@ -133,4 +133,20 @@ export class ImoveisService {
       return { latitude: null, longitude: null }
     }
   }
+
+  async addFoto(id: string, url: string, tenantId: string) {
+    const imovel = await this.findById(id, tenantId)
+    const fotos = imovel.fotos || []
+    fotos.push(url)
+
+    return await this.imoveisRepository.update(id, { fotos }, tenantId)
+  }
+
+  async removeFoto(id: string, index: number, tenantId: string) {
+    const imovel = await this.findById(id, tenantId)
+    const fotos = imovel.fotos || []
+    fotos.splice(index, 1)
+
+    return await this.imoveisRepository.update(id, { fotos }, tenantId)
+  }
 }
