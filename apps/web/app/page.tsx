@@ -96,7 +96,7 @@ export default function Home() {
               {/* Headline com Gradient */}
               <h1 className="text-5xl md:text-6xl font-bold text-white leading-tight">
                 Gestão Imobiliária
-                <span className="block text-gradient">
+                <span className="block text-gradient pb-2">
                   Simples e Inteligente
                 </span>
               </h1>
