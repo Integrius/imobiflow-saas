@@ -4,24 +4,33 @@ import { useEffect, useState } from 'react';
 import { api } from '@/lib/api';
 import { toast } from '@/lib/toast';
 import Modal from '@/components/Modal';
+import ImageUpload from '@/components/ImageUpload';
 
 interface Imovel {
   id: string;
-  titulo: string;
+  titulo?: string;
   descricao?: string;
-  tipo: string;
-  endereco: string;
-  cidade: string;
-  estado: string;
-  cep: string;
-  valor: number;
-  area?: number;
-  quartos?: number;
-  banheiros?: number;
-  vagas?: number;
-  status: 'DISPONIVEL' | 'RESERVADO' | 'VENDIDO';
+  tipo?: string;
+  endereco?: {
+    logradouro?: string;
+    numero?: string;
+    bairro?: string;
+    cidade?: string;
+    estado?: string;
+    cep?: string;
+  };
+  valor?: number;
+  preco?: number;
+  caracteristicas?: {
+    area_total?: number;
+    area_construida?: number;
+    quartos?: number;
+    banheiros?: number;
+    vagas_garagem?: number;
+  };
+  status?: 'DISPONIVEL' | 'RESERVADO' | 'VENDIDO';
   fotos?: string[];
-  proprietario_id: string;
+  proprietario_id?: string;
   proprietario?: {
     nome: string;
   };
@@ -87,7 +96,8 @@ export default function ImoveisPage() {
   const loadImoveis = async () => {
     try {
       const response = await api.get('/imoveis');
-      setImoveis(Array.isArray(response.data) ? response.data : []);
+      const imoveis = response.data.data || response.data;
+      setImoveis(Array.isArray(imoveis) ? imoveis : []);
     } catch (error: any) {
       console.error('Erro ao carregar imóveis:', error);
       toast.error('Erro ao carregar imóveis');
@@ -99,7 +109,8 @@ export default function ImoveisPage() {
   const loadProprietarios = async () => {
     try {
       const response = await api.get('/proprietarios');
-      setProprietarios(Array.isArray(response.data) ? response.data : []);
+      const proprietarios = response.data.data || response.data;
+      setProprietarios(Array.isArray(proprietarios) ? proprietarios : []);
     } catch (error: any) {
       console.error('Erro ao carregar proprietários:', error);
     }
@@ -130,20 +141,20 @@ export default function ImoveisPage() {
   const openEditModal = (imovel: Imovel) => {
     setEditingImovel(imovel);
     setFormData({
-      titulo: imovel.titulo,
+      titulo: imovel.titulo || '',
       descricao: imovel.descricao || '',
-      tipo: imovel.tipo,
-      endereco: imovel.endereco,
-      cidade: imovel.cidade,
-      estado: imovel.estado,
-      cep: imovel.cep,
-      valor: imovel.valor.toString(),
-      area: imovel.area?.toString() || '',
-      quartos: imovel.quartos?.toString() || '',
-      banheiros: imovel.banheiros?.toString() || '',
-      vagas: imovel.vagas?.toString() || '',
-      status: imovel.status,
-      proprietario_id: imovel.proprietario_id,
+      tipo: imovel.tipo || 'APARTAMENTO',
+      endereco: `${imovel.endereco?.logradouro || ''}, ${imovel.endereco?.numero || ''}`,
+      cidade: imovel.endereco?.cidade || '',
+      estado: imovel.endereco?.estado || '',
+      cep: imovel.endereco?.cep || '',
+      valor: (imovel.valor || imovel.preco)?.toString() || '0',
+      area: imovel.caracteristicas?.area_total?.toString() || '',
+      quartos: imovel.caracteristicas?.quartos?.toString() || '',
+      banheiros: imovel.caracteristicas?.banheiros?.toString() || '',
+      vagas: imovel.caracteristicas?.vagas_garagem?.toString() || '',
+      status: imovel.status || 'DISPONIVEL',
+      proprietario_id: imovel.proprietario_id || '',
       fotos: imovel.fotos?.join('\n') || '',
     });
     setModalOpen(true);
@@ -154,15 +165,37 @@ export default function ImoveisPage() {
     setSubmitting(true);
 
     try {
-      const payload = {
-        ...formData,
+      // Extrai logradouro e número do campo endereco
+      const enderecoMatch = formData.endereco.match(/^(.*?),\s*(.*)$/);
+      const logradouro = enderecoMatch ? enderecoMatch[1].trim() : formData.endereco;
+      const numero = enderecoMatch ? enderecoMatch[2].trim() : '';
+
+      const payload: any = {
+        titulo: formData.titulo,
+        descricao: formData.descricao,
+        tipo: formData.tipo,
+        endereco: {
+          logradouro,
+          numero,
+          cidade: formData.cidade,
+          estado: formData.estado,
+          cep: formData.cep,
+        },
         valor: parseFloat(formData.valor),
-        area: formData.area ? parseFloat(formData.area) : undefined,
-        quartos: formData.quartos ? parseInt(formData.quartos) : undefined,
-        banheiros: formData.banheiros ? parseInt(formData.banheiros) : undefined,
-        vagas: formData.vagas ? parseInt(formData.vagas) : undefined,
-        fotos: formData.fotos ? formData.fotos.split('\n').filter(url => url.trim()) : [],
+        status: formData.status,
+        proprietario_id: formData.proprietario_id,
+        caracteristicas: {
+          area_total: formData.area ? parseFloat(formData.area) : undefined,
+          quartos: formData.quartos ? parseInt(formData.quartos) : undefined,
+          banheiros: formData.banheiros ? parseInt(formData.banheiros) : undefined,
+          vagas_garagem: formData.vagas ? parseInt(formData.vagas) : undefined,
+        },
       };
+
+      // Apenas incluir fotos quando estamos criando um novo imóvel
+      if (!editingImovel) {
+        payload.fotos = formData.fotos ? formData.fotos.split('\n').filter(url => url.trim()) : [];
+      }
 
       if (editingImovel) {
         await api.put(`/imoveis/${editingImovel.id}`, payload);
@@ -174,6 +207,7 @@ export default function ImoveisPage() {
       setModalOpen(false);
       loadImoveis();
     } catch (error: any) {
+      console.error('Erro ao salvar:', error);
       toast.error(error.response?.data?.error || 'Erro ao salvar imóvel');
     } finally {
       setSubmitting(false);
@@ -199,9 +233,9 @@ export default function ImoveisPage() {
 
   const filteredImoveis = imoveis.filter(
     (imovel) =>
-      imovel.titulo.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      imovel.endereco.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      imovel.cidade.toLowerCase().includes(searchTerm.toLowerCase())
+      imovel.titulo?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      imovel.endereco?.logradouro?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      imovel.endereco?.cidade?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   if (loading) {
@@ -285,27 +319,27 @@ export default function ImoveisPage() {
                   </h3>
                   <p className="text-xs font-semibold text-[#7FB344] uppercase tracking-wider bg-[#8FD14F]/20 px-2 py-1 rounded-md inline-block border border-[#8FD14F]/50">{imovel.tipo}</p>
                 </div>
-                <p className="text-sm text-[#8B7F76] mb-1 font-medium">📍 {imovel.endereco}</p>
-                <p className="text-xs text-[#8B7F76] mb-4">{imovel.cidade} - {imovel.estado}</p>
+                <p className="text-sm text-[#8B7F76] mb-1 font-medium">📍 {imovel.endereco?.logradouro}, {imovel.endereco?.numero}</p>
+                <p className="text-xs text-[#8B7F76] mb-4">{imovel.endereco?.cidade} - {imovel.endereco?.estado}</p>
 
                 <div className="flex flex-wrap gap-2 text-xs text-[#2C2C2C] mb-4">
-                  {imovel.area && (
-                    <span className="px-2 py-1 bg-[#A97E6F]/20 rounded-md font-bold border border-[#A97E6F]/50">📐 {imovel.area}m²</span>
+                  {imovel.caracteristicas?.area_total && (
+                    <span className="px-2 py-1 bg-[#A97E6F]/20 rounded-md font-bold border border-[#A97E6F]/50">📐 {imovel.caracteristicas.area_total}m²</span>
                   )}
-                  {imovel.quartos && (
-                    <span className="px-2 py-1 bg-[#A97E6F]/20 rounded-md font-bold border border-[#A97E6F]/50">🛏️ {imovel.quartos} quartos</span>
+                  {imovel.caracteristicas?.quartos && (
+                    <span className="px-2 py-1 bg-[#A97E6F]/20 rounded-md font-bold border border-[#A97E6F]/50">🛏️ {imovel.caracteristicas.quartos} quartos</span>
                   )}
-                  {imovel.banheiros && (
-                    <span className="px-2 py-1 bg-[#A97E6F]/20 rounded-md font-bold border border-[#A97E6F]/50">🚿 {imovel.banheiros} banheiros</span>
+                  {imovel.caracteristicas?.banheiros && (
+                    <span className="px-2 py-1 bg-[#A97E6F]/20 rounded-md font-bold border border-[#A97E6F]/50">🚿 {imovel.caracteristicas.banheiros} banheiros</span>
                   )}
-                  {imovel.vagas && (
-                    <span className="px-2 py-1 bg-[#A97E6F]/20 rounded-md font-bold border border-[#A97E6F]/50">🚗 {imovel.vagas} vagas</span>
+                  {imovel.caracteristicas?.vagas_garagem && (
+                    <span className="px-2 py-1 bg-[#A97E6F]/20 rounded-md font-bold border border-[#A97E6F]/50">🚗 {imovel.caracteristicas.vagas_garagem} vagas</span>
                   )}
                 </div>
 
                 <div className="mb-4">
                   <span className="text-2xl font-bold text-[#7FB344]">
-                    R$ {Number(imovel.valor).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                    R$ {Number(imovel.valor || imovel.preco || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
                   </span>
                 </div>
 
@@ -343,12 +377,12 @@ export default function ImoveisPage() {
         isOpen={modalOpen}
         onClose={() => setModalOpen(false)}
         title={editingImovel ? 'Editar Imóvel' : 'Novo Imóvel'}
-        size="xl"
+        size="2xl"
       >
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="grid grid-cols-2 gap-4">
             <div className="col-span-2">
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-bold text-[#2C2C2C] mb-2">
                 Título *
               </label>
               <input
@@ -361,7 +395,7 @@ export default function ImoveisPage() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-bold text-[#2C2C2C] mb-2">
                 Tipo *
               </label>
               <select
@@ -378,7 +412,7 @@ export default function ImoveisPage() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-bold text-[#2C2C2C] mb-2">
                 Status *
               </label>
               <select
@@ -393,7 +427,7 @@ export default function ImoveisPage() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-bold text-[#2C2C2C] mb-2">
                 Proprietário *
               </label>
               <select
@@ -412,7 +446,7 @@ export default function ImoveisPage() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-bold text-[#2C2C2C] mb-2">
                 Valor (R$) *
               </label>
               <input
@@ -427,7 +461,7 @@ export default function ImoveisPage() {
             </div>
 
             <div className="col-span-2">
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-bold text-[#2C2C2C] mb-2">
                 Endereço *
               </label>
               <input
@@ -440,7 +474,7 @@ export default function ImoveisPage() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-bold text-[#2C2C2C] mb-2">
                 Cidade *
               </label>
               <input
@@ -453,7 +487,7 @@ export default function ImoveisPage() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-bold text-[#2C2C2C] mb-2">
                 Estado *
               </label>
               <input
@@ -468,7 +502,7 @@ export default function ImoveisPage() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-bold text-[#2C2C2C] mb-2">
                 CEP *
               </label>
               <input
@@ -481,7 +515,7 @@ export default function ImoveisPage() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-bold text-[#2C2C2C] mb-2">
                 Área (m²)
               </label>
               <input
@@ -495,7 +529,7 @@ export default function ImoveisPage() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-bold text-[#2C2C2C] mb-2">
                 Quartos
               </label>
               <input
@@ -508,7 +542,7 @@ export default function ImoveisPage() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-bold text-[#2C2C2C] mb-2">
                 Banheiros
               </label>
               <input
@@ -521,7 +555,7 @@ export default function ImoveisPage() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-bold text-[#2C2C2C] mb-2">
                 Vagas de Garagem
               </label>
               <input
@@ -534,7 +568,7 @@ export default function ImoveisPage() {
             </div>
 
             <div className="col-span-2">
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-bold text-[#2C2C2C] mb-2">
                 Descrição
               </label>
               <textarea
@@ -546,34 +580,69 @@ export default function ImoveisPage() {
             </div>
 
             <div className="col-span-2">
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                URLs das Fotos (uma por linha)
-              </label>
-              <textarea
-                rows={4}
-                value={formData.fotos}
-                onChange={(e) => setFormData({ ...formData, fotos: e.target.value })}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                placeholder="https://exemplo.com/foto1.jpg&#10;https://exemplo.com/foto2.jpg"
-              />
-              <p className="text-xs text-gray-500 mt-1">
-                Cole URLs de imagens, uma por linha. Upload de arquivos será implementado futuramente.
-              </p>
+              {editingImovel ? (
+                <ImageUpload
+                  imovelId={editingImovel.id}
+                  fotos={editingImovel.fotos || []}
+                  onUploadSuccess={(novaFoto) => {
+                    setEditingImovel({
+                      ...editingImovel,
+                      fotos: [...(editingImovel.fotos || []), novaFoto]
+                    });
+                    toast.success('Foto enviada com sucesso!');
+                    loadImoveis(); // Recarrega a lista após upload
+                  }}
+                  onDeleteSuccess={(index) => {
+                    const novasFotos = [...(editingImovel.fotos || [])];
+                    novasFotos.splice(index, 1);
+                    setEditingImovel({
+                      ...editingImovel,
+                      fotos: novasFotos
+                    });
+                    toast.success('Foto removida com sucesso!');
+                    loadImoveis(); // Recarrega a lista após deletar
+                  }}
+                  onReorderSuccess={(newOrder) => {
+                    setEditingImovel({
+                      ...editingImovel,
+                      fotos: newOrder
+                    });
+                    toast.success('Fotos reordenadas com sucesso!');
+                    loadImoveis(); // Recarrega a lista após reordenar
+                  }}
+                />
+              ) : (
+                <div>
+                  <label className="block text-sm font-bold text-[#2C2C2C] mb-2">
+                    URLs das Fotos (uma por linha)
+                  </label>
+                  <textarea
+                    rows={4}
+                    value={formData.fotos}
+                    onChange={(e) => setFormData({ ...formData, fotos: e.target.value })}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    placeholder="https://exemplo.com/foto1.jpg&#10;https://exemplo.com/foto2.jpg"
+                  />
+                  <p className="text-xs text-gray-500 mt-1">
+                    Adicione o imóvel primeiro para fazer upload de fotos. Ou cole URLs de imagens externas.
+                  </p>
+                </div>
+              )}
             </div>
           </div>
 
-          <div className="flex justify-end gap-3 pt-4 border-t">
+          <div className="flex justify-end gap-3 pt-6 border-t border-[rgba(169,126,111,0.2)] mt-6">
             <button
               type="button"
               onClick={() => setModalOpen(false)}
-              className="px-4 py-2 text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50"
+              className="px-6 py-2.5 text-[#A97E6F] border-2 border-[#A97E6F] rounded-lg hover:bg-[#A97E6F] hover:text-white font-bold transition-all"
             >
               Cancelar
             </button>
             <button
               type="submit"
               disabled={submitting}
-              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
+              className="px-6 py-2.5 bg-gradient-to-r from-[#8FD14F] to-[#006D77] text-white rounded-lg hover:shadow-lg font-bold transition-all disabled:opacity-50"
             >
               {submitting ? 'Salvando...' : 'Salvar'}
             </button>
@@ -589,22 +658,22 @@ export default function ImoveisPage() {
         size="sm"
       >
         <div className="space-y-4">
-          <p className="text-gray-700">
-            Tem certeza que deseja excluir o imóvel <strong>{deletingImovel?.titulo}</strong>?
+          <p className="text-[#2C2C2C] text-base">
+            Tem certeza que deseja excluir o imóvel <strong className="text-[#A97E6F]">{deletingImovel?.titulo}</strong>?
           </p>
-          <p className="text-sm text-gray-500">Esta ação não pode ser desfeita.</p>
+          <p className="text-sm text-[#8B7F76]">Esta ação não pode ser desfeita.</p>
 
-          <div className="flex justify-end gap-3 pt-4 border-t">
+          <div className="flex justify-end gap-3 pt-6 border-t border-[rgba(169,126,111,0.2)] mt-6">
             <button
               onClick={() => setDeleteModalOpen(false)}
-              className="px-4 py-2 text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50"
+              className="px-6 py-2.5 text-[#A97E6F] border-2 border-[#A97E6F] rounded-lg hover:bg-[#A97E6F] hover:text-white font-bold transition-all"
             >
               Cancelar
             </button>
             <button
               onClick={handleDelete}
               disabled={submitting}
-              className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 disabled:opacity-50"
+              className="px-6 py-2.5 bg-[#FF6B6B] text-white rounded-lg hover:bg-[#FF006E] font-bold transition-all disabled:opacity-50"
             >
               {submitting ? 'Excluindo...' : 'Excluir'}
             </button>

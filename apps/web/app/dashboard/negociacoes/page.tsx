@@ -14,6 +14,7 @@ interface Negociacao {
   status: 'PROPOSTA' | 'EM_ANDAMENTO' | 'FECHADA' | 'CANCELADA';
   valor_proposta: number;
   valor_final?: number;
+  percentual_comissao: number;
   data_inicio: string;
   data_conclusao?: string;
   observacoes?: string;
@@ -35,6 +36,7 @@ interface NegociacaoForm {
   status: string;
   valor_proposta: string;
   valor_final: string;
+  percentual_comissao: string;
   data_inicio: string;
   data_conclusao: string;
   observacoes: string;
@@ -75,6 +77,7 @@ export default function NegociacoesPage() {
     status: 'PROPOSTA',
     valor_proposta: '',
     valor_final: '',
+    percentual_comissao: '5',
     data_inicio: new Date().toISOString().split('T')[0],
     data_conclusao: '',
     observacoes: '',
@@ -142,6 +145,7 @@ export default function NegociacoesPage() {
       status: 'PROPOSTA',
       valor_proposta: '',
       valor_final: '',
+      percentual_comissao: '5',
       data_inicio: new Date().toISOString().split('T')[0],
       data_conclusao: '',
       observacoes: '',
@@ -158,6 +162,7 @@ export default function NegociacoesPage() {
       status: negociacao.status,
       valor_proposta: negociacao.valor_proposta.toString(),
       valor_final: negociacao.valor_final?.toString() || '',
+      percentual_comissao: negociacao.percentual_comissao?.toString() || '5',
       data_inicio: negociacao.data_inicio.split('T')[0],
       data_conclusao: negociacao.data_conclusao ? negociacao.data_conclusao.split('T')[0] : '',
       observacoes: negociacao.observacoes || '',
@@ -174,6 +179,7 @@ export default function NegociacoesPage() {
         ...formData,
         valor_proposta: parseFloat(formData.valor_proposta),
         valor_final: formData.valor_final ? parseFloat(formData.valor_final) : undefined,
+        percentual_comissao: parseFloat(formData.percentual_comissao),
         data_conclusao: formData.data_conclusao || undefined,
         corretor_id: formData.corretor_id || undefined,
       };
@@ -448,6 +454,23 @@ export default function NegociacoesPage() {
                 value={formData.valor_final}
                 onChange={(e) => setFormData({ ...formData, valor_final: e.target.value })}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-bold text-[#2C2C2C] mb-2">
+                % Comissão *
+              </label>
+              <input
+                type="number"
+                required
+                step="0.1"
+                min="0"
+                max="100"
+                value={formData.percentual_comissao}
+                onChange={(e) => setFormData({ ...formData, percentual_comissao: e.target.value })}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                placeholder="5.0"
               />
             </div>
 

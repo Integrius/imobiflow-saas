@@ -48,4 +48,9 @@ export async function imoveisRoutes(server: FastifyInstance) {
   server.delete('/:id/fotos/:fotoIndex', async (request, reply) => {
     return controller.deleteFoto(request, reply)
   })
+
+  // Reordenar fotos
+  server.put('/:id/reorder-fotos', async (request, reply) => {
+    return controller.reorderFotos(request, reply)
+  })
 }

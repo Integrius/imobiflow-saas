@@ -77,7 +77,7 @@ export const createImovelSchema = z.object({
 })
 
 // Schema para atualizar Imóvel
-export const updateImovelSchema = createImovelSchema.partial()
+export const updateImovelSchema = createImovelSchema.partial().omit({ fotos: true })
 
 // Schema para filtros de busca (aceita strings de query)
 export const filterImoveisSchema = z.object({

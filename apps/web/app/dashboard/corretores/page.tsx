@@ -259,7 +259,7 @@ export default function CorretoresPage() {
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="grid grid-cols-2 gap-4">
             <div className="col-span-2">
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-bold text-[#2C2C2C] mb-2">
                 Nome *
               </label>
               <input
@@ -272,7 +272,7 @@ export default function CorretoresPage() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-bold text-[#2C2C2C] mb-2">
                 Email *
               </label>
               <input
@@ -285,7 +285,7 @@ export default function CorretoresPage() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-bold text-[#2C2C2C] mb-2">
                 Telefone *
               </label>
               <input
@@ -298,7 +298,7 @@ export default function CorretoresPage() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-bold text-[#2C2C2C] mb-2">
                 CRECI *
               </label>
               <input
@@ -311,7 +311,7 @@ export default function CorretoresPage() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-bold text-[#2C2C2C] mb-2">
                 Comissão (%)
               </label>
               <input
@@ -326,7 +326,7 @@ export default function CorretoresPage() {
             </div>
 
             <div className="col-span-2">
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-bold text-[#2C2C2C] mb-2">
                 Especialidade
               </label>
               <input
@@ -339,18 +339,18 @@ export default function CorretoresPage() {
             </div>
           </div>
 
-          <div className="flex justify-end gap-3 pt-4 border-t">
+          <div className="flex justify-end gap-3 pt-6 border-t border-[rgba(169,126,111,0.2)] mt-6">
             <button
               type="button"
               onClick={() => setModalOpen(false)}
-              className="px-4 py-2 text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50"
+              className="px-6 py-2.5 text-[#A97E6F] border-2 border-[#A97E6F] rounded-lg hover:bg-[#A97E6F] hover:text-white font-bold transition-all"
             >
               Cancelar
             </button>
             <button
               type="submit"
               disabled={submitting}
-              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
+              className="px-6 py-2.5 bg-gradient-to-r from-[#8FD14F] to-[#006D77] text-white rounded-lg hover:shadow-lg font-bold transition-all disabled:opacity-50"
             >
               {submitting ? 'Salvando...' : 'Salvar'}
             </button>
@@ -366,22 +366,22 @@ export default function CorretoresPage() {
         size="sm"
       >
         <div className="space-y-4">
-          <p className="text-gray-700">
-            Tem certeza que deseja excluir o corretor <strong>{deletingCorretor?.nome}</strong>?
+          <p className="text-[#2C2C2C] text-base">
+            Tem certeza que deseja excluir o corretor <strong className="text-[#A97E6F]">{deletingCorretor?.nome}</strong>?
           </p>
-          <p className="text-sm text-gray-500">Esta ação não pode ser desfeita.</p>
+          <p className="text-sm text-[#8B7F76]">Esta ação não pode ser desfeita.</p>
 
-          <div className="flex justify-end gap-3 pt-4 border-t">
+          <div className="flex justify-end gap-3 pt-6 border-t border-[rgba(169,126,111,0.2)] mt-6">
             <button
               onClick={() => setDeleteModalOpen(false)}
-              className="px-4 py-2 text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50"
+              className="px-6 py-2.5 text-[#A97E6F] border-2 border-[#A97E6F] rounded-lg hover:bg-[#A97E6F] hover:text-white font-bold transition-all"
             >
               Cancelar
             </button>
             <button
               onClick={handleDelete}
               disabled={submitting}
-              className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 disabled:opacity-50"
+              className="px-6 py-2.5 bg-[#FF6B6B] text-white rounded-lg hover:bg-[#FF006E] font-bold transition-all disabled:opacity-50"
             >
               {submitting ? 'Excluindo...' : 'Excluir'}
             </button>

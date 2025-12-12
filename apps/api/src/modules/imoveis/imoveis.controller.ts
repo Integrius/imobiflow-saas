@@ -43,7 +43,9 @@ export class ImoveisController {
     const tenantId = (request as any).tenantId || 'default-tenant-id'
     const { id } = request.params as { id: string }
     const data = updateImovelSchema.parse(request.body)
+    console.log('=== UPDATE PAYLOAD ===', JSON.stringify(data, null, 2))
     const imovel = await this.imoveisService.update(id, data, tenantId)
+    console.log('=== IMOVEL AFTER UPDATE ===', JSON.stringify({ id: imovel.id, fotos: imovel.fotos }, null, 2))
     return reply.send(imovel)
   }
 
@@ -148,6 +150,43 @@ export class ImoveisController {
     } catch (error: any) {
       console.error('Erro ao excluir foto:', error)
       return reply.status(500).send({ error: 'Erro ao excluir foto' })
+    }
+  }
+
+  async reorderFotos(request: FastifyRequest, reply: FastifyReply) {
+    try {
+      const tenantId = (request as any).tenantId || 'default-tenant-id'
+      const { id } = request.params as { id: string }
+      const { fotos } = request.body as { fotos: string[] }
+
+      if (!fotos || !Array.isArray(fotos)) {
+        return reply.status(400).send({ error: 'Array de fotos inválido' })
+      }
+
+      // Busca o imóvel para validar
+      const imovel = await this.imoveisService.findById(id, tenantId)
+      if (!imovel) {
+        return reply.status(404).send({ error: 'Imóvel não encontrado' })
+      }
+
+      // Valida que todas as URLs no array existem no imóvel
+      const fotosOriginais = imovel.fotos || []
+      const todasFotosValidas = fotos.every(foto => fotosOriginais.includes(foto))
+
+      if (!todasFotosValidas || fotos.length !== fotosOriginais.length) {
+        return reply.status(400).send({ error: 'Array de fotos não corresponde ao imóvel' })
+      }
+
+      // Reordena as fotos
+      const updatedImovel = await this.imoveisService.reorderFotos(id, fotos, tenantId)
+
+      return reply.status(200).send({
+        message: 'Fotos reordenadas com sucesso',
+        imovel: updatedImovel
+      })
+    } catch (error: any) {
+      console.error('Erro ao reordenar fotos:', error)
+      return reply.status(500).send({ error: 'Erro ao reordenar fotos' })
     }
   }
 }

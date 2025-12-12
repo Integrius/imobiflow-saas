@@ -162,6 +162,13 @@ export class ImoveisRepository {
   }
 
   async update(id: string, data: UpdateImovelDTO, tenantId: string) {
+    // Buscar o imóvel antes do update para ver o estado das fotos
+    const imovelAntes = await this.prisma.imovel.findUnique({
+      where: { id },
+      select: { id: true, fotos: true }
+    })
+    console.log('=== FOTOS ANTES DO UPDATE ===', JSON.stringify(imovelAntes, null, 2))
+
     const updateData: any = {}
 
     if (data.codigo) updateData.codigo = data.codigo
@@ -174,9 +181,12 @@ export class ImoveisRepository {
     if (data.preco) updateData.preco = data.preco
     if (data.condominio !== undefined) updateData.condominio = data.condominio
     if (data.iptu !== undefined) updateData.iptu = data.iptu
-    if (data.fotos) updateData.fotos = data.fotos
+    // Fotos são gerenciadas exclusivamente pelos endpoints de upload/delete
+    // if (data.fotos) updateData.fotos = data.fotos
     if (data.documentos) updateData.documentos = data.documentos
     if (data.status) updateData.status = data.status
+
+    console.log('=== UPDATE DATA (PRISMA) ===', JSON.stringify(updateData, null, 2))
 
     return await this.prisma.imovel.update({
       where: { id },
@@ -192,6 +202,21 @@ export class ImoveisRepository {
       where: {
         id,
         tenant_id: tenantId
+      }
+    })
+  }
+
+  async updateFotos(id: string, fotos: string[], tenantId: string) {
+    return await this.prisma.imovel.update({
+      where: {
+        id,
+        tenant_id: tenantId
+      },
+      data: {
+        fotos
+      },
+      include: {
+        proprietario: true
       }
     })
   }

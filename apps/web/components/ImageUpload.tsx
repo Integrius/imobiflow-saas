@@ -8,16 +8,20 @@ interface ImageUploadProps {
   fotos: string[];
   onUploadSuccess: (novaFoto: string) => void;
   onDeleteSuccess: (index: number) => void;
+  onReorderSuccess: (newOrder: string[]) => void;
 }
 
 export default function ImageUpload({
   imovelId,
   fotos,
   onUploadSuccess,
-  onDeleteSuccess
+  onDeleteSuccess,
+  onReorderSuccess
 }: ImageUploadProps) {
   const [uploading, setUploading] = useState(false);
   const [dragActive, setDragActive] = useState(false);
+  const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
+  const [dragOverIndex, setDragOverIndex] = useState<number | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleDrag = (e: React.DragEvent) => {
@@ -69,7 +73,7 @@ export default function ImageUpload({
 
       const token = localStorage.getItem('token');
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/imoveis/${imovelId}/upload-foto`,
+        `${process.env.NEXT_PUBLIC_API_URL}/api/v1/imoveis/${imovelId}/upload-foto`,
         {
           method: 'POST',
           headers: {
@@ -105,7 +109,7 @@ export default function ImageUpload({
     try {
       const token = localStorage.getItem('token');
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/imoveis/${imovelId}/fotos/${index}`,
+        `${process.env.NEXT_PUBLIC_API_URL}/api/v1/imoveis/${imovelId}/fotos/${index}`,
         {
           method: 'DELETE',
           headers: {
@@ -124,6 +128,73 @@ export default function ImageUpload({
       console.error('Erro ao excluir foto:', error);
       alert(error.message || 'Erro ao excluir foto');
     }
+  };
+
+  const handlePhotoDragStart = (e: React.DragEvent, index: number) => {
+    setDraggedIndex(index);
+    e.dataTransfer.effectAllowed = 'move';
+  };
+
+  const handlePhotoDragOver = (e: React.DragEvent, index: number) => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+    setDragOverIndex(index);
+  };
+
+  const handlePhotoDragLeave = () => {
+    setDragOverIndex(null);
+  };
+
+  const handlePhotoDrop = async (e: React.DragEvent, dropIndex: number) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    if (draggedIndex === null || draggedIndex === dropIndex) {
+      setDraggedIndex(null);
+      setDragOverIndex(null);
+      return;
+    }
+
+    // Cria novo array com a ordem reordenada
+    const newOrder = [...fotos];
+    const [draggedItem] = newOrder.splice(draggedIndex, 1);
+    newOrder.splice(dropIndex, 0, draggedItem);
+
+    // Atualiza visualmente primeiro (otimista)
+    onReorderSuccess(newOrder);
+    setDraggedIndex(null);
+    setDragOverIndex(null);
+
+    // Salva no backend
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/v1/imoveis/${imovelId}/reorder-fotos`,
+        {
+          method: 'PUT',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ fotos: newOrder }),
+        }
+      );
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || 'Erro ao reordenar fotos');
+      }
+    } catch (error: any) {
+      console.error('Erro ao reordenar fotos:', error);
+      alert(error.message || 'Erro ao reordenar fotos');
+      // Reverte para a ordem original em caso de erro
+      onReorderSuccess(fotos);
+    }
+  };
+
+  const handlePhotoDragEnd = () => {
+    setDraggedIndex(null);
+    setDragOverIndex(null);
   };
 
   return (
@@ -186,32 +257,52 @@ export default function ImageUpload({
 
       {/* Gallery */}
       {fotos && fotos.length > 0 && (
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-          {fotos.map((foto, index) => (
-            <div
-              key={index}
-              className="relative group aspect-square rounded-lg overflow-hidden border-2 border-[rgba(169,126,111,0.2)] hover:border-[#8FD14F] transition-all"
-            >
-              <img
-                src={foto}
-                alt={`Foto ${index + 1}`}
-                className="w-full h-full object-cover"
-              />
-              <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-50 transition-all flex items-center justify-center">
-                <button
-                  onClick={() => handleDelete(index)}
-                  className="opacity-0 group-hover:opacity-100 transition-opacity bg-[#FF6B6B] hover:bg-[#FF006E] text-white px-4 py-2 rounded-lg font-bold"
-                >
-                  🗑️ Excluir
-                </button>
-              </div>
-              {index === 0 && (
-                <div className="absolute top-2 left-2 bg-[#8FD14F] text-white text-xs font-bold px-2 py-1 rounded">
-                  Principal
+        <div>
+          <p className="text-sm text-[#8B7F76] mb-3">
+            Arraste as fotos para reordenar. A primeira foto será a principal.
+          </p>
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+            {fotos.map((foto, index) => (
+              <div
+                key={`${foto}-${index}`}
+                draggable
+                onDragStart={(e) => handlePhotoDragStart(e, index)}
+                onDragOver={(e) => handlePhotoDragOver(e, index)}
+                onDragLeave={handlePhotoDragLeave}
+                onDrop={(e) => handlePhotoDrop(e, index)}
+                onDragEnd={handlePhotoDragEnd}
+                className={`relative group aspect-square rounded-lg overflow-hidden border-2 transition-all cursor-move ${
+                  draggedIndex === index
+                    ? 'opacity-50 border-[#8FD14F] scale-95'
+                    : dragOverIndex === index
+                    ? 'border-[#8FD14F] border-dashed scale-105'
+                    : 'border-[rgba(169,126,111,0.2)] hover:border-[#8FD14F]'
+                }`}
+              >
+                <img
+                  src={foto}
+                  alt={`Foto ${index + 1}`}
+                  className="w-full h-full object-cover pointer-events-none"
+                />
+                <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-50 transition-all flex items-center justify-center">
+                  <button
+                    onClick={() => handleDelete(index)}
+                    className="opacity-0 group-hover:opacity-100 transition-opacity bg-[#FF6B6B] hover:bg-[#FF006E] text-white px-4 py-2 rounded-lg font-bold z-10"
+                  >
+                    Excluir
+                  </button>
                 </div>
-              )}
-            </div>
-          ))}
+                {index === 0 && (
+                  <div className="absolute top-2 left-2 bg-[#8FD14F] text-white text-xs font-bold px-2 py-1 rounded shadow-lg">
+                    Principal
+                  </div>
+                )}
+                <div className="absolute top-2 right-2 bg-black/50 text-white text-xs font-bold px-2 py-1 rounded">
+                  #{index + 1}
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       )}
     </div>

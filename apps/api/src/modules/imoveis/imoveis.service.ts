@@ -139,7 +139,7 @@ export class ImoveisService {
     const fotos = imovel.fotos || []
     fotos.push(url)
 
-    return await this.imoveisRepository.update(id, { fotos }, tenantId)
+    return await this.imoveisRepository.updateFotos(id, fotos, tenantId)
   }
 
   async removeFoto(id: string, index: number, tenantId: string) {
@@ -147,6 +147,11 @@ export class ImoveisService {
     const fotos = imovel.fotos || []
     fotos.splice(index, 1)
 
-    return await this.imoveisRepository.update(id, { fotos }, tenantId)
+    return await this.imoveisRepository.updateFotos(id, fotos, tenantId)
+  }
+
+  async reorderFotos(id: string, fotos: string[], tenantId: string) {
+    await this.findById(id, tenantId)
+    return await this.imoveisRepository.updateFotos(id, fotos, tenantId)
   }
 }
