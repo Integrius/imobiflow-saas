@@ -53,7 +53,6 @@ export default function ProprietariosPage() {
     cpf_cnpj: '',
     tipo_pessoa: 'FISICA',
     endereco: '',
-    percentual_comissao: '0',
   });
 
   useEffect(() => {
