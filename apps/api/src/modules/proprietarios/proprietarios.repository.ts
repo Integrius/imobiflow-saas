@@ -16,7 +16,6 @@ export class ProprietariosRepository {
         telefone_secundario: data.contato.telefone_secundario,
         contato: data.contato,
         forma_pagamento: data.forma_pagamento,
-        percentual_comissao: data.percentual_comissao,
         banco: data.dados_bancarios || {},
       },
     })
@@ -117,7 +116,6 @@ export class ProprietariosRepository {
     if (data.cpf_cnpj) updateData.cpf_cnpj = data.cpf_cnpj
     if (data.tipo_pessoa) updateData.tipo_pessoa = data.tipo_pessoa
     if (data.forma_pagamento) updateData.forma_pagamento = data.forma_pagamento
-    if (data.percentual_comissao !== undefined) updateData.percentual_comissao = data.percentual_comissao
 
     if (data.contato) {
       updateData.email = data.contato.email
