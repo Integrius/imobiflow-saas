@@ -100,6 +100,17 @@ export class ImoveisRepository {
       },
       include: {
         proprietario: true,
+        corretor_responsavel: {
+          include: {
+            user: {
+              select: {
+                id: true,
+                nome: true,
+                email: true,
+              },
+            },
+          },
+        },
         negociacoes: {
           include: {
             lead: true,
@@ -217,6 +228,82 @@ export class ImoveisRepository {
       },
       include: {
         proprietario: true
+      }
+    })
+  }
+
+  async changeCorretor(id: string, corretorId: string, tenantId: string, userId: string) {
+    const imovel = await this.prisma.imovel.findFirst({
+      where: {
+        id,
+        tenant_id: tenantId
+      },
+      include: {
+        corretor_responsavel: {
+          include: {
+            user: {
+              select: {
+                nome: true
+              }
+            }
+          }
+        }
+      }
+    })
+
+    if (!imovel) {
+      throw new Error('Imóvel não encontrado')
+    }
+
+    const novoCorretor = await this.prisma.corretor.findFirst({
+      where: {
+        id: corretorId,
+        tenant_id: tenantId
+      },
+      include: {
+        user: {
+          select: {
+            nome: true
+          }
+        }
+      }
+    })
+
+    if (!novoCorretor) {
+      throw new Error('Corretor não encontrado')
+    }
+
+    const historicoEntry = {
+      data_troca: new Date().toISOString(),
+      corretor_anterior_id: imovel.corretor_responsavel_id,
+      corretor_anterior_nome: imovel.corretor_responsavel?.user.nome || null,
+      corretor_novo_id: corretorId,
+      corretor_novo_nome: novoCorretor.user.nome,
+      alterado_por: userId
+    }
+
+    const historicoAtual = (imovel.historico_corretores as any[]) || []
+    const novoHistorico = [...historicoAtual, historicoEntry]
+
+    return await this.prisma.imovel.update({
+      where: { id },
+      data: {
+        corretor_responsavel_id: corretorId,
+        historico_corretores: novoHistorico
+      },
+      include: {
+        proprietario: true,
+        corretor_responsavel: {
+          include: {
+            user: {
+              select: {
+                id: true,
+                nome: true,
+                email: true
+              }
+            }
+          }
+        }
       }
     })
   }

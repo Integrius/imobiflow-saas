@@ -27,6 +27,10 @@ export async function proprietariosRoutes(server: FastifyInstance) {
     return controller.getById(request, reply)
   })
 
+  server.get('/:id/imoveis', async (request, reply) => {
+    return controller.getImoveis(request, reply)
+  })
+
   server.put('/:id', async (request, reply) => {
     return controller.update(request, reply)
   })

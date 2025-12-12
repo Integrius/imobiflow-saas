@@ -1,9 +1,9 @@
 import { FastifyRequest, FastifyReply } from 'fastify'
 import { ProprietariosService } from './proprietarios.service'
-import { 
-  createProprietarioSchema, 
+import {
+  createProprietarioSchema,
   updateProprietarioSchema,
-  filterProprietariosSchema 
+  filterProprietariosSchema
 } from './proprietarios.schema'
 
 export class ProprietariosController {
@@ -56,5 +56,12 @@ export class ProprietariosController {
     const { id } = request.params as { id: string }
     await this.proprietariosService.delete(id, tenantId)
     return reply.status(204).send()
+  }
+
+  async getImoveis(request: FastifyRequest, reply: FastifyReply) {
+    const tenantId = (request as any).tenantId || 'default-tenant-id'
+    const { id } = request.params as { id: string }
+    const imoveis = await this.proprietariosService.getImoveis(id, tenantId)
+    return reply.send(imoveis)
   }
 }

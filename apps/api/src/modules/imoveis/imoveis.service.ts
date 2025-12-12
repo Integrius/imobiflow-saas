@@ -154,4 +154,9 @@ export class ImoveisService {
     await this.findById(id, tenantId)
     return await this.imoveisRepository.updateFotos(id, fotos, tenantId)
   }
+
+  async changeCorretor(id: string, corretorId: string, tenantId: string, userId: string) {
+    await this.findById(id, tenantId)
+    return await this.imoveisRepository.changeCorretor(id, corretorId, tenantId, userId)
+  }
 }

@@ -142,4 +142,37 @@ export class ProprietariosRepository {
       }
     })
   }
+
+  async getImoveis(id: string, tenantId: string) {
+    const imoveis = await this.prisma.imovel.findMany({
+      where: {
+        tenant_id: tenantId,
+        proprietario_id: id
+      },
+      select: {
+        id: true,
+        codigo: true,
+        titulo: true,
+        tipo: true,
+        status: true,
+        preco: true,
+        fotos: true,
+        endereco: true
+      },
+      orderBy: {
+        created_at: 'desc'
+      }
+    })
+
+    return imoveis.map(imovel => ({
+      id: imovel.id,
+      codigo: imovel.codigo,
+      titulo: imovel.titulo,
+      tipo: imovel.tipo,
+      status: imovel.status,
+      preco: Number(imovel.preco),
+      fotoPrincipal: imovel.fotos[0] || null,
+      endereco: imovel.endereco
+    }))
+  }
 }

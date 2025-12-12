@@ -53,4 +53,9 @@ export async function imoveisRoutes(server: FastifyInstance) {
   server.put('/:id/reorder-fotos', async (request, reply) => {
     return controller.reorderFotos(request, reply)
   })
+
+  // Trocar corretor responsável
+  server.put('/:id/corretor', async (request, reply) => {
+    return controller.changeCorretor(request, reply)
+  })
 }

@@ -189,4 +189,27 @@ export class ImoveisController {
       return reply.status(500).send({ error: 'Erro ao reordenar fotos' })
     }
   }
+
+  async changeCorretor(request: FastifyRequest, reply: FastifyReply) {
+    try {
+      const tenantId = (request as any).tenantId || 'default-tenant-id'
+      const userId = (request as any).userId || 'system'
+      const { id } = request.params as { id: string }
+      const { corretor_id } = request.body as { corretor_id: string }
+
+      if (!corretor_id) {
+        return reply.status(400).send({ error: 'corretor_id é obrigatório' })
+      }
+
+      const imovel = await this.imoveisService.changeCorretor(id, corretor_id, tenantId, userId)
+
+      return reply.status(200).send({
+        message: 'Corretor responsável alterado com sucesso',
+        imovel
+      })
+    } catch (error: any) {
+      console.error('Erro ao alterar corretor:', error)
+      return reply.status(500).send({ error: error.message || 'Erro ao alterar corretor' })
+    }
+  }
 }
