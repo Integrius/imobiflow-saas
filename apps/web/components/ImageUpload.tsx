@@ -27,6 +27,12 @@ export default function ImageUpload({
   const handleDrag = (e: React.DragEvent) => {
     e.preventDefault();
     e.stopPropagation();
+
+    // Não ativa a área de upload se estamos arrastando uma foto existente
+    if (draggedIndex !== null) {
+      return;
+    }
+
     if (e.type === 'dragenter' || e.type === 'dragover') {
       setDragActive(true);
     } else if (e.type === 'dragleave') {
@@ -39,7 +45,8 @@ export default function ImageUpload({
     e.stopPropagation();
     setDragActive(false);
 
-    if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+    // Verifica se é um arquivo sendo arrastado de fora (não uma foto existente)
+    if (e.dataTransfer.files && e.dataTransfer.files.length > 0 && draggedIndex === null) {
       await uploadFile(e.dataTransfer.files[0]);
     }
   };
