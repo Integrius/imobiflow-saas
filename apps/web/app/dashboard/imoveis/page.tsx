@@ -318,30 +318,31 @@ export default function ImoveisPage() {
 
   return (
     <div>
-      <div className="flex justify-between items-center mb-8">
+      <div className="flex justify-between items-center gap-4 mb-6">
         <div>
           <h2 className="text-4xl font-bold text-[#2C2C2C] tracking-tight">Imóveis</h2>
           <p className="text-sm text-[#8B7F76] mt-2 font-medium">
             <span className="text-[#7FB344] text-lg font-bold">{imoveis.length}</span> imóveis cadastrados
           </p>
         </div>
+
+        {/* Busca */}
+        <div className="flex-1 max-w-md">
+          <input
+            type="text"
+            placeholder="🔍 Buscar por título, endereço ou cidade..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="input-modern"
+          />
+        </div>
+
         <button
           onClick={openCreateModal}
-          className="btn-primary"
+          className="btn-primary whitespace-nowrap"
         >
           + Novo Imóvel
         </button>
-      </div>
-
-      {/* Busca */}
-      <div className="mb-6">
-        <input
-          type="text"
-          placeholder="🔍 Buscar por título, endereço ou cidade..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          className="input-modern"
-        />
       </div>
 
       {/* Grid de Cards */}
