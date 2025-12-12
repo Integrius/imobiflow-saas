@@ -69,6 +69,8 @@ export default function NegociacoesPage() {
   const [deletingNegociacao, setDeletingNegociacao] = useState<Negociacao | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
+  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
+  const [originalFormData, setOriginalFormData] = useState<any>(null);
 
   const [formData, setFormData] = useState<NegociacaoForm>({
     lead_id: '',
@@ -83,10 +85,50 @@ export default function NegociacoesPage() {
     observacoes: '',
   });
 
+  // Formata valor para exibição no padrão brasileiro
+  const formatCurrency = (value: string): string => {
+    if (!value) return '';
+    const numericValue = value.replace(/\D/g, '');
+    const number = parseFloat(numericValue) / 100;
+    return number.toLocaleString('pt-BR', {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    });
+  };
+
+  // Formata número do banco de dados para exibição
+  const formatNumberToCurrency = (value: number | string | null | undefined): string => {
+    if (!value) return '';
+    const numValue = typeof value === 'string' ? parseFloat(value) : value;
+    if (isNaN(numValue)) return '';
+    return numValue.toLocaleString('pt-BR', {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    });
+  };
+
+  // Remove formatação para salvar no banco
+  const parseCurrency = (value: string): string => {
+    if (!value) return '';
+    return value.replace(/\./g, '').replace(',', '.');
+  };
+
   useEffect(() => {
     loadAll();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  useEffect(() => {
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      if (hasUnsavedChanges && modalOpen) {
+        e.preventDefault();
+        e.returnValue = '';
+      }
+    };
+
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    return () => window.removeEventListener('beforeunload', handleBeforeUnload);
+  }, [hasUnsavedChanges, modalOpen]);
 
   const loadAll = async () => {
     await Promise.all([
@@ -100,7 +142,9 @@ export default function NegociacoesPage() {
   const loadNegociacoes = async () => {
     try {
       const response = await api.get('/negociacoes');
-      setNegociacoes(Array.isArray(response.data) ? response.data : []);
+      // API retorna { data: [...], meta: {...} }
+      const negociacoesData = response.data.data || response.data;
+      setNegociacoes(Array.isArray(negociacoesData) ? negociacoesData : []);
     } catch (error: any) {
       console.error('Erro ao carregar negociações:', error);
       toast.error('Erro ao carregar negociações');
@@ -112,7 +156,9 @@ export default function NegociacoesPage() {
   const loadLeads = async () => {
     try {
       const response = await api.get('/leads');
-      setLeads(Array.isArray(response.data) ? response.data : []);
+      // API retorna { data: [...], meta: {...} }
+      const leadsData = response.data.data || response.data;
+      setLeads(Array.isArray(leadsData) ? leadsData : []);
     } catch (error: any) {
       console.error('Erro ao carregar leads:', error);
     }
@@ -121,7 +167,9 @@ export default function NegociacoesPage() {
   const loadImoveis = async () => {
     try {
       const response = await api.get('/imoveis');
-      setImoveis(Array.isArray(response.data) ? response.data : []);
+      // API retorna { data: [...], meta: {...} }
+      const imoveisData = response.data.data || response.data;
+      setImoveis(Array.isArray(imoveisData) ? imoveisData : []);
     } catch (error: any) {
       console.error('Erro ao carregar imóveis:', error);
     }
@@ -133,6 +181,22 @@ export default function NegociacoesPage() {
       setCorretores(Array.isArray(response.data) ? response.data : []);
     } catch (error: any) {
       console.error('Erro ao carregar corretores:', error);
+    }
+  };
+
+  const handleFormChange = (field: string, value: any) => {
+    setFormData({ ...formData, [field]: value });
+    setHasUnsavedChanges(true);
+  };
+
+  const handleCloseModal = () => {
+    if (hasUnsavedChanges && editingNegociacao) {
+      if (window.confirm('Você tem alterações não salvas. Deseja realmente sair sem salvar?')) {
+        setModalOpen(false);
+        setHasUnsavedChanges(false);
+      }
+    } else {
+      setModalOpen(false);
     }
   };
 
@@ -150,23 +214,28 @@ export default function NegociacoesPage() {
       data_conclusao: '',
       observacoes: '',
     });
+    setOriginalFormData(null);
+    setHasUnsavedChanges(false);
     setModalOpen(true);
   };
 
   const openEditModal = (negociacao: Negociacao) => {
     setEditingNegociacao(negociacao);
-    setFormData({
+    const formDataToSet = {
       lead_id: negociacao.lead_id,
       imovel_id: negociacao.imovel_id,
       corretor_id: negociacao.corretor_id || '',
       status: negociacao.status,
-      valor_proposta: negociacao.valor_proposta.toString(),
-      valor_final: negociacao.valor_final?.toString() || '',
+      valor_proposta: formatNumberToCurrency(negociacao.valor_proposta),
+      valor_final: formatNumberToCurrency(negociacao.valor_final),
       percentual_comissao: negociacao.percentual_comissao?.toString() || '5',
-      data_inicio: negociacao.data_inicio.split('T')[0],
+      data_inicio: negociacao.data_inicio ? negociacao.data_inicio.split('T')[0] : new Date().toISOString().split('T')[0],
       data_conclusao: negociacao.data_conclusao ? negociacao.data_conclusao.split('T')[0] : '',
       observacoes: negociacao.observacoes || '',
-    });
+    };
+    setFormData(formDataToSet);
+    setOriginalFormData({ ...formDataToSet });
+    setHasUnsavedChanges(false);
     setModalOpen(true);
   };
 
@@ -177,8 +246,8 @@ export default function NegociacoesPage() {
     try {
       const payload = {
         ...formData,
-        valor_proposta: parseFloat(formData.valor_proposta),
-        valor_final: formData.valor_final ? parseFloat(formData.valor_final) : undefined,
+        valor_proposta: parseFloat(parseCurrency(formData.valor_proposta)),
+        valor_final: formData.valor_final ? parseFloat(parseCurrency(formData.valor_final)) : undefined,
         percentual_comissao: parseFloat(formData.percentual_comissao),
         data_conclusao: formData.data_conclusao || undefined,
         corretor_id: formData.corretor_id || undefined,
@@ -191,6 +260,7 @@ export default function NegociacoesPage() {
         await api.post('/negociacoes', payload);
         toast.success('Negociação cadastrada com sucesso!');
       }
+      setHasUnsavedChanges(false);
       setModalOpen(false);
       loadNegociacoes();
     } catch (error: any) {
@@ -328,7 +398,7 @@ export default function NegociacoesPage() {
                       onClick={() => openEditModal(negociacao)}
                       className="text-[#7FB344] hover:text-[#006D77] mr-4 font-bold hover:underline transition-all"
                     >
-                      ✏️ Editar
+                      👁️ Consultar
                     </button>
                     <button
                       onClick={() => {
@@ -350,8 +420,8 @@ export default function NegociacoesPage() {
       {/* Modal de Cadastro/Edição */}
       <Modal
         isOpen={modalOpen}
-        onClose={() => setModalOpen(false)}
-        title={editingNegociacao ? 'Editar Negociação' : 'Nova Negociação'}
+        onClose={handleCloseModal}
+        title={editingNegociacao ? 'Consultar Negociação' : 'Nova Negociação'}
         size="lg"
       >
         <form onSubmit={handleSubmit} className="space-y-4">
@@ -363,7 +433,7 @@ export default function NegociacoesPage() {
               <select
                 required
                 value={formData.lead_id}
-                onChange={(e) => setFormData({ ...formData, lead_id: e.target.value })}
+                onChange={(e) => handleFormChange('lead_id', e.target.value)}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               >
                 <option value="">Selecione...</option>
@@ -382,7 +452,7 @@ export default function NegociacoesPage() {
               <select
                 required
                 value={formData.imovel_id}
-                onChange={(e) => setFormData({ ...formData, imovel_id: e.target.value })}
+                onChange={(e) => handleFormChange('imovel_id', e.target.value)}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               >
                 <option value="">Selecione...</option>
@@ -400,7 +470,7 @@ export default function NegociacoesPage() {
               </label>
               <select
                 value={formData.corretor_id}
-                onChange={(e) => setFormData({ ...formData, corretor_id: e.target.value })}
+                onChange={(e) => handleFormChange('corretor_id', e.target.value)}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               >
                 <option value="">Nenhum</option>
@@ -418,7 +488,7 @@ export default function NegociacoesPage() {
               </label>
               <select
                 value={formData.status}
-                onChange={(e) => setFormData({ ...formData, status: e.target.value })}
+                onChange={(e) => handleFormChange('status', e.target.value)}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               >
                 <option value="PROPOSTA">Proposta</option>
@@ -429,31 +499,37 @@ export default function NegociacoesPage() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Valor da Proposta (R$) *
+              <label className="block text-sm font-bold text-[#2C2C2C] mb-1">
+                Valor da Proposta Inicial *
               </label>
+              <p className="text-xs text-[#8B7F76] mb-2">Valor oferecido pelo cliente</p>
               <input
-                type="number"
+                type="text"
                 required
-                step="0.01"
-                min="0"
                 value={formData.valor_proposta}
-                onChange={(e) => setFormData({ ...formData, valor_proposta: e.target.value })}
+                onChange={(e) => {
+                  const formatted = formatCurrency(e.target.value);
+                  handleFormChange('valor_proposta', formatted);
+                }}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                placeholder="0,00"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Valor Final (R$)
+              <label className="block text-sm font-bold text-[#2C2C2C] mb-1">
+                Valor Final Negociado
               </label>
+              <p className="text-xs text-[#8B7F76] mb-2">Valor acordado após negociação</p>
               <input
-                type="number"
-                step="0.01"
-                min="0"
+                type="text"
                 value={formData.valor_final}
-                onChange={(e) => setFormData({ ...formData, valor_final: e.target.value })}
+                onChange={(e) => {
+                  const formatted = formatCurrency(e.target.value);
+                  handleFormChange('valor_final', formatted);
+                }}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                placeholder="0,00"
               />
             </div>
 
@@ -468,7 +544,7 @@ export default function NegociacoesPage() {
                 min="0"
                 max="100"
                 value={formData.percentual_comissao}
-                onChange={(e) => setFormData({ ...formData, percentual_comissao: e.target.value })}
+                onChange={(e) => handleFormChange('percentual_comissao', e.target.value)}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 placeholder="5.0"
               />
@@ -482,7 +558,7 @@ export default function NegociacoesPage() {
                 type="date"
                 required
                 value={formData.data_inicio}
-                onChange={(e) => setFormData({ ...formData, data_inicio: e.target.value })}
+                onChange={(e) => handleFormChange('data_inicio', e.target.value)}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />
             </div>
@@ -494,7 +570,7 @@ export default function NegociacoesPage() {
               <input
                 type="date"
                 value={formData.data_conclusao}
-                onChange={(e) => setFormData({ ...formData, data_conclusao: e.target.value })}
+                onChange={(e) => handleFormChange('data_conclusao', e.target.value)}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />
             </div>
@@ -506,7 +582,7 @@ export default function NegociacoesPage() {
               <textarea
                 rows={3}
                 value={formData.observacoes}
-                onChange={(e) => setFormData({ ...formData, observacoes: e.target.value })}
+                onChange={(e) => handleFormChange('observacoes', e.target.value)}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />
             </div>
@@ -515,7 +591,7 @@ export default function NegociacoesPage() {
           <div className="flex justify-end gap-3 pt-4 border-t">
             <button
               type="button"
-              onClick={() => setModalOpen(false)}
+              onClick={handleCloseModal}
               className="px-4 py-2 text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50"
             >
               Cancelar
