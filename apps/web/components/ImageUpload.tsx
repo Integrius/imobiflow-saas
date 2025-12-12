@@ -28,8 +28,11 @@ export default function ImageUpload({
     e.preventDefault();
     e.stopPropagation();
 
+    // Verifica se é um arquivo sendo arrastado (contém "Files" no tipo)
+    const hasFiles = Array.from(e.dataTransfer.types).includes('Files');
+
     // Não ativa a área de upload se estamos arrastando uma foto existente
-    if (draggedIndex !== null) {
+    if (draggedIndex !== null || !hasFiles) {
       return;
     }
 
@@ -45,8 +48,13 @@ export default function ImageUpload({
     e.stopPropagation();
     setDragActive(false);
 
-    // Verifica se é um arquivo sendo arrastado de fora (não uma foto existente)
-    if (e.dataTransfer.files && e.dataTransfer.files.length > 0 && draggedIndex === null) {
+    // Se estamos arrastando uma foto existente, não faz upload
+    if (draggedIndex !== null) {
+      return;
+    }
+
+    // Upload de novo arquivo
+    if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
       await uploadFile(e.dataTransfer.files[0]);
     }
   };
