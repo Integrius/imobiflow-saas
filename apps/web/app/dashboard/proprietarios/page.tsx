@@ -49,6 +49,8 @@ export default function ProprietariosPage() {
   const [activeTab, setActiveTab] = useState<'dados' | 'imoveis'>('dados');
   const [proprietarioImoveis, setProprietarioImoveis] = useState<Imovel[]>([]);
   const [loadingImoveis, setLoadingImoveis] = useState(false);
+  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
+  const [originalFormData, setOriginalFormData] = useState<any>(null);
 
   const formatPhone = (phone: string) => {
     const cleaned = phone.replace(/\D/g, '');
@@ -73,6 +75,18 @@ export default function ProprietariosPage() {
     loadProprietarios();
   }, []);
 
+  useEffect(() => {
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      if (hasUnsavedChanges && modalOpen) {
+        e.preventDefault();
+        e.returnValue = '';
+      }
+    };
+
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    return () => window.removeEventListener('beforeunload', handleBeforeUnload);
+  }, [hasUnsavedChanges, modalOpen]);
+
   const loadProprietarios = async () => {
     try {
       const response = await api.get('/proprietarios');
@@ -87,6 +101,22 @@ export default function ProprietariosPage() {
     }
   };
 
+  const handleFormChange = (field: string, value: any) => {
+    setFormData({ ...formData, [field]: value });
+    setHasUnsavedChanges(true);
+  };
+
+  const handleCloseModal = () => {
+    if (hasUnsavedChanges && editingProprietario) {
+      if (window.confirm('Você tem alterações não salvas. Deseja realmente sair sem salvar?')) {
+        setModalOpen(false);
+        setHasUnsavedChanges(false);
+      }
+    } else {
+      setModalOpen(false);
+    }
+  };
+
   const openCreateModal = () => {
     setEditingProprietario(null);
     setFormData({
@@ -97,6 +127,8 @@ export default function ProprietariosPage() {
       tipo_pessoa: 'FISICA',
       endereco: '',
     });
+    setOriginalFormData(null);
+    setHasUnsavedChanges(false);
     setModalOpen(true);
   };
 
@@ -116,14 +148,17 @@ export default function ProprietariosPage() {
 
   const openEditModal = (proprietario: Proprietario) => {
     setEditingProprietario(proprietario);
-    setFormData({
+    const formDataToSet = {
       nome: proprietario.nome,
       email: proprietario.contato?.email || '',
       telefone: proprietario.contato?.telefone_principal || '',
       cpf_cnpj: proprietario.cpf_cnpj,
       tipo_pessoa: proprietario.tipo_pessoa,
       endereco: proprietario.endereco || '',
-    });
+    };
+    setFormData(formDataToSet);
+    setOriginalFormData({ ...formDataToSet });
+    setHasUnsavedChanges(false);
     setActiveTab('dados');
     setProprietarioImoveis([]);
     setModalOpen(true);
@@ -153,6 +188,7 @@ export default function ProprietariosPage() {
         await api.post('/proprietarios', payload);
         toast.success('Proprietário cadastrado com sucesso!');
       }
+      setHasUnsavedChanges(false);
       setModalOpen(false);
       loadProprietarios();
     } catch (error: any) {
@@ -324,7 +360,7 @@ export default function ProprietariosPage() {
       {/* Modal de Cadastro/Edição */}
       <Modal
         isOpen={modalOpen}
-        onClose={() => setModalOpen(false)}
+        onClose={handleCloseModal}
         title={editingProprietario ? 'Consultar Proprietário' : 'Novo Proprietário'}
         size="lg"
       >
@@ -368,7 +404,7 @@ export default function ProprietariosPage() {
                 type="text"
                 required
                 value={formData.nome}
-                onChange={(e) => setFormData({ ...formData, nome: e.target.value })}
+                onChange={(e) => handleFormChange('nome', e.target.value)}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />
             </div>
@@ -379,7 +415,7 @@ export default function ProprietariosPage() {
               </label>
               <select
                 value={formData.tipo_pessoa}
-                onChange={(e) => setFormData({ ...formData, tipo_pessoa: e.target.value })}
+                onChange={(e) => handleFormChange('tipo_pessoa', e.target.value)}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               >
                 <option value="FISICA">Pessoa Física</option>
@@ -395,7 +431,7 @@ export default function ProprietariosPage() {
                 type="text"
                 required
                 value={formData.cpf_cnpj}
-                onChange={(e) => setFormData({ ...formData, cpf_cnpj: e.target.value })}
+                onChange={(e) => handleFormChange('cpf_cnpj', e.target.value)}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 placeholder={formData.tipo_pessoa === 'FISICA' ? '000.000.000-00' : '00.000.000/0000-00'}
               />
@@ -409,7 +445,7 @@ export default function ProprietariosPage() {
                 type="email"
                 required
                 value={formData.email}
-                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                onChange={(e) => handleFormChange('email', e.target.value)}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />
             </div>
@@ -422,7 +458,7 @@ export default function ProprietariosPage() {
                 type="tel"
                 required
                 value={formData.telefone}
-                onChange={(e) => setFormData({ ...formData, telefone: e.target.value })}
+                onChange={(e) => handleFormChange('telefone', e.target.value)}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 placeholder="(11) 99999-9999"
               />
@@ -435,7 +471,7 @@ export default function ProprietariosPage() {
               <input
                 type="text"
                 value={formData.endereco}
-                onChange={(e) => setFormData({ ...formData, endereco: e.target.value })}
+                onChange={(e) => handleFormChange('endereco', e.target.value)}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />
             </div>
@@ -444,7 +480,7 @@ export default function ProprietariosPage() {
           <div className="flex justify-end gap-3 pt-6 border-t border-[rgba(169,126,111,0.2)] mt-6">
             <button
               type="button"
-              onClick={() => setModalOpen(false)}
+              onClick={handleCloseModal}
               className="px-6 py-2.5 text-[#A97E6F] border-2 border-[#A97E6F] rounded-lg hover:bg-[#A97E6F] hover:text-white font-bold transition-all"
             >
               Cancelar

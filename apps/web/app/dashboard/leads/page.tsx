@@ -40,6 +40,8 @@ export default function LeadsPage() {
   const [deletingLead, setDeletingLead] = useState<Lead | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
+  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
+  const [originalFormData, setOriginalFormData] = useState<any>(null);
 
   const formatPhone = (phone: string) => {
     const cleaned = phone.replace(/\D/g, '');
@@ -70,6 +72,18 @@ export default function LeadsPage() {
     loadLeads();
   }, []);
 
+  useEffect(() => {
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      if (hasUnsavedChanges && modalOpen) {
+        e.preventDefault();
+        e.returnValue = '';
+      }
+    };
+
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    return () => window.removeEventListener('beforeunload', handleBeforeUnload);
+  }, [hasUnsavedChanges, modalOpen]);
+
   const loadLeads = async () => {
     try {
       const response = await api.get('/leads');
@@ -79,6 +93,30 @@ export default function LeadsPage() {
       toast.error('Erro ao carregar leads');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleFormChange = (field: string, value: any) => {
+    if (field.includes('.')) {
+      const [parent, child] = field.split('.');
+      setFormData({
+        ...formData,
+        [parent]: { ...(formData as any)[parent], [child]: value }
+      });
+    } else {
+      setFormData({ ...formData, [field]: value });
+    }
+    setHasUnsavedChanges(true);
+  };
+
+  const handleCloseModal = () => {
+    if (hasUnsavedChanges && editingLead) {
+      if (window.confirm('Você tem alterações não salvas. Deseja realmente sair sem salvar?')) {
+        setModalOpen(false);
+        setHasUnsavedChanges(false);
+      }
+    } else {
+      setModalOpen(false);
     }
   };
 
@@ -98,13 +136,15 @@ export default function LeadsPage() {
       },
       observacoes: '',
     });
+    setOriginalFormData(null);
+    setHasUnsavedChanges(false);
     setModalOpen(true);
   };
 
   const openEditModal = (lead: Lead) => {
     setEditingLead(lead);
     const interesseData = typeof lead.interesse === 'string' ? JSON.parse(lead.interesse) : (lead.interesse || {});
-    setFormData({
+    const formDataToSet = {
       nome: lead.nome,
       email: lead.email,
       telefone: lead.telefone,
@@ -117,7 +157,10 @@ export default function LeadsPage() {
         forma_pagamento: interesseData.forma_pagamento || [],
       },
       observacoes: lead.observacoes || '',
-    });
+    };
+    setFormData(formDataToSet);
+    setOriginalFormData({ ...formDataToSet });
+    setHasUnsavedChanges(false);
     setModalOpen(true);
   };
 
@@ -133,6 +176,7 @@ export default function LeadsPage() {
         await api.post('/leads', formData);
         toast.success('Lead cadastrado com sucesso!');
       }
+      setHasUnsavedChanges(false);
       setModalOpen(false);
       loadLeads();
     } catch (error: any) {
@@ -248,7 +292,7 @@ export default function LeadsPage() {
                       onClick={() => openEditModal(lead)}
                       className="text-[#7FB344] hover:text-[#006D77] mr-4 font-bold hover:underline transition-all"
                     >
-                      ✏️ Editar
+                      👁️ Consultar
                     </button>
                     <button
                       onClick={() => {
@@ -270,8 +314,8 @@ export default function LeadsPage() {
       {/* Modal de Cadastro/Edição */}
       <Modal
         isOpen={modalOpen}
-        onClose={() => setModalOpen(false)}
-        title={editingLead ? 'Editar Lead' : 'Novo Lead'}
+        onClose={handleCloseModal}
+        title={editingLead ? 'Consultar Lead' : 'Novo Lead'}
         size="lg"
       >
         <form onSubmit={handleSubmit} className="space-y-6">
@@ -280,44 +324,44 @@ export default function LeadsPage() {
             <h4 className="text-md font-bold text-[#2C2C2C] border-b border-[rgba(169,126,111,0.2)] pb-2">Dados Básicos</h4>
             <div className="grid grid-cols-2 gap-4">
               <div className="col-span-2">
-                <label className="block text-sm font-medium text-[#2C2C2C] mb-1">Nome *</label>
+                <label className="block text-sm font-bold text-[#2C2C2C] mb-2">Nome *</label>
                 <input
                   type="text"
                   required
                   value={formData.nome}
-                  onChange={(e) => setFormData({ ...formData, nome: e.target.value })}
-                  className="input-modern"
+                  onChange={(e) => handleFormChange('nome', e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-[#2C2C2C] mb-1">Email *</label>
+                <label className="block text-sm font-bold text-[#2C2C2C] mb-2">Email *</label>
                 <input
                   type="email"
                   required
                   value={formData.email}
-                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                  className="input-modern"
+                  onChange={(e) => handleFormChange('email', e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-[#2C2C2C] mb-1">Telefone *</label>
+                <label className="block text-sm font-bold text-[#2C2C2C] mb-2">Telefone *</label>
                 <input
                   type="tel"
                   required
                   value={formData.telefone}
-                  onChange={(e) => setFormData({ ...formData, telefone: e.target.value })}
-                  className="input-modern"
+                  onChange={(e) => handleFormChange('telefone', e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-[#2C2C2C] mb-1">Status</label>
+                <label className="block text-sm font-bold text-[#2C2C2C] mb-2">Status</label>
                 <select
                   value={formData.status}
-                  onChange={(e) => setFormData({ ...formData, status: e.target.value })}
-                  className="input-modern"
+                  onChange={(e) => handleFormChange('status', e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 >
                   <option value="FRIO">Frio</option>
                   <option value="MORNO">Morno</option>
@@ -326,11 +370,11 @@ export default function LeadsPage() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-[#2C2C2C] mb-1">Origem</label>
+                <label className="block text-sm font-bold text-[#2C2C2C] mb-2">Origem</label>
                 <select
                   value={formData.origem}
-                  onChange={(e) => setFormData({ ...formData, origem: e.target.value })}
-                  className="input-modern"
+                  onChange={(e) => handleFormChange('origem', e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 >
                   <option value="SITE">Site</option>
                   <option value="INDICACAO">Indicação</option>
@@ -347,7 +391,7 @@ export default function LeadsPage() {
             <h4 className="text-md font-bold text-[#2C2C2C] border-b border-[rgba(169,126,111,0.2)] pb-2">Perfil do Cliente</h4>
             <div className="grid grid-cols-2 gap-4">
               <div className="col-span-2">
-                <label className="block text-sm font-medium text-[#2C2C2C] mb-2">O cliente é: *</label>
+                <label className="block text-sm font-bold text-[#2C2C2C] mb-2">O cliente é: *</label>
                 <div className="grid grid-cols-2 gap-3">
                   <label className={`flex items-center p-3 border-2 rounded-lg cursor-pointer transition-all ${
                     formData.perfil === 'PROPRIETARIO'
@@ -359,7 +403,7 @@ export default function LeadsPage() {
                       name="perfil"
                       value="PROPRIETARIO"
                       checked={formData.perfil === 'PROPRIETARIO'}
-                      onChange={(e) => setFormData({ ...formData, perfil: e.target.value as any })}
+                      onChange={(e) => handleFormChange('perfil', e.target.value as any)}
                       className="mr-2"
                     />
                     <span className="font-medium">🏠 Proprietário (quer vender/alugar)</span>
@@ -374,7 +418,7 @@ export default function LeadsPage() {
                       name="perfil"
                       value="INTERESSADO"
                       checked={formData.perfil === 'INTERESSADO'}
-                      onChange={(e) => setFormData({ ...formData, perfil: e.target.value as any })}
+                      onChange={(e) => handleFormChange('perfil', e.target.value as any)}
                       className="mr-2"
                     />
                     <span className="font-medium">👤 Interessado (quer comprar/alugar)</span>
@@ -383,34 +427,34 @@ export default function LeadsPage() {
               </div>
 
               <div className="col-span-2">
-                <label className="block text-sm font-medium text-slate-300 mb-2">Finalidade: *</label>
+                <label className="block text-sm font-bold text-[#2C2C2C] mb-2">Finalidade: *</label>
                 <div className="grid grid-cols-2 gap-3">
                   <label className={`flex items-center p-3 border-2 rounded-lg cursor-pointer transition-all ${
                     formData.interesse.finalidade === 'VENDA'
-                      ? 'bg-emerald-900/40 border-emerald-500 text-emerald-200'
-                      : 'bg-slate-700 border-slate-600 text-slate-300 hover:border-slate-500'
+                      ? 'bg-[#DFF9C7] border-[#8FD14F] text-[#2C2C2C]'
+                      : 'bg-white border-[rgba(169,126,111,0.2)] text-[#2C2C2C] hover:border-[#8FD14F]/50'
                   }`}>
                     <input
                       type="radio"
                       name="finalidade"
                       value="VENDA"
                       checked={formData.interesse.finalidade === 'VENDA'}
-                      onChange={(e) => setFormData({ ...formData, interesse: { ...formData.interesse, finalidade: e.target.value as any } })}
+                      onChange={(e) => handleFormChange('interesse.finalidade', e.target.value as any)}
                       className="mr-2"
                     />
                     <span className="font-medium">💰 {formData.perfil === 'PROPRIETARIO' ? 'Vender' : 'Comprar'}</span>
                   </label>
                   <label className={`flex items-center p-3 border-2 rounded-lg cursor-pointer transition-all ${
                     formData.interesse.finalidade === 'LOCACAO'
-                      ? 'bg-emerald-900/40 border-emerald-500 text-emerald-200'
-                      : 'bg-slate-700 border-slate-600 text-slate-300 hover:border-slate-500'
+                      ? 'bg-[#DFF9C7] border-[#8FD14F] text-[#2C2C2C]'
+                      : 'bg-white border-[rgba(169,126,111,0.2)] text-[#2C2C2C] hover:border-[#8FD14F]/50'
                   }`}>
                     <input
                       type="radio"
                       name="finalidade"
                       value="LOCACAO"
                       checked={formData.interesse.finalidade === 'LOCACAO'}
-                      onChange={(e) => setFormData({ ...formData, interesse: { ...formData.interesse, finalidade: e.target.value as any } })}
+                      onChange={(e) => handleFormChange('interesse.finalidade', e.target.value as any)}
                       className="mr-2"
                     />
                     <span className="font-medium">🔑 Alugar</span>
@@ -419,10 +463,10 @@ export default function LeadsPage() {
               </div>
 
               <div className="col-span-2">
-                <label className="block text-sm font-medium text-slate-300 mb-2">Formas de Pagamento Aceitas/Desejadas:</label>
+                <label className="block text-sm font-bold text-[#2C2C2C] mb-2">Formas de Pagamento Aceitas/Desejadas:</label>
                 <div className="grid grid-cols-2 gap-2">
                   {['À Vista', 'Financiamento Bancário', 'Carta de Crédito', 'Consórcio', 'Permuta'].map((forma) => (
-                    <label key={forma} className="flex items-center p-2 bg-slate-700 border border-slate-600 rounded-lg hover:border-slate-500 cursor-pointer">
+                    <label key={forma} className="flex items-center p-2 bg-white border border-[rgba(169,126,111,0.2)] rounded-lg hover:border-[#8FD14F]/50 cursor-pointer transition-all">
                       <input
                         type="checkbox"
                         checked={formData.interesse.forma_pagamento.includes(forma)}
@@ -430,11 +474,11 @@ export default function LeadsPage() {
                           const novasFormas = e.target.checked
                             ? [...formData.interesse.forma_pagamento, forma]
                             : formData.interesse.forma_pagamento.filter(f => f !== forma);
-                          setFormData({ ...formData, interesse: { ...formData.interesse, forma_pagamento: novasFormas } });
+                          handleFormChange('interesse.forma_pagamento', novasFormas);
                         }}
                         className="mr-2"
                       />
-                      <span className="text-sm text-slate-200">{forma}</span>
+                      <span className="text-sm text-[#2C2C2C] font-medium">{forma}</span>
                     </label>
                   ))}
                 </div>
@@ -444,28 +488,28 @@ export default function LeadsPage() {
 
           {/* Observações */}
           <div className="space-y-4">
-            <h4 className="text-md font-bold text-slate-200 border-b border-slate-600 pb-2">Observações</h4>
+            <h4 className="text-md font-bold text-[#2C2C2C] border-b border-[rgba(169,126,111,0.2)] pb-2">Observações</h4>
             <textarea
               rows={3}
               value={formData.observacoes}
-              onChange={(e) => setFormData({ ...formData, observacoes: e.target.value })}
+              onChange={(e) => handleFormChange('observacoes', e.target.value)}
               placeholder="Informações adicionais sobre o lead..."
-              className="w-full px-3 py-2 bg-slate-700 border border-slate-600 text-slate-100 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 placeholder:text-slate-500"
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent placeholder:text-gray-400"
             />
           </div>
 
-          <div className="flex justify-end gap-3 pt-4 border-t border-slate-600">
+          <div className="flex justify-end gap-3 pt-6 border-t border-[rgba(169,126,111,0.2)] mt-6">
             <button
               type="button"
-              onClick={() => setModalOpen(false)}
-              className="px-4 py-2 text-slate-300 border border-slate-600 rounded-lg hover:bg-slate-700 transition-colors"
+              onClick={handleCloseModal}
+              className="px-6 py-2.5 text-[#A97E6F] border-2 border-[#A97E6F] rounded-lg hover:bg-[#A97E6F] hover:text-white font-bold transition-all"
             >
               Cancelar
             </button>
             <button
               type="submit"
               disabled={submitting}
-              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 transition-colors"
+              className="px-6 py-2.5 bg-gradient-to-r from-[#8FD14F] to-[#006D77] text-white rounded-lg hover:shadow-lg font-bold transition-all disabled:opacity-50"
             >
               {submitting ? 'Salvando...' : 'Salvar'}
             </button>
@@ -481,22 +525,22 @@ export default function LeadsPage() {
         size="sm"
       >
         <div className="space-y-4">
-          <p className="text-slate-300">
-            Tem certeza que deseja excluir o lead <strong>{deletingLead?.nome}</strong>?
+          <p className="text-[#2C2C2C] text-base">
+            Tem certeza que deseja excluir o lead <strong className="text-[#A97E6F]">{deletingLead?.nome}</strong>?
           </p>
-          <p className="text-sm text-slate-400">Esta ação não pode ser desfeita.</p>
+          <p className="text-sm text-[#8B7F76]">Esta ação não pode ser desfeita.</p>
 
-          <div className="flex justify-end gap-3 pt-4 border-t border-slate-600">
+          <div className="flex justify-end gap-3 pt-6 border-t border-[rgba(169,126,111,0.2)] mt-6">
             <button
               onClick={() => setDeleteModalOpen(false)}
-              className="px-4 py-2 text-slate-300 border border-slate-600 rounded-lg hover:bg-slate-700"
+              className="px-6 py-2.5 text-[#A97E6F] border-2 border-[#A97E6F] rounded-lg hover:bg-[#A97E6F] hover:text-white font-bold transition-all"
             >
               Cancelar
             </button>
             <button
               onClick={handleDelete}
               disabled={submitting}
-              className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 disabled:opacity-50"
+              className="px-6 py-2.5 bg-[#FF6B6B] text-white rounded-lg hover:bg-[#FF006E] font-bold transition-all disabled:opacity-50"
             >
               {submitting ? 'Excluindo...' : 'Excluir'}
             </button>

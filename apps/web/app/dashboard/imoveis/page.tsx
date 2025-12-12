@@ -83,6 +83,8 @@ export default function ImoveisPage() {
   const [deletingImovel, setDeletingImovel] = useState<Imovel | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
+  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
+  const [originalFormData, setOriginalFormData] = useState<any>(null);
 
   const [formData, setFormData] = useState<ImovelForm>({
     titulo: '',
@@ -107,6 +109,18 @@ export default function ImoveisPage() {
     loadProprietarios();
     loadCorretores();
   }, []);
+
+  useEffect(() => {
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      if (hasUnsavedChanges && modalOpen) {
+        e.preventDefault();
+        e.returnValue = '';
+      }
+    };
+
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    return () => window.removeEventListener('beforeunload', handleBeforeUnload);
+  }, [hasUnsavedChanges, modalOpen]);
 
   const loadImoveis = async () => {
     try {
@@ -140,6 +154,22 @@ export default function ImoveisPage() {
     }
   };
 
+  const handleFormChange = (field: string, value: any) => {
+    setFormData({ ...formData, [field]: value });
+    setHasUnsavedChanges(true);
+  };
+
+  const handleCloseModal = () => {
+    if (hasUnsavedChanges && editingImovel) {
+      if (window.confirm('Você tem alterações não salvas. Deseja realmente sair sem salvar?')) {
+        setModalOpen(false);
+        setHasUnsavedChanges(false);
+      }
+    } else {
+      setModalOpen(false);
+    }
+  };
+
   const openCreateModal = () => {
     setEditingImovel(null);
     setFormData({
@@ -159,12 +189,14 @@ export default function ImoveisPage() {
       proprietario_id: '',
       fotos: '',
     });
+    setOriginalFormData(null);
+    setHasUnsavedChanges(false);
     setModalOpen(true);
   };
 
   const openEditModal = (imovel: Imovel) => {
     setEditingImovel(imovel);
-    setFormData({
+    const formDataToSet = {
       titulo: imovel.titulo || '',
       descricao: imovel.descricao || '',
       tipo: imovel.tipo || 'APARTAMENTO',
@@ -180,7 +212,10 @@ export default function ImoveisPage() {
       status: imovel.status || 'DISPONIVEL',
       proprietario_id: imovel.proprietario_id || '',
       fotos: imovel.fotos?.join('\n') || '',
-    });
+    };
+    setFormData(formDataToSet);
+    setOriginalFormData({ ...formDataToSet });
+    setHasUnsavedChanges(false);
     setModalOpen(true);
   };
 
@@ -228,6 +263,7 @@ export default function ImoveisPage() {
         await api.post('/imoveis', payload);
         toast.success('Imóvel cadastrado com sucesso!');
       }
+      setHasUnsavedChanges(false);
       setModalOpen(false);
       loadImoveis();
     } catch (error: any) {
@@ -437,7 +473,7 @@ export default function ImoveisPage() {
       {/* Modal de Cadastro/Edição */}
       <Modal
         isOpen={modalOpen}
-        onClose={() => setModalOpen(false)}
+        onClose={handleCloseModal}
         title={editingImovel ? 'Editar Imóvel' : 'Novo Imóvel'}
         size="2xl"
       >
@@ -451,7 +487,7 @@ export default function ImoveisPage() {
                 type="text"
                 required
                 value={formData.titulo}
-                onChange={(e) => setFormData({ ...formData, titulo: e.target.value })}
+                onChange={(e) => handleFormChange('titulo', e.target.value)}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />
             </div>
@@ -462,7 +498,7 @@ export default function ImoveisPage() {
               </label>
               <select
                 value={formData.tipo}
-                onChange={(e) => setFormData({ ...formData, tipo: e.target.value })}
+                onChange={(e) => handleFormChange('tipo', e.target.value)}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               >
                 <option value="APARTAMENTO">Apartamento</option>
@@ -479,7 +515,7 @@ export default function ImoveisPage() {
               </label>
               <select
                 value={formData.status}
-                onChange={(e) => setFormData({ ...formData, status: e.target.value })}
+                onChange={(e) => handleFormChange('status', e.target.value)}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               >
                 <option value="DISPONIVEL">Disponível</option>
@@ -495,7 +531,7 @@ export default function ImoveisPage() {
               <select
                 required
                 value={formData.proprietario_id}
-                onChange={(e) => setFormData({ ...formData, proprietario_id: e.target.value })}
+                onChange={(e) => handleFormChange('proprietario_id', e.target.value)}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               >
                 <option value="">Selecione...</option>
@@ -517,7 +553,7 @@ export default function ImoveisPage() {
                 step="0.01"
                 min="0"
                 value={formData.valor}
-                onChange={(e) => setFormData({ ...formData, valor: e.target.value })}
+                onChange={(e) => handleFormChange('valor', e.target.value)}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />
             </div>
@@ -530,7 +566,7 @@ export default function ImoveisPage() {
                 type="text"
                 required
                 value={formData.endereco}
-                onChange={(e) => setFormData({ ...formData, endereco: e.target.value })}
+                onChange={(e) => handleFormChange('endereco', e.target.value)}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />
             </div>
@@ -543,7 +579,7 @@ export default function ImoveisPage() {
                 type="text"
                 required
                 value={formData.cidade}
-                onChange={(e) => setFormData({ ...formData, cidade: e.target.value })}
+                onChange={(e) => handleFormChange('cidade', e.target.value)}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />
             </div>
@@ -556,7 +592,7 @@ export default function ImoveisPage() {
                 type="text"
                 required
                 value={formData.estado}
-                onChange={(e) => setFormData({ ...formData, estado: e.target.value })}
+                onChange={(e) => handleFormChange('estado', e.target.value)}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 placeholder="UF"
                 maxLength={2}
@@ -571,7 +607,7 @@ export default function ImoveisPage() {
                 type="text"
                 required
                 value={formData.cep}
-                onChange={(e) => setFormData({ ...formData, cep: e.target.value })}
+                onChange={(e) => handleFormChange('cep', e.target.value)}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />
             </div>
@@ -585,7 +621,7 @@ export default function ImoveisPage() {
                 step="0.01"
                 min="0"
                 value={formData.area}
-                onChange={(e) => setFormData({ ...formData, area: e.target.value })}
+                onChange={(e) => handleFormChange('area', e.target.value)}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />
             </div>
@@ -598,7 +634,7 @@ export default function ImoveisPage() {
                 type="number"
                 min="0"
                 value={formData.quartos}
-                onChange={(e) => setFormData({ ...formData, quartos: e.target.value })}
+                onChange={(e) => handleFormChange('quartos', e.target.value)}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />
             </div>
@@ -611,7 +647,7 @@ export default function ImoveisPage() {
                 type="number"
                 min="0"
                 value={formData.banheiros}
-                onChange={(e) => setFormData({ ...formData, banheiros: e.target.value })}
+                onChange={(e) => handleFormChange('banheiros', e.target.value)}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />
             </div>
@@ -624,7 +660,7 @@ export default function ImoveisPage() {
                 type="number"
                 min="0"
                 value={formData.vagas}
-                onChange={(e) => setFormData({ ...formData, vagas: e.target.value })}
+                onChange={(e) => handleFormChange('vagas', e.target.value)}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />
             </div>
@@ -636,7 +672,7 @@ export default function ImoveisPage() {
               <textarea
                 rows={3}
                 value={formData.descricao}
-                onChange={(e) => setFormData({ ...formData, descricao: e.target.value })}
+                onChange={(e) => handleFormChange('descricao', e.target.value)}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />
             </div>
@@ -681,7 +717,7 @@ export default function ImoveisPage() {
                   <textarea
                     rows={4}
                     value={formData.fotos}
-                    onChange={(e) => setFormData({ ...formData, fotos: e.target.value })}
+                    onChange={(e) => handleFormChange('fotos', e.target.value)}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     placeholder="https://exemplo.com/foto1.jpg&#10;https://exemplo.com/foto2.jpg"
                   />
@@ -696,7 +732,7 @@ export default function ImoveisPage() {
           <div className="flex justify-end gap-3 pt-6 border-t border-[rgba(169,126,111,0.2)] mt-6">
             <button
               type="button"
-              onClick={() => setModalOpen(false)}
+              onClick={handleCloseModal}
               className="px-6 py-2.5 text-[#A97E6F] border-2 border-[#A97E6F] rounded-lg hover:bg-[#A97E6F] hover:text-white font-bold transition-all"
             >
               Cancelar

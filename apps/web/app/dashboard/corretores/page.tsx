@@ -47,6 +47,8 @@ export default function CorretoresPage() {
   const [activeTab, setActiveTab] = useState<'dados' | 'imoveis'>('dados');
   const [corretorImoveis, setCorretorImoveis] = useState<Imovel[]>([]);
   const [loadingImoveis, setLoadingImoveis] = useState(false);
+  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
+  const [originalFormData, setOriginalFormData] = useState<any>(null);
 
   const formatPhone = (phone: string) => {
     const cleaned = phone.replace(/\D/g, '');
@@ -71,6 +73,18 @@ export default function CorretoresPage() {
     loadCorretores();
   }, []);
 
+  useEffect(() => {
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      if (hasUnsavedChanges && modalOpen) {
+        e.preventDefault();
+        e.returnValue = '';
+      }
+    };
+
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    return () => window.removeEventListener('beforeunload', handleBeforeUnload);
+  }, [hasUnsavedChanges, modalOpen]);
+
   const loadCorretores = async () => {
     try {
       const response = await api.get('/corretores');
@@ -93,7 +107,25 @@ export default function CorretoresPage() {
       especialidade: '',
       comissao: '',
     });
+    setOriginalFormData(null);
+    setHasUnsavedChanges(false);
     setModalOpen(true);
+  };
+
+  const handleFormChange = (field: string, value: any) => {
+    setFormData({ ...formData, [field]: value });
+    setHasUnsavedChanges(true);
+  };
+
+  const handleCloseModal = () => {
+    if (hasUnsavedChanges && editingCorretor) {
+      if (window.confirm('Você tem alterações não salvas. Deseja realmente sair sem salvar?')) {
+        setModalOpen(false);
+        setHasUnsavedChanges(false);
+      }
+    } else {
+      setModalOpen(false);
+    }
   };
 
   const loadCorretorImoveis = async (corretorId: string) => {
@@ -112,14 +144,17 @@ export default function CorretoresPage() {
 
   const openEditModal = (corretor: Corretor) => {
     setEditingCorretor(corretor);
-    setFormData({
+    const formDataToSet = {
       nome: corretor.nome,
       email: corretor.email,
       telefone: corretor.telefone,
       creci: corretor.creci,
       especialidade: corretor.especialidade || '',
       comissao: corretor.comissao?.toString() || '',
-    });
+    };
+    setFormData(formDataToSet);
+    setOriginalFormData({ ...formDataToSet });
+    setHasUnsavedChanges(false);
     setActiveTab('dados');
     setCorretorImoveis([]);
     setModalOpen(true);
@@ -143,6 +178,7 @@ export default function CorretoresPage() {
         await api.post('/corretores', payload);
         toast.success('Corretor cadastrado com sucesso!');
       }
+      setHasUnsavedChanges(false);
       setModalOpen(false);
       loadCorretores();
     } catch (error: any) {
@@ -283,7 +319,7 @@ export default function CorretoresPage() {
       {/* Modal de Cadastro/Edição */}
       <Modal
         isOpen={modalOpen}
-        onClose={() => setModalOpen(false)}
+        onClose={handleCloseModal}
         title={editingCorretor ? 'Consultar Corretor' : 'Novo Corretor'}
         size="lg"
       >
@@ -327,7 +363,7 @@ export default function CorretoresPage() {
                 type="text"
                 required
                 value={formData.nome}
-                onChange={(e) => setFormData({ ...formData, nome: e.target.value })}
+                onChange={(e) => handleFormChange('nome', e.target.value)}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />
             </div>
@@ -340,7 +376,7 @@ export default function CorretoresPage() {
                 type="email"
                 required
                 value={formData.email}
-                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                onChange={(e) => handleFormChange('email', e.target.value)}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />
             </div>
@@ -353,7 +389,7 @@ export default function CorretoresPage() {
                 type="tel"
                 required
                 value={formData.telefone}
-                onChange={(e) => setFormData({ ...formData, telefone: e.target.value })}
+                onChange={(e) => handleFormChange('telefone', e.target.value)}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />
             </div>
@@ -366,7 +402,7 @@ export default function CorretoresPage() {
                 type="text"
                 required
                 value={formData.creci}
-                onChange={(e) => setFormData({ ...formData, creci: e.target.value })}
+                onChange={(e) => handleFormChange('creci', e.target.value)}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />
             </div>
@@ -381,7 +417,7 @@ export default function CorretoresPage() {
                 min="0"
                 max="100"
                 value={formData.comissao}
-                onChange={(e) => setFormData({ ...formData, comissao: e.target.value })}
+                onChange={(e) => handleFormChange('comissao', e.target.value)}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />
             </div>
@@ -393,7 +429,7 @@ export default function CorretoresPage() {
               <input
                 type="text"
                 value={formData.especialidade}
-                onChange={(e) => setFormData({ ...formData, especialidade: e.target.value })}
+                onChange={(e) => handleFormChange('especialidade', e.target.value)}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 placeholder="Ex: Imóveis comerciais, Apartamentos de luxo..."
               />
@@ -403,7 +439,7 @@ export default function CorretoresPage() {
           <div className="flex justify-end gap-3 pt-6 border-t border-[rgba(169,126,111,0.2)] mt-6">
             <button
               type="button"
-              onClick={() => setModalOpen(false)}
+              onClick={handleCloseModal}
               className="px-6 py-2.5 text-[#A97E6F] border-2 border-[#A97E6F] rounded-lg hover:bg-[#A97E6F] hover:text-white font-bold transition-all"
             >
               Cancelar
