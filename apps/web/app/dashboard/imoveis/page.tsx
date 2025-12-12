@@ -34,6 +34,13 @@ interface Imovel {
   proprietario?: {
     nome: string;
   };
+  corretor_responsavel?: {
+    id: string;
+    user: {
+      nome: string;
+    };
+  };
+  historico_corretores?: any[];
 }
 
 interface ImovelForm {
@@ -59,9 +66,16 @@ interface Proprietario {
   nome: string;
 }
 
+interface Corretor {
+  id: string;
+  nome: string;
+}
+
 export default function ImoveisPage() {
   const [imoveis, setImoveis] = useState<Imovel[]>([]);
   const [proprietarios, setProprietarios] = useState<Proprietario[]>([]);
+  const [corretores, setCorretores] = useState<Corretor[]>([]);
+  const [selectedCorretorId, setSelectedCorretorId] = useState<string>('');
   const [loading, setLoading] = useState(true);
   const [modalOpen, setModalOpen] = useState(false);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
@@ -91,6 +105,7 @@ export default function ImoveisPage() {
   useEffect(() => {
     loadImoveis();
     loadProprietarios();
+    loadCorretores();
   }, []);
 
   const loadImoveis = async () => {
@@ -113,6 +128,15 @@ export default function ImoveisPage() {
       setProprietarios(Array.isArray(proprietarios) ? proprietarios : []);
     } catch (error: any) {
       console.error('Erro ao carregar proprietários:', error);
+    }
+  };
+
+  const loadCorretores = async () => {
+    try {
+      const response = await api.get('/corretores');
+      setCorretores(Array.isArray(response.data) ? response.data : []);
+    } catch (error: any) {
+      console.error('Erro ao carregar corretores:', error);
     }
   };
 
@@ -231,6 +255,16 @@ export default function ImoveisPage() {
     }
   };
 
+  const handleChangeCorretor = async (imovelId: string, corretorId: string) => {
+    try {
+      await api.put(`/imoveis/${imovelId}/corretor`, { corretor_id: corretorId });
+      toast.success('Corretor alterado com sucesso!');
+      loadImoveis();
+    } catch (error: any) {
+      toast.error(error.response?.data?.error || 'Erro ao alterar corretor');
+    }
+  };
+
   const filteredImoveis = imoveis.filter(
     (imovel) =>
       imovel.titulo?.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -343,11 +377,39 @@ export default function ImoveisPage() {
                   </span>
                 </div>
 
-                {imovel.proprietario && (
-                  <p className="text-xs text-[#8B7F76] mb-4 font-medium">
-                    👤 Proprietário: <span className="font-bold text-[#2C2C2C]">{imovel.proprietario.nome}</span>
-                  </p>
-                )}
+                {/* Informações adicionais */}
+                <div className="mb-4 space-y-2">
+                  {/* Proprietário */}
+                  <div className="text-sm">
+                    <span className="font-bold text-[#2C2C2C]">Proprietário:</span>{' '}
+                    <span className="text-[#8B7F76]">{imovel.proprietario?.nome || 'Não informado'}</span>
+                  </div>
+
+                  {/* Corretor Responsável */}
+                  <div className="text-sm">
+                    <span className="font-bold text-[#2C2C2C]">Corretor Responsável:</span>
+                    <select
+                      value={imovel.corretor_responsavel?.id || ''}
+                      onChange={(e) => handleChangeCorretor(imovel.id, e.target.value)}
+                      className="ml-2 px-2 py-1 border border-gray-300 rounded-md text-sm"
+                    >
+                      <option value="">Sem corretor</option>
+                      {corretores.map(corretor => (
+                        <option key={corretor.id} value={corretor.id}>
+                          {corretor.nome}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+
+                {/* Botão Nova Proposta */}
+                <button
+                  onClick={() => window.location.href = `/dashboard/negociacoes?imovel=${imovel.id}&proprietario=${imovel.proprietario_id}&corretor=${imovel.corretor_responsavel?.id || ''}`}
+                  className="w-full mb-3 px-4 py-2.5 text-sm bg-gradient-to-r from-[#FFB627] to-[#FF006E] text-white rounded-lg hover:shadow-lg font-bold transition-all"
+                >
+                  💼 Nova Proposta
+                </button>
 
                 <div className="flex gap-2">
                   <button
