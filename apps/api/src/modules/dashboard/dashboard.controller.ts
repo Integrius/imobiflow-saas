@@ -119,4 +119,16 @@ export class DashboardController {
       })
     }
   }
+
+  async getChartsData(request: FastifyRequest, reply: FastifyReply) {
+    try {
+      const data = await this.service.getChartsData()
+      return reply.send(data)
+    } catch (error: any) {
+      console.error('Erro ao buscar dados históricos:', error)
+      return reply.status(500).send({
+        error: 'Erro ao buscar dados históricos para gráficos'
+      })
+    }
+  }
 }

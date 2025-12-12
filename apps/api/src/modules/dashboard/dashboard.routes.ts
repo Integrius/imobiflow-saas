@@ -21,4 +21,5 @@ export async function dashboardRoutes(server: FastifyInstance) {
   server.get('/funil', controller.getFunilVendas.bind(controller))
   server.get('/activity', controller.getRecentActivity.bind(controller))
   server.get('/valores', controller.getValorMedioNegociacoes.bind(controller))
+  server.get('/charts', controller.getChartsData.bind(controller))
 }

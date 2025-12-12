@@ -238,4 +238,103 @@ export class DashboardService {
       totalComValor: negociacoes.length
     }
   }
+
+  // ==================== DADOS HISTÓRICOS ====================
+
+  /**
+   * Retorna contagem mensal de Leads, Imóveis e Negociações
+   * nos últimos X meses
+   */
+  async getHistoricalData(months: number) {
+    const now = new Date()
+    const startDate = new Date()
+    startDate.setMonth(now.getMonth() - months)
+
+    // Busca todos os registros dentro do período
+    const [leads, imoveis, negociacoes] = await Promise.all([
+      this.prisma.lead.findMany({
+        where: {
+          created_at: {
+            gte: startDate
+          }
+        },
+        select: {
+          created_at: true
+        }
+      }),
+      this.prisma.imovel.findMany({
+        where: {
+          created_at: {
+            gte: startDate
+          }
+        },
+        select: {
+          created_at: true
+        }
+      }),
+      this.prisma.negociacao.findMany({
+        where: {
+          created_at: {
+            gte: startDate
+          }
+        },
+        select: {
+          created_at: true
+        }
+      })
+    ])
+
+    // Agrupa por mês
+    const groupByMonth = (items: { created_at: Date }[]) => {
+      const grouped: { [key: string]: number } = {}
+
+      items.forEach(item => {
+        const date = new Date(item.created_at)
+        const key = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`
+        grouped[key] = (grouped[key] || 0) + 1
+      })
+
+      return grouped
+    }
+
+    const leadsGrouped = groupByMonth(leads)
+    const imoveisGrouped = groupByMonth(imoveis)
+    const negociacoesGrouped = groupByMonth(negociacoes)
+
+    // Gera array com todos os meses no período
+    const result = []
+    for (let i = months - 1; i >= 0; i--) {
+      const date = new Date()
+      date.setMonth(now.getMonth() - i)
+      const key = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`
+      const monthName = date.toLocaleDateString('pt-BR', { month: 'short' })
+
+      result.push({
+        month: key,
+        monthName: monthName.charAt(0).toUpperCase() + monthName.slice(1),
+        leads: leadsGrouped[key] || 0,
+        imoveis: imoveisGrouped[key] || 0,
+        negociacoes: negociacoesGrouped[key] || 0
+      })
+    }
+
+    return result
+  }
+
+  /**
+   * Retorna dados históricos para 3, 6 e 12 meses
+   */
+  async getChartsData() {
+    const [data3months, data6months, data12months] = await Promise.all([
+      this.getHistoricalData(3),
+      this.getHistoricalData(6),
+      this.getHistoricalData(12)
+    ])
+
+    return {
+      last3Months: data3months,
+      last6Months: data6months,
+      last12Months: data12months
+    }
+  }
 }

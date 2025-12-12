@@ -213,6 +213,7 @@ model Corretor {
   // Relacionamentos
   leads               Lead[]
   negociacoes         Negociacao[]
+  imoveis_responsavel Imovel[]
 
   @@unique([tenant_id, creci])
   @@map("corretores")
@@ -379,6 +380,11 @@ model Imovel {
   proprietario_id     String
   proprietario        Proprietario    @relation(fields: [proprietario_id], references: [id], onDelete: Restrict)
 
+  // Corretor Responsável
+  corretor_responsavel_id String?
+  corretor_responsavel    Corretor?   @relation(fields: [corretor_responsavel_id], references: [id], onDelete: SetNull)
+  historico_corretores    Json[]      // Histórico de trocas de corretor
+
   // Timestamps
   created_at          DateTime        @default(now())
   updated_at          DateTime        @updatedAt
@@ -394,6 +400,7 @@ model Imovel {
   @@index([categoria])
   @@index([status])
   @@index([proprietario_id])
+  @@index([corretor_responsavel_id])
 }
 
 enum TipoImovel {

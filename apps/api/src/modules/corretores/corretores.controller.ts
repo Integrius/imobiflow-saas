@@ -44,4 +44,11 @@ export class CorretoresController {
     await this.corretoresService.delete(id, tenantId)
     return reply.status(204).send()
   }
+
+  async getImoveis(request: FastifyRequest, reply: FastifyReply) {
+    const tenantId = (request as any).tenantId || 'default-tenant-id'
+    const { id } = request.params as { id: string }
+    const imoveis = await this.corretoresService.getImoveis(id, tenantId)
+    return reply.send(imoveis)
+  }
 }
