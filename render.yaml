@@ -19,3 +19,9 @@ services:
         value: 3333
       - key: SMTP_FROM
         value: noreply@integrius.com.br
+      - key: CLOUDINARY_CLOUD_NAME
+        sync: false
+      - key: CLOUDINARY_API_KEY
+        sync: false
+      - key: CLOUDINARY_API_SECRET
+        sync: false
