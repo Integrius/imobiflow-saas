@@ -1,6 +1,6 @@
 services:
   - type: web
-    name: imobiflow-saas
+    name: imobiflow-saas-1
     env: node
     region: ohio
     plan: starter
