@@ -34,7 +34,6 @@ export const createProprietarioSchema = z.object({
   }).optional(),
   dados_bancarios: dadosBancariosSchema,
   forma_pagamento: z.enum(['PIX', 'TED', 'BOLETO', 'DINHEIRO']).default('PIX'),
-  percentual_comissao: z.number().min(0).max(100),
   observacoes: z.string().max(1000).optional().nullable(),
 })
 

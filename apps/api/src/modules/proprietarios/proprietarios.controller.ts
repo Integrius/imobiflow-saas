@@ -11,9 +11,22 @@ export class ProprietariosController {
 
   async create(request: FastifyRequest, reply: FastifyReply) {
     const tenantId = (request as any).tenantId || 'default-tenant-id'
-    const data = createProprietarioSchema.parse(request.body)
-    const proprietario = await this.proprietariosService.create(data, tenantId)
-    return reply.status(201).send(proprietario)
+    console.log('=== CREATE PROPRIETARIO REQUEST ===')
+    console.log('Body recebido:', JSON.stringify(request.body, null, 2))
+    console.log('Tenant ID:', tenantId)
+
+    try {
+      const data = createProprietarioSchema.parse(request.body)
+      console.log('Dados após validação:', JSON.stringify(data, null, 2))
+
+      const proprietario = await this.proprietariosService.create(data, tenantId)
+      console.log('Proprietário criado:', JSON.stringify(proprietario, null, 2))
+
+      return reply.status(201).send(proprietario)
+    } catch (error) {
+      console.error('ERRO AO CRIAR PROPRIETÁRIO:', error)
+      throw error
+    }
   }
 
   async list(request: FastifyRequest, reply: FastifyReply) {

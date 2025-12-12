@@ -6,10 +6,30 @@ export class ProprietariosService {
   constructor(private proprietariosRepository: ProprietariosRepository) {}
 
   async create(data: CreateProprietarioDTO, tenantId: string) {
-    const proprietarioExists = await this.proprietariosRepository.findByCpfCnpj(data.cpf_cnpj, tenantId)
+    // Validação 1: CPF/CNPJ duplicado
+    const proprietarioByCpfCnpj = await this.proprietariosRepository.findByCpfCnpj(data.cpf_cnpj, tenantId)
 
-    if (proprietarioExists) {
-      throw new AppError('CPF/CNPJ já cadastrado', 400, 'PROPRIETARIO_DUPLICADO')
+    if (proprietarioByCpfCnpj) {
+      throw new AppError(
+        'Já existe um proprietário cadastrado com este CPF/CNPJ',
+        400,
+        'CPF_CNPJ_DUPLICADO'
+      )
+    }
+
+    // Validação 2: Nome + Telefone duplicado
+    const proprietarioByNomeTelefone = await this.proprietariosRepository.findByNomeAndTelefone(
+      data.nome,
+      data.contato.telefone_principal,
+      tenantId
+    )
+
+    if (proprietarioByNomeTelefone) {
+      throw new AppError(
+        'Já existe um proprietário cadastrado com este nome e telefone',
+        400,
+        'NOME_TELEFONE_DUPLICADO'
+      )
     }
 
     return await this.proprietariosRepository.create(data, tenantId)
@@ -32,11 +52,33 @@ export class ProprietariosService {
   async update(id: string, data: UpdateProprietarioDTO, tenantId: string) {
     await this.findById(id, tenantId)
 
+    // Validação 1: CPF/CNPJ duplicado
     if (data.cpf_cnpj) {
       const proprietarioWithCpfCnpj = await this.proprietariosRepository.findByCpfCnpj(data.cpf_cnpj, tenantId)
 
       if (proprietarioWithCpfCnpj && proprietarioWithCpfCnpj.id !== id) {
-        throw new AppError('CPF/CNPJ já cadastrado para outro proprietário', 400, 'CPF_CNPJ_DUPLICADO')
+        throw new AppError(
+          'Já existe outro proprietário cadastrado com este CPF/CNPJ',
+          400,
+          'CPF_CNPJ_DUPLICADO'
+        )
+      }
+    }
+
+    // Validação 2: Nome + Telefone duplicado
+    if (data.nome && data.contato?.telefone_principal) {
+      const proprietarioWithNomeTelefone = await this.proprietariosRepository.findByNomeAndTelefone(
+        data.nome,
+        data.contato.telefone_principal,
+        tenantId
+      )
+
+      if (proprietarioWithNomeTelefone && proprietarioWithNomeTelefone.id !== id) {
+        throw new AppError(
+          'Já existe outro proprietário cadastrado com este nome e telefone',
+          400,
+          'NOME_TELEFONE_DUPLICADO'
+        )
       }
     }
 

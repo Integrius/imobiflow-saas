@@ -18,13 +18,15 @@ export const createNegociacaoSchema = z.object({
   lead_id: z.string().uuid('Lead ID inválido'),
   imovel_id: z.string().uuid('Imóvel ID inválido'),
   corretor_id: z.string().uuid('Corretor ID inválido'),
-  valor_proposta: z.number().positive('Valor da proposta deve ser positivo').optional().nullable()
+  valor_proposta: z.number().positive('Valor da proposta deve ser positivo').optional().nullable(),
+  percentual_comissao: z.number().min(0).max(100, 'Percentual de comissão deve estar entre 0 e 100').default(5)
 })
 
 // Schema para atualizar Negociação
 export const updateNegociacaoSchema = z.object({
   status: statusNegociacaoSchema.optional(),
-  valor_proposta: z.number().positive('Valor da proposta deve ser positivo').optional().nullable()
+  valor_proposta: z.number().positive('Valor da proposta deve ser positivo').optional().nullable(),
+  percentual_comissao: z.number().min(0).max(100, 'Percentual de comissão deve estar entre 0 e 100').optional()
 })
 
 // Schema para adicionar evento à timeline

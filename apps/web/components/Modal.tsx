@@ -3,7 +3,7 @@ interface ModalProps {
   onClose: () => void;
   title: string;
   children: React.ReactNode;
-  size?: 'sm' | 'md' | 'lg' | 'xl';
+  size?: 'sm' | 'md' | 'lg' | 'xl' | '2xl';
 }
 
 export default function Modal({ isOpen, onClose, title, children, size = 'md' }: ModalProps) {
@@ -14,25 +14,26 @@ export default function Modal({ isOpen, onClose, title, children, size = 'md' }:
     md: 'max-w-lg',
     lg: 'max-w-2xl',
     xl: 'max-w-4xl',
+    '2xl': 'max-w-6xl',
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
       {/* Overlay */}
       <div
-        className="fixed inset-0 bg-slate-900 bg-opacity-75 transition-opacity"
+        className="fixed inset-0"
         onClick={onClose}
       />
 
       {/* Modal */}
-      <div className={`relative bg-slate-800 rounded-lg shadow-xl transform transition-all ${sizeClasses[size]} w-full max-h-[90vh] flex flex-col border-2 border-slate-600`}>
+      <div className={`relative bg-white rounded-xl shadow-2xl transform transition-all ${sizeClasses[size]} w-full max-h-[90vh] flex flex-col`}>
         {/* Header - Fixed */}
-        <div className="bg-slate-700 px-4 pt-5 pb-4 sm:px-6 border-b border-slate-600 flex-shrink-0 rounded-t-lg">
+        <div className="bg-gradient-to-r from-[#A97E6F] to-[#8B6F61] px-6 pt-6 pb-5 border-b border-[rgba(169,126,111,0.2)] flex-shrink-0 rounded-t-xl">
           <div className="flex items-center justify-between">
-            <h3 className="text-lg font-bold text-slate-100">{title}</h3>
+            <h3 className="text-xl font-bold text-white">{title}</h3>
             <button
               onClick={onClose}
-              className="text-slate-400 hover:text-slate-200 focus:outline-none transition-colors"
+              className="text-white/80 hover:text-white focus:outline-none transition-colors p-1 hover:bg-white/10 rounded-lg"
             >
               <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -42,7 +43,7 @@ export default function Modal({ isOpen, onClose, title, children, size = 'md' }:
         </div>
 
         {/* Content - Scrollable */}
-        <div className="overflow-y-auto flex-1 px-4 py-5 sm:px-6 bg-slate-800">{children}</div>
+        <div className="overflow-y-auto flex-1 px-6 py-6 bg-white">{children}</div>
       </div>
     </div>
   );

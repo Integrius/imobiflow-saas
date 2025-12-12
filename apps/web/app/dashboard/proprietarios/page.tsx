@@ -8,10 +8,12 @@ import Modal from '@/components/Modal';
 interface Proprietario {
   id: string;
   nome: string;
-  email: string;
-  telefone: string;
   cpf_cnpj: string;
-  tipo: 'PESSOA_FISICA' | 'PESSOA_JURIDICA';
+  tipo_pessoa: 'FISICA' | 'JURIDICA';
+  contato: {
+    telefone_principal: string;
+    email?: string;
+  };
   endereco?: string;
 }
 
@@ -20,7 +22,7 @@ interface ProprietarioForm {
   email: string;
   telefone: string;
   cpf_cnpj: string;
-  tipo: string;
+  tipo_pessoa: string;
   endereco: string;
 }
 
@@ -49,8 +51,9 @@ export default function ProprietariosPage() {
     email: '',
     telefone: '',
     cpf_cnpj: '',
-    tipo: 'PESSOA_FISICA',
+    tipo_pessoa: 'FISICA',
     endereco: '',
+    percentual_comissao: '0',
   });
 
   useEffect(() => {
@@ -60,7 +63,9 @@ export default function ProprietariosPage() {
   const loadProprietarios = async () => {
     try {
       const response = await api.get('/proprietarios');
-      setProprietarios(Array.isArray(response.data) ? response.data : []);
+      // API retorna { data: [...], meta: {...} }
+      const proprietariosList = response.data.data || response.data || [];
+      setProprietarios(Array.isArray(proprietariosList) ? proprietariosList : []);
     } catch (error: any) {
       console.error('Erro ao carregar proprietários:', error);
       toast.error('Erro ao carregar proprietários');
@@ -76,7 +81,7 @@ export default function ProprietariosPage() {
       email: '',
       telefone: '',
       cpf_cnpj: '',
-      tipo: 'PESSOA_FISICA',
+      tipo_pessoa: 'FISICA',
       endereco: '',
     });
     setModalOpen(true);
@@ -86,10 +91,10 @@ export default function ProprietariosPage() {
     setEditingProprietario(proprietario);
     setFormData({
       nome: proprietario.nome,
-      email: proprietario.email,
-      telefone: proprietario.telefone,
+      email: proprietario.contato?.email || '',
+      telefone: proprietario.contato?.telefone_principal || '',
       cpf_cnpj: proprietario.cpf_cnpj,
-      tipo: proprietario.tipo,
+      tipo_pessoa: proprietario.tipo_pessoa,
       endereco: proprietario.endereco || '',
     });
     setModalOpen(true);
@@ -100,17 +105,59 @@ export default function ProprietariosPage() {
     setSubmitting(true);
 
     try {
+      // Transformar dados do formulário para o formato da API
+      const payload = {
+        nome: formData.nome,
+        cpf_cnpj: formData.cpf_cnpj.replace(/\D/g, ''), // Remove caracteres não numéricos
+        tipo_pessoa: formData.tipo_pessoa,
+        contato: {
+          telefone_principal: formData.telefone.replace(/\D/g, ''),
+          email: formData.email,
+        },
+      };
+
       if (editingProprietario) {
-        await api.put(`/proprietarios/${editingProprietario.id}`, formData);
+        await api.put(`/proprietarios/${editingProprietario.id}`, payload);
         toast.success('Proprietário atualizado com sucesso!');
       } else {
-        await api.post('/proprietarios', formData);
+        await api.post('/proprietarios', payload);
         toast.success('Proprietário cadastrado com sucesso!');
       }
       setModalOpen(false);
       loadProprietarios();
     } catch (error: any) {
-      toast.error(error.response?.data?.error || 'Erro ao salvar proprietário');
+      console.error('Erro completo:', error);
+      console.error('Resposta da API:', error.response?.data);
+
+      // Trata erros de validação do Zod (array de erros)
+      if (error.response?.data && Array.isArray(error.response.data)) {
+        const zodErrors = error.response.data;
+        const cpfError = zodErrors.find((e: any) => e.path?.includes('cpf_cnpj'));
+
+        if (cpfError) {
+          toast.error('CPF/CNPJ deve ter 11 dígitos (CPF) ou 14 dígitos (CNPJ)');
+          return;
+        }
+
+        // Mostra o primeiro erro de validação
+        toast.error(zodErrors[0]?.message || 'Erro de validação dos dados');
+        return;
+      }
+
+      // Captura a mensagem de erro do backend
+      const errorMessage = error.response?.data?.message ||
+                          error.response?.data?.error ||
+                          error.message;
+
+      // Mapeamento de mensagens específicas
+      if (errorMessage?.includes('CPF/CNPJ já cadastrado') ||
+          errorMessage?.includes('nome e telefone')) {
+        toast.error('Proprietário já cadastrado!');
+      } else if (errorMessage?.includes('CPF') || errorMessage?.includes('CNPJ')) {
+        toast.error('CPF/CNPJ inválido');
+      } else {
+        toast.error(errorMessage || 'Erro ao salvar proprietário');
+      }
     } finally {
       setSubmitting(false);
     }
@@ -136,7 +183,7 @@ export default function ProprietariosPage() {
   const filteredProprietarios = proprietarios.filter(
     (proprietario) =>
       proprietario.nome.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      proprietario.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      proprietario.contato?.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       proprietario.cpf_cnpj.includes(searchTerm)
   );
 
@@ -206,20 +253,20 @@ export default function ProprietariosPage() {
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-bold text-[#2C2C2C]">
                     {proprietario.nome}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-[#8B7F76]">{proprietario.email}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-[#8B7F76]">{proprietario.contato?.email || '-'}</td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-[#8B7F76]">
                     <span className="px-2 py-1 bg-slate-600 text-slate-200 rounded-md font-mono text-xs font-bold border border-slate-500">{proprietario.cpf_cnpj}</span>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-[#8B7F76]">
                     <span className={`px-3 py-1.5 text-xs font-bold rounded-full border-2 ${
-                      proprietario.tipo === 'PESSOA_FISICA'
+                      proprietario.tipo_pessoa === 'FISICA'
                         ? 'bg-blue-900/60 text-blue-200 border-blue-500/50'
                         : 'bg-purple-900/60 text-purple-200 border-purple-500/50'
                     }`}>
-                      {proprietario.tipo === 'PESSOA_FISICA' ? '👤 Pessoa Física' : '🏢 Pessoa Jurídica'}
+                      {proprietario.tipo_pessoa === 'FISICA' ? '👤 Pessoa Física' : '🏢 Pessoa Jurídica'}
                     </span>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-[#8B7F76] font-medium">{formatPhone(proprietario.telefone)}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-[#8B7F76] font-medium">{formatPhone(proprietario.contato?.telefone_principal || '')}</td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm">
                     <button
                       onClick={() => openEditModal(proprietario)}
@@ -254,7 +301,7 @@ export default function ProprietariosPage() {
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="grid grid-cols-2 gap-4">
             <div className="col-span-2">
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-bold text-[#2C2C2C] mb-2">
                 Nome *
               </label>
               <input
@@ -267,22 +314,22 @@ export default function ProprietariosPage() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-bold text-[#2C2C2C] mb-2">
                 Tipo *
               </label>
               <select
-                value={formData.tipo}
-                onChange={(e) => setFormData({ ...formData, tipo: e.target.value })}
+                value={formData.tipo_pessoa}
+                onChange={(e) => setFormData({ ...formData, tipo_pessoa: e.target.value })}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               >
-                <option value="PESSOA_FISICA">Pessoa Física</option>
-                <option value="PESSOA_JURIDICA">Pessoa Jurídica</option>
+                <option value="FISICA">Pessoa Física</option>
+                <option value="JURIDICA">Pessoa Jurídica</option>
               </select>
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                {formData.tipo === 'PESSOA_FISICA' ? 'CPF *' : 'CNPJ *'}
+              <label className="block text-sm font-bold text-[#2C2C2C] mb-2">
+                {formData.tipo_pessoa === 'FISICA' ? 'CPF *' : 'CNPJ *'}
               </label>
               <input
                 type="text"
@@ -290,12 +337,12 @@ export default function ProprietariosPage() {
                 value={formData.cpf_cnpj}
                 onChange={(e) => setFormData({ ...formData, cpf_cnpj: e.target.value })}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                placeholder={formData.tipo === 'PESSOA_FISICA' ? '000.000.000-00' : '00.000.000/0000-00'}
+                placeholder={formData.tipo_pessoa === 'FISICA' ? '000.000.000-00' : '00.000.000/0000-00'}
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-bold text-[#2C2C2C] mb-2">
                 Email *
               </label>
               <input
@@ -308,7 +355,7 @@ export default function ProprietariosPage() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-bold text-[#2C2C2C] mb-2">
                 Telefone *
               </label>
               <input
@@ -317,11 +364,12 @@ export default function ProprietariosPage() {
                 value={formData.telefone}
                 onChange={(e) => setFormData({ ...formData, telefone: e.target.value })}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                placeholder="(11) 99999-9999"
               />
             </div>
 
             <div className="col-span-2">
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-bold text-[#2C2C2C] mb-2">
                 Endereço
               </label>
               <input
@@ -333,18 +381,18 @@ export default function ProprietariosPage() {
             </div>
           </div>
 
-          <div className="flex justify-end gap-3 pt-4 border-t">
+          <div className="flex justify-end gap-3 pt-6 border-t border-[rgba(169,126,111,0.2)] mt-6">
             <button
               type="button"
               onClick={() => setModalOpen(false)}
-              className="px-4 py-2 text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50"
+              className="px-6 py-2.5 text-[#A97E6F] border-2 border-[#A97E6F] rounded-lg hover:bg-[#A97E6F] hover:text-white font-bold transition-all"
             >
               Cancelar
             </button>
             <button
               type="submit"
               disabled={submitting}
-              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
+              className="px-6 py-2.5 bg-gradient-to-r from-[#8FD14F] to-[#006D77] text-white rounded-lg hover:shadow-lg font-bold transition-all disabled:opacity-50"
             >
               {submitting ? 'Salvando...' : 'Salvar'}
             </button>
@@ -360,22 +408,22 @@ export default function ProprietariosPage() {
         size="sm"
       >
         <div className="space-y-4">
-          <p className="text-gray-700">
-            Tem certeza que deseja excluir o proprietário <strong>{deletingProprietario?.nome}</strong>?
+          <p className="text-[#2C2C2C] text-base">
+            Tem certeza que deseja excluir o proprietário <strong className="text-[#A97E6F]">{deletingProprietario?.nome}</strong>?
           </p>
-          <p className="text-sm text-gray-500">Esta ação não pode ser desfeita.</p>
+          <p className="text-sm text-[#8B7F76]">Esta ação não pode ser desfeita.</p>
 
-          <div className="flex justify-end gap-3 pt-4 border-t">
+          <div className="flex justify-end gap-3 pt-6 border-t border-[rgba(169,126,111,0.2)] mt-6">
             <button
               onClick={() => setDeleteModalOpen(false)}
-              className="px-4 py-2 text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50"
+              className="px-6 py-2.5 text-[#A97E6F] border-2 border-[#A97E6F] rounded-lg hover:bg-[#A97E6F] hover:text-white font-bold transition-all"
             >
               Cancelar
             </button>
             <button
               onClick={handleDelete}
               disabled={submitting}
-              className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 disabled:opacity-50"
+              className="px-6 py-2.5 bg-[#FF6B6B] text-white rounded-lg hover:bg-[#FF006E] font-bold transition-all disabled:opacity-50"
             >
               {submitting ? 'Excluindo...' : 'Excluir'}
             </button>

@@ -97,6 +97,19 @@ export class ProprietariosRepository {
     })
   }
 
+  async findByNomeAndTelefone(nome: string, telefone: string, tenantId: string) {
+    return await this.prisma.proprietario.findFirst({
+      where: {
+        tenant_id: tenantId,
+        nome: {
+          equals: nome,
+          mode: 'insensitive'
+        },
+        telefone: telefone
+      }
+    })
+  }
+
   async update(id: string, data: UpdateProprietarioDTO, tenantId: string) {
     const updateData: any = {}
 
