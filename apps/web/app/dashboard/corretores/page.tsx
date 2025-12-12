@@ -24,6 +24,17 @@ interface CorretorForm {
   comissao: string;
 }
 
+interface Imovel {
+  id: string;
+  codigo: string;
+  titulo: string;
+  tipo: string;
+  status: string;
+  preco: number;
+  fotoPrincipal: string | null;
+  endereco: any;
+}
+
 export default function CorretoresPage() {
   const [corretores, setCorretores] = useState<Corretor[]>([]);
   const [loading, setLoading] = useState(true);
@@ -33,6 +44,9 @@ export default function CorretoresPage() {
   const [deletingCorretor, setDeletingCorretor] = useState<Corretor | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
+  const [activeTab, setActiveTab] = useState<'dados' | 'imoveis'>('dados');
+  const [corretorImoveis, setCorretorImoveis] = useState<Imovel[]>([]);
+  const [loadingImoveis, setLoadingImoveis] = useState(false);
 
   const formatPhone = (phone: string) => {
     const cleaned = phone.replace(/\D/g, '');
@@ -82,6 +96,20 @@ export default function CorretoresPage() {
     setModalOpen(true);
   };
 
+  const loadCorretorImoveis = async (corretorId: string) => {
+    setLoadingImoveis(true);
+    try {
+      const response = await api.get(`/corretores/${corretorId}/imoveis`);
+      setCorretorImoveis(Array.isArray(response.data) ? response.data : []);
+    } catch (error: any) {
+      console.error('Erro ao carregar imóveis do corretor:', error);
+      toast.error('Erro ao carregar imóveis');
+      setCorretorImoveis([]);
+    } finally {
+      setLoadingImoveis(false);
+    }
+  };
+
   const openEditModal = (corretor: Corretor) => {
     setEditingCorretor(corretor);
     setFormData({
@@ -92,7 +120,10 @@ export default function CorretoresPage() {
       especialidade: corretor.especialidade || '',
       comissao: corretor.comissao?.toString() || '',
     });
+    setActiveTab('dados');
+    setCorretorImoveis([]);
     setModalOpen(true);
+    loadCorretorImoveis(corretor.id);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -230,7 +261,7 @@ export default function CorretoresPage() {
                       onClick={() => openEditModal(corretor)}
                       className="text-[#7FB344] hover:text-[#006D77] mr-4 font-bold hover:underline transition-all"
                     >
-                      ✏️ Editar
+                      👁️ Consultar
                     </button>
                     <button
                       onClick={() => {
@@ -253,10 +284,40 @@ export default function CorretoresPage() {
       <Modal
         isOpen={modalOpen}
         onClose={() => setModalOpen(false)}
-        title={editingCorretor ? 'Editar Corretor' : 'Novo Corretor'}
+        title={editingCorretor ? 'Consultar Corretor' : 'Novo Corretor'}
         size="lg"
       >
-        <form onSubmit={handleSubmit} className="space-y-4">
+        {/* Abas - apenas quando editando */}
+        {editingCorretor && (
+          <div className="flex border-b border-[rgba(169,126,111,0.3)] mb-6">
+            <button
+              type="button"
+              onClick={() => setActiveTab('dados')}
+              className={`px-6 py-3 font-bold transition-all ${
+                activeTab === 'dados'
+                  ? 'border-b-4 border-[#8FD14F] text-[#8FD14F]'
+                  : 'text-[#8B7F76] hover:text-[#7FB344]'
+              }`}
+            >
+              📋 Dados
+            </button>
+            <button
+              type="button"
+              onClick={() => setActiveTab('imoveis')}
+              className={`px-6 py-3 font-bold transition-all ${
+                activeTab === 'imoveis'
+                  ? 'border-b-4 border-[#8FD14F] text-[#8FD14F]'
+                  : 'text-[#8B7F76] hover:text-[#7FB344]'
+              }`}
+            >
+              🏘️ Imóveis ({corretorImoveis.length})
+            </button>
+          </div>
+        )}
+
+        {/* Conteúdo da aba Dados */}
+        {activeTab === 'dados' && (
+          <form onSubmit={handleSubmit} className="space-y-4">
           <div className="grid grid-cols-2 gap-4">
             <div className="col-span-2">
               <label className="block text-sm font-bold text-[#2C2C2C] mb-2">
@@ -356,6 +417,71 @@ export default function CorretoresPage() {
             </button>
           </div>
         </form>
+        )}
+
+        {/* Conteúdo da aba Imóveis */}
+        {activeTab === 'imoveis' && editingCorretor && (
+          <div className="space-y-4">
+            {loadingImoveis ? (
+              <div className="flex justify-center items-center py-12">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#8FD14F]"></div>
+              </div>
+            ) : corretorImoveis.length === 0 ? (
+              <div className="text-center py-12">
+                <p className="text-[#8B7F76] text-lg">Nenhum imóvel sob responsabilidade deste corretor</p>
+              </div>
+            ) : (
+              <div className="max-h-[500px] overflow-y-auto space-y-3">
+                {corretorImoveis.map((imovel) => (
+                  <div
+                    key={imovel.id}
+                    className="flex gap-4 p-4 border-2 border-[rgba(169,126,111,0.2)] rounded-lg hover:border-[#8FD14F] hover:shadow-lg transition-all bg-white"
+                  >
+                    {/* Foto */}
+                    {imovel.fotoPrincipal ? (
+                      <img
+                        src={imovel.fotoPrincipal}
+                        alt={imovel.titulo}
+                        className="w-24 h-24 object-cover rounded-lg"
+                      />
+                    ) : (
+                      <div className="w-24 h-24 bg-gray-200 rounded-lg flex items-center justify-center">
+                        <span className="text-4xl">🏘️</span>
+                      </div>
+                    )}
+
+                    {/* Informações */}
+                    <div className="flex-1">
+                      <h4 className="font-bold text-[#2C2C2C] text-lg">{imovel.titulo}</h4>
+                      <div className="flex gap-4 mt-2 text-sm">
+                        <span className="px-2 py-1 bg-[#A97E6F]/20 text-[#A97E6F] rounded-md font-bold">
+                          {imovel.tipo}
+                        </span>
+                        <span className={`px-2 py-1 rounded-md font-bold ${
+                          imovel.status === 'DISPONIVEL'
+                            ? 'bg-[#8FD14F]/20 text-[#4A6B29]'
+                            : imovel.status === 'RESERVADO'
+                            ? 'bg-[#FFB627]/20 text-[#FFB627]'
+                            : 'bg-[#FF6B6B]/20 text-[#FF006E]'
+                        }`}>
+                          {imovel.status}
+                        </span>
+                      </div>
+                      <p className="text-[#8FD14F] font-bold text-xl mt-2">
+                        R$ {imovel.preco.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                      </p>
+                      {imovel.endereco && (
+                        <p className="text-[#8B7F76] text-sm mt-1">
+                          📍 {imovel.endereco.cidade}, {imovel.endereco.estado}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
       </Modal>
 
       {/* Modal de Confirmação de Exclusão */}
