@@ -16,10 +16,15 @@ const server = Fastify({
 })
 
 server.register(cors, {
-  origin: true,
+  origin: [
+    'http://localhost:3000',
+    'https://vivoly.integrius.com.br',
+    'https://imobiflow-web.onrender.com'
+  ],
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
-  credentials: true
+  credentials: true,
+  exposedHeaders: ['Authorization']
 })
 
 server.register(helmet, {
