@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { api } from '@/lib/api';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 
 interface DashboardData {
   leads: { total: number; quentes: number };
@@ -9,16 +10,27 @@ interface DashboardData {
   negociacoes: { total: number; fechadas: number; taxaConversao: number };
 }
 
+interface ChartData {
+  last3Months: { mes: string; leads: number; imoveis: number; negociacoes: number }[];
+  last6Months: { mes: string; leads: number; imoveis: number; negociacoes: number }[];
+  last12Months: { mes: string; leads: number; imoveis: number; negociacoes: number }[];
+}
+
 export default function DashboardPage() {
   const [data, setData] = useState<DashboardData | null>(null);
+  const [chartData, setChartData] = useState<ChartData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
   useEffect(() => {
     async function loadData() {
       try {
-        const dashboardData = await api.get('/dashboard/overview').then(res => res.data);
+        const [dashboardData, chartsData] = await Promise.all([
+          api.get('/dashboard/overview').then(res => res.data),
+          api.get('/dashboard/charts').then(res => res.data)
+        ]);
         setData(dashboardData);
+        setChartData(chartsData);
       } catch (err: any) {
         setError('Erro ao carregar dados');
         console.error(err);
@@ -145,6 +157,111 @@ export default function DashboardPage() {
               </div>
             </div>
             <div className="h-2 bg-gradient-to-r from-[#FFB627] to-[#FF006E]"></div>
+          </div>
+        </div>
+      )}
+
+      {/* Gráficos Históricos */}
+      {chartData && (
+        <div className="mt-12">
+          <h3 className="text-2xl font-bold text-[#2C2C2C] mb-6">Evolução nos Últimos Meses</h3>
+
+          <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
+            {/* Gráfico 3 Meses */}
+            <div className="card-warm p-6">
+              <h4 className="text-lg font-semibold text-[#2C2C2C] mb-4 text-center">Últimos 3 Meses</h4>
+              <ResponsiveContainer width="100%" height={300}>
+                <BarChart data={chartData.last3Months}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#E5E5E5" />
+                  <XAxis dataKey="mes" stroke="#8B7F76" fontSize={12} />
+                  <YAxis stroke="#8B7F76" fontSize={12} />
+                  <Tooltip
+                    contentStyle={{
+                      backgroundColor: '#FFFAF5',
+                      border: '2px solid #8FD14F',
+                      borderRadius: '8px',
+                      fontWeight: 'bold'
+                    }}
+                  />
+                  <Legend
+                    wrapperStyle={{ fontSize: '12px', fontWeight: 'bold' }}
+                    iconType="rect"
+                  />
+                  <Bar dataKey="leads" fill="#8FD14F" name="Leads" radius={[8, 8, 0, 0]} />
+                  <Bar dataKey="imoveis" fill="#A97E6F" name="Imóveis" radius={[8, 8, 0, 0]} />
+                  <Bar dataKey="negociacoes" fill="#FFB627" name="Negociações" radius={[8, 8, 0, 0]} />
+                </BarChart>
+              </ResponsiveContainer>
+              <div className="mt-4 text-center">
+                <p className="text-sm font-bold text-[#8B7F76]">
+                  Total: {chartData.last3Months.reduce((acc, m) => acc + m.leads + m.imoveis + m.negociacoes, 0)}
+                </p>
+              </div>
+            </div>
+
+            {/* Gráfico 6 Meses */}
+            <div className="card-warm p-6">
+              <h4 className="text-lg font-semibold text-[#2C2C2C] mb-4 text-center">Últimos 6 Meses</h4>
+              <ResponsiveContainer width="100%" height={300}>
+                <BarChart data={chartData.last6Months}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#E5E5E5" />
+                  <XAxis dataKey="mes" stroke="#8B7F76" fontSize={12} />
+                  <YAxis stroke="#8B7F76" fontSize={12} />
+                  <Tooltip
+                    contentStyle={{
+                      backgroundColor: '#FFFAF5',
+                      border: '2px solid #8FD14F',
+                      borderRadius: '8px',
+                      fontWeight: 'bold'
+                    }}
+                  />
+                  <Legend
+                    wrapperStyle={{ fontSize: '12px', fontWeight: 'bold' }}
+                    iconType="rect"
+                  />
+                  <Bar dataKey="leads" fill="#8FD14F" name="Leads" radius={[8, 8, 0, 0]} />
+                  <Bar dataKey="imoveis" fill="#A97E6F" name="Imóveis" radius={[8, 8, 0, 0]} />
+                  <Bar dataKey="negociacoes" fill="#FFB627" name="Negociações" radius={[8, 8, 0, 0]} />
+                </BarChart>
+              </ResponsiveContainer>
+              <div className="mt-4 text-center">
+                <p className="text-sm font-bold text-[#8B7F76]">
+                  Total: {chartData.last6Months.reduce((acc, m) => acc + m.leads + m.imoveis + m.negociacoes, 0)}
+                </p>
+              </div>
+            </div>
+
+            {/* Gráfico 12 Meses */}
+            <div className="card-warm p-6">
+              <h4 className="text-lg font-semibold text-[#2C2C2C] mb-4 text-center">Últimos 12 Meses</h4>
+              <ResponsiveContainer width="100%" height={300}>
+                <BarChart data={chartData.last12Months}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#E5E5E5" />
+                  <XAxis dataKey="mes" stroke="#8B7F76" fontSize={12} />
+                  <YAxis stroke="#8B7F76" fontSize={12} />
+                  <Tooltip
+                    contentStyle={{
+                      backgroundColor: '#FFFAF5',
+                      border: '2px solid #8FD14F',
+                      borderRadius: '8px',
+                      fontWeight: 'bold'
+                    }}
+                  />
+                  <Legend
+                    wrapperStyle={{ fontSize: '12px', fontWeight: 'bold' }}
+                    iconType="rect"
+                  />
+                  <Bar dataKey="leads" fill="#8FD14F" name="Leads" radius={[8, 8, 0, 0]} />
+                  <Bar dataKey="imoveis" fill="#A97E6F" name="Imóveis" radius={[8, 8, 0, 0]} />
+                  <Bar dataKey="negociacoes" fill="#FFB627" name="Negociações" radius={[8, 8, 0, 0]} />
+                </BarChart>
+              </ResponsiveContainer>
+              <div className="mt-4 text-center">
+                <p className="text-sm font-bold text-[#8B7F76]">
+                  Total: {chartData.last12Months.reduce((acc, m) => acc + m.leads + m.imoveis + m.negociacoes, 0)}
+                </p>
+              </div>
+            </div>
           </div>
         </div>
       )}
