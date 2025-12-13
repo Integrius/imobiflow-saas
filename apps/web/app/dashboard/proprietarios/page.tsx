@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { api } from '@/lib/api';
 import { toast } from '@/lib/toast';
 import Modal from '@/components/Modal';
+import { formatPhone, formatCPF, formatCNPJ, unformatNumbers } from '@/lib/formatters';
 
 interface Proprietario {
   id: string;
@@ -102,6 +103,19 @@ export default function ProprietariosPage() {
   };
 
   const handleFormChange = (field: string, value: any) => {
+    // Aplica formatação automática para telefone e CPF/CNPJ
+    if (field === 'telefone') {
+      value = formatPhone(value);
+    }
+    if (field === 'cpf_cnpj') {
+      // Aplica formatação CPF ou CNPJ dependendo do tipo de pessoa
+      if (formData.tipo_pessoa === 'FISICA') {
+        value = formatCPF(value);
+      } else {
+        value = formatCNPJ(value);
+      }
+    }
+
     setFormData({ ...formData, [field]: value });
     setHasUnsavedChanges(true);
   };
@@ -151,8 +165,10 @@ export default function ProprietariosPage() {
     const formDataToSet = {
       nome: proprietario.nome,
       email: proprietario.contato?.email || '',
-      telefone: proprietario.contato?.telefone_principal || '',
-      cpf_cnpj: proprietario.cpf_cnpj,
+      telefone: formatPhone(proprietario.contato?.telefone_principal || ''),
+      cpf_cnpj: proprietario.tipo_pessoa === 'FISICA'
+        ? formatCPF(proprietario.cpf_cnpj)
+        : formatCNPJ(proprietario.cpf_cnpj),
       tipo_pessoa: proprietario.tipo_pessoa,
       endereco: proprietario.endereco || '',
     };

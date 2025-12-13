@@ -5,6 +5,7 @@ import { api } from '@/lib/api';
 import { toast } from '@/lib/toast';
 import Modal from '@/components/Modal';
 import ImageUpload from '@/components/ImageUpload';
+import { formatCEP, formatCurrencyInput, parseCurrency, unformatNumbers } from '@/lib/formatters';
 
 interface Imovel {
   id: string;
@@ -157,6 +158,14 @@ export default function ImoveisPage() {
   };
 
   const handleFormChange = (field: string, value: any) => {
+    // Aplica formatação automática para CEP e valor
+    if (field === 'cep') {
+      value = formatCEP(value);
+    }
+    if (field === 'valor') {
+      value = formatCurrencyInput(value);
+    }
+
     setFormData({ ...formData, [field]: value });
     setHasUnsavedChanges(true);
   };
@@ -207,8 +216,8 @@ export default function ImoveisPage() {
       endereco: `${imovel.endereco?.logradouro || ''}, ${imovel.endereco?.numero || ''}`,
       cidade: imovel.endereco?.cidade || '',
       estado: imovel.endereco?.estado || '',
-      cep: imovel.endereco?.cep || '',
-      valor: (imovel.valor || imovel.preco)?.toString() || '0',
+      cep: formatCEP(imovel.endereco?.cep || ''),
+      valor: formatCurrencyInput(((imovel.valor || imovel.preco) || 0).toString()),
       area: imovel.caracteristicas?.area_total?.toString() || '',
       quartos: imovel.caracteristicas?.quartos?.toString() || '',
       banheiros: imovel.caracteristicas?.banheiros?.toString() || '',
@@ -243,9 +252,9 @@ export default function ImoveisPage() {
           numero,
           cidade: formData.cidade,
           estado: formData.estado,
-          cep: formData.cep.replace(/\D/g, ''),
+          cep: unformatNumbers(formData.cep),
         },
-        preco: parseFloat(formData.valor),
+        preco: parseCurrency(formData.valor),
         status: formData.status,
         proprietario_id: formData.proprietario_id,
         caracteristicas: {
@@ -554,10 +563,9 @@ export default function ImoveisPage() {
                 Valor (R$) *
               </label>
               <input
-                type="number"
+                type="text"
                 required
-                step="0.01"
-                min="0"
+                placeholder="0,00"
                 value={formData.valor}
                 onChange={(e) => handleFormChange('valor', e.target.value)}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
@@ -612,6 +620,7 @@ export default function ImoveisPage() {
               <input
                 type="text"
                 required
+                placeholder="00000-000"
                 value={formData.cep}
                 onChange={(e) => handleFormChange('cep', e.target.value)}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"

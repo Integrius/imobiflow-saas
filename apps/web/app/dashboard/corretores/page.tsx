@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { api } from '@/lib/api';
 import { toast } from '@/lib/toast';
 import Modal from '@/components/Modal';
+import { formatPhone, unformatNumbers } from '@/lib/formatters';
 
 interface Corretor {
   id: string;
@@ -49,16 +50,6 @@ export default function CorretoresPage() {
   const [loadingImoveis, setLoadingImoveis] = useState(false);
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const [originalFormData, setOriginalFormData] = useState<any>(null);
-
-  const formatPhone = (phone: string) => {
-    const cleaned = phone.replace(/\D/g, '');
-    if (cleaned.length === 11) {
-      return `(${cleaned.slice(0, 2)}) ${cleaned.slice(2, 7)}-${cleaned.slice(7)}`;
-    } else if (cleaned.length === 10) {
-      return `(${cleaned.slice(0, 2)}) ${cleaned.slice(2, 6)}-${cleaned.slice(6)}`;
-    }
-    return phone;
-  };
 
   const [formData, setFormData] = useState<CorretorForm>({
     nome: '',
@@ -113,6 +104,11 @@ export default function CorretoresPage() {
   };
 
   const handleFormChange = (field: string, value: any) => {
+    // Aplica formatação automática para telefone
+    if (field === 'telefone') {
+      value = formatPhone(value);
+    }
+
     setFormData({ ...formData, [field]: value });
     setHasUnsavedChanges(true);
   };
@@ -147,7 +143,7 @@ export default function CorretoresPage() {
     const formDataToSet = {
       nome: corretor.nome,
       email: corretor.email,
-      telefone: corretor.telefone,
+      telefone: formatPhone(corretor.telefone),
       creci: corretor.creci,
       especialidade: corretor.especialidade || '',
       comissao: corretor.comissao?.toString() || '',
@@ -166,8 +162,10 @@ export default function CorretoresPage() {
     setSubmitting(true);
 
     try {
+      // Remove formatação do telefone antes de enviar
       const payload = {
         ...formData,
+        telefone: unformatNumbers(formData.telefone),
         comissao: formData.comissao ? parseFloat(formData.comissao) : undefined,
       };
 
@@ -388,6 +386,7 @@ export default function CorretoresPage() {
               <input
                 type="tel"
                 required
+                placeholder="(00) 00000-0000"
                 value={formData.telefone}
                 onChange={(e) => handleFormChange('telefone', e.target.value)}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"

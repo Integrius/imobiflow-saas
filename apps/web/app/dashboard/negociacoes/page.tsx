@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { api } from '@/lib/api';
 import { toast } from '@/lib/toast';
 import Modal from '@/components/Modal';
+import { formatCurrencyInput, parseCurrency } from '@/lib/formatters';
 
 interface Negociacao {
   id: string;
@@ -84,34 +85,6 @@ export default function NegociacoesPage() {
     data_conclusao: '',
     observacoes: '',
   });
-
-  // Formata valor para exibição no padrão brasileiro
-  const formatCurrency = (value: string): string => {
-    if (!value) return '';
-    const numericValue = value.replace(/\D/g, '');
-    const number = parseFloat(numericValue) / 100;
-    return number.toLocaleString('pt-BR', {
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2,
-    });
-  };
-
-  // Formata número do banco de dados para exibição
-  const formatNumberToCurrency = (value: number | string | null | undefined): string => {
-    if (!value) return '';
-    const numValue = typeof value === 'string' ? parseFloat(value) : value;
-    if (isNaN(numValue)) return '';
-    return numValue.toLocaleString('pt-BR', {
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2,
-    });
-  };
-
-  // Remove formatação para salvar no banco
-  const parseCurrency = (value: string): string => {
-    if (!value) return '';
-    return value.replace(/\./g, '').replace(',', '.');
-  };
 
   useEffect(() => {
     loadAll();
@@ -226,8 +199,8 @@ export default function NegociacoesPage() {
       imovel_id: negociacao.imovel_id,
       corretor_id: negociacao.corretor_id || '',
       status: negociacao.status,
-      valor_proposta: formatNumberToCurrency(negociacao.valor_proposta),
-      valor_final: formatNumberToCurrency(negociacao.valor_final),
+      valor_proposta: formatCurrencyInput(negociacao.valor_proposta?.toString() || '0'),
+      valor_final: formatCurrencyInput((negociacao.valor_final || 0)?.toString()),
       percentual_comissao: negociacao.percentual_comissao?.toString() || '5',
       data_inicio: negociacao.data_inicio ? negociacao.data_inicio.split('T')[0] : new Date().toISOString().split('T')[0],
       data_conclusao: negociacao.data_conclusao ? negociacao.data_conclusao.split('T')[0] : '',
@@ -508,7 +481,7 @@ export default function NegociacoesPage() {
                 required
                 value={formData.valor_proposta}
                 onChange={(e) => {
-                  const formatted = formatCurrency(e.target.value);
+                  const formatted = formatCurrencyInput(e.target.value);
                   handleFormChange('valor_proposta', formatted);
                 }}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
@@ -525,7 +498,7 @@ export default function NegociacoesPage() {
                 type="text"
                 value={formData.valor_final}
                 onChange={(e) => {
-                  const formatted = formatCurrency(e.target.value);
+                  const formatted = formatCurrencyInput(e.target.value);
                   handleFormChange('valor_final', formatted);
                 }}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
