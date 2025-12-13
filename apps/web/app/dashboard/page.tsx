@@ -107,7 +107,7 @@ export default function DashboardPage() {
             <div className="p-6">
               <div className="flex items-center justify-between mb-4">
                 <div className="p-3 bg-gradient-to-br from-[#A97E6F] to-[#8B6F5C] rounded-xl shadow-lg">
-                  <span className="text-3xl">🏘️</span>
+                  <img src="/ico-imoveis.png" alt="Imóveis" className="w-8 h-8" />
                 </div>
                 <div className="text-right">
                   <div className="text-sm font-semibold text-[#A97E6F] uppercase tracking-wider">
@@ -134,7 +134,7 @@ export default function DashboardPage() {
             <div className="p-6">
               <div className="flex items-center justify-between mb-4">
                 <div className="p-3 bg-gradient-to-br from-[#FFB627] to-[#FF006E] rounded-xl shadow-lg">
-                  <span className="text-3xl">💼</span>
+                  <img src="/ico-negociacoes.png" alt="Negociações" className="w-8 h-8" />
                 </div>
                 <div className="text-right">
                   <div className="text-sm font-semibold text-[#FFB627] uppercase tracking-wider">

@@ -34,9 +34,9 @@ export default function DashboardLayout({
     { name: 'Dashboard', href: '/dashboard', icon: '📊', iconImage: '/ico-dashboard.png' },
     { name: 'Leads', href: '/dashboard/leads', icon: '👥', iconImage: '/ico-Leads.png' },
     { name: 'Corretores', href: '/dashboard/corretores', icon: '🏢', iconImage: '/ico-corretores.png' },
-    { name: 'Proprietários', href: '/dashboard/proprietarios', icon: '🏠' },
-    { name: 'Imóveis', href: '/dashboard/imoveis', icon: '🏘️' },
-    { name: 'Negociações', href: '/dashboard/negociacoes', icon: '💼' },
+    { name: 'Proprietários', href: '/dashboard/proprietarios', icon: '🏠', iconImage: '/ico-proprietarios.png' },
+    { name: 'Imóveis', href: '/dashboard/imoveis', icon: '🏘️', iconImage: '/ico-imoveis.png' },
+    { name: 'Negociações', href: '/dashboard/negociacoes', icon: '💼', iconImage: '/ico-negociacoes.png' },
   ];
 
   return (
