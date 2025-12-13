@@ -47,6 +47,7 @@ interface ImovelForm {
   titulo: string;
   descricao: string;
   tipo: string;
+  categoria: string;
   endereco: string;
   cidade: string;
   estado: string;
@@ -90,6 +91,7 @@ export default function ImoveisPage() {
     titulo: '',
     descricao: '',
     tipo: 'APARTAMENTO',
+    categoria: 'VENDA',
     endereco: '',
     cidade: '',
     estado: '',
@@ -176,6 +178,7 @@ export default function ImoveisPage() {
       titulo: '',
       descricao: '',
       tipo: 'APARTAMENTO',
+      categoria: 'VENDA',
       endereco: '',
       cidade: '',
       estado: '',
@@ -200,6 +203,7 @@ export default function ImoveisPage() {
       titulo: imovel.titulo || '',
       descricao: imovel.descricao || '',
       tipo: imovel.tipo || 'APARTAMENTO',
+      categoria: 'VENDA',
       endereco: `${imovel.endereco?.logradouro || ''}, ${imovel.endereco?.numero || ''}`,
       cidade: imovel.endereco?.cidade || '',
       estado: imovel.endereco?.estado || '',
@@ -233,21 +237,22 @@ export default function ImoveisPage() {
         titulo: formData.titulo,
         descricao: formData.descricao,
         tipo: formData.tipo,
+        categoria: formData.categoria,
         endereco: {
           logradouro,
           numero,
           cidade: formData.cidade,
           estado: formData.estado,
-          cep: formData.cep,
+          cep: formData.cep.replace(/\D/g, ''),
         },
-        valor: parseFloat(formData.valor),
+        preco: parseFloat(formData.valor),
         status: formData.status,
         proprietario_id: formData.proprietario_id,
         caracteristicas: {
           area_total: formData.area ? parseFloat(formData.area) : undefined,
           quartos: formData.quartos ? parseInt(formData.quartos) : undefined,
           banheiros: formData.banheiros ? parseInt(formData.banheiros) : undefined,
-          vagas_garagem: formData.vagas ? parseInt(formData.vagas) : undefined,
+          vagas: formData.vagas ? parseInt(formData.vagas) : undefined,
         },
       };
 
