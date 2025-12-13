@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { api } from '@/lib/api';
 import { toast } from '@/lib/toast';
 import Modal from '@/components/Modal';
+import { formatPhone, unformatNumbers } from '@/lib/formatters';
 
 interface Lead {
   id: string;
@@ -42,17 +43,6 @@ export default function LeadsPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const [originalFormData, setOriginalFormData] = useState<any>(null);
-
-  const formatPhone = (phone: string) => {
-    const cleaned = phone.replace(/\D/g, '');
-    if (cleaned.length === 11) {
-      return `(${cleaned.slice(0, 2)}) ${cleaned.slice(2, 7)}-${cleaned.slice(7)}`;
-    } else if (cleaned.length === 10) {
-      return `(${cleaned.slice(0, 2)}) ${cleaned.slice(2, 6)}-${cleaned.slice(6)}`;
-    }
-    return phone;
-  };
-
   const [formData, setFormData] = useState<LeadForm>({
     nome: '',
     email: '',
@@ -97,6 +87,11 @@ export default function LeadsPage() {
   };
 
   const handleFormChange = (field: string, value: any) => {
+    // Aplica formatação automática para telefone
+    if (field === 'telefone') {
+      value = formatPhone(value);
+    }
+
     if (field.includes('.')) {
       const [parent, child] = field.split('.');
       setFormData({
@@ -169,11 +164,17 @@ export default function LeadsPage() {
     setSubmitting(true);
 
     try {
+      // Remove formatação do telefone antes de enviar
+      const payload = {
+        ...formData,
+        telefone: unformatNumbers(formData.telefone),
+      };
+
       if (editingLead) {
-        await api.put(`/leads/${editingLead.id}`, formData);
+        await api.put(`/leads/${editingLead.id}`, payload);
         toast.success('Lead atualizado com sucesso!');
       } else {
-        await api.post('/leads', formData);
+        await api.post('/leads', payload);
         toast.success('Lead cadastrado com sucesso!');
       }
       setHasUnsavedChanges(false);
@@ -350,6 +351,7 @@ export default function LeadsPage() {
                 <input
                   type="tel"
                   required
+                  placeholder="(00) 00000-0000"
                   value={formData.telefone}
                   onChange={(e) => handleFormChange('telefone', e.target.value)}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
