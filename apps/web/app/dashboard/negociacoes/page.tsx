@@ -219,8 +219,8 @@ export default function NegociacoesPage() {
     try {
       const payload = {
         ...formData,
-        valor_proposta: parseFloat(parseCurrency(formData.valor_proposta)),
-        valor_final: formData.valor_final ? parseFloat(parseCurrency(formData.valor_final)) : undefined,
+        valor_proposta: parseCurrency(formData.valor_proposta),
+        valor_final: formData.valor_final ? parseCurrency(formData.valor_final) : undefined,
         percentual_comissao: parseFloat(formData.percentual_comissao),
         data_conclusao: formData.data_conclusao || undefined,
         corretor_id: formData.corretor_id || undefined,
