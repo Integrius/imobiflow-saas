@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
 import { getToken } from '@/lib/auth';
+import ChristmasFloat from '@/components/ChristmasFloat';
 
 export default function Home() {
   const router = useRouter();
@@ -29,6 +30,9 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-[#FAF8F5] relative">
+      {/* Christmas Floating Santa */}
+      <ChristmasFloat />
+
       {/* Background Gradient Mesh - Animated */}
       <div className="absolute inset-0 bg-gradient-mesh opacity-40"></div>
 
