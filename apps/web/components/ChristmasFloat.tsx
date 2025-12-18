@@ -203,7 +203,7 @@ export default function ChristmasFloat() {
         </button>
 
         <img
-          src="/Santa%20Claus.png"
+          src="/santa-claus.png"
           alt="Papai Noel"
           className="santa-image"
           onClick={() => setShowMessage(!showMessage)}
