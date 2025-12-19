@@ -2,7 +2,7 @@
 
 ## ❌ Erro Atual: `400: origin_mismatch`
 
-Este erro ocorre porque as URLs do Render não estão autorizadas no Google Cloud Console.
+Este erro ocorre porque a URL do Cloudflare (vivoly.integrius.com.br) não está autorizada no Google Cloud Console.
 
 ## ✅ Solução (5 minutos)
 
@@ -19,7 +19,7 @@ https://console.cloud.google.com/apis/credentials
 Adicione TODAS estas URLs:
 ```
 http://localhost:3000
-https://imobiflow-frontend-bdnqa7ebp-hans-dohmanns-projects.vercel.app
+https://vivoly.integrius.com.br
 https://imobiflow.com.br
 https://www.imobiflow.com.br
 ```
@@ -29,8 +29,8 @@ Adicione TODAS estas URLs:
 ```
 http://localhost:3000
 http://localhost:3000/login
-https://imobiflow-frontend-bdnqa7ebp-hans-dohmanns-projects.vercel.app
-https://imobiflow-frontend-bdnqa7ebp-hans-dohmanns-projects.vercel.app/login
+https://vivoly.integrius.com.br
+https://vivoly.integrius.com.br/login
 https://imobiflow.com.br
 https://imobiflow.com.br/login
 https://www.imobiflow.com.br
@@ -47,7 +47,7 @@ As mudanças podem levar até 1 minuto para propagar.
 
 ## 🧪 Teste após configurar
 
-1. Acesse: https://imobiflow-frontend-bdnqa7ebp-hans-dohmanns-projects.vercel.app/login
+1. Acesse: https://vivoly.integrius.com.br/login
 2. Clique em "Continuar com Google"
 3. Deve abrir popup do Google sem erro
 

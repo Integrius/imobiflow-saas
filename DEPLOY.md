@@ -10,24 +10,24 @@
 - **Auto-deploy**: ✅ Ativo (push para `main`)
 - **Configuração**: `render.yaml`
 
-### ✅ Frontend (Web) - Vercel
-- **URL Produção**: https://imobiflow-frontend-bdnqa7ebp-hans-dohmanns-projects.vercel.app
-- **Plataforma**: Vercel
+### ✅ Frontend (Web) - Cloudflare Pages
+- **URL Produção**: https://vivoly.integrius.com.br
+- **Plataforma**: Cloudflare Pages
 - **Auto-deploy**: ✅ Ativo (push para `main`)
-- **Configuração**: `vercel.json`
+- **CDN Global**: 275+ cidades (14 no Brasil)
 
 ### ❌ NÃO usar Frontend no Render
-O Render está configurado APENAS para rodar a API. Todo o frontend roda exclusivamente no Vercel.
+O Render está configurado APENAS para rodar a API. Todo o frontend roda exclusivamente no Cloudflare Pages.
 
 ---
 
 ## Pré-requisitos
 
-1. Conta na Vercel (https://vercel.com)
+1. Conta no Cloudflare (https://cloudflare.com)
 2. Repositório Git (GitHub, GitLab ou Bitbucket)
-3. Vercel CLI instalado (opcional, mas recomendado)
+3. Conta no Render (https://render.com)
 
-## Opção 1: Deploy via Dashboard da Vercel (Recomendado)
+## Deploy do Frontend (Cloudflare Pages)
 
 ### Passo 1: Preparar o Repositório
 
@@ -147,13 +147,13 @@ git push origin main
 
 **Resultado:**
 - ✅ Render faz rebuild da API automaticamente
-- ✅ Vercel faz rebuild do Frontend automaticamente
+- ✅ Cloudflare Pages faz rebuild do Frontend automaticamente
 
 ### Deploy Manual Frontend (se necessário)
-```bash
-cd apps/web
-vercel --prod
-```
+- Acesse https://dash.cloudflare.com
+- Vá em "Workers & Pages"
+- Selecione seu projeto
+- Click "Create deployment" → "Deploy latest commit"
 
 ### Deploy Manual Backend (se necessário)
 - Acesse https://dashboard.render.com
@@ -172,10 +172,15 @@ CLOUDINARY_API_KEY=...
 CLOUDINARY_API_SECRET=...
 ```
 
-### Frontend (Vercel Dashboard)
+### Frontend (Cloudflare Pages Dashboard)
 ```env
 NEXT_PUBLIC_API_URL=https://imobiflow-saas-1.onrender.com
 ```
+
+**Como configurar:**
+1. Acesse https://dash.cloudflare.com
+2. Workers & Pages → Seu projeto → Settings → Environment variables
+3. Adicione a variável para Production e Preview
 
 ## Domínio Customizado
 
