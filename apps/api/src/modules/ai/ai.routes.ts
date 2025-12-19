@@ -1,22 +1,28 @@
 import { FastifyInstance } from 'fastify';
 import { MessageProcessorV2Service } from '../../ai/services/message-processor-v2.service';
 import { PrismaClient } from '@prisma/client';
+import { authMiddleware } from '../../shared/middlewares/auth.middleware';
+import { tenantMiddleware } from '../../shared/middlewares/tenant.middleware';
 
 const prisma = new PrismaClient();
 
 export async function aiRoutes(server: FastifyInstance) {
+  // 🔒 SEGURANÇA CRÍTICA: Adiciona autenticação e validação de tenant em TODAS as rotas
+  server.addHook('onRequest', authMiddleware);
+  server.addHook('onRequest', tenantMiddleware);
   /**
    * POST /api/v1/ai/process-message
    * Processa uma mensagem recebida de um lead
    */
   server.post('/process-message', async (request, reply) => {
     try {
-      const { tenantId, leadId, message } = request.body as any;
+      const { leadId, message } = request.body as any;
+      const tenantId = request.tenantId; // 🔒 SEGURO: vem do middleware, não do body
 
       // Validação
-      if (!tenantId || !leadId || !message) {
+      if (!leadId || !message) {
         return reply.status(400).send({
-          error: 'Campos obrigatórios: tenantId, leadId, message'
+          error: 'Campos obrigatórios: leadId, message'
         });
       }
 
@@ -56,13 +62,7 @@ export async function aiRoutes(server: FastifyInstance) {
   server.get('/lead/:leadId/messages', async (request, reply) => {
     try {
       const { leadId } = request.params as any;
-      const { tenantId } = request.query as any;
-
-      if (!tenantId) {
-        return reply.status(400).send({
-          error: 'tenantId é obrigatório'
-        });
-      }
+      const tenantId = request.tenantId; // 🔒 SEGURO: vem do middleware
 
       // Busca mensagens
       const messages = await prisma.message.findMany({
@@ -115,13 +115,7 @@ export async function aiRoutes(server: FastifyInstance) {
   server.get('/lead/:leadId/conversation', async (request, reply) => {
     try {
       const { leadId } = request.params as any;
-      const { tenantId } = request.query as any;
-
-      if (!tenantId) {
-        return reply.status(400).send({
-          error: 'tenantId é obrigatório'
-        });
-      }
+      const tenantId = request.tenantId; // 🔒 SEGURO: vem do middleware
 
       // Busca lead com mensagens
       const lead = await prisma.lead.findUnique({
@@ -200,13 +194,7 @@ export async function aiRoutes(server: FastifyInstance) {
    */
   server.get('/stats', async (request, reply) => {
     try {
-      const { tenantId } = request.query as any;
-
-      if (!tenantId) {
-        return reply.status(400).send({
-          error: 'tenantId é obrigatório'
-        });
-      }
+      const tenantId = request.tenantId; // 🔒 SEGURO: vem do middleware
 
       const [
         totalLeadsWithAI,
@@ -277,11 +265,17 @@ export async function aiRoutes(server: FastifyInstance) {
   server.patch('/lead/:leadId/toggle', async (request, reply) => {
     try {
       const { leadId } = request.params as any;
-      const { tenantId, enabled } = request.body as any;
+      const { enabled } = request.body as any;
+      const tenantId = request.tenantId; // 🔒 SEGURO: vem do middleware
 
-      if (!tenantId) {
-        return reply.status(400).send({
-          error: 'tenantId é obrigatório'
+      // 🔒 SEGURANÇA: Valida que o lead pertence ao tenant antes de atualizar
+      const leadExists = await prisma.lead.findFirst({
+        where: { id: leadId, tenant_id: tenantId }
+      });
+
+      if (!leadExists) {
+        return reply.status(404).send({
+          error: 'Lead não encontrado'
         });
       }
 
@@ -317,11 +311,17 @@ export async function aiRoutes(server: FastifyInstance) {
   server.post('/lead/:leadId/escalate', async (request, reply) => {
     try {
       const { leadId } = request.params as any;
-      const { tenantId, reason } = request.body as any;
+      const { reason } = request.body as any;
+      const tenantId = request.tenantId; // 🔒 SEGURO: vem do middleware
 
-      if (!tenantId) {
-        return reply.status(400).send({
-          error: 'tenantId é obrigatório'
+      // 🔒 SEGURANÇA: Valida que o lead pertence ao tenant antes de escalar
+      const leadExists = await prisma.lead.findFirst({
+        where: { id: leadId, tenant_id: tenantId }
+      });
+
+      if (!leadExists) {
+        return reply.status(404).send({
+          error: 'Lead não encontrado'
         });
       }
 
