@@ -22,20 +22,17 @@ export default function LoginPage() {
 
     try {
       await login({ email, senha });
+      setLoading(false);
       router.push('/dashboard');
     } catch (err: any) {
       const errorMessage = err.response?.data?.error || 'Erro ao fazer login';
       setError(errorMessage);
       setLoading(false);
 
-      // Mantém a mensagem de erro visível por 5 segundos
+      // Mantém a mensagem de erro visível por 10 segundos (tempo garantido)
       setTimeout(() => {
         setError('');
-      }, 5000);
-
-      return; // Não executa o finally
-    } finally {
-      setLoading(false);
+      }, 10000);
     }
   }
 
@@ -51,6 +48,7 @@ export default function LoginPage() {
       if (response.data.token) {
         localStorage.setItem('token', response.data.token);
         localStorage.setItem('user', JSON.stringify(response.data.user));
+        setLoading(false);
         router.push('/dashboard');
       }
     } catch (err: any) {
@@ -58,24 +56,20 @@ export default function LoginPage() {
       setError(errorMessage);
       setLoading(false);
 
-      // Mantém a mensagem de erro visível por 5 segundos
+      // Mantém a mensagem de erro visível por 10 segundos (tempo garantido)
       setTimeout(() => {
         setError('');
-      }, 5000);
-
-      return; // Não executa o finally
-    } finally {
-      setLoading(false);
+      }, 10000);
     }
   }
 
   function handleGoogleError() {
     setError('Erro ao fazer login com Google. Tente novamente.');
 
-    // Mantém a mensagem de erro visível por 5 segundos
+    // Mantém a mensagem de erro visível por 10 segundos (tempo garantido)
     setTimeout(() => {
       setError('');
-    }, 5000);
+    }, 10000);
   }
 
   return (

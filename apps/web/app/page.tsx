@@ -66,7 +66,7 @@ export default function Home() {
             <div className="flex items-center gap-4">
               <Link
                 href="/login"
-                className="text-[#8B7F76] hover:text-[#2C2C2C] transition-colors font-medium text-sm"
+                className="px-6 py-2.5 text-[#2C2C2C] hover:text-[#8FD14F] transition-all font-semibold text-base border-2 border-[#8FD14F] rounded-full hover:bg-[#8FD14F] hover:text-white hover:shadow-lg hover:scale-105"
               >
                 Entrar
               </Link>
