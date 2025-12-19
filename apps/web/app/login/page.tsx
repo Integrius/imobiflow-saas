@@ -286,18 +286,17 @@ export default function LoginPage() {
             </form>
 
             {/* Divider */}
-            {/* Temporariamente desabilitado - Google OAuth precisa ser configurado */}
-            {/* <div className="relative my-6">
+            <div className="relative my-6">
               <div className="absolute inset-0 flex items-center">
                 <div className="w-full border-t border-[rgba(169,126,111,0.2)]"></div>
               </div>
               <div className="relative flex justify-center text-sm">
                 <span className="px-4 bg-[#FAF8F5] text-[#8B7F76]">ou continue com</span>
               </div>
-            </div> */}
+            </div>
 
             {/* Google Login */}
-            {/* <div className="flex justify-center">
+            <div className="flex justify-center">
               <GoogleLogin
                 onSuccess={handleGoogleSuccess}
                 onError={handleGoogleError}
@@ -307,7 +306,7 @@ export default function LoginPage() {
                 text="signin_with"
                 locale="pt-BR"
               />
-            </div> */}
+            </div>
 
             {/* Sign up link */}
             <div className="mt-8 text-center">
