@@ -1,8 +1,8 @@
-# 🔧 Configuração Google OAuth - URGENTE
+# 🔧 Configuração Google OAuth
 
 ## ❌ Erro Atual: `400: origin_mismatch`
 
-Este erro ocorre porque a URL do Cloudflare (vivoly.integrius.com.br) não está autorizada no Google Cloud Console.
+Este erro ocorre porque a URL de produção (vivoly.integrius.com.br) não está autorizada no Google Cloud Console.
 
 ## ✅ Solução (5 minutos)
 

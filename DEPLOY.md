@@ -6,28 +6,36 @@
 
 ### ✅ Backend (API) - Render
 - **URL Produção**: https://imobiflow-saas-1.onrender.com
-- **Plataforma**: Render
+- **Plataforma**: Render Web Service
 - **Auto-deploy**: ✅ Ativo (push para `main`)
 - **Configuração**: `render.yaml`
 
-### ✅ Frontend (Web) - Cloudflare Pages
-- **URL Produção**: https://vivoly.integrius.com.br
-- **Plataforma**: Cloudflare Pages
+### ✅ Frontend (Web) - Render
+- **URL Produção**: https://vivoly.integrius.com.br (via Cloudflare DNS)
+- **Plataforma**: Render Web Service
 - **Auto-deploy**: ✅ Ativo (push para `main`)
-- **CDN Global**: 275+ cidades (14 no Brasil)
+- **CDN/Proxy**: Cloudflare (apenas DNS + cache)
 
-### ❌ NÃO usar Frontend no Render
-O Render está configurado APENAS para rodar a API. Todo o frontend roda exclusivamente no Cloudflare Pages.
+### ✅ Database - Render PostgreSQL
+- **Plataforma**: Render PostgreSQL
+- **Conexão**: Privada (network interno Render)
 
 ---
 
 ## Pré-requisitos
 
-1. Conta no Cloudflare (https://cloudflare.com)
+1. Conta no Render (https://render.com)
 2. Repositório Git (GitHub, GitLab ou Bitbucket)
-3. Conta no Render (https://render.com)
+3. Conta no Cloudflare (opcional - para DNS/CDN)
 
-## Deploy do Frontend (Cloudflare Pages)
+## Arquitetura Simples: Tudo no Render
+
+**Custo Total**: $21/mês
+- Backend: $7/mês
+- Frontend: $7/mês
+- Database: $7/mês
+
+**Vantagem**: Um único dashboard, configuração simples
 
 ### Passo 1: Preparar o Repositório
 
@@ -147,13 +155,12 @@ git push origin main
 
 **Resultado:**
 - ✅ Render faz rebuild da API automaticamente
-- ✅ Cloudflare Pages faz rebuild do Frontend automaticamente
+- ✅ Render faz rebuild do Frontend automaticamente
 
-### Deploy Manual Frontend (se necessário)
-- Acesse https://dash.cloudflare.com
-- Vá em "Workers & Pages"
-- Selecione seu projeto
-- Click "Create deployment" → "Deploy latest commit"
+### Deploy Manual (se necessário)
+- Acesse https://dashboard.render.com
+- Selecione o serviço desejado
+- Click "Manual Deploy" → "Deploy latest commit"
 
 ### Deploy Manual Backend (se necessário)
 - Acesse https://dashboard.render.com
@@ -172,15 +179,16 @@ CLOUDINARY_API_KEY=...
 CLOUDINARY_API_SECRET=...
 ```
 
-### Frontend (Cloudflare Pages Dashboard)
+### Frontend (Render Dashboard)
 ```env
 NEXT_PUBLIC_API_URL=https://imobiflow-saas-1.onrender.com
 ```
 
 **Como configurar:**
-1. Acesse https://dash.cloudflare.com
-2. Workers & Pages → Seu projeto → Settings → Environment variables
-3. Adicione a variável para Production e Preview
+1. Acesse https://dashboard.render.com
+2. Selecione serviço frontend
+3. Environment → Add Environment Variable
+4. Adicione a variável acima
 
 ## Domínio Customizado
 
