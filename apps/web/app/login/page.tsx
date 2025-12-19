@@ -41,14 +41,16 @@ export default function LoginPage() {
       router.push('/dashboard');
     } catch (err: any) {
       const errorMessage = err.response?.data?.error || 'Erro ao fazer login';
+      console.log('🔴 ERRO DE LOGIN:', errorMessage, '- Será exibido por 15 segundos');
       setError(errorMessage);
       setLoading(false);
 
-      // GARANTE que a mensagem fica 10 segundos - usa ref para prevenir limpeza prematura
+      // GARANTE que a mensagem fica 15 SEGUNDOS - usa ref para prevenir limpeza prematura
       errorTimeoutRef.current = setTimeout(() => {
+        console.log('⏰ Limpando mensagem de erro após 15 segundos');
         setError('');
         errorTimeoutRef.current = null;
-      }, 10000);
+      }, 15000); // 15 SEGUNDOS
     }
   }
 
@@ -73,14 +75,16 @@ export default function LoginPage() {
       }
     } catch (err: any) {
       const errorMessage = err.response?.data?.error || 'Erro ao fazer login com Google';
+      console.log('🔴 ERRO GOOGLE OAUTH:', errorMessage, '- Será exibido por 15 segundos');
       setError(errorMessage);
       setLoading(false);
 
-      // GARANTE que a mensagem fica 10 segundos
+      // GARANTE que a mensagem fica 15 SEGUNDOS
       errorTimeoutRef.current = setTimeout(() => {
+        console.log('⏰ Limpando mensagem de erro Google após 15 segundos');
         setError('');
         errorTimeoutRef.current = null;
-      }, 10000);
+      }, 15000); // 15 SEGUNDOS
     }
   }
 
@@ -90,13 +94,16 @@ export default function LoginPage() {
       clearTimeout(errorTimeoutRef.current);
     }
 
-    setError('Erro ao fazer login com Google. Tente novamente.');
+    const errorMessage = 'Erro ao fazer login com Google. Tente novamente.';
+    console.log('🔴 ERRO GOOGLE OAUTH (callback):', errorMessage, '- Será exibido por 15 segundos');
+    setError(errorMessage);
 
-    // GARANTE que a mensagem fica 10 segundos
+    // GARANTE que a mensagem fica 15 SEGUNDOS
     errorTimeoutRef.current = setTimeout(() => {
+      console.log('⏰ Limpando mensagem de erro Google após 15 segundos');
       setError('');
       errorTimeoutRef.current = null;
-    }, 10000);
+    }, 15000); // 15 SEGUNDOS
   }
 
   return (
