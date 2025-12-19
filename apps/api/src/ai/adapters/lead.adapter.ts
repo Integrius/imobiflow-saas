@@ -166,7 +166,7 @@ export class LeadAdapter {
         'MEDIA': 'média',
         'ALTA': 'alta'
       };
-      data.urgency = urgencyMap[lead.urgency];
+      data.urgency = urgencyMap[lead.urgency as UrgencyLevel];
     }
 
     if (lead.sentiment) {
@@ -175,7 +175,7 @@ export class LeadAdapter {
         'NEUTRO': 'neutro',
         'NEGATIVO': 'negativo'
       };
-      data.sentiment = sentimentMap[lead.sentiment];
+      data.sentiment = sentimentMap[lead.sentiment as Sentiment];
     }
 
     if (lead.intent) data.intent = lead.intent.toLowerCase();
