@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checklist Final | Guia BI + IA</title>
+    <link rel="stylesheet" href="guia-styles.css">
+</head>
+<body>
+    <div class="container">
+        <header class="phase-header phase3">
+            <div class="breadcrumb">
+                <a href="guia-index.html">🏠 Índice</a> →
+                <a href="guia-metricas.html">📊 Métricas</a> →
+                <span>Checklist</span>
+            </div>
+            <h1>✅ Checklist Final de Implementação</h1>
+            <p>Verificação Completa do Sistema</p>
+        </header>
+
+        <nav class="nav-sticky">
+            <a href="#preparacao">Preparação</a>
+            <a href="#fase1">Fase 1</a>
+            <a href="#fase2">Fase 2</a>
+            <a href="#fase3">Fase 3</a>
+            <a href="#producao">Produção</a>
+        </nav>
+
+        <div class="content">
+            <section id="intro">
+                <div class="card card-info">
+                    <h2>📋 Como Usar Este Checklist</h2>
+                    <p>Marque cada item conforme completa. Use este guia para garantir que nada foi esquecido!</p>
+                </div>
+            </section>
+
+            <section id="preparacao">
+                <h2>📝 Preparação (1-2 horas)</h2>
+
+                <div class="card card-success">
+                    <h3>✅ Contas e APIs</h3>
+                    <ul style="list-style: none;">
+                        <li>☐ Conta Anthropic criada</li>
+                        <li>☐ API key do Claude obtida</li>
+                        <li>☐ Conta OpenAI criada (backup)</li>
+                        <li>☐ Créditos adicionados nas APIs</li>
+                        <li>☐ Bot Telegram criado via @BotFather</li>
+                        <li>☐ Token do bot Telegram salvo</li>
+                    </ul>
+
+                    <h3>✅ Ambiente de Desenvolvimento</h3>
+                    <ul style="list-style: none;">
+                        <li>☐ Node.js 18+ instalado</li>
+                        <li>☐ pnpm instalado</li>
+                        <li>☐ PostgreSQL rodando</li>
+                        <li>☐ Arquivo .env configurado</li>
+                        <li>☐ Dependências instaladas (pnpm install)</li>
+                        <li>☐ Prisma migrations executadas</li>
+                    </ul>
+
+                    <h3>✅ Estrutura de Pastas</h3>
+                    <ul style="list-style: none;">
+                        <li>☐ apps/api/src/ai criada</li>
+                        <li>☐ apps/api/src/messaging criada</li>
+                        <li>☐ apps/api/src/automation criada</li>
+                        <li>☐ apps/api/src/analytics criada</li>
+                    </ul>
+                </div>
+            </section>
+
+            <section id="fase1">
+                <h2>🎯 Fase 1: MVP (6 semanas)</h2>
+
+                <div class="card card-success">
+                    <h3>✅ Sprint 1: Setup Básico</h3>
+                    <ul style="list-style: none;">
+                        <li>☐ ClaudeService implementado</li>
+                        <li>☐ ClaudeService testado</li>
+                        <li>☐ WhatsAppService implementado</li>
+                        <li>☐ QR Code escaneado e conectado</li>
+                        <li>☐ TelegramService implementado</li>
+                        <li>☐ Bot Telegram respondendo a /start</li>
+                        <li>☐ Tracking de custos funcionando</li>
+                    </ul>
+
+                    <h3>✅ Sprint 2: Contexto e Integração</h3>
+                    <ul style="list-style: none;">
+                        <li>☐ ContextBuilderService implementado</li>
+                        <li>☐ Histórico de conversas mantido</li>
+                        <li>☐ Prompts do sistema (sofia-prompts.ts)</li>
+                        <li>☐ MessageProcessorService implementado</li>
+                        <li>☐ Análise de mensagens funcionando</li>
+                        <li>☐ Score sendo atualizado</li>
+                        <li>☐ Leads salvos no banco</li>
+                    </ul>
+
+                    <h3>✅ Sprint 3: Orquestração</h3>
+                    <ul style="list-style: none;">
+                        <li>☐ AIOrchestrator implementado</li>
+                        <li>☐ WhatsApp → IA → Telegram funcionando</li>
+                        <li>☐ Múltiplas conversas simultâneas</li>
+                        <li>☐ Notificações para corretores</li>
+                        <li>☐ Graceful shutdown implementado</li>
+                        <li>☐ Logs claros e informativos</li>
+                    </ul>
+
+                    <h3>✅ Testes Fase 1</h3>
+                    <ul style="list-style: none;">
+                        <li>☐ Teste de conversa completa</li>
+                        <li>☐ Lead criado no banco</li>
+                        <li>☐ Score calculado corretamente</li>
+                        <li>☐ Corretor recebeu notificação</li>
+                        <li>☐ Contexto mantido entre mensagens</li>
+                    </ul>
+                </div>
+            </section>
+
+            <section id="fase2">
+                <h2>🧠 Fase 2: Inteligência Avançada (8 semanas)</h2>
+
+                <div class="card card-success">
+                    <h3>✅ Lead Scoring ML</h3>
+                    <ul style="list-style: none;">
+                        <li>☐ LeadScoringMLService implementado</li>
+                        <li>☐ Features extraídas corretamente</li>
+                        <li>☐ Score avançado calculado</li>
+                        <li>☐ Fatores de score identificados</li>
+                        <li>☐ Recomendações geradas</li>
+                        <li>☐ Batch update de scores funcionando</li>
+                    </ul>
+
+                    <h3>✅ Análise de Sentimento</h3>
+                    <ul style="list-style: none;">
+                        <li>☐ SentimentAnalysisService implementado</li>
+                        <li>☐ Emoções detectadas (8 tipos)</li>
+                        <li>☐ Urgência identificada</li>
+                        <li>☐ Engagement medido</li>
+                        <li>☐ Timeline de sentimento gerada</li>
+                        <li>☐ Tendências calculadas</li>
+                    </ul>
+
+                    <h3>✅ Sistema de Recomendação</h3>
+                    <ul style="list-style: none;">
+                        <li>☐ PropertyRecommenderService implementado</li>
+                        <li>☐ Preferências extraídas das conversas</li>
+                        <li>☐ Match score calculado</li>
+                        <li>☐ Top 5 imóveis recomendados</li>
+                        <li>☐ Razões da recomendação claras</li>
+                    </ul>
+
+                    <h3>✅ Analytics Preditivo</h3>
+                    <ul style="list-style: none;">
+                        <li>☐ PredictiveAnalyticsService implementado</li>
+                        <li>☐ Previsão de conversões</li>
+                        <li>☐ Detector de oportunidades</li>
+                        <li>☐ Tendências identificadas</li>
+                    </ul>
+
+                    <h3>✅ Dashboard de Métricas</h3>
+                    <ul style="list-style: none;">
+                        <li>☐ MetricsDashboardService implementado</li>
+                        <li>☐ Overview funcionando</li>
+                        <li>☐ Performance tracking</li>
+                        <li>☐ Score distribution</li>
+                        <li>☐ Leads by source</li>
+                    </ul>
+                </div>
+            </section>
+
+            <section id="fase3">
+                <h2>⚡ Fase 3: Automações (6 semanas)</h2>
+
+                <div class="card card-success">
+                    <h3>✅ Follow-ups Automáticos</h3>
+                    <ul style="list-style: none;">
+                        <li>☐ FollowUpService implementado</li>
+                        <li>☐ Estratégias definidas (4+)</li>
+                        <li>☐ Mensagens personalizadas</li>
+                        <li>☐ Delay entre follow-ups</li>
+                        <li>☐ Follow-ups registrados no banco</li>
+                    </ul>
+
+                    <h3>✅ Recuperação de Leads</h3>
+                    <ul style="list-style: none;">
+                        <li>☐ LeadRecoveryService implementado</li>
+                        <li>☐ Leads frios identificados</li>
+                        <li>☐ Estratégias de recuperação</li>
+                        <li>☐ Mensagens contextualizadas</li>
+                        <li>☐ Taxa de recuperação medida</li>
+                    </ul>
+
+                    <h3>✅ Agendamento Inteligente</h3>
+                    <ul style="list-style: none;">
+                        <li>☐ SmartSchedulingService implementado</li>
+                        <li>☐ Intenção de agendamento detectada</li>
+                        <li>☐ Google Calendar integrado</li>
+                        <li>☐ Slots disponíveis buscados</li>
+                        <li>☐ Visitas criadas no banco</li>
+                        <li>☐ Eventos criados no Calendar</li>
+                    </ul>
+
+                    <h3>✅ Sistema de Lembretes</h3>
+                    <ul style="list-style: none;">
+                        <li>☐ ReminderService implementado</li>
+                        <li>☐ Lembretes de visitas</li>
+                        <li>☐ Lembretes de pagamentos</li>
+                        <li>☐ Lembretes de documentos</li>
+                        <li>☐ Enviados via WhatsApp e Telegram</li>
+                    </ul>
+
+                    <h3>✅ Feedback Automático</h3>
+                    <ul style="list-style: none;">
+                        <li>☐ FeedbackService implementado</li>
+                        <li>☐ Feedback pós-visita</li>
+                        <li>☐ Feedback pós-venda</li>
+                        <li>☐ Análise de feedback com IA</li>
+                        <li>☐ Score ajustado baseado em feedback</li>
+                    </ul>
+
+                    <h3>✅ Cron Jobs</h3>
+                    <ul style="list-style: none;">
+                        <li>☐ AutomationScheduler implementado</li>
+                        <li>☐ Follow-ups: a cada 6h</li>
+                        <li>☐ Recuperação: 10h diariamente</li>
+                        <li>☐ Lembretes: a cada 2h</li>
+                        <li>☐ Feedback: a cada 4h</li>
+                        <li>☐ Score update: 2h diariamente</li>
+                    </ul>
+                </div>
+            </section>
+
+            <section id="testes">
+                <h2>🧪 Testes Completos</h2>
+
+                <div class="card card-success">
+                    <h3>✅ Testes Unitários</h3>
+                    <ul style="list-style: none;">
+                        <li>☐ ClaudeService testado</li>
+                        <li>☐ MessageProcessor testado</li>
+                        <li>☐ Todos os serviços têm testes</li>
+                        <li>☐ Coverage > 70%</li>
+                    </ul>
+
+                    <h3>✅ Testes de Integração</h3>
+                    <ul style="list-style: none;">
+                        <li>☐ Fluxo completo de mensagem</li>
+                        <li>☐ Lead scoring ML</li>
+                        <li>☐ Múltiplos serviços integrados</li>
+                    </ul>
+
+                    <h3>✅ Testes E2E</h3>
+                    <ul style="list-style: none;">
+                        <li>☐ Conversa completa simulada</li>
+                        <li>☐ Lead quente → conversão</li>
+                        <li>☐ Lead frio → recuperação</li>
+                        <li>☐ Múltiplos leads simultâneos</li>
+                    </ul>
+
+                    <h3>✅ Testes de Performance</h3>
+                    <ul style="list-style: none;">
+                        <li>☐ Load test (50+ mensagens)</li>
+                        <li>☐ Tempo de resposta < 5s</li>
+                        <li>☐ Throughput adequado</li>
+                        <li>☐ Sem memory leaks</li>
+                    </ul>
+                </div>
+            </section>
+
+            <section id="producao">
+                <h2>🚀 Deploy para Produção</h2>
+
+                <div class="card card-success">
+                    <h3>✅ Infraestrutura</h3>
+                    <ul style="list-style: none;">
+                        <li>☐ Banco de dados PostgreSQL (Render)</li>
+                        <li>☐ Migrations executadas em produção</li>
+                        <li>☐ API deployada (Render)</li>
+                        <li>☐ Frontend deployado (Vercel)</li>
+                        <li>☐ Variáveis de ambiente configuradas</li>
+                    </ul>
+
+                    <h3>✅ Integrações</h3>
+                    <ul style="list-style: none;">
+                        <li>☐ WhatsApp conectado em produção</li>
+                        <li>☐ Telegram bot ativo</li>
+                        <li>☐ Claude API funcionando</li>
+                        <li>☐ Google Calendar integrado</li>
+                    </ul>
+
+                    <h3>✅ Verificações</h3>
+                    <ul style="list-style: none;">
+                        <li>☐ /health endpoint respondendo</li>
+                        <li>☐ Logs sem erros críticos</li>
+                        <li>☐ Teste de mensagem real</li>
+                        <li>☐ Notificação Telegram funcionando</li>
+                        <li>☐ Dashboard carregando</li>
+                    </ul>
+
+                    <h3>✅ Monitoramento</h3>
+                    <ul style="list-style: none;">
+                        <li>☐ UptimeRobot configurado</li>
+                        <li>☐ Alertas de custo ativos</li>
+                        <li>☐ Logs centralizados</li>
+                        <li>☐ Métricas sendo coletadas</li>
+                    </ul>
+
+                    <h3>✅ Segurança</h3>
+                    <ul style="list-style: none;">
+                        <li>☐ API keys em variáveis de ambiente</li>
+                        <li>☐ .env não commitado no Git</li>
+                        <li>☐ CORS configurado</li>
+                        <li>☐ Rate limiting implementado</li>
+                        <li>☐ SSL/HTTPS ativo</li>
+                    </ul>
+
+                    <h3>✅ Documentação</h3>
+                    <ul style="list-style: none;">
+                        <li>☐ README atualizado</li>
+                        <li>☐ Variáveis de ambiente documentadas</li>
+                        <li>☐ Guias lidos e seguidos</li>
+                        <li>☐ Troubleshooting conhecido</li>
+                    </ul>
+                </div>
+            </section>
+
+            <section id="go-live">
+                <h2>🎊 Go Live!</h2>
+
+                <div class="card card-success">
+                    <h3>✅ Checklist Final</h3>
+                    <ul style="list-style: none;">
+                        <li>☐ Todos os testes passando</li>
+                        <li>☐ Sistema rodando em produção</li>
+                        <li>☐ WhatsApp respondendo leads reais</li>
+                        <li>☐ Corretores recebendo notificações</li>
+                        <li>☐ Automações rodando (cron jobs)</li>
+                        <li>☐ Métricas sendo rastreadas</li>
+                        <li>☐ Alertas configurados</li>
+                        <li>☐ Backup configurado</li>
+                        <li>☐ Time treinado no sistema</li>
+                        <li>☐ Documentação completa</li>
+                    </ul>
+                </div>
+
+                <div class="card card-info" style="margin-top: 30px;">
+                    <h3>📊 Expectativas de ROI</h3>
+                    <table style="width: 100%; margin-top: 20px;">
+                        <tr>
+                            <th style="text-align: left;">Métrica</th>
+                            <th style="text-align: center;">Antes</th>
+                            <th style="text-align: center;">Com BI+IA</th>
+                            <th style="text-align: center;">Melhoria</th>
+                        </tr>
+                        <tr>
+                            <td>Taxa de Conversão</td>
+                            <td style="text-align: center;">5%</td>
+                            <td style="text-align: center;">12%</td>
+                            <td style="text-align: center;">+140%</td>
+                        </tr>
+                        <tr>
+                            <td>Tempo de Resposta</td>
+                            <td style="text-align: center;">2-4h</td>
+                            <td style="text-align: center;">&lt;5s</td>
+                            <td style="text-align: center;">-99%</td>
+                        </tr>
+                        <tr>
+                            <td>Leads Perdidos</td>
+                            <td style="text-align: center;">30%</td>
+                            <td style="text-align: center;">5%</td>
+                            <td style="text-align: center;">-83%</td>
+                        </tr>
+                        <tr>
+                            <td>Custo por Lead</td>
+                            <td style="text-align: center;">R$ 50</td>
+                            <td style="text-align: center;">R$ 2</td>
+                            <td style="text-align: center;">-96%</td>
+                        </tr>
+                        <tr style="background: #e8f5e9; font-weight: bold;">
+                            <td>ROI Esperado</td>
+                            <td style="text-align: center;">-</td>
+                            <td style="text-align: center;">10.400%</td>
+                            <td style="text-align: center;">🚀</td>
+                        </tr>
+                    </table>
+                </div>
+
+                <div class="card card-success" style="margin-top: 30px; text-align: center;">
+                    <h2>🎉 PARABÉNS!</h2>
+                    <p style="font-size: 1.2em; margin: 20px 0;">
+                        Você implementou com sucesso um sistema completo de<br>
+                        <strong>Business Intelligence com Inteligência Artificial</strong><br>
+                        para sua imobiliária!
+                    </p>
+                    <p>O sistema está funcionando 24/7 atendendo leads, qualificando oportunidades e gerando conversões automaticamente.</p>
+                    <p style="margin-top: 30px;">
+                        <strong>Próximos passos:</strong>
+                    </p>
+                    <ul style="list-style: none; font-size: 1.1em;">
+                        <li>📊 Monitore as métricas diariamente</li>
+                        <li>🔧 Ajuste prompts conforme necessário</li>
+                        <li>📈 Acompanhe o ROI</li>
+                        <li>🎯 Otimize continuamente</li>
+                        <li>🚀 Escale o sucesso!</li>
+                    </ul>
+                </div>
+            </section>
+        </div>
+
+        <footer class="nav-footer">
+            <a href="guia-metricas.html" class="btn-nav">← Métricas</a>
+            <a href="guia-index.html" class="btn-nav">🏠 Voltar ao Início</a>
+            <a href="planejamento-bi-ia.html" class="btn-nav">📋 Planejamento</a>
+        </footer>
+    </div>
+
+    <script src="guia-scripts.js"></script>
+</body>
+</html>

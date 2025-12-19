@@ -1,0 +1,1206 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fase 1: MVP - Fundação | Guia BI + IA</title>
+    <link rel="stylesheet" href="guia-styles.css">
+</head>
+<body>
+    <div class="container">
+        <header class="phase-header phase1">
+            <div class="breadcrumb">
+                <a href="guia-index.html">🏠 Índice</a> →
+                <a href="guia-preparacao.html">📝 Preparação</a> →
+                <span>Fase 1</span>
+            </div>
+            <h1>🎯 Fase 1: MVP - Fundação</h1>
+            <p>Implemente o sistema básico funcional com IA respondendo leads</p>
+            <div class="phase-meta">
+                <span class="badge">⏱️ 6 semanas</span>
+                <span class="badge">📊 Médio</span>
+                <span class="badge">🎯 MVP Funcional</span>
+            </div>
+        </header>
+
+        <nav class="nav-sticky">
+            <a href="#visao">Visão Geral</a>
+            <a href="#sprint1">Sprint 1</a>
+            <a href="#sprint2">Sprint 2</a>
+            <a href="#sprint3">Sprint 3</a>
+            <a href="#testes">Testes</a>
+        </nav>
+
+        <div class="content">
+            <section id="visao">
+                <h2>📋 Visão Geral da Fase 1</h2>
+                <div class="card card-info">
+                    <h3>🎯 Objetivo</h3>
+                    <p>Ao final desta fase, você terá um sistema MVP completo com:</p>
+                    <ul>
+                        <li>✅ IA Claude respondendo mensagens WhatsApp 24/7</li>
+                        <li>✅ Sistema de scoring automático de leads</li>
+                        <li>✅ Notificações Telegram para corretores</li>
+                        <li>✅ Contexto e memória de conversas</li>
+                        <li>✅ Pipeline completo de processamento</li>
+                    </ul>
+                </div>
+
+                <div class="timeline-overview">
+                    <div class="timeline-item">
+                        <strong>Sprint 1 (Semanas 1-2)</strong>
+                        <p>Setup básico: Claude, WhatsApp, Telegram</p>
+                    </div>
+                    <div class="timeline-item">
+                        <strong>Sprint 2 (Semanas 3-4)</strong>
+                        <p>Integração IA + Mensageria com contexto</p>
+                    </div>
+                    <div class="timeline-item">
+                        <strong>Sprint 3 (Semanas 5-6)</strong>
+                        <p>Sistema completo e orquestração</p>
+                    </div>
+                </div>
+            </section>
+
+            <section id="sprint1">
+                <h2>📅 Sprint 1: Setup Básico (Semanas 1-2)</h2>
+
+                <h3>Tarefa 1.1: Serviço Claude AI</h3>
+                <div class="code-block">
+                    <div class="code-header">
+                        <span>📁 apps/api/src/ai/services/claude.service.ts</span>
+                        <button onclick="copyCode(this)">📋 Copiar</button>
+                    </div>
+                    <pre><code>import Anthropic from '@anthropic-ai/sdk';
+
+export class ClaudeService {
+  private client: Anthropic;
+  private requestCount = 0;
+  private dailyCost = 0;
+
+  constructor() {
+    this.client = new Anthropic({
+      apiKey: process.env.ANTHROPIC_API_KEY,
+    });
+  }
+
+  async generateResponse(
+    prompt: string,
+    context?: string,
+    options?: {
+      maxTokens?: number;
+      temperature?: number;
+    }
+  ): Promise<string> {
+    try {
+      const maxTokens = options?.maxTokens || 2000;
+      const temperature = options?.temperature || 0.7;
+
+      const message = await this.client.messages.create({
+        model: 'claude-3-5-sonnet-20241022',
+        max_tokens: maxTokens,
+        temperature: temperature,
+        messages: [
+          {
+            role: 'user',
+            content: context ? `${context}\n\n${prompt}` : prompt
+          }
+        ]
+      });
+
+      // Tracking de uso
+      this.requestCount++;
+      const inputTokens = message.usage?.input_tokens || 0;
+      const outputTokens = message.usage?.output_tokens || 0;
+      this.dailyCost += this.calculateCost(inputTokens, outputTokens);
+
+      console.log(`📊 Claude Request #${this.requestCount}`, {
+        inputTokens,
+        outputTokens,
+        dailyCost: `$${this.dailyCost.toFixed(4)}`
+      });
+
+      return message.content[0].type === 'text'
+        ? message.content[0].text
+        : '';
+
+    } catch (error: any) {
+      console.error('❌ Erro ao chamar Claude:', error);
+
+      // Se atingiu limite de rate, espera e tenta novamente
+      if (error.status === 429) {
+        console.log('⏳ Rate limit atingido, aguardando 60s...');
+        await this.sleep(60000);
+        return this.generateResponse(prompt, context, options);
+      }
+
+      throw error;
+    }
+  }
+
+  async analyze(prompt: string): Promise<any> {
+    const response = await this.generateResponse(prompt);
+    try {
+      // Remove markdown code blocks se houver
+      const cleaned = response.replace(/```json\n?|\n?```/g, '').trim();
+      return JSON.parse(cleaned);
+    } catch {
+      return { response };
+    }
+  }
+
+  private calculateCost(inputTokens: number, outputTokens: number): number {
+    // Preços Claude 3.5 Sonnet (por milhão de tokens)
+    const INPUT_COST_PER_M = 3.00;
+    const OUTPUT_COST_PER_M = 15.00;
+
+    const inputCost = (inputTokens / 1000000) * INPUT_COST_PER_M;
+    const outputCost = (outputTokens / 1000000) * OUTPUT_COST_PER_M;
+
+    return inputCost + outputCost;
+  }
+
+  private sleep(ms: number): Promise<void> {
+    return new Promise(resolve => setTimeout(resolve, ms));
+  }
+
+  getStats() {
+    return {
+      requestCount: this.requestCount,
+      dailyCost: this.dailyCost
+    };
+  }
+
+  resetDailyStats() {
+    this.requestCount = 0;
+    this.dailyCost = 0;
+  }
+}</code></pre>
+                </div>
+
+                <h3>Tarefa 1.2: Serviço WhatsApp</h3>
+                <div class="code-block">
+                    <div class="code-header">
+                        <span>📁 apps/api/src/messaging/services/whatsapp.service.ts</span>
+                        <button onclick="copyCode(this)">📋 Copiar</button>
+                    </div>
+                    <pre><code>import { Client, LocalAuth, Message } from 'whatsapp-web.js';
+import qrcode from 'qrcode-terminal';
+
+export class WhatsAppService {
+  private client: Client;
+  private isReady = false;
+
+  constructor() {
+    this.client = new Client({
+      authStrategy: new LocalAuth({
+        dataPath: './whatsapp-sessions'
+      }),
+      puppeteer: {
+        args: ['--no-sandbox', '--disable-setuid-sandbox'],
+      }
+    });
+
+    this.setupEventHandlers();
+  }
+
+  private setupEventHandlers() {
+    // QR Code para autenticação
+    this.client.on('qr', (qr) => {
+      console.log('📱 Escaneie o QR Code com seu WhatsApp:');
+      qrcode.generate(qr, { small: true });
+    });
+
+    // Cliente autenticado
+    this.client.on('authenticated', () => {
+      console.log('✅ WhatsApp autenticado!');
+    });
+
+    // Cliente pronto
+    this.client.on('ready', () => {
+      this.isReady = true;
+      console.log('🚀 WhatsApp está pronto!');
+    });
+
+    // Erros
+    this.client.on('auth_failure', (error) => {
+      console.error('❌ Falha na autenticação:', error);
+    });
+
+    this.client.on('disconnected', (reason) => {
+      console.log('⚠️ WhatsApp desconectado:', reason);
+      this.isReady = false;
+    });
+  }
+
+  async initialize() {
+    console.log('🔄 Inicializando WhatsApp...');
+    await this.client.initialize();
+  }
+
+  onMessage(callback: (message: Message) => void) {
+    this.client.on('message', async (message) => {
+      // Ignora mensagens de grupos e mensagens próprias
+      if (message.from.includes('@g.us') || message.fromMe) {
+        return;
+      }
+
+      console.log(`📩 Nova mensagem de ${message.from}:`, message.body);
+      callback(message);
+    });
+  }
+
+  async sendMessage(to: string, text: string): Promise<void> {
+    if (!this.isReady) {
+      throw new Error('WhatsApp não está pronto');
+    }
+
+    try {
+      // Formata número se necessário
+      const chatId = to.includes('@c.us') ? to : `${to}@c.us`;
+      await this.client.sendMessage(chatId, text);
+      console.log(`✅ Mensagem enviada para ${to}`);
+    } catch (error) {
+      console.error('❌ Erro ao enviar mensagem:', error);
+      throw error;
+    }
+  }
+
+  async sendMessageWithTyping(to: string, text: string): Promise<void> {
+    const chatId = to.includes('@c.us') ? to : `${to}@c.us`;
+    const chat = await this.client.getChatById(chatId);
+
+    // Simula digitação
+    await chat.sendStateTyping();
+
+    // Delay proporcional ao tamanho da mensagem (mais humano)
+    const typingTime = Math.min(text.length * 50, 3000);
+    await new Promise(resolve => setTimeout(resolve, typingTime));
+
+    await this.sendMessage(to, text);
+  }
+
+  isClientReady(): boolean {
+    return this.isReady;
+  }
+
+  async getContact(number: string) {
+    const contactId = number.includes('@c.us') ? number : `${number}@c.us`;
+    return await this.client.getContactById(contactId);
+  }
+
+  async destroy() {
+    await this.client.destroy();
+  }
+}</code></pre>
+                </div>
+
+                <h3>Tarefa 1.3: Serviço Telegram</h3>
+                <div class="code-block">
+                    <div class="code-header">
+                        <span>📁 apps/api/src/messaging/services/telegram.service.ts</span>
+                        <button onclick="copyCode(this)">📋 Copiar</button>
+                    </div>
+                    <pre><code>import TelegramBot from 'node-telegram-bot-api';
+
+export class TelegramService {
+  private bot: TelegramBot;
+  private brokerChats: Map<string, string> = new Map(); // userId -> chatId
+
+  constructor() {
+    const token = process.env.TELEGRAM_BOT_TOKEN!;
+    this.bot = new TelegramBot(token, { polling: true });
+    this.setupCommands();
+  }
+
+  private setupCommands() {
+    // Comando /start
+    this.bot.onText(/\/start/, async (msg) => {
+      const chatId = msg.chat.id;
+      const userId = msg.from?.id.toString();
+
+      if (userId) {
+        this.brokerChats.set(userId, chatId.toString());
+      }
+
+      await this.bot.sendMessage(chatId,
+        `🏠 *Bem-vindo ao Vivoly BI Assistant!*\n\n` +
+        `Você receberá notificações sobre:\n` +
+        `✅ Novos leads qualificados\n` +
+        `✅ Oportunidades urgentes\n` +
+        `✅ Leads com alta probabilidade de conversão\n` +
+        `✅ Agendamentos confirmados\n\n` +
+        `Use /help para ver todos os comandos disponíveis.`,
+        { parse_mode: 'Markdown' }
+      );
+    });
+
+    // Comando /help
+    this.bot.onText(/\/help/, async (msg) => {
+      await this.bot.sendMessage(msg.chat.id,
+        `📚 *Comandos Disponíveis:*\n\n` +
+        `/start - Iniciar o bot\n` +
+        `/help - Mostrar ajuda\n` +
+        `/stats - Ver estatísticas do dia\n` +
+        `/leads - Listar leads recentes\n` +
+        `/hot - Ver leads quentes agora`,
+        { parse_mode: 'Markdown' }
+      );
+    });
+
+    // Comando /stats
+    this.bot.onText(/\/stats/, async (msg) => {
+      // TODO: Buscar stats reais do banco
+      await this.bot.sendMessage(msg.chat.id,
+        `📊 *Estatísticas de Hoje:*\n\n` +
+        `📩 Mensagens recebidas: 47\n` +
+        `👤 Novos leads: 12\n` +
+        `🔥 Leads quentes: 5\n` +
+        `⭐ Score médio: 67/100\n` +
+        `✅ Taxa de resposta IA: 100%`,
+        { parse_mode: 'Markdown' }
+      );
+    });
+  }
+
+  async notifyNewLead(brokerId: string, leadData: {
+    name: string;
+    phone: string;
+    message: string;
+    score: number;
+    urgency: 'baixa' | 'média' | 'alta';
+  }) {
+    const chatId = this.brokerChats.get(brokerId);
+    if (!chatId) {
+      console.warn(`⚠️ Broker ${brokerId} não tem chat Telegram configurado`);
+      return;
+    }
+
+    const urgencyEmoji = {
+      'baixa': '🟢',
+      'média': '🟡',
+      'alta': '🔴'
+    }[leadData.urgency];
+
+    const message =
+      `${urgencyEmoji} *Novo Lead!*\n\n` +
+      `👤 *Nome:* ${leadData.name}\n` +
+      `📱 *Telefone:* ${leadData.phone}\n` +
+      `⭐ *Score:* ${leadData.score}/100\n` +
+      `🎯 *Urgência:* ${leadData.urgency.toUpperCase()}\n\n` +
+      `💬 *Primeira mensagem:*\n_"${leadData.message}"_\n\n` +
+      `🤖 A IA já iniciou a conversa!`;
+
+    await this.bot.sendMessage(chatId, message, {
+      parse_mode: 'Markdown',
+      reply_markup: {
+        inline_keyboard: [[
+          { text: '📞 Ligar Agora', callback_data: `call_${leadData.phone}` },
+          { text: '💬 Ver Conversa', callback_data: `chat_${leadData.phone}` }
+        ]]
+      }
+    });
+  }
+
+  async notifyHighScore(brokerId: string, leadData: {
+    name: string;
+    phone: string;
+    score: number;
+    reason: string;
+  }) {
+    const chatId = this.brokerChats.get(brokerId);
+    if (!chatId) return;
+
+    const message =
+      `🔥 *LEAD QUENTE DETECTADO!*\n\n` +
+      `👤 ${leadData.name}\n` +
+      `📱 ${leadData.phone}\n` +
+      `⭐ *Score: ${leadData.score}/100*\n\n` +
+      `🎯 *Por quê?*\n${leadData.reason}\n\n` +
+      `⚡ *AÇÃO RECOMENDADA:* Contato imediato!`;
+
+    await this.bot.sendMessage(chatId, message, {
+      parse_mode: 'Markdown'
+    });
+  }
+
+  async sendMessage(chatId: string, text: string) {
+    await this.bot.sendMessage(chatId, text, {
+      parse_mode: 'Markdown'
+    });
+  }
+
+  registerBrokerChat(userId: string, chatId: string) {
+    this.brokerChats.set(userId, chatId);
+  }
+}</code></pre>
+                </div>
+
+                <div class="test-box">
+                    <h4>🧪 Teste dos Serviços Sprint 1</h4>
+                    <div class="code-block">
+                        <div class="code-header">
+                            <span>📁 apps/api/src/test-sprint1.ts</span>
+                            <button onclick="copyCode(this)">📋 Copiar</button>
+                        </div>
+                        <pre><code>import { ClaudeService } from './ai/services/claude.service';
+import { WhatsAppService } from './messaging/services/whatsapp.service';
+import { TelegramService } from './messaging/services/telegram.service';
+
+async function testSprint1() {
+  console.log('🧪 Testando Sprint 1...\n');
+
+  // Teste Claude
+  console.log('1️⃣ Testando Claude AI...');
+  const claude = new ClaudeService();
+  const response = await claude.generateResponse(
+    'Responda: Você está funcionando?'
+  );
+  console.log('✅ Claude respondeu:', response.substring(0, 50) + '...\n');
+
+  // Teste WhatsApp (apenas inicialização)
+  console.log('2️⃣ Inicializando WhatsApp...');
+  const whatsapp = new WhatsAppService();
+  whatsapp.onMessage((msg) => {
+    console.log('📱 Mensagem recebida:', msg.body);
+  });
+  await whatsapp.initialize();
+  console.log('✅ WhatsApp inicializado (escaneie QR se necessário)\n');
+
+  // Teste Telegram
+  console.log('3️⃣ Testando Telegram Bot...');
+  const telegram = new TelegramService();
+  console.log('✅ Telegram bot iniciado (envie /start no bot)\n');
+
+  console.log('🎉 Todos os serviços do Sprint 1 estão funcionando!');
+}
+
+testSprint1().catch(console.error);</code></pre>
+                    </div>
+                    <div class="command-box">
+npx tsx src/test-sprint1.ts
+                    </div>
+                </div>
+            </section>
+
+            <section id="sprint2">
+                <h2>📅 Sprint 2: Contexto e Integração (Semanas 3-4)</h2>
+
+                <h3>Tarefa 2.1: Context Builder</h3>
+                <div class="code-block">
+                    <div class="code-header">
+                        <span>📁 apps/api/src/ai/services/context-builder.service.ts</span>
+                        <button onclick="copyCode(this)">📋 Copiar</button>
+                    </div>
+                    <pre><code>import { PrismaClient } from '@prisma/client';
+
+const prisma = new PrismaClient();
+
+export class ContextBuilderService {
+  async buildContext(leadPhone: string, tenantId: string): Promise<string> {
+    // Buscar histórico de conversas
+    const messages = await prisma.message.findMany({
+      where: {
+        fromNumber: leadPhone,
+        tenantId
+      },
+      orderBy: { createdAt: 'desc' },
+      take: 10,
+      include: {
+        lead: {
+          include: {
+            properties: true,
+            deals: true
+          }
+        }
+      }
+    });
+
+    if (messages.length === 0) {
+      return this.getNewLeadContext();
+    }
+
+    const lead = messages[0].lead;
+    let context = '';
+
+    // Informações do lead
+    context += `🎯 INFORMAÇÕES DO LEAD:\n`;
+    context += `Nome: ${lead?.name || 'Não informado'}\n`;
+    context += `Telefone: ${leadPhone}\n`;
+    context += `Score Atual: ${lead?.score || 0}/100\n`;
+    context += `Status: ${lead?.status || 'novo'}\n\n`;
+
+    // Histórico de conversas
+    context += `📜 HISTÓRICO (últimas ${messages.length} mensagens):\n`;
+    messages.reverse().forEach((msg, i) => {
+      const sender = msg.fromNumber === leadPhone ? 'Lead' : 'IA';
+      context += `${i + 1}. ${sender}: ${msg.content}\n`;
+    });
+    context += '\n';
+
+    // Imóveis de interesse
+    if (lead?.properties && lead.properties.length > 0) {
+      context += `🏠 IMÓVEIS DE INTERESSE:\n`;
+      lead.properties.forEach((prop: any) => {
+        context += `- ${prop.title} (${prop.type}, ${prop.bedrooms}Q)\n`;
+      });
+      context += '\n';
+    }
+
+    // Negociações ativas
+    if (lead?.deals && lead.deals.length > 0) {
+      context += `💼 NEGOCIAÇÕES ATIVAS:\n`;
+      lead.deals.forEach((deal: any) => {
+        context += `- ${deal.propertyTitle}: ${deal.status}\n`;
+      });
+      context += '\n';
+    }
+
+    // Preferências conhecidas
+    const preferences = this.extractPreferences(messages);
+    if (preferences.length > 0) {
+      context += `🎯 PREFERÊNCIAS CONHECIDAS:\n`;
+      preferences.forEach(pref => context += `- ${pref}\n`);
+    }
+
+    return context;
+  }
+
+  private getNewLeadContext(): string {
+    return `🎯 NOVO LEAD (primeira interação)\n\n` +
+           `Este é um novo contato. Seja receptivo, cordial e busque entender as necessidades.\n`;
+  }
+
+  private extractPreferences(messages: any[]): string[] {
+    const preferences: string[] = [];
+    const content = messages.map(m => m.content.toLowerCase()).join(' ');
+
+    // Detectar preferências básicas
+    if (content.includes('apartamento')) preferences.push('Tipo: Apartamento');
+    if (content.includes('casa')) preferences.push('Tipo: Casa');
+    if (content.match(/\d+ quartos?/)) {
+      const match = content.match(/(\d+) quartos?/);
+      if (match) preferences.push(`Quartos: ${match[1]}`);
+    }
+    if (content.includes('garagem')) preferences.push('Com garagem');
+    if (content.includes('urgente')) preferences.push('Urgência: Alta');
+
+    // Orçamento
+    const budgetMatch = content.match(/até r?\$?\s*(\d+\.?\d*)/i);
+    if (budgetMatch) {
+      preferences.push(`Orçamento: até R$ ${budgetMatch[1]}k`);
+    }
+
+    return preferences;
+  }
+
+  async updateLeadFromConversation(
+    leadId: string,
+    message: string,
+    analysis: any
+  ) {
+    const updates: any = {};
+
+    // Atualizar score se detectado interesse
+    if (analysis.urgency === 'alta') {
+      updates.score = { increment: 15 };
+    } else if (analysis.urgency === 'média') {
+      updates.score = { increment: 5 };
+    }
+
+    // Atualizar tags
+    if (analysis.tags && analysis.tags.length > 0) {
+      updates.tags = { push: analysis.tags };
+    }
+
+    await prisma.lead.update({
+      where: { id: leadId },
+      data: updates
+    });
+  }
+}</code></pre>
+                </div>
+
+                <h3>Tarefa 2.2: Prompts do Sistema</h3>
+                <div class="code-block">
+                    <div class="code-header">
+                        <span>📁 apps/api/src/ai/prompts/sofia-prompts.ts</span>
+                        <button onclick="copyCode(this)">📋 Copiar</button>
+                    </div>
+                    <pre><code>export const SOFIA_SYSTEM_PROMPT = `
+Você é Sofia, assistente virtual da Vivoly Imobiliária Premium.
+
+🎯 SUA MISSÃO:
+- Atender leads imobiliários 24/7 via WhatsApp
+- Qualificar interesse e urgência
+- Agendar visitas quando apropriado
+- Passar leads quentes para corretores humanos
+- Sempre manter tom profissional e cordial
+
+👤 PERSONALIDADE:
+- Comunicativa mas objetiva
+- Empática e prestativa
+- Conhecedora do mercado imobiliário
+- Brasileira (use português BR natural)
+- Não use emojis em excesso (máximo 2 por mensagem)
+
+📋 INFORMAÇÕES IMPORTANTES:
+1. Sempre pergunte: tipo de imóvel, localização, orçamento, urgência
+2. Se lead tem pressa: priorize agendamento
+3. Se lead está indeciso: envie opções e eduque
+4. Nunca invente preços ou detalhes de imóveis
+5. Se não souber algo: "Vou verificar com nossa equipe e retorno em breve"
+
+🚨 SITUAÇÕES ESPECIAIS:
+- Lead com orçamento alto (>R$1M): notificar corretor imediatamente
+- Urgência explícita: oferecer agendamento para hoje/amanhã
+- Múltiplas perguntas sem interesse: educadamente encerrar
+
+💬 TOM DE VOZ:
+- Informal mas profissional
+- Use "você" (não use "senhor/senhora" excessivamente)
+- Seja direta: respostas curtas e objetivas
+- Exemplo BOM: "Ótimo! Temos apartamentos incríveis na região. Qual seu orçamento?"
+- Exemplo RUIM: "Muito obrigada pelo seu contato! Ficamos extremamente felizes..."
+
+🎯 OBJETIVO FINAL:
+Transformar cada conversa em uma oportunidade de negócio qualificada.
+`;
+
+export const ANALYSIS_PROMPT = `
+Analise a mensagem do lead e retorne um JSON com:
+
+{
+  "urgency": "baixa" | "média" | "alta",
+  "intent": "informacao" | "agendamento" | "negociacao" | "reclamacao",
+  "sentiment": "positivo" | "neutro" | "negativo",
+  "budget_mentioned": boolean,
+  "preferences": {
+    "property_type": string | null,
+    "location": string | null,
+    "bedrooms": number | null,
+    "budget_max": number | null
+  },
+  "next_action": "respond" | "schedule" | "escalate" | "close",
+  "score_impact": number, // -10 a +10
+  "tags": string[]
+}
+
+Seja preciso na análise. Urgência "alta" apenas se explicitamente mencionado.
+`;
+
+export const RESPONSE_PROMPT = (context: string, message: string) => `
+${SOFIA_SYSTEM_PROMPT}
+
+${context}
+
+MENSAGEM DO LEAD:
+"${message}"
+
+INSTRUÇÕES:
+1. Responda de forma natural e conversacional
+2. Avance a conversa (faça pergunta relevante se apropriado)
+3. Máximo 3 frases
+4. Se detectar oportunidade de agendamento, sugira
+5. Mantenha consistência com histórico
+
+Sua resposta:
+`;</code></pre>
+                </div>
+
+                <h3>Tarefa 2.3: Message Processor</h3>
+                <div class="code-block">
+                    <div class="code-header">
+                        <span>📁 apps/api/src/ai/services/message-processor.service.ts</span>
+                        <button onclick="copyCode(this)">📋 Copiar</button>
+                    </div>
+                    <pre><code>import { PrismaClient } from '@prisma/client';
+import { ClaudeService } from './claude.service';
+import { ContextBuilderService } from './context-builder.service';
+import { RESPONSE_PROMPT, ANALYSIS_PROMPT } from '../prompts/sofia-prompts';
+
+const prisma = new PrismaClient();
+
+export class MessageProcessorService {
+  private claudeService: ClaudeService;
+  private contextBuilder: ContextBuilderService;
+
+  constructor() {
+    this.claudeService = new ClaudeService();
+    this.contextBuilder = new ContextBuilderService();
+  }
+
+  async processIncomingMessage(
+    fromNumber: string,
+    messageText: string,
+    tenantId: string
+  ): Promise<{
+    reply: string;
+    analysis: any;
+    shouldNotifyBroker: boolean;
+  }> {
+    console.log(`\n🔄 Processando mensagem de ${fromNumber}...`);
+
+    // 1. Buscar ou criar lead
+    let lead = await prisma.lead.findFirst({
+      where: { phone: fromNumber, tenantId }
+    });
+
+    if (!lead) {
+      lead = await prisma.lead.create({
+        data: {
+          phone: fromNumber,
+          status: 'new',
+          score: 50,
+          tenantId,
+          source: 'whatsapp'
+        }
+      });
+      console.log('✅ Novo lead criado');
+    }
+
+    // 2. Salvar mensagem recebida
+    await prisma.message.create({
+      data: {
+        content: messageText,
+        fromNumber,
+        toNumber: 'system',
+        direction: 'inbound',
+        leadId: lead.id,
+        tenantId,
+        channel: 'whatsapp'
+      }
+    });
+
+    // 3. Construir contexto
+    const context = await this.contextBuilder.buildContext(fromNumber, tenantId);
+    console.log('📝 Contexto construído');
+
+    // 4. Analisar mensagem
+    const analysis = await this.analyzeMessage(messageText);
+    console.log('🧠 Análise:', analysis);
+
+    // 5. Gerar resposta
+    const reply = await this.generateReply(context, messageText);
+    console.log('💬 Resposta gerada');
+
+    // 6. Salvar resposta
+    await prisma.message.create({
+      data: {
+        content: reply,
+        fromNumber: 'system',
+        toNumber: fromNumber,
+        direction: 'outbound',
+        leadId: lead.id,
+        tenantId,
+        channel: 'whatsapp'
+      }
+    });
+
+    // 7. Atualizar score do lead
+    await this.updateLeadScore(lead.id, analysis);
+
+    // 8. Decidir se notifica corretor
+    const shouldNotifyBroker = this.shouldNotifyBroker(analysis, lead);
+
+    return {
+      reply,
+      analysis,
+      shouldNotifyBroker
+    };
+  }
+
+  private async analyzeMessage(message: string): Promise<any> {
+    try {
+      const analysis = await this.claudeService.analyze(
+        `${ANALYSIS_PROMPT}\n\nMensagem: "${message}"`
+      );
+      return analysis;
+    } catch (error) {
+      console.error('Erro na análise:', error);
+      return {
+        urgency: 'média',
+        intent: 'informacao',
+        sentiment: 'neutro',
+        next_action: 'respond',
+        score_impact: 0
+      };
+    }
+  }
+
+  private async generateReply(context: string, message: string): Promise<string> {
+    const prompt = RESPONSE_PROMPT(context, message);
+    return await this.claudeService.generateResponse(prompt, undefined, {
+      maxTokens: 500,
+      temperature: 0.8 // Um pouco mais criativo para conversas
+    });
+  }
+
+  private async updateLeadScore(leadId: string, analysis: any) {
+    const scoreChange = analysis.score_impact || 0;
+
+    if (scoreChange !== 0) {
+      await prisma.lead.update({
+        where: { id: leadId },
+        data: {
+          score: {
+            increment: scoreChange
+          }
+        }
+      });
+    }
+  }
+
+  private shouldNotifyBroker(analysis: any, lead: any): boolean {
+    // Notificar se:
+    // 1. Lead novo com alta urgência
+    if (lead.status === 'new' && analysis.urgency === 'alta') return true;
+
+    // 2. Score passou de 80
+    if (lead.score + (analysis.score_impact || 0) >= 80) return true;
+
+    // 3. Intent é agendamento ou negociação
+    if (['agendamento', 'negociacao'].includes(analysis.intent)) return true;
+
+    return false;
+  }
+}</code></pre>
+                </div>
+            </section>
+
+            <section id="sprint3">
+                <h2>📅 Sprint 3: Orquestração Completa (Semanas 5-6)</h2>
+
+                <h3>Tarefa 3.1: AI Orchestrator (Integração Final)</h3>
+                <div class="code-block">
+                    <div class="code-header">
+                        <span>📁 apps/api/src/ai/ai-orchestrator.service.ts</span>
+                        <button onclick="copyCode(this)">📋 Copiar</button>
+                    </div>
+                    <pre><code>import { WhatsAppService } from '../messaging/services/whatsapp.service';
+import { TelegramService } from '../messaging/services/telegram.service';
+import { MessageProcessorService } from './services/message-processor.service';
+import { PrismaClient } from '@prisma/client';
+
+const prisma = new PrismaClient();
+
+export class AIOrchestrator {
+  private whatsapp: WhatsAppService;
+  private telegram: TelegramService;
+  private processor: MessageProcessorService;
+
+  constructor() {
+    this.whatsapp = new WhatsAppService();
+    this.telegram = new TelegramService();
+    this.processor = new MessageProcessorService();
+  }
+
+  async initialize() {
+    console.log('🚀 Inicializando AI Orchestrator...\n');
+
+    // Inicializar WhatsApp
+    await this.whatsapp.initialize();
+
+    // Configurar handler de mensagens
+    this.whatsapp.onMessage(async (message) => {
+      await this.handleIncomingMessage(message);
+    });
+
+    console.log('✅ AI Orchestrator pronto!\n');
+    console.log('📱 Aguardando mensagens no WhatsApp...');
+    console.log('🤖 Sofia está online!\n');
+  }
+
+  private async handleIncomingMessage(message: any) {
+    const startTime = Date.now();
+
+    try {
+      console.log(`\n${'='.repeat(60)}`);
+      console.log(`📨 NOVA MENSAGEM RECEBIDA`);
+      console.log(`${'='.repeat(60)}`);
+      console.log(`De: ${message.from}`);
+      console.log(`Conteúdo: ${message.body}`);
+      console.log(`Horário: ${new Date().toLocaleString('pt-BR')}`);
+
+      // Processar mensagem (análise + geração de resposta)
+      const result = await this.processor.processIncomingMessage(
+        message.from,
+        message.body,
+        'default-tenant' // TODO: detectar tenant real
+      );
+
+      // Enviar resposta com efeito de digitação
+      await this.whatsapp.sendMessageWithTyping(
+        message.from,
+        result.reply
+      );
+
+      console.log(`\n✅ Resposta enviada: ${result.reply.substring(0, 80)}...`);
+
+      // Notificar corretor se necessário
+      if (result.shouldNotifyBroker) {
+        await this.notifyBroker(message.from, result);
+      }
+
+      const elapsed = Date.now() - startTime;
+      console.log(`\n⏱️ Processado em ${elapsed}ms`);
+      console.log(`${'='.repeat(60)}\n`);
+
+    } catch (error) {
+      console.error('\n❌ ERRO ao processar mensagem:', error);
+
+      // Resposta de fallback
+      await this.whatsapp.sendMessage(
+        message.from,
+        'Desculpe, tive um problema técnico. Um corretor entrará em contato em breve! 🙏'
+      );
+    }
+  }
+
+  private async notifyBroker(leadPhone: string, result: any) {
+    try {
+      // Buscar lead
+      const lead = await prisma.lead.findFirst({
+        where: { phone: leadPhone }
+      });
+
+      if (!lead) return;
+
+      // Buscar corretor responsável (ou usar padrão)
+      const broker = await prisma.user.findFirst({
+        where: {
+          role: 'BROKER',
+          tenantId: lead.tenantId
+        }
+      });
+
+      if (!broker?.telegramUserId) {
+        console.warn('⚠️ Nenhum corretor com Telegram configurado');
+        return;
+      }
+
+      // Enviar notificação
+      await this.telegram.notifyNewLead(broker.telegramUserId, {
+        name: lead.name || 'Nome não informado',
+        phone: leadPhone,
+        message: result.analysis.intent || 'Mensagem recebida',
+        score: lead.score,
+        urgency: result.analysis.urgency || 'média'
+      });
+
+      console.log('📢 Corretor notificado via Telegram');
+
+    } catch (error) {
+      console.error('❌ Erro ao notificar corretor:', error);
+    }
+  }
+
+  async shutdown() {
+    console.log('\n🛑 Desligando AI Orchestrator...');
+    await this.whatsapp.destroy();
+    await prisma.$disconnect();
+    console.log('✅ Shutdown concluído');
+  }
+}
+
+// ============================================
+// INICIALIZAÇÃO DO SISTEMA
+// ============================================
+
+if (require.main === module) {
+  const orchestrator = new AIOrchestrator();
+
+  // Inicializar
+  orchestrator.initialize().catch((error) => {
+    console.error('❌ Erro fatal na inicialização:', error);
+    process.exit(1);
+  });
+
+  // Graceful shutdown
+  process.on('SIGINT', async () => {
+    console.log('\n\n⚠️ Recebido SIGINT...');
+    await orchestrator.shutdown();
+    process.exit(0);
+  });
+
+  process.on('SIGTERM', async () => {
+    console.log('\n\n⚠️ Recebido SIGTERM...');
+    await orchestrator.shutdown();
+    process.exit(0);
+  });
+}</code></pre>
+                </div>
+
+                <h3>Tarefa 3.2: Arquivo Principal de Inicialização</h3>
+                <div class="code-block">
+                    <div class="code-header">
+                        <span>📁 apps/api/src/main.ts</span>
+                        <button onclick="copyCode(this)">📋 Copiar</button>
+                    </div>
+                    <pre><code>import { AIOrchestrator } from './ai/ai-orchestrator.service';
+
+async function bootstrap() {
+  console.clear();
+  console.log(`
+╔═══════════════════════════════════════════════════════════╗
+║                                                           ║
+║     🏠 VIVOLY BI + IA SYSTEM                             ║
+║     Powered by Claude AI                                  ║
+║                                                           ║
+╚═══════════════════════════════════════════════════════════╝
+  `);
+
+  console.log('📋 Checando configurações...\n');
+
+  // Validar variáveis de ambiente
+  const requiredEnvVars = [
+    'ANTHROPIC_API_KEY',
+    'TELEGRAM_BOT_TOKEN',
+    'DATABASE_URL'
+  ];
+
+  const missing = requiredEnvVars.filter(v => !process.env[v]);
+
+  if (missing.length > 0) {
+    console.error('❌ Variáveis de ambiente faltando:');
+    missing.forEach(v => console.error(`   - ${v}`));
+    process.exit(1);
+  }
+
+  console.log('✅ Todas as variáveis configuradas\n');
+
+  // Inicializar sistema
+  const orchestrator = new AIOrchestrator();
+  await orchestrator.initialize();
+
+  console.log(`
+╔═══════════════════════════════════════════════════════════╗
+║  ✅ SISTEMA OPERACIONAL                                   ║
+║                                                           ║
+║  📱 WhatsApp: Conectado                                   ║
+║  🤖 Claude IA: Online                                     ║
+║  📢 Telegram: Ativo                                       ║
+║                                                           ║
+║  🎯 Sofia está pronta para atender leads!                ║
+╚═══════════════════════════════════════════════════════════╝
+  `);
+}
+
+bootstrap();</code></pre>
+                </div>
+
+                <div class="command-box">
+npx tsx src/main.ts
+                </div>
+            </section>
+
+            <section id="testes">
+                <h2>🧪 Testes Completos do MVP</h2>
+
+                <div class="card card-warning">
+                    <h3>⚠️ Antes de Testar</h3>
+                    <p>Certifique-se de que:</p>
+                    <ul>
+                        <li>✅ Variáveis de ambiente estão configuradas (.env)</li>
+                        <li>✅ Banco de dados está rodando (PostgreSQL)</li>
+                        <li>✅ Migrations foram executadas (npx prisma migrate dev)</li>
+                        <li>✅ Você tem créditos nas APIs (Anthropic)</li>
+                        <li>✅ WhatsApp está pronto para escanear QR Code</li>
+                    </ul>
+                </div>
+
+                <h3>Teste 1: Conversa Completa Simulada</h3>
+                <div class="code-block">
+                    <div class="code-header">
+                        <span>📁 apps/api/src/tests/test-full-conversation.ts</span>
+                        <button onclick="copyCode(this)">📋 Copiar</button>
+                    </div>
+                    <pre><code>import { MessageProcessorService } from '../ai/services/message-processor.service';
+
+async function testConversation() {
+  console.log('🧪 Testando conversa completa...\n');
+
+  const processor = new MessageProcessorService();
+  const leadPhone = '5511999999999';
+  const tenantId = 'test-tenant';
+
+  const conversation = [
+    'Oi, estou procurando apartamento',
+    '2 quartos, na zona sul de SP',
+    'Meu orçamento é até 500 mil',
+    'Preciso com urgência, para este mês',
+    'Pode agendar uma visita?'
+  ];
+
+  for (const message of conversation) {
+    console.log(`\n👤 Lead: ${message}`);
+
+    const result = await processor.processIncomingMessage(
+      leadPhone,
+      message,
+      tenantId
+    );
+
+    console.log(`🤖 Sofia: ${result.reply}`);
+    console.log(`📊 Análise:`, {
+      urgency: result.analysis.urgency,
+      intent: result.analysis.intent,
+      shouldNotify: result.shouldNotifyBroker
+    });
+
+    // Pequeno delay entre mensagens
+    await new Promise(r => setTimeout(r, 2000));
+  }
+
+  console.log('\n✅ Teste de conversa completo!');
+}
+
+testConversation().catch(console.error);</code></pre>
+                </div>
+
+                <h3>Teste 2: Sistema End-to-End</h3>
+                <div class="test-box">
+                    <h4>📱 Teste Manual com WhatsApp Real</h4>
+                    <ol>
+                        <li>Inicie o sistema: <code>npx tsx src/main.ts</code></li>
+                        <li>Escaneie o QR Code com seu WhatsApp</li>
+                        <li>De outro número, envie: "Olá, quero alugar apartamento"</li>
+                        <li>Continue a conversa naturalmente</li>
+                        <li>Verifique notificações no Telegram</li>
+                        <li>Confira logs no terminal</li>
+                    </ol>
+                </div>
+
+                <div class="card card-success">
+                    <h3>✅ Critérios de Sucesso</h3>
+                    <p>O MVP está funcionando se:</p>
+                    <ul>
+                        <li>✅ WhatsApp conecta sem erros</li>
+                        <li>✅ Mensagens são recebidas e processadas</li>
+                        <li>✅ Claude gera respostas coerentes</li>
+                        <li>✅ Contexto é mantido entre mensagens</li>
+                        <li>✅ Leads são salvos no banco</li>
+                        <li>✅ Score é atualizado corretamente</li>
+                        <li>✅ Notificações Telegram funcionam</li>
+                        <li>✅ Sistema aguenta múltiplas conversas simultâneas</li>
+                    </ul>
+                </div>
+            </section>
+
+            <div class="card card-info" style="margin-top: 50px;">
+                <h3>🎉 Parabéns!</h3>
+                <p>Se você chegou até aqui e todos os testes passaram, você tem um <strong>MVP funcional</strong> do sistema de BI + IA!</p>
+                <p>Próximo passo: <a href="guia-fase2.html">Fase 2 - Inteligência Avançada</a></p>
+            </div>
+        </div>
+
+        <footer class="nav-footer">
+            <a href="guia-preparacao.html" class="btn-nav">← Preparação</a>
+            <a href="guia-index.html" class="btn-nav">🏠 Índice</a>
+            <a href="guia-fase2.html" class="btn-nav">Fase 2 →</a>
+        </footer>
+    </div>
+
+    <script src="guia-scripts.js"></script>
+</body>
+</html>

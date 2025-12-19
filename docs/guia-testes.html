@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guia Completo de Testes | Guia BI + IA</title>
+    <link rel="stylesheet" href="guia-styles.css">
+</head>
+<body>
+    <div class="container">
+        <header class="phase-header phase1">
+            <div class="breadcrumb">
+                <a href="guia-index.html">🏠 Índice</a> →
+                <a href="guia-fase3.html">⚡ Fase 3</a> →
+                <span>Testes</span>
+            </div>
+            <h1>🧪 Guia Completo de Testes</h1>
+            <p>Validação e Qualidade do Sistema</p>
+            <div class="phase-meta">
+                <span class="badge">📋 Essencial</span>
+                <span class="badge">✅ Qualidade</span>
+            </div>
+        </header>
+
+        <nav class="nav-sticky">
+            <a href="#visao">Visão Geral</a>
+            <a href="#unit">Testes Unitários</a>
+            <a href="#integration">Integração</a>
+            <a href="#e2e">End-to-End</a>
+            <a href="#scenarios">Cenários</a>
+            <a href="#performance">Performance</a>
+        </nav>
+
+        <div class="content">
+            <section id="visao">
+                <h2>📋 Visão Geral dos Testes</h2>
+                <div class="card card-info">
+                    <h3>🎯 Objetivo</h3>
+                    <p>Garantir que todo o sistema está funcionando corretamente antes do deploy em produção.</p>
+                </div>
+
+                <div class="card card-warning">
+                    <h3>⚠️ Checklist Pré-Testes</h3>
+                    <ul>
+                        <li>✅ Todas as fases implementadas (1, 2 e 3)</li>
+                        <li>✅ Banco de dados configurado</li>
+                        <li>✅ Variáveis de ambiente definidas</li>
+                        <li>✅ APIs com créditos (Anthropic, OpenAI)</li>
+                        <li>✅ WhatsApp pronto para conexão</li>
+                        <li>✅ Telegram bot configurado</li>
+                    </ul>
+                </div>
+            </section>
+
+            <section id="unit">
+                <h2>🔬 Testes Unitários</h2>
+
+                <h3>Configuração do Jest</h3>
+                <div class="code-block">
+                    <div class="code-header">
+                        <span>📁 apps/api/jest.config.js</span>
+                        <button onclick="copyCode(this)">📋 Copiar</button>
+                    </div>
+                    <pre><code>module.exports = {
+  preset: 'ts-jest',
+  testEnvironment: 'node',
+  roots: ['<rootDir>/src'],
+  testMatch: ['**/__tests__/**/*.ts', '**/?(*.)+(spec|test).ts'],
+  transform: {
+    '^.+\\.ts$': 'ts-jest',
+  },
+  collectCoverageFrom: [
+    'src/**/*.ts',
+    '!src/**/*.test.ts',
+    '!src/**/*.spec.ts',
+  ],
+  coverageDirectory: 'coverage',
+  coverageReporters: ['text', 'lcov', 'html'],
+};</code></pre>
+                </div>
+
+                <h3>Teste: ClaudeService</h3>
+                <div class="code-block">
+                    <div class="code-header">
+                        <span>📁 apps/api/src/ai/services/__tests__/claude.service.test.ts</span>
+                        <button onclick="copyCode(this)">📋 Copiar</button>
+                    </div>
+                    <pre><code>import { ClaudeService } from '../claude.service';
+
+describe('ClaudeService', () => {
+  let service: ClaudeService;
+
+  beforeEach(() => {
+    service = new ClaudeService();
+  });
+
+  describe('generateResponse', () => {
+    it('deve gerar uma resposta válida', async () => {
+      const response = await service.generateResponse('Diga olá');
+
+      expect(response).toBeDefined();
+      expect(typeof response).toBe('string');
+      expect(response.length).toBeGreaterThan(0);
+    });
+
+    it('deve usar contexto quando fornecido', async () => {
+      const context = 'Você é um assistente de imobiliária';
+      const response = await service.generateResponse(
+        'Como você ajuda clientes?',
+        context
+      );
+
+      expect(response).toBeDefined();
+      expect(response.length).toBeGreaterThan(0);
+    });
+
+    it('deve rastrear custo e uso', async () => {
+      await service.generateResponse('Teste');
+      const stats = service.getStats();
+
+      expect(stats.requestCount).toBe(1);
+      expect(stats.dailyCost).toBeGreaterThan(0);
+    });
+  });
+
+  describe('analyze', () => {
+    it('deve retornar JSON válido', async () => {
+      const prompt = 'Retorne {"test": true}';
+      const result = await service.analyze(prompt);
+
+      expect(result).toBeDefined();
+      expect(typeof result).toBe('object');
+    });
+  });
+
+  describe('resetDailyStats', () => {
+    it('deve resetar estatísticas', async () => {
+      await service.generateResponse('Teste');
+      service.resetDailyStats();
+
+      const stats = service.getStats();
+      expect(stats.requestCount).toBe(0);
+      expect(stats.dailyCost).toBe(0);
+    });
+  });
+});</code></pre>
+                </div>
+
+                <h3>Teste: MessageProcessor</h3>
+                <div class="code-block">
+                    <div class="code-header">
+                        <span>📁 apps/api/src/ai/services/__tests__/message-processor.test.ts</span>
+                        <button onclick="copyCode(this)">📋 Copiar</button>
+                    </div>
+                    <pre><code>import { MessageProcessorService } from '../message-processor.service';
+import { PrismaClient } from '@prisma/client';
+
+const prisma = new PrismaClient();
+
+describe('MessageProcessorService', () => {
+  let service: MessageProcessorService;
+  let testLeadId: string;
+
+  beforeAll(async () => {
+    // Criar lead de teste
+    const lead = await prisma.lead.create({
+      data: {
+        phone: '5511999999999',
+        tenantId: 'test',
+        status: 'new',
+        score: 50
+      }
+    });
+    testLeadId = lead.id;
+  });
+
+  afterAll(async () => {
+    // Limpar dados de teste
+    await prisma.message.deleteMany({
+      where: { leadId: testLeadId }
+    });
+    await prisma.lead.delete({
+      where: { id: testLeadId }
+    });
+    await prisma.$disconnect();
+  });
+
+  beforeEach(() => {
+    service = new MessageProcessorService();
+  });
+
+  describe('processIncomingMessage', () => {
+    it('deve processar mensagem e retornar resposta', async () => {
+      const result = await service.processIncomingMessage(
+        '5511999999999',
+        'Olá, procuro apartamento',
+        'test'
+      );
+
+      expect(result).toBeDefined();
+      expect(result.reply).toBeDefined();
+      expect(result.analysis).toBeDefined();
+      expect(typeof result.shouldNotifyBroker).toBe('boolean');
+    });
+
+    it('deve salvar mensagem no banco', async () => {
+      await service.processIncomingMessage(
+        '5511999999999',
+        'Teste de mensagem',
+        'test'
+      );
+
+      const messages = await prisma.message.findMany({
+        where: { leadId: testLeadId }
+      });
+
+      expect(messages.length).toBeGreaterThan(0);
+    });
+
+    it('deve atualizar score do lead', async () => {
+      const leadBefore = await prisma.lead.findUnique({
+        where: { id: testLeadId }
+      });
+
+      await service.processIncomingMessage(
+        '5511999999999',
+        'Preciso urgente de um apartamento!',
+        'test'
+      );
+
+      const leadAfter = await prisma.lead.findUnique({
+        where: { id: testLeadId }
+      });
+
+      expect(leadAfter!.score).not.toBe(leadBefore!.score);
+    });
+  });
+});</code></pre>
+                </div>
+
+                <div class="command-box">
+pnpm test
+                </div>
+            </section>
+
+            <section id="integration">
+                <h2>🔗 Testes de Integração</h2>
+
+                <h3>Teste: Fluxo Completo de Mensagem</h3>
+                <div class="code-block">
+                    <div class="code-header">
+                        <span>📁 apps/api/src/__tests__/integration/message-flow.test.ts</span>
+                        <button onclick="copyCode(this)">📋 Copiar</button>
+                    </div>
+                    <pre><code>import { AIOrchestrator } from '../../ai/ai-orchestrator.service';
+import { PrismaClient } from '@prisma/client';
+
+const prisma = new PrismaClient();
+
+describe('Fluxo Completo de Mensagem', () => {
+  let orchestrator: AIOrchestrator;
+
+  beforeAll(async () => {
+    orchestrator = new AIOrchestrator();
+    // Não inicializar WhatsApp em testes
+  });
+
+  afterAll(async () => {
+    await prisma.$disconnect();
+  });
+
+  it('deve processar mensagem do lead até notificação do corretor', async () => {
+    // 1. Simular recebimento de mensagem
+    const mockMessage = {
+      from: '5511988888888',
+      body: 'Quero comprar um apartamento de 3 quartos urgente!',
+      fromMe: false
+    };
+
+    // 2. Processar (sem enviar WhatsApp real)
+    const processor = orchestrator['processor'];
+    const result = await processor.processIncomingMessage(
+      mockMessage.from,
+      mockMessage.body,
+      'test-tenant'
+    );
+
+    // 3. Verificações
+    expect(result.reply).toBeDefined();
+    expect(result.analysis.urgency).toBe('alta');
+    expect(result.shouldNotifyBroker).toBe(true);
+
+    // 4. Verificar que lead foi criado
+    const lead = await prisma.lead.findFirst({
+      where: { phone: mockMessage.from }
+    });
+
+    expect(lead).toBeDefined();
+    expect(lead!.score).toBeGreaterThan(50);
+  });
+});</code></pre>
+                </div>
+
+                <h3>Teste: Lead Scoring ML</h3>
+                <div class="code-block">
+                    <div class="code-header">
+                        <span>📁 apps/api/src/__tests__/integration/lead-scoring.test.ts</span>
+                        <button onclick="copyCode(this)">📋 Copiar</button>
+                    </div>
+                    <pre><code>import { LeadScoringMLService } from '../../ai/ml/lead-scoring.service';
+import { PrismaClient } from '@prisma/client';
+
+const prisma = new PrismaClient();
+
+describe('Lead Scoring ML', () => {
+  let service: LeadScoringMLService;
+  let testLeadId: string;
+
+  beforeAll(async () => {
+    service = new LeadScoringMLService();
+
+    // Criar lead com histórico
+    const lead = await prisma.lead.create({
+      data: {
+        phone: '5511977777777',
+        tenantId: 'test',
+        status: 'active',
+        score: 50,
+        budgetMax: 500000
+      }
+    });
+
+    testLeadId = lead.id;
+
+    // Criar mensagens de teste
+    for (let i = 0; i < 15; i++) {
+      await prisma.message.create({
+        data: {
+          leadId: testLeadId,
+          content: i % 2 === 0 ? 'Pergunta do lead' : 'Resposta da IA',
+          direction: i % 2 === 0 ? 'inbound' : 'outbound',
+          fromNumber: i % 2 === 0 ? lead.phone : 'system',
+          toNumber: i % 2 === 0 ? 'system' : lead.phone,
+          tenantId: 'test',
+          channel: 'whatsapp'
+        }
+      });
+    }
+  });
+
+  afterAll(async () => {
+    await prisma.message.deleteMany({ where: { leadId: testLeadId } });
+    await prisma.lead.delete({ where: { id: testLeadId } });
+    await prisma.$disconnect();
+  });
+
+  it('deve calcular score avançado', async () => {
+    const result = await service.calculateAdvancedScore(testLeadId);
+
+    expect(result.score).toBeGreaterThanOrEqual(0);
+    expect(result.score).toBeLessThanOrEqual(100);
+    expect(result.confidence).toBeGreaterThan(0);
+    expect(result.factors).toBeDefined();
+    expect(result.recommendation).toBeDefined();
+  });
+
+  it('deve identificar fatores de score', async () => {
+    const result = await service.calculateAdvancedScore(testLeadId);
+
+    expect(result.factors.engagement).toBeDefined();
+    expect(result.factors.urgency).toBeDefined();
+    expect(result.factors.budget_clarity).toBeDefined();
+  });
+});</code></pre>
+                </div>
+            </section>
+
+            <section id="e2e">
+                <h2>🎯 Testes End-to-End</h2>
+
+                <div class="card card-warning">
+                    <h3>⚠️ Atenção</h3>
+                    <p>Testes E2E usam serviços reais (WhatsApp, Telegram, APIs). Execute com cautela para não consumir créditos desnecessariamente.</p>
+                </div>
+
+                <h3>Teste E2E: Conversa Completa</h3>
+                <div class="code-block">
+                    <div class="code-header">
+                        <span>📁 apps/api/src/__tests__/e2e/full-conversation.e2e.ts</span>
+                        <button onclick="copyCode(this)">📋 Copiar</button>
+                    </div>
+                    <pre><code>import { MessageProcessorService } from '../../ai/services/message-processor.service';
+
+describe('E2E: Conversa Completa', () => {
+  let processor: MessageProcessorService;
+  const testPhone = '5511966666666';
+  const tenantId = 'e2e-test';
+
+  beforeAll(() => {
+    processor = new MessageProcessorService();
+  });
+
+  it('deve simular conversa realista de lead quente', async () => {
+    const conversation = [
+      { msg: 'Oi, procuro apartamento', expectedUrgency: 'média' },
+      { msg: '2 quartos na zona sul', expectedUrgency: 'média' },
+      { msg: 'Até 500 mil', expectedUrgency: 'média' },
+      { msg: 'Preciso com urgência, mudo mês que vem', expectedUrgency: 'alta' },
+      { msg: 'Pode agendar visita?', expectedIntent: 'agendamento' }
+    ];
+
+    for (const turn of conversation) {
+      const result = await processor.processIncomingMessage(
+        testPhone,
+        turn.msg,
+        tenantId
+      );
+
+      console.log(`\n📨 Lead: ${turn.msg}`);
+      console.log(`🤖 Sofia: ${result.reply}`);
+      console.log(`📊 Análise: ${JSON.stringify(result.analysis, null, 2)}`);
+
+      expect(result.reply).toBeDefined();
+      expect(result.reply.length).toBeGreaterThan(0);
+
+      if (turn.expectedUrgency) {
+        expect(result.analysis.urgency).toBe(turn.expectedUrgency);
+      }
+
+      if (turn.expectedIntent) {
+        expect(result.analysis.intent).toBe(turn.expectedIntent);
+      }
+
+      // Pequeno delay entre mensagens
+      await new Promise(r => setTimeout(r, 2000));
+    }
+
+    // Verificar lead final
+    const prisma = new PrismaClient();
+    const lead = await prisma.lead.findFirst({
+      where: { phone: testPhone }
+    });
+
+    expect(lead).toBeDefined();
+    expect(lead!.score).toBeGreaterThan(70); // Lead quente
+    expect(lead!.budgetMax).toBeDefined();
+
+    await prisma.$disconnect();
+  }, 60000); // Timeout maior para E2E
+});</code></pre>
+                </div>
+
+                <div class="command-box">
+pnpm test:e2e
+                </div>
+            </section>
+
+            <section id="scenarios">
+                <h2>📝 Cenários de Teste</h2>
+
+                <div class="test-box">
+                    <h4>Cenário 1: Lead Quente → Conversão</h4>
+                    <ol>
+                        <li>Lead envia: "Preciso urgente de apartamento 3 quartos"</li>
+                        <li>Sistema detecta urgência alta</li>
+                        <li>IA responde com opções</li>
+                        <li>Lead visualiza imóveis</li>
+                        <li>Lead solicita agendamento</li>
+                        <li>Sistema agenda visita automaticamente</li>
+                        <li>Corretor é notificado no Telegram</li>
+                        <li>Lembretes são enviados</li>
+                        <li>Visita é realizada</li>
+                        <li>Feedback é coletado</li>
+                    </ol>
+                    <p><strong>Validações:</strong></p>
+                    <ul>
+                        <li>✅ Score aumenta progressivamente</li>
+                        <li>✅ Notificações enviadas no momento certo</li>
+                        <li>✅ Contexto mantido entre mensagens</li>
+                        <li>✅ Agendamento criado no Google Calendar</li>
+                    </ul>
+                </div>
+
+                <div class="test-box">
+                    <h4>Cenário 2: Lead Frio → Recuperação</h4>
+                    <ol>
+                        <li>Lead teve conversa inicial (score 60)</li>
+                        <li>Para de responder por 10 dias</li>
+                        <li>Sistema detecta lead frio</li>
+                        <li>Mensagem de recuperação é enviada</li>
+                        <li>Lead responde</li>
+                        <li>Conversa é retomada</li>
+                    </ol>
+                    <p><strong>Validações:</strong></p>
+                    <ul>
+                        <li>✅ Lead é identificado como frio</li>
+                        <li>✅ Mensagem de recuperação é personalizada</li>
+                        <li>✅ Score não cai drasticamente</li>
+                        <li>✅ Contexto histórico é preservado</li>
+                    </ul>
+                </div>
+
+                <div class="test-box">
+                    <h4>Cenário 3: Multiple Leads Simultâneos</h4>
+                    <ol>
+                        <li>5 leads diferentes enviam mensagens ao mesmo tempo</li>
+                        <li>Sistema processa todas em paralelo</li>
+                        <li>Cada uma recebe resposta personalizada</li>
+                        <li>Contextos não se misturam</li>
+                    </ol>
+                    <p><strong>Validações:</strong></p>
+                    <ul>
+                        <li>✅ Todas mensagens são processadas</li>
+                        <li>✅ Não há mistura de contextos</li>
+                        <li>✅ Tempo de resposta < 10s por lead</li>
+                        <li>✅ Sem erros de concorrência</li>
+                    </ul>
+                </div>
+
+                <div class="test-box">
+                    <h4>Cenário 4: Automações Funcionando</h4>
+                    <ol>
+                        <li>Sistema roda por 24 horas</li>
+                        <li>Jobs cron executam conforme agendado</li>
+                        <li>Follow-ups são enviados</li>
+                        <li>Scores são atualizados</li>
+                        <li>Lembretes são disparados</li>
+                    </ol>
+                    <p><strong>Validações:</strong></p>
+                    <ul>
+                        <li>✅ Todos os cron jobs executam</li>
+                        <li>✅ Sem duplicação de mensagens</li>
+                        <li>✅ Logs sem erros</li>
+                        <li>✅ Performance estável</li>
+                    </ul>
+                </div>
+            </section>
+
+            <section id="performance">
+                <h2>⚡ Testes de Performance</h2>
+
+                <h3>Teste de Carga</h3>
+                <div class="code-block">
+                    <div class="code-header">
+                        <span>📁 apps/api/src/__tests__/performance/load-test.ts</span>
+                        <button onclick="copyCode(this)">📋 Copiar</button>
+                    </div>
+                    <pre><code>import { MessageProcessorService } from '../../ai/services/message-processor.service';
+
+describe('Performance: Load Test', () => {
+  it('deve processar 50 mensagens em menos de 2 minutos', async () => {
+    const processor = new MessageProcessorService();
+    const startTime = Date.now();
+    const promises: Promise<any>[] = [];
+
+    // Simular 50 mensagens simultâneas
+    for (let i = 0; i < 50; i++) {
+      const promise = processor.processIncomingMessage(
+        `5511${String(i).padStart(9, '9')}`,
+        `Teste de carga número ${i}`,
+        'load-test'
+      );
+      promises.push(promise);
+    }
+
+    await Promise.all(promises);
+
+    const elapsed = Date.now() - startTime;
+    const elapsedSeconds = elapsed / 1000;
+
+    console.log(`\n⏱️ Tempo total: ${elapsedSeconds}s`);
+    console.log(`📊 Tempo médio por mensagem: ${(elapsedSeconds / 50).toFixed(2)}s`);
+
+    expect(elapsedSeconds).toBeLessThan(120); // Menos de 2 minutos
+  }, 150000); // Timeout de 2.5 minutos
+});</code></pre>
+                </div>
+
+                <div class="card card-success">
+                    <h3>✅ Benchmarks Esperados</h3>
+                    <ul>
+                        <li>Tempo de resposta médio: &lt; 5 segundos</li>
+                        <li>Processamento de mensagem: &lt; 3 segundos</li>
+                        <li>Análise de sentimento: &lt; 2 segundos</li>
+                        <li>Cálculo de score: &lt; 1 segundo</li>
+                        <li>Throughput: 100+ mensagens/minuto</li>
+                    </ul>
+                </div>
+            </section>
+
+            <div class="card card-info" style="margin-top: 50px;">
+                <h3>🎉 Checklist Final de Testes</h3>
+                <ul>
+                    <li>☐ Todos os testes unitários passando</li>
+                    <li>☐ Testes de integração sem erros</li>
+                    <li>☐ Pelo menos 1 teste E2E completo</li>
+                    <li>☐ Todos os cenários validados</li>
+                    <li>☐ Performance dentro dos benchmarks</li>
+                    <li>☐ Sem memory leaks</li>
+                    <li>☐ Logs sem erros críticos</li>
+                    <li>☐ Coverage de código &gt; 70%</li>
+                </ul>
+                <p><strong>Próximo passo:</strong> <a href="guia-deploy.html">Deploy para Produção</a></p>
+            </div>
+        </div>
+
+        <footer class="nav-footer">
+            <a href="guia-fase3.html" class="btn-nav">← Fase 3</a>
+            <a href="guia-index.html" class="btn-nav">🏠 Índice</a>
+            <a href="guia-deploy.html" class="btn-nav">Deploy →</a>
+        </footer>
+    </div>
+
+    <script src="guia-scripts.js"></script>
+</body>
+</html>

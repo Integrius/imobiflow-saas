@@ -1,0 +1,661 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Métricas e Monitoramento | Guia BI + IA</title>
+    <link rel="stylesheet" href="guia-styles.css">
+</head>
+<body>
+    <div class="container">
+        <header class="phase-header phase2">
+            <div class="breadcrumb">
+                <a href="guia-index.html">🏠 Índice</a> →
+                <a href="guia-troubleshooting.html">🔧 Troubleshooting</a> →
+                <span>Métricas</span>
+            </div>
+            <h1>📊 Métricas e Monitoramento</h1>
+            <p>Acompanhe a Performance do Sistema</p>
+        </header>
+
+        <nav class="nav-sticky">
+            <a href="#visao">Visão Geral</a>
+            <a href="#kpis">KPIs</a>
+            <a href="#analytics">Analytics</a>
+            <a href="#custos">Custos</a>
+            <a href="#alertas">Alertas</a>
+        </nav>
+
+        <div class="content">
+            <section id="visao">
+                <h2>📋 Visão Geral das Métricas</h2>
+                <div class="card card-info">
+                    <h3>🎯 Objetivo</h3>
+                    <p>Acompanhar a saúde e performance do sistema em tempo real através de indicadores-chave.</p>
+                </div>
+
+                <div class="card card-success">
+                    <h3>✅ Métricas Principais</h3>
+                    <ul>
+                        <li><strong>Operacionais:</strong> Uptime, latência, erros</li>
+                        <li><strong>Negócio:</strong> Conversões, ROI, satisfação</li>
+                        <li><strong>IA:</strong> Accuracy, custos, performance</li>
+                        <li><strong>Técnicas:</strong> CPU, memória, database</li>
+                    </ul>
+                </div>
+            </section>
+
+            <section id="kpis">
+                <h2>📈 KPIs do Sistema</h2>
+
+                <h3>1. Métricas de Conversão</h3>
+                <div class="code-block">
+                    <div class="code-header">
+                        <span>📁 apps/api/src/analytics/conversion-metrics.ts</span>
+                        <button onclick="copyCode(this)">📋 Copiar</button>
+                    </div>
+                    <pre><code>export interface ConversionMetrics {
+  // Taxa de conversão
+  conversionRate: number; // %
+
+  // Tempo médio para conversão
+  avgTimeToConversion: number; // dias
+
+  // Valor médio por conversão
+  avgDealValue: number; // R$
+
+  // Taxa de leads qualificados
+  qualifiedLeadRate: number; // %
+
+  // Score médio no momento da conversão
+  avgConversionScore: number; // 0-100
+}
+
+async function calculateConversionMetrics(
+  tenantId: string,
+  period: 'week' | 'month' | 'quarter'
+): Promise<ConversionMetrics> {
+  const startDate = getStartDate(period);
+
+  const [totalLeads, conversions] = await Promise.all([
+    prisma.lead.count({
+      where: { tenantId, createdAt: { gte: startDate } }
+    }),
+    prisma.deal.findMany({
+      where: {
+        tenantId,
+        status: 'closed_won',
+        closedAt: { gte: startDate }
+      },
+      include: { lead: true }
+    })
+  ]);
+
+  const conversionRate = (conversions.length / totalLeads) * 100;
+
+  const avgTimeToConversion = conversions.reduce((sum, deal) => {
+    const days = (deal.closedAt.getTime() - deal.lead.createdAt.getTime())
+                  / (1000 * 60 * 60 * 24);
+    return sum + days;
+  }, 0) / conversions.length;
+
+  const avgDealValue = conversions.reduce((sum, d) => sum + d.value, 0)
+                        / conversions.length;
+
+  const qualifiedLeads = await prisma.lead.count({
+    where: { tenantId, score: { gte: 60 }, createdAt: { gte: startDate } }
+  });
+  const qualifiedLeadRate = (qualifiedLeads / totalLeads) * 100;
+
+  const avgConversionScore = conversions.reduce((sum, d) => sum + d.lead.score, 0)
+                              / conversions.length;
+
+  return {
+    conversionRate,
+    avgTimeToConversion,
+    avgDealValue,
+    qualifiedLeadRate,
+    avgConversionScore
+  };
+}</code></pre>
+                </div>
+
+                <h3>2. Métricas de IA</h3>
+                <div class="code-block">
+                    <div class="code-header">
+                        <span>📁 apps/api/src/analytics/ai-metrics.ts</span>
+                        <button onclick="copyCode(this)">📋 Copiar</button>
+                    </div>
+                    <pre><code>export interface AIMetrics {
+  // Uso da API
+  totalRequests: number;
+  totalTokensUsed: number;
+  avgTokensPerRequest: number;
+
+  // Custos
+  totalCost: number; // R$
+  costPerLead: number; // R$
+  costPerConversion: number; // R$
+
+  // Performance
+  avgResponseTime: number; // ms
+  errorRate: number; // %
+
+  // Qualidade
+  avgSentimentScore: number; // -1 a 1
+  accuracyScore: number; // %
+}
+
+async function calculateAIMetrics(
+  tenantId: string,
+  period: 'day' | 'week' | 'month'
+): Promise<AIMetrics> {
+  const startDate = getStartDate(period);
+
+  // Buscar logs de API
+  const apiLogs = await prisma.apiLog.findMany({
+    where: {
+      tenantId,
+      createdAt: { gte: startDate },
+      service: 'claude'
+    }
+  });
+
+  const totalRequests = apiLogs.length;
+  const totalTokensUsed = apiLogs.reduce((sum, log) =>
+    sum + (log.inputTokens + log.outputTokens), 0
+  );
+  const avgTokensPerRequest = totalTokensUsed / totalRequests;
+
+  // Calcular custos (Claude 3.5 Sonnet pricing)
+  const INPUT_COST_PER_1M = 3.00;
+  const OUTPUT_COST_PER_1M = 15.00;
+
+  const totalCost = apiLogs.reduce((sum, log) => {
+    const inputCost = (log.inputTokens / 1000000) * INPUT_COST_PER_1M;
+    const outputCost = (log.outputTokens / 1000000) * OUTPUT_COST_PER_1M;
+    return sum + inputCost + outputCost;
+  }, 0);
+
+  const leadCount = await prisma.lead.count({
+    where: { tenantId, createdAt: { gte: startDate } }
+  });
+
+  const conversionCount = await prisma.deal.count({
+    where: {
+      tenantId,
+      status: 'closed_won',
+      closedAt: { gte: startDate }
+    }
+  });
+
+  const costPerLead = leadCount > 0 ? totalCost / leadCount : 0;
+  const costPerConversion = conversionCount > 0 ? totalCost / conversionCount : 0;
+
+  const avgResponseTime = apiLogs.reduce((sum, log) =>
+    sum + log.responseTime, 0
+  ) / totalRequests;
+
+  const errors = apiLogs.filter(log => log.error).length;
+  const errorRate = (errors / totalRequests) * 100;
+
+  return {
+    totalRequests,
+    totalTokensUsed,
+    avgTokensPerRequest,
+    totalCost,
+    costPerLead,
+    costPerConversion,
+    avgResponseTime,
+    errorRate,
+    avgSentimentScore: 0.65, // Placeholder
+    accuracyScore: 92 // Placeholder
+  };
+}</code></pre>
+                </div>
+
+                <h3>3. Métricas de Engagement</h3>
+                <div class="code-block">
+                    <div class="code-header">
+                        <span>📁 apps/api/src/analytics/engagement-metrics.ts</span>
+                        <button onclick="copyCode(this)">📋 Copiar</button>
+                    </div>
+                    <pre><code>export interface EngagementMetrics {
+  // Mensagens
+  totalMessages: number;
+  avgMessagesPerLead: number;
+  avgResponseTime: number; // segundos
+
+  // Follow-ups
+  followUpsSent: number;
+  followUpResponseRate: number; // %
+
+  // Reativação
+  coldLeadsIdentified: number;
+  recoveryAttempts: number;
+  recoverySuccessRate: number; // %
+
+  // Agendamentos
+  visitesScheduled: number;
+  visitCompletionRate: number; // %
+  noShowRate: number; // %
+}
+
+async function calculateEngagementMetrics(
+  tenantId: string,
+  period: string
+): Promise<EngagementMetrics> {
+  const startDate = getStartDate(period);
+
+  const messages = await prisma.message.findMany({
+    where: { tenantId, createdAt: { gte: startDate } }
+  });
+
+  const leads = await prisma.lead.findMany({
+    where: { tenantId, createdAt: { gte: startDate } },
+    include: { messages: true }
+  });
+
+  const followUps = await prisma.followUp.findMany({
+    where: { createdAt: { gte: startDate } }
+  });
+
+  // Follow-up response rate
+  const followUpResponses = await prisma.message.count({
+    where: {
+      tenantId,
+      direction: 'inbound',
+      createdAt: {
+        gte: startDate,
+        lte: new Date(startDate.getTime() + 24 * 60 * 60 * 1000)
+      },
+      leadId: { in: followUps.map(f => f.leadId) }
+    }
+  });
+
+  const visits = await prisma.visit.findMany({
+    where: {
+      scheduledAt: { gte: startDate }
+    }
+  });
+
+  const completedVisits = visits.filter(v => v.status === 'completed').length;
+  const noShows = visits.filter(v => v.status === 'no_show').length;
+
+  return {
+    totalMessages: messages.length,
+    avgMessagesPerLead: messages.length / leads.length,
+    avgResponseTime: 45, // Placeholder - calcular real
+    followUpsSent: followUps.length,
+    followUpResponseRate: (followUpResponses / followUps.length) * 100,
+    coldLeadsIdentified: 0, // Buscar do sistema
+    recoveryAttempts: 0,
+    recoverySuccessRate: 0,
+    visitesScheduled: visits.length,
+    visitCompletionRate: (completedVisits / visits.length) * 100,
+    noShowRate: (noShows / visits.length) * 100
+  };
+}</code></pre>
+                </div>
+            </section>
+
+            <section id="analytics">
+                <h2>📊 Dashboard de Analytics</h2>
+
+                <div class="card card-info">
+                    <h3>Dados Consolidados</h3>
+                    <p>Use o MetricsDashboardService para acessar todas as métricas:</p>
+                    <div class="command-box">
+curl https://sua-api.onrender.com/api/metrics/dashboard
+                    </div>
+                </div>
+
+                <h3>Visualização Recomendada</h3>
+                <div class="test-box">
+                    <h4>Ferramentas de Visualização:</h4>
+                    <ul>
+                        <li><strong>Metabase</strong> (Open Source) - Dashboards SQL</li>
+                        <li><strong>Grafana</strong> - Métricas em tempo real</li>
+                        <li><strong>Looker Studio</strong> (Google) - Gratuito</li>
+                        <li><strong>Chart.js</strong> - Gráficos no próprio app</li>
+                    </ul>
+                </div>
+
+                <h3>Exemplo: Dashboard em React</h3>
+                <div class="code-block">
+                    <div class="code-header">
+                        <span>📁 apps/web/src/app/dashboard/page.tsx</span>
+                        <button onclick="copyCode(this)">📋 Copiar</button>
+                    </div>
+                    <pre><code>import { useEffect, useState } from 'react';
+import { Line, Bar, Doughnut } from 'react-chartjs-2';
+
+export default function DashboardPage() {
+  const [metrics, setMetrics] = useState(null);
+
+  useEffect(() => {
+    fetch('/api/metrics/dashboard')
+      .then(res => res.json())
+      .then(setMetrics);
+  }, []);
+
+  if (!metrics) return <div>Carregando...</div>;
+
+  return (
+    <div className="grid grid-cols-3 gap-6">
+      {/* KPI Cards */}
+      <KPICard
+        title="Taxa de Conversão"
+        value={`${metrics.conversionRate.toFixed(1)}%`}
+        trend="+5.2%"
+      />
+      <KPICard
+        title="Leads Ativos"
+        value={metrics.activeLeads}
+        trend="+12"
+      />
+      <KPICard
+        title="Custo por Lead"
+        value={`R$ ${metrics.costPerLead.toFixed(2)}`}
+        trend="-8.1%"
+      />
+
+      {/* Gráfico de Conversões */}
+      <div className="col-span-2">
+        <Line data={conversionChartData} />
+      </div>
+
+      {/* Distribuição de Score */}
+      <div>
+        <Doughnut data={scoreDistributionData} />
+      </div>
+    </div>
+  );
+}</code></pre>
+                </div>
+            </section>
+
+            <section id="custos">
+                <h2>💰 Monitoramento de Custos</h2>
+
+                <h3>Tracking de Custos API</h3>
+                <div class="code-block">
+                    <div class="code-header">
+                        <span>📁 apps/api/src/analytics/cost-tracking.service.ts</span>
+                        <button onclick="copyCode(this)">📋 Copiar</button>
+                    </div>
+                    <pre><code>export class CostTrackingService {
+  async getDailyCosts(tenantId: string): Promise<DailyCostReport> {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const apiLogs = await prisma.apiLog.findMany({
+      where: {
+        tenantId,
+        createdAt: { gte: today }
+      }
+    });
+
+    // Custos Claude
+    const claudeCost = apiLogs
+      .filter(log => log.service === 'claude')
+      .reduce((sum, log) => {
+        const inputCost = (log.inputTokens / 1000000) * 3.00;
+        const outputCost = (log.outputTokens / 1000000) * 15.00;
+        return sum + inputCost + outputCost;
+      }, 0);
+
+    // Custos OpenAI (se usar)
+    const openaiCost = apiLogs
+      .filter(log => log.service === 'openai')
+      .reduce((sum, log) => {
+        const inputCost = (log.inputTokens / 1000000) * 5.00;
+        const outputCost = (log.outputTokens / 1000000) * 15.00;
+        return sum + inputCost + outputCost;
+      }, 0);
+
+    // Outros custos fixos (hosting)
+    const hostingCost = 14 / 30; // $14/mês = $0.47/dia
+
+    const totalCost = claudeCost + openaiCost + hostingCost;
+
+    // Calcular ROI
+    const revenue = await this.calculateDailyRevenue(tenantId, today);
+    const roi = ((revenue - totalCost) / totalCost) * 100;
+
+    return {
+      date: today,
+      costs: {
+        claude: claudeCost,
+        openai: openaiCost,
+        hosting: hostingCost,
+        total: totalCost
+      },
+      revenue,
+      roi,
+      costPerLead: totalCost / (await this.getLeadCount(tenantId, today))
+    };
+  }
+
+  async getMonthlyProjection(tenantId: string): Promise<number> {
+    // Média dos últimos 7 dias
+    const last7Days = await Promise.all(
+      Array.from({ length: 7 }, (_, i) => {
+        const date = new Date();
+        date.setDate(date.getDate() - i);
+        return this.getDailyCosts(tenantId);
+      })
+    );
+
+    const avgDailyCost = last7Days.reduce((sum, day) =>
+      sum + day.costs.total, 0
+    ) / 7;
+
+    return avgDailyCost * 30; // Projeção mensal
+  }
+
+  async sendCostAlert(tenantId: string): Promise<void> {
+    const projection = await this.getMonthlyProjection(tenantId);
+
+    if (projection > 100) { // Budget limite: $100/mês
+      // Enviar alerta ao admin
+      console.warn(`⚠️ Projeção de custos: $${projection.toFixed(2)}/mês`);
+
+      // Opcional: enviar email ou notificação
+    }
+  }
+}</code></pre>
+                </div>
+
+                <div class="card card-warning">
+                    <h3>⚠️ Alertas de Custo</h3>
+                    <p>Configure limites de gastos:</p>
+                    <ul>
+                        <li>Diário: < $5</li>
+                        <li>Semanal: < $30</li>
+                        <li>Mensal: < $100</li>
+                    </ul>
+                    <p>Se ultrapassar, considere otimizações:</p>
+                    <ul>
+                        <li>Reduzir maxTokens nas respostas</li>
+                        <li>Cachear respostas comuns</li>
+                        <li>Usar modelo mais barato para tarefas simples</li>
+                    </ul>
+                </div>
+            </section>
+
+            <section id="alertas">
+                <h2>🚨 Sistema de Alertas</h2>
+
+                <h3>Alertas Automatizados</h3>
+                <div class="code-block">
+                    <div class="code-header">
+                        <span>📁 apps/api/src/monitoring/alerts.service.ts</span>
+                        <button onclick="copyCode(this)">📋 Copiar</button>
+                    </div>
+                    <pre><code>export class AlertsService {
+  async checkHealthMetrics(): Promise<void> {
+    const alerts: string[] = [];
+
+    // 1. Check error rate
+    const errorRate = await this.getErrorRate();
+    if (errorRate > 5) { // > 5% de erros
+      alerts.push(`Taxa de erro alta: ${errorRate.toFixed(1)}%`);
+    }
+
+    // 2. Check response time
+    const avgResponseTime = await this.getAvgResponseTime();
+    if (avgResponseTime > 10000) { // > 10s
+      alerts.push(`Tempo de resposta alto: ${avgResponseTime}ms`);
+    }
+
+    // 3. Check WhatsApp connection
+    const whatsappStatus = await this.checkWhatsAppStatus();
+    if (!whatsappStatus.connected) {
+      alerts.push('WhatsApp desconectado!');
+    }
+
+    // 4. Check database
+    const dbStatus = await this.checkDatabaseStatus();
+    if (!dbStatus.healthy) {
+      alerts.push('Banco de dados com problemas');
+    }
+
+    // 5. Check daily cost
+    const dailyCost = await this.getDailyCost();
+    if (dailyCost > 10) { // > $10/dia
+      alerts.push(`Custo diário alto: $${dailyCost.toFixed(2)}`);
+    }
+
+    // Enviar alertas se houver
+    if (alerts.length > 0) {
+      await this.sendAlerts(alerts);
+    }
+  }
+
+  private async sendAlerts(alerts: string[]): Promise<void> {
+    const message =
+      `🚨 *ALERTAS DO SISTEMA*\n\n` +
+      alerts.map((a, i) => `${i + 1}. ${a}`).join('\n');
+
+    // Enviar para admin via Telegram
+    const adminTelegramId = process.env.ADMIN_TELEGRAM_ID;
+    if (adminTelegramId) {
+      await telegramBot.sendMessage(adminTelegramId, message);
+    }
+
+    // Log
+    console.error('🚨 ALERTAS:', alerts);
+  }
+}
+
+// Executar a cada 15 minutos
+cron.schedule('*/15 * * * *', async () => {
+  const alerts = new AlertsService();
+  await alerts.checkHealthMetrics();
+});</code></pre>
+                </div>
+
+                <h3>Health Check Endpoint</h3>
+                <div class="code-block">
+                    <div class="code-header">
+                        <span>📁 apps/api/src/routes/health.ts</span>
+                        <button onclick="copyCode(this)">📋 Copiar</button>
+                    </div>
+                    <pre><code>app.get('/health', async (req, res) => {
+  const health = {
+    status: 'ok',
+    timestamp: new Date().toISOString(),
+    uptime: process.uptime(),
+    services: {
+      database: 'unknown',
+      claude: 'unknown',
+      whatsapp: 'unknown',
+      telegram: 'unknown'
+    },
+    metrics: {
+      memoryUsage: process.memoryUsage(),
+      cpuUsage: process.cpuUsage()
+    }
+  };
+
+  try {
+    // Test database
+    await prisma.$queryRaw`SELECT 1`;
+    health.services.database = 'connected';
+  } catch {
+    health.services.database = 'error';
+    health.status = 'degraded';
+  }
+
+  try {
+    // Test Claude (quick)
+    await claudeService.generateResponse('hi', undefined, { maxTokens: 5 });
+    health.services.claude = 'available';
+  } catch {
+    health.services.claude = 'error';
+  }
+
+  health.services.whatsapp = whatsappService.isClientReady() ? 'ready' : 'disconnected';
+  health.services.telegram = 'active'; // Assume sempre ativo
+
+  res.status(health.status === 'ok' ? 200 : 503).json(health);
+});</code></pre>
+                </div>
+
+                <p>Configure monitoramento externo:</p>
+                <ul>
+                    <li><strong>UptimeRobot</strong> - Ping /health a cada 5 minutos</li>
+                    <li><strong>Better Uptime</strong> - Monitoramento + notificações</li>
+                    <li><strong>Cronitor</strong> - Monitorar cron jobs</li>
+                </ul>
+            </section>
+
+            <div class="card card-success" style="margin-top: 50px;">
+                <h3>🎯 Metas de Performance</h3>
+                <table style="width: 100%; margin-top: 20px;">
+                    <tr>
+                        <th style="text-align: left;">Métrica</th>
+                        <th style="text-align: center;">Meta</th>
+                        <th style="text-align: center;">Status</th>
+                    </tr>
+                    <tr>
+                        <td>Taxa de Conversão</td>
+                        <td style="text-align: center;">&gt; 15%</td>
+                        <td style="text-align: center;">✅</td>
+                    </tr>
+                    <tr>
+                        <td>Tempo de Resposta</td>
+                        <td style="text-align: center;">&lt; 5s</td>
+                        <td style="text-align: center;">✅</td>
+                    </tr>
+                    <tr>
+                        <td>Uptime</td>
+                        <td style="text-align: center;">&gt; 99%</td>
+                        <td style="text-align: center;">✅</td>
+                    </tr>
+                    <tr>
+                        <td>Custo por Lead</td>
+                        <td style="text-align: center;">&lt; R$ 2</td>
+                        <td style="text-align: center;">✅</td>
+                    </tr>
+                    <tr>
+                        <td>ROI</td>
+                        <td style="text-align: center;">&gt; 300%</td>
+                        <td style="text-align: center;">🎯</td>
+                    </tr>
+                </table>
+                <p style="margin-top: 20px;"><strong>Próximo:</strong> <a href="guia-checklist.html">Checklist Final de Implementação</a></p>
+            </div>
+        </div>
+
+        <footer class="nav-footer">
+            <a href="guia-troubleshooting.html" class="btn-nav">← Troubleshooting</a>
+            <a href="guia-index.html" class="btn-nav">🏠 Índice</a>
+            <a href="guia-checklist.html" class="btn-nav">Checklist →</a>
+        </footer>
+    </div>
+
+    <script src="guia-scripts.js"></script>
+</body>
+</html>

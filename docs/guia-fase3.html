@@ -1,0 +1,1338 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fase 3: Automações Avançadas | Guia BI + IA</title>
+    <link rel="stylesheet" href="guia-styles.css">
+</head>
+<body>
+    <div class="container">
+        <header class="phase-header phase3">
+            <div class="breadcrumb">
+                <a href="guia-index.html">🏠 Índice</a> →
+                <a href="guia-fase2.html">🧠 Fase 2</a> →
+                <span>Fase 3</span>
+            </div>
+            <h1>⚡ Fase 3: Automações Avançadas</h1>
+            <p>Follow-ups, Recuperação e Agendamento Inteligente</p>
+            <div class="phase-meta">
+                <span class="badge">⏱️ 6 semanas</span>
+                <span class="badge">📊 Avançado</span>
+                <span class="badge">🤖 100% Automatizado</span>
+            </div>
+        </header>
+
+        <nav class="nav-sticky">
+            <a href="#visao">Visão Geral</a>
+            <a href="#followup">Follow-ups</a>
+            <a href="#recuperacao">Recuperação</a>
+            <a href="#agendamento">Agendamento</a>
+            <a href="#lembretes">Lembretes</a>
+            <a href="#feedback">Feedback</a>
+        </nav>
+
+        <div class="content">
+            <section id="visao">
+                <h2>📋 Visão Geral da Fase 3</h2>
+                <div class="card card-info">
+                    <h3>🎯 Objetivo</h3>
+                    <p>Ao final desta fase, você terá:</p>
+                    <ul>
+                        <li>✅ Follow-ups automáticos inteligentes</li>
+                        <li>✅ Sistema de recuperação de leads frios</li>
+                        <li>✅ Agendamento automático de visitas</li>
+                        <li>✅ Integração com Google Calendar</li>
+                        <li>✅ Lembretes automáticos via WhatsApp e Telegram</li>
+                        <li>✅ Coleta automática de feedback</li>
+                    </ul>
+                </div>
+
+                <div class="timeline-overview">
+                    <div class="timeline-item">
+                        <strong>Semanas 1-2: Follow-ups Automáticos</strong>
+                        <p>Sistema inteligente de retomada de contato</p>
+                    </div>
+                    <div class="timeline-item">
+                        <strong>Semanas 3-4: Recuperação de Leads</strong>
+                        <p>Reativar leads inativos com estratégias personalizadas</p>
+                    </div>
+                    <div class="timeline-item">
+                        <strong>Semanas 5-6: Agendamento e Lembretes</strong>
+                        <p>Gestão completa de visitas e compromissos</p>
+                    </div>
+                </div>
+            </section>
+
+            <section id="followup">
+                <h2>📬 Follow-ups Automáticos Inteligentes</h2>
+
+                <div class="card card-warning">
+                    <h3>💡 Conceito</h3>
+                    <p>O sistema detecta quando um lead não responde e automaticamente envia mensagens de follow-up personalizadas nos momentos ideais.</p>
+                </div>
+
+                <h3>Tarefa 3.1: Follow-up Automation Service</h3>
+                <div class="code-block">
+                    <div class="code-header">
+                        <span>📁 apps/api/src/automation/followup.service.ts</span>
+                        <button onclick="copyCode(this)">📋 Copiar</button>
+                    </div>
+                    <pre><code>import { PrismaClient } from '@prisma/client';
+import { WhatsAppService } from '../messaging/services/whatsapp.service';
+import { ClaudeService } from '../ai/services/claude.service';
+
+const prisma = new PrismaClient();
+
+interface FollowUpStrategy {
+  name: string;
+  delay: number; // horas
+  condition: (lead: any) => boolean;
+  messageTemplate: (lead: any) => Promise<string>;
+}
+
+export class FollowUpService {
+  private whatsapp: WhatsAppService;
+  private claude: ClaudeService;
+  private strategies: FollowUpStrategy[];
+
+  constructor() {
+    this.whatsapp = new WhatsAppService();
+    this.claude = new ClaudeService();
+    this.strategies = this.defineStrategies();
+  }
+
+  private defineStrategies(): FollowUpStrategy[] {
+    return [
+      {
+        name: 'no_response_24h',
+        delay: 24,
+        condition: (lead) => {
+          const lastMessage = lead.messages[0];
+          if (!lastMessage) return false;
+
+          const hoursSince = (Date.now() - lastMessage.createdAt.getTime()) / (1000 * 60 * 60);
+          return lastMessage.direction === 'outbound' && hoursSince >= 24;
+        },
+        messageTemplate: async (lead) => {
+          return await this.generateFollowUpMessage(lead, '24h_no_response');
+        }
+      },
+      {
+        name: 'high_score_no_schedule',
+        delay: 12,
+        condition: (lead) => {
+          return lead.score >= 70 && lead.status === 'active' && !lead.scheduledVisitAt;
+        },
+        messageTemplate: async (lead) => {
+          return await this.generateFollowUpMessage(lead, 'high_score_schedule');
+        }
+      },
+      {
+        name: 'post_property_view',
+        delay: 4,
+        condition: (lead) => {
+          if (!lead.propertyViews || lead.propertyViews.length === 0) return false;
+
+          const lastView = lead.propertyViews[0];
+          const hoursSince = (Date.now() - lastView.viewedAt.getTime()) / (1000 * 60 * 60);
+
+          // Visualizou imóvel mas não respondeu em 4h
+          return hoursSince >= 4 && hoursSince < 24;
+        },
+        messageTemplate: async (lead) => {
+          const lastView = lead.propertyViews[0];
+          return await this.generatePropertyFollowUp(lead, lastView.property);
+        }
+      },
+      {
+        name: 'engagement_drop',
+        delay: 48,
+        condition: (lead) => {
+          // Lead que estava muito ativo mas parou de responder
+          if (lead.messages.length < 10) return false;
+
+          const recentMessages = lead.messages.slice(0, 5);
+          const olderMessages = lead.messages.slice(5, 15);
+
+          const recentDays = this.getDaysSinceLastMessage(recentMessages);
+          const wasPreviouslyActive = olderMessages.some(m =>
+            m.direction === 'inbound'
+          );
+
+          return recentDays >= 2 && wasPreviouslyActive;
+        },
+        messageTemplate: async (lead) => {
+          return await this.generateFollowUpMessage(lead, 'engagement_drop');
+        }
+      }
+    ];
+  }
+
+  async processFollowUps(tenantId: string): Promise<void> {
+    console.log('🔄 Processando follow-ups automáticos...\n');
+
+    const leads = await prisma.lead.findMany({
+      where: {
+        tenantId,
+        status: { in: ['active', 'contacted'] },
+        optedOutFromAutomation: false
+      },
+      include: {
+        messages: {
+          orderBy: { createdAt: 'desc' },
+          take: 20
+        },
+        propertyViews: {
+          orderBy: { viewedAt: 'desc' },
+          take: 5,
+          include: { property: true }
+        }
+      }
+    });
+
+    let sentCount = 0;
+
+    for (const lead of leads) {
+      for (const strategy of this.strategies) {
+        if (strategy.condition(lead)) {
+          // Verificar se já enviou follow-up desta estratégia recentemente
+          const alreadySent = await this.wasFollowUpRecentlySent(
+            lead.id,
+            strategy.name,
+            strategy.delay
+          );
+
+          if (!alreadySent) {
+            await this.sendFollowUp(lead, strategy);
+            sentCount++;
+            break; // Apenas uma estratégia por lead por execução
+          }
+        }
+      }
+    }
+
+    console.log(`✅ Follow-ups enviados: ${sentCount}\n`);
+  }
+
+  private async sendFollowUp(lead: any, strategy: FollowUpStrategy): Promise<void> {
+    try {
+      const message = await strategy.messageTemplate(lead);
+
+      // Enviar via WhatsApp
+      await this.whatsapp.sendMessageWithTyping(lead.phone, message);
+
+      // Registrar follow-up
+      await prisma.followUp.create({
+        data: {
+          leadId: lead.id,
+          strategy: strategy.name,
+          message,
+          sentAt: new Date()
+        }
+      });
+
+      console.log(`📬 Follow-up enviado para ${lead.name || lead.phone}: ${strategy.name}`);
+    } catch (error) {
+      console.error(`❌ Erro ao enviar follow-up para ${lead.id}:`, error);
+    }
+  }
+
+  private async generateFollowUpMessage(
+    lead: any,
+    context: string
+  ): Promise<string> {
+    const conversationSummary = lead.messages
+      .slice(0, 5)
+      .map((m: any) => `${m.direction === 'inbound' ? 'Lead' : 'Sofia'}: ${m.content}`)
+      .join('\n');
+
+    const prompt = `
+Você é Sofia, assistente da Vivoly Imobiliária.
+
+CONTEXTO: ${context}
+
+INFORMAÇÕES DO LEAD:
+- Nome: ${lead.name || 'Não informado'}
+- Score: ${lead.score}/100
+- Última interação: ${this.getDaysSinceLastMessage(lead.messages)} dias atrás
+
+ÚLTIMAS MENSAGENS:
+${conversationSummary}
+
+Gere uma mensagem de follow-up:
+- Casual e amigável
+- Não insistente
+- Agregue valor (nova informação, dica, imóvel)
+- Máximo 2-3 frases
+- Inclua uma pergunta ou call-to-action
+
+Sua mensagem:
+    `;
+
+    return await this.claude.generateResponse(prompt, undefined, {
+      maxTokens: 300,
+      temperature: 0.8
+    });
+  }
+
+  private async generatePropertyFollowUp(
+    lead: any,
+    property: any
+  ): Promise<string> {
+    const prompt = `
+Gere uma mensagem de follow-up para um lead que visualizou este imóvel:
+
+IMÓVEL: ${property.title}
+TIPO: ${property.type}
+PREÇO: R$ ${property.price?.toLocaleString('pt-BR')}
+QUARTOS: ${property.bedrooms}
+
+O lead visualizou mas não comentou nada. Seja sutil e útil.
+
+Sua mensagem (2-3 frases):
+    `;
+
+    return await this.claude.generateResponse(prompt, undefined, {
+      maxTokens: 250,
+      temperature: 0.8
+    });
+  }
+
+  private async wasFollowUpRecentlySent(
+    leadId: string,
+    strategyName: string,
+    delayHours: number
+  ): Promise<boolean> {
+    const cutoff = new Date();
+    cutoff.setHours(cutoff.getHours() - delayHours);
+
+    const recent = await prisma.followUp.findFirst({
+      where: {
+        leadId,
+        strategy: strategyName,
+        sentAt: { gte: cutoff }
+      }
+    });
+
+    return recent !== null;
+  }
+
+  private getDaysSinceLastMessage(messages: any[]): number {
+    if (messages.length === 0) return 999;
+
+    const lastMessage = messages[0];
+    return Math.floor(
+      (Date.now() - lastMessage.createdAt.getTime()) / (1000 * 60 * 60 * 24)
+    );
+  }
+}</code></pre>
+                </div>
+            </section>
+
+            <section id="recuperacao">
+                <h2>🔄 Recuperação de Leads Frios</h2>
+
+                <h3>Tarefa 3.2: Lead Recovery Service</h3>
+                <div class="code-block">
+                    <div class="code-header">
+                        <span>📁 apps/api/src/automation/lead-recovery.service.ts</span>
+                        <button onclick="copyCode(this)">📋 Copiar</button>
+                    </div>
+                    <pre><code>import { PrismaClient } from '@prisma/client';
+import { WhatsAppService } from '../messaging/services/whatsapp.service';
+import { ClaudeService } from '../ai/services/claude.service';
+
+const prisma = new PrismaClient();
+
+export class LeadRecoveryService {
+  private whatsapp: WhatsAppService;
+  private claude: ClaudeService;
+
+  constructor() {
+    this.whatsapp = new WhatsAppService();
+    this.claude = new ClaudeService();
+  }
+
+  async identifyColdLeads(tenantId: string): Promise<any[]> {
+    const thirtyDaysAgo = new Date();
+    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+
+    const sevenDaysAgo = new Date();
+    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+
+    // Leads que:
+    // 1. Foram ativos (tiveram conversa)
+    // 2. Não respondem há mais de 7 dias
+    // 3. Não foram fechados/perdidos
+    // 4. Têm score razoável (mostraram interesse)
+    const coldLeads = await prisma.lead.findMany({
+      where: {
+        tenantId,
+        status: { in: ['active', 'contacted'] },
+        score: { gte: 40 }, // Pelo menos interesse moderado
+        messages: {
+          some: {
+            createdAt: { lt: sevenDaysAgo }
+          }
+        }
+      },
+      include: {
+        messages: {
+          orderBy: { createdAt: 'desc' },
+          take: 20
+        },
+        propertyViews: {
+          include: { property: true }
+        }
+      }
+    });
+
+    // Filtrar apenas os que realmente estão frios (última mensagem há mais de 7 dias)
+    return coldLeads.filter(lead => {
+      const lastMessage = lead.messages[0];
+      if (!lastMessage) return false;
+
+      const daysSince = (Date.now() - lastMessage.createdAt.getTime()) / (1000 * 60 * 60 * 24);
+      return daysSince >= 7;
+    });
+  }
+
+  async attemptRecovery(tenantId: string): Promise<{
+    attempted: number;
+    sent: number;
+  }> {
+    console.log('🔄 Iniciando recuperação de leads frios...\n');
+
+    const coldLeads = await this.identifyColdLeads(tenantId);
+    console.log(`❄️ Leads frios identificados: ${coldLeads.length}\n`);
+
+    let sentCount = 0;
+
+    for (const lead of coldLeads) {
+      // Verificar se já tentou recuperar recentemente
+      const recentRecoveryAttempt = await prisma.recoveryAttempt.findFirst({
+        where: {
+          leadId: lead.id,
+          attemptedAt: {
+            gte: new Date(Date.now() - 14 * 24 * 60 * 60 * 1000) // 14 dias
+          }
+        }
+      });
+
+      if (recentRecoveryAttempt) {
+        console.log(`⏭️ Lead ${lead.id} já teve tentativa recente`);
+        continue;
+      }
+
+      // Gerar mensagem personalizada de recuperação
+      const message = await this.generateRecoveryMessage(lead);
+
+      try {
+        // Enviar mensagem
+        await this.whatsapp.sendMessageWithTyping(lead.phone, message);
+
+        // Registrar tentativa
+        await prisma.recoveryAttempt.create({
+          data: {
+            leadId: lead.id,
+            strategy: this.determineRecoveryStrategy(lead),
+            message,
+            attemptedAt: new Date()
+          }
+        });
+
+        sentCount++;
+        console.log(`✅ Mensagem de recuperação enviada: ${lead.name || lead.phone}`);
+
+        // Delay entre mensagens (mais humano)
+        await this.delay(5000);
+      } catch (error) {
+        console.error(`❌ Erro ao tentar recuperar lead ${lead.id}:`, error);
+      }
+    }
+
+    console.log(`\n🎉 Recuperação concluída: ${sentCount}/${coldLeads.length} mensagens enviadas\n`);
+
+    return {
+      attempted: coldLeads.length,
+      sent: sentCount
+    };
+  }
+
+  private determineRecoveryStrategy(lead: any): string {
+    const daysSince = this.getDaysSinceLastMessage(lead.messages);
+
+    if (daysSince >= 30) return 'long_term_inactive';
+    if (daysSince >= 14) return 'medium_term_inactive';
+    if (lead.propertyViews?.length > 0) return 'viewed_but_not_engaged';
+    if (lead.score >= 60) return 'high_score_dropped';
+    return 'general_reactivation';
+  }
+
+  private async generateRecoveryMessage(lead: any): Promise<string> {
+    const strategy = this.determineRecoveryStrategy(lead);
+    const daysSince = this.getDaysSinceLastMessage(lead.messages);
+
+    let context = '';
+
+    switch (strategy) {
+      case 'long_term_inactive':
+        context = 'Lead inativo há mais de 30 dias. Ofereça algo novo e valioso.';
+        break;
+      case 'medium_term_inactive':
+        context = 'Lead parou de responder há 2-4 semanas. Retome gentilmente.';
+        break;
+      case 'viewed_but_not_engaged':
+        context = `Lead visualizou ${lead.propertyViews.length} imóveis mas não agendou visita.`;
+        break;
+      case 'high_score_dropped':
+        context = 'Lead tinha alto interesse (score ${lead.score}) mas sumiu.';
+        break;
+      default:
+        context = 'Reativação geral de lead inativo.';
+    }
+
+    const lastMessages = lead.messages
+      .slice(0, 3)
+      .map((m: any) => `${m.direction === 'inbound' ? 'Lead' : 'IA'}: ${m.content}`)
+      .join('\n');
+
+    const prompt = `
+Você é Sofia da Vivoly Imobiliária.
+
+SITUAÇÃO: ${context}
+ÚLTIMA INTERAÇÃO: Há ${daysSince} dias
+
+ÚLTIMAS MENSAGENS:
+${lastMessages}
+
+PREFERÊNCIAS CONHECIDAS:
+${lead.propertyType ? `- Tipo: ${lead.propertyType}` : ''}
+${lead.bedrooms ? `- Quartos: ${lead.bedrooms}` : ''}
+${lead.budgetMax ? `- Orçamento: até R$ ${lead.budgetMax.toLocaleString('pt-BR')}` : ''}
+
+Gere uma mensagem de recuperação que:
+1. Seja amigável e não invasiva
+2. Ofereça valor real (novidades, dicas, oportunidade)
+3. Seja específica para o perfil do lead
+4. Máximo 3 frases
+5. Tenha um call-to-action suave
+
+ESTRATÉGIAS EFETIVAS:
+- "Temos novos imóveis que combinam com você"
+- "O mercado mudou, quer saber como isso te beneficia?"
+- "Lembrei de você ao ver este lançamento"
+- Evite: "Você ainda está interessado?"
+
+Sua mensagem:
+    `;
+
+    return await this.claude.generateResponse(prompt, undefined, {
+      maxTokens: 300,
+      temperature: 0.9 // Mais criativo
+    });
+  }
+
+  private getDaysSinceLastMessage(messages: any[]): number {
+    if (messages.length === 0) return 999;
+    const lastMessage = messages[0];
+    return Math.floor((Date.now() - lastMessage.createdAt.getTime()) / (1000 * 60 * 60 * 24));
+  }
+
+  private delay(ms: number): Promise<void> {
+    return new Promise(resolve => setTimeout(resolve, ms));
+  }
+}</code></pre>
+                </div>
+            </section>
+
+            <section id="agendamento">
+                <h2>📅 Agendamento Inteligente de Visitas</h2>
+
+                <h3>Tarefa 3.3: Smart Scheduling Service</h3>
+                <div class="code-block">
+                    <div class="code-header">
+                        <span>📁 apps/api/src/automation/smart-scheduling.service.ts</span>
+                        <button onclick="copyCode(this)">📋 Copiar</button>
+                    </div>
+                    <pre><code>import { PrismaClient } from '@prisma/client';
+import { ClaudeService } from '../ai/services/claude.service';
+import { google } from 'googleapis';
+
+const prisma = new PrismaClient();
+
+export class SmartSchedulingService {
+  private claude: ClaudeService;
+  private calendar: any;
+
+  constructor() {
+    this.claude = new ClaudeService();
+    this.initializeGoogleCalendar();
+  }
+
+  private initializeGoogleCalendar() {
+    // Configurar OAuth2 do Google Calendar
+    const auth = new google.auth.OAuth2(
+      process.env.GOOGLE_CLIENT_ID,
+      process.env.GOOGLE_CLIENT_SECRET,
+      process.env.GOOGLE_REDIRECT_URI
+    );
+
+    auth.setCredentials({
+      refresh_token: process.env.GOOGLE_REFRESH_TOKEN
+    });
+
+    this.calendar = google.calendar({ version: 'v3', auth });
+  }
+
+  async detectSchedulingIntent(message: string): Promise<{
+    isSchedulingRequest: boolean;
+    preferredDate?: Date;
+    preferredTime?: string;
+    flexibility: 'flexible' | 'specific' | 'urgent';
+  }> {
+    const prompt = `
+Analise esta mensagem e detecte se é uma solicitação de agendamento de visita:
+
+MENSAGEM: "${message}"
+
+Retorne JSON:
+{
+  "isSchedulingRequest": boolean,
+  "preferredDate": "YYYY-MM-DD" | null,
+  "preferredTime": "HH:MM" | "manhã" | "tarde" | "noite" | null,
+  "flexibility": "flexible" | "specific" | "urgent"
+}
+
+EXEMPLOS:
+"Quero agendar uma visita" -> isSchedulingRequest: true, flexibility: flexible
+"Pode ser amanhã às 14h?" -> isSchedulingRequest: true, preferredDate: tomorrow, preferredTime: "14:00", flexibility: specific
+"Preciso ver hoje!" -> isSchedulingRequest: true, flexibility: urgent
+"Quanto custa?" -> isSchedulingRequest: false
+    `;
+
+    try {
+      const result = await this.claude.analyze(prompt);
+      return {
+        isSchedulingRequest: result.isSchedulingRequest || false,
+        preferredDate: result.preferredDate ? new Date(result.preferredDate) : undefined,
+        preferredTime: result.preferredTime,
+        flexibility: result.flexibility || 'flexible'
+      };
+    } catch (error) {
+      console.error('Erro ao detectar intenção de agendamento:', error);
+      return { isSchedulingRequest: false, flexibility: 'flexible' };
+    }
+  }
+
+  async findAvailableSlots(
+    brokerId: string,
+    startDate: Date,
+    endDate: Date
+  ): Promise<Array<{ start: Date; end: Date }>> {
+    try {
+      const response = await this.calendar.freebusy.query({
+        requestBody: {
+          timeMin: startDate.toISOString(),
+          timeMax: endDate.toISOString(),
+          items: [{ id: `${brokerId}@vivoly.com` }]
+        }
+      });
+
+      const busy = response.data.calendars[`${brokerId}@vivoly.com`]?.busy || [];
+
+      // Gerar slots de 1 hora das 9h às 18h
+      const slots: Array<{ start: Date; end: Date }> = [];
+      let current = new Date(startDate);
+
+      while (current < endDate) {
+        const hour = current.getHours();
+
+        // Horário comercial: 9h-18h
+        if (hour >= 9 && hour < 18) {
+          const slotStart = new Date(current);
+          const slotEnd = new Date(current);
+          slotEnd.setHours(slotEnd.getHours() + 1);
+
+          // Verificar se slot está livre
+          const isBusy = busy.some((b: any) => {
+            const busyStart = new Date(b.start);
+            const busyEnd = new Date(b.end);
+            return slotStart < busyEnd && slotEnd > busyStart;
+          });
+
+          if (!isBusy) {
+            slots.push({ start: slotStart, end: slotEnd });
+          }
+        }
+
+        current.setHours(current.getHours() + 1);
+      }
+
+      return slots;
+    } catch (error) {
+      console.error('Erro ao buscar horários disponíveis:', error);
+      return [];
+    }
+  }
+
+  async suggestSlots(
+    brokerId: string,
+    preferredDate?: Date,
+    preferredTime?: string,
+    flexibility: string = 'flexible'
+  ): Promise<string> {
+    const startDate = preferredDate || new Date();
+    const endDate = new Date(startDate);
+    endDate.setDate(endDate.getDate() + 7); // Próximos 7 dias
+
+    const availableSlots = await this.findAvailableSlots(brokerId, startDate, endDate);
+
+    if (availableSlots.length === 0) {
+      return 'No momento não temos horários disponíveis esta semana. Que tal semana que vem?';
+    }
+
+    // Filtrar por preferência de horário
+    let filteredSlots = availableSlots;
+
+    if (preferredTime) {
+      filteredSlots = this.filterByTimePreference(availableSlots, preferredTime);
+    }
+
+    // Formatar sugestões
+    const suggestions = filteredSlots.slice(0, 3).map(slot =>
+      this.formatSlot(slot.start)
+    );
+
+    if (flexibility === 'urgent') {
+      const today = suggestions.filter(s => s.includes('Hoje'));
+      if (today.length > 0) {
+        return `Temos disponível hoje: ${today.join(', ')}. Qual prefere?`;
+      }
+    }
+
+    return `Tenho estes horários disponíveis: ${suggestions.join(', ')}. Qual funciona melhor pra você?`;
+  }
+
+  async createVisit(
+    leadId: string,
+    brokerId: string,
+    propertyId: string,
+    scheduledAt: Date,
+    duration: number = 60 // minutos
+  ): Promise<any> {
+    // 1. Criar no banco de dados
+    const visit = await prisma.visit.create({
+      data: {
+        leadId,
+        brokerId,
+        propertyId,
+        scheduledAt,
+        duration,
+        status: 'scheduled'
+      },
+      include: {
+        lead: true,
+        broker: true,
+        property: true
+      }
+    });
+
+    // 2. Criar evento no Google Calendar
+    const endTime = new Date(scheduledAt);
+    endTime.setMinutes(endTime.getMinutes() + duration);
+
+    try {
+      await this.calendar.events.insert({
+        calendarId: `${brokerId}@vivoly.com`,
+        requestBody: {
+          summary: `Visita: ${visit.property.title}`,
+          description: `Cliente: ${visit.lead.name || visit.lead.phone}\nImóvel: ${visit.property.title}`,
+          start: { dateTime: scheduledAt.toISOString() },
+          end: { dateTime: endTime.toISOString() },
+          attendees: [
+            { email: visit.broker.email },
+            { email: visit.lead.email || undefined }
+          ].filter(a => a.email),
+          reminders: {
+            useDefault: false,
+            overrides: [
+              { method: 'email', minutes: 60 },
+              { method: 'popup', minutes: 30 }
+            ]
+          }
+        }
+      });
+
+      console.log('✅ Visita criada no Google Calendar');
+    } catch (error) {
+      console.error('❌ Erro ao criar evento no Calendar:', error);
+    }
+
+    return visit;
+  }
+
+  private filterByTimePreference(
+    slots: Array<{ start: Date; end: Date }>,
+    preference: string
+  ): Array<{ start: Date; end: Date }> {
+    return slots.filter(slot => {
+      const hour = slot.start.getHours();
+
+      switch (preference.toLowerCase()) {
+        case 'manhã':
+        case 'morning':
+          return hour >= 9 && hour < 12;
+        case 'tarde':
+        case 'afternoon':
+          return hour >= 12 && hour < 17;
+        case 'noite':
+        case 'evening':
+          return hour >= 17 && hour < 20;
+        default:
+          // Tentar extrair hora específica
+          const timeMatch = preference.match(/(\d{1,2}):?(\d{2})?/);
+          if (timeMatch) {
+            const preferredHour = parseInt(timeMatch[1]);
+            return hour === preferredHour;
+          }
+          return true;
+      }
+    });
+  }
+
+  private formatSlot(date: Date): string {
+    const today = new Date();
+    const tomorrow = new Date(today);
+    tomorrow.setDate(tomorrow.getDate() + 1);
+
+    const isToday = date.toDateString() === today.toDateString();
+    const isTomorrow = date.toDateString() === tomorrow.toDateString();
+
+    const time = date.toLocaleTimeString('pt-BR', {
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+
+    if (isToday) return `Hoje às ${time}`;
+    if (isTomorrow) return `Amanhã às ${time}`;
+
+    const weekday = date.toLocaleDateString('pt-BR', { weekday: 'long' });
+    return `${weekday} às ${time}`;
+  }
+}</code></pre>
+                </div>
+            </section>
+
+            <section id="lembretes">
+                <h2>⏰ Sistema de Lembretes Automáticos</h2>
+
+                <h3>Tarefa 3.4: Reminder Service</h3>
+                <div class="code-block">
+                    <div class="code-header">
+                        <span>📁 apps/api/src/automation/reminder.service.ts</span>
+                        <button onclick="copyCode(this)">📋 Copiar</button>
+                    </div>
+                    <pre><code>import { PrismaClient } from '@prisma/client';
+import { WhatsAppService } from '../messaging/services/whatsapp.service';
+import { TelegramService } from '../messaging/services/telegram.service';
+
+const prisma = new PrismaClient();
+
+export class ReminderService {
+  private whatsapp: WhatsAppService;
+  private telegram: TelegramService;
+
+  constructor() {
+    this.whatsapp = new WhatsAppService();
+    this.telegram = new TelegramService();
+  }
+
+  async processReminders(): Promise<void> {
+    console.log('⏰ Processando lembretes...\n');
+
+    await Promise.all([
+      this.sendVisitReminders(),
+      this.sendPaymentReminders(),
+      this.sendDocumentReminders()
+    ]);
+
+    console.log('✅ Lembretes processados\n');
+  }
+
+  private async sendVisitReminders(): Promise<void> {
+    // Buscar visitas agendadas para as próximas 24 horas
+    const tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
+
+    const upcomingVisits = await prisma.visit.findMany({
+      where: {
+        scheduledAt: {
+          gte: new Date(),
+          lte: tomorrow
+        },
+        status: 'scheduled',
+        reminderSent: false
+      },
+      include: {
+        lead: true,
+        broker: true,
+        property: true
+      }
+    });
+
+    for (const visit of upcomingVisits) {
+      const timeUntil = this.getTimeUntilVisit(visit.scheduledAt);
+
+      // Lembrete para o lead
+      const leadMessage =
+        `⏰ *Lembrete de Visita*\n\n` +
+        `Olá ${visit.lead.name}! Lembre-se da sua visita ao imóvel:\n\n` +
+        `🏠 *${visit.property.title}*\n` +
+        `📍 ${visit.property.address}\n` +
+        `🕐 ${this.formatDateTime(visit.scheduledAt)}\n` +
+        `👤 Corretor: ${visit.broker.name}\n\n` +
+        `${timeUntil}\n\n` +
+        `Alguma dúvida ou precisa reagendar? É só responder!`;
+
+      await this.whatsapp.sendMessage(visit.lead.phone, leadMessage);
+
+      // Lembrete para o corretor via Telegram
+      if (visit.broker.telegramUserId) {
+        const brokerMessage =
+          `⏰ *Lembrete de Visita*\n\n` +
+          `📅 ${this.formatDateTime(visit.scheduledAt)}\n` +
+          `👤 Cliente: ${visit.lead.name || visit.lead.phone}\n` +
+          `🏠 ${visit.property.title}\n` +
+          `📍 ${visit.property.address}\n\n` +
+          `${timeUntil}`;
+
+        await this.telegram.sendMessage(
+          visit.broker.telegramUserId,
+          brokerMessage
+        );
+      }
+
+      // Marcar como enviado
+      await prisma.visit.update({
+        where: { id: visit.id },
+        data: { reminderSent: true }
+      });
+
+      console.log(`✅ Lembrete de visita enviado: ${visit.id}`);
+    }
+  }
+
+  private async sendPaymentReminders(): Promise<void> {
+    // Buscar negociações com pagamentos pendentes
+    const pendingPayments = await prisma.payment.findMany({
+      where: {
+        status: 'pending',
+        dueDate: {
+          lte: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000) // 3 dias
+        },
+        reminderSent: false
+      },
+      include: {
+        deal: {
+          include: {
+            lead: true,
+            property: true
+          }
+        }
+      }
+    });
+
+    for (const payment of pendingPayments) {
+      const daysUntilDue = Math.ceil(
+        (payment.dueDate.getTime() - Date.now()) / (1000 * 60 * 60 * 24)
+      );
+
+      let urgency = '';
+      if (daysUntilDue === 0) urgency = '🚨 VENCE HOJE';
+      else if (daysUntilDue === 1) urgency = '⚠️ Vence amanhã';
+      else urgency = `Vence em ${daysUntilDue} dias`;
+
+      const message =
+        `💰 *Lembrete de Pagamento*\n\n` +
+        `${urgency}\n\n` +
+        `Referente a: ${payment.deal.property.title}\n` +
+        `Valor: R$ ${payment.amount.toLocaleString('pt-BR')}\n` +
+        `Vencimento: ${this.formatDate(payment.dueDate)}\n\n` +
+        `Precisa de ajuda com o pagamento? Estamos à disposição!`;
+
+      await this.whatsapp.sendMessage(payment.deal.lead.phone, message);
+
+      await prisma.payment.update({
+        where: { id: payment.id },
+        data: { reminderSent: true }
+      });
+
+      console.log(`✅ Lembrete de pagamento enviado: ${payment.id}`);
+    }
+  }
+
+  private async sendDocumentReminders(): Promise<void> {
+    // Buscar deals com documentos pendentes
+    const pendingDocs = await prisma.deal.findMany({
+      where: {
+        status: { in: ['documentation', 'contract_review'] },
+        documentsPending: { not: null }
+      },
+      include: {
+        lead: true,
+        property: true
+      }
+    });
+
+    for (const deal of pendingDocs) {
+      if (!deal.documentsPending || deal.documentsPending.length === 0) continue;
+
+      const message =
+        `📄 *Documentos Pendentes*\n\n` +
+        `Olá! Para darmos continuidade à negociação do imóvel ${deal.property.title}, ` +
+        `ainda precisamos dos seguintes documentos:\n\n` +
+        `${(deal.documentsPending as string[]).map(doc => `📎 ${doc}`).join('\n')}\n\n` +
+        `Pode enviar aqui mesmo pelo WhatsApp ou trazer na próxima reunião!`;
+
+      await this.whatsapp.sendMessage(deal.lead.phone, message);
+
+      console.log(`✅ Lembrete de documentos enviado: ${deal.id}`);
+    }
+  }
+
+  private getTimeUntilVisit(scheduledAt: Date): string {
+    const hours = Math.floor((scheduledAt.getTime() - Date.now()) / (1000 * 60 * 60));
+
+    if (hours < 1) return 'A visita é daqui a pouco!';
+    if (hours < 3) return `Faltam ${hours} horas`;
+    if (hours < 24) return `Faltam ${hours} horas`;
+
+    const days = Math.floor(hours / 24);
+    return `Faltam ${days} dia${days > 1 ? 's' : ''}`;
+  }
+
+  private formatDateTime(date: Date): string {
+    return date.toLocaleString('pt-BR', {
+      weekday: 'long',
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+  }
+
+  private formatDate(date: Date): string {
+    return date.toLocaleDateString('pt-BR', {
+      weekday: 'long',
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    });
+  }
+}</code></pre>
+                </div>
+            </section>
+
+            <section id="feedback">
+                <h2>💬 Sistema de Feedback Automático</h2>
+
+                <h3>Tarefa 3.5: Feedback Collection Service</h3>
+                <div class="code-block">
+                    <div class="code-header">
+                        <span>📁 apps/api/src/automation/feedback.service.ts</span>
+                        <button onclick="copyCode(this)">📋 Copiar</button>
+                    </div>
+                    <pre><code>import { PrismaClient } from '@prisma/client';
+import { WhatsAppService } from '../messaging/services/whatsapp.service';
+import { ClaudeService } from '../ai/services/claude.service';
+
+const prisma = new PrismaClient();
+
+export class FeedbackService {
+  private whatsapp: WhatsAppService;
+  private claude: ClaudeService;
+
+  constructor() {
+    this.whatsapp = new WhatsAppService();
+    this.claude = new ClaudeService();
+  }
+
+  async collectPostVisitFeedback(): Promise<void> {
+    // Buscar visitas realizadas nas últimas 24h sem feedback
+    const oneDayAgo = new Date();
+    oneDayAgo.setDate(oneDayAgo.getDate() - 1);
+
+    const visits = await prisma.visit.findMany({
+      where: {
+        status: 'completed',
+        scheduledAt: { gte: oneDayAgo },
+        feedbackCollected: false
+      },
+      include: {
+        lead: true,
+        property: true
+      }
+    });
+
+    for (const visit of visits) {
+      const message =
+        `Oi ${visit.lead.name}! 😊\n\n` +
+        `Como foi a visita ao ${visit.property.title}? ` +
+        `Sua opinião é muito importante pra gente!\n\n` +
+        `Pode responder em poucas palavras:\n` +
+        `- O que achou do imóvel?\n` +
+        `- Atendeu suas expectativas?\n` +
+        `- Tem interesse em avançar?`;
+
+      await this.whatsapp.sendMessage(visit.lead.phone, message);
+
+      await prisma.visit.update({
+        where: { id: visit.id },
+        data: { feedbackRequested: true }
+      });
+
+      console.log(`✅ Feedback solicitado: Visita ${visit.id}`);
+    }
+  }
+
+  async analyzeFeedback(visitId: string, feedbackText: string): Promise<void> {
+    const prompt = `
+Analise este feedback de uma visita a imóvel e retorne JSON:
+
+FEEDBACK: "${feedbackText}"
+
+Retorne:
+{
+  "sentiment": "positive" | "neutral" | "negative",
+  "interest_level": 1-10,
+  "concerns": ["preocupação 1", ...],
+  "positive_points": ["ponto positivo 1", ...],
+  "next_action": "schedule_second_visit" | "send_proposal" | "address_concerns" | "follow_up" | "close_lost"
+}
+    `;
+
+    const analysis = await this.claude.analyze(prompt);
+
+    await prisma.visit.update({
+      where: { id: visitId },
+      data: {
+        feedback: feedbackText,
+        feedbackAnalysis: analysis,
+        feedbackCollected: true
+      }
+    });
+
+    // Atualizar score do lead baseado no feedback
+    const visit = await prisma.visit.findUnique({
+      where: { id: visitId },
+      include: { lead: true }
+    });
+
+    if (visit) {
+      const scoreAdjustment = this.calculateScoreAdjustment(analysis);
+
+      await prisma.lead.update({
+        where: { id: visit.leadId },
+        data: {
+          score: {
+            increment: scoreAdjustment
+          }
+        }
+      });
+    }
+  }
+
+  async collectPostDealFeedback(): Promise<void> {
+    // Buscar negociações fechadas recentemente
+    const sevenDaysAgo = new Date();
+    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+
+    const closedDeals = await prisma.deal.findMany({
+      where: {
+        status: 'closed_won',
+        closedAt: { gte: sevenDaysAgo },
+        feedbackCollected: false
+      },
+      include: {
+        lead: true,
+        property: true,
+        broker: true
+      }
+    });
+
+    for (const deal of closedDeals) {
+      const message =
+        `Olá ${deal.lead.name}! 🎉\n\n` +
+        `Parabéns pela aquisição do seu novo imóvel! ` +
+        `Gostaríamos muito de saber como foi sua experiência conosco.\n\n` +
+        `De 0 a 10, como você avalia:\n\n` +
+        `1️⃣ Atendimento geral\n` +
+        `2️⃣ Agilidade no processo\n` +
+        `3️⃣ Atendimento do corretor ${deal.broker.name}\n` +
+        `4️⃣ Recomendaria a Vivoly para amigos?\n\n` +
+        `Sua opinião nos ajuda a melhorar sempre! 🙏`;
+
+      await this.whatsapp.sendMessage(deal.lead.phone, message);
+
+      await prisma.deal.update({
+        where: { id: deal.id },
+        data: { feedbackRequested: true }
+      });
+
+      console.log(`✅ Feedback pós-venda solicitado: Deal ${deal.id}`);
+    }
+  }
+
+  private calculateScoreAdjustment(analysis: any): number {
+    let adjustment = 0;
+
+    // Sentimento
+    if (analysis.sentiment === 'positive') adjustment += 10;
+    else if (analysis.sentiment === 'negative') adjustment -= 10;
+
+    // Nível de interesse
+    if (analysis.interest_level >= 8) adjustment += 15;
+    else if (analysis.interest_level >= 6) adjustment += 5;
+    else if (analysis.interest_level <= 3) adjustment -= 10;
+
+    // Ação recomendada
+    switch (analysis.next_action) {
+      case 'schedule_second_visit':
+      case 'send_proposal':
+        adjustment += 10;
+        break;
+      case 'close_lost':
+        adjustment -= 20;
+        break;
+    }
+
+    return adjustment;
+  }
+}</code></pre>
+                </div>
+            </section>
+
+            <section id="cron">
+                <h2>⚙️ Configuração de Jobs Automáticos (Cron)</h2>
+
+                <div class="code-block">
+                    <div class="code-header">
+                        <span>📁 apps/api/src/automation/cron-jobs.ts</span>
+                        <button onclick="copyCode(this)">📋 Copiar</button>
+                    </div>
+                    <pre><code>import cron from 'node-cron';
+import { FollowUpService } from './followup.service';
+import { LeadRecoveryService } from './lead-recovery.service';
+import { ReminderService } from './reminder.service';
+import { FeedbackService } from './feedback.service';
+import { LeadScoringMLService } from '../ai/ml/lead-scoring.service';
+
+export class AutomationScheduler {
+  private followUpService: FollowUpService;
+  private recoveryService: LeadRecoveryService;
+  private reminderService: ReminderService;
+  private feedbackService: FeedbackService;
+  private scoringService: LeadScoringMLService;
+
+  constructor() {
+    this.followUpService = new FollowUpService();
+    this.recoveryService = new LeadRecoveryService();
+    this.reminderService = new ReminderService();
+    this.feedbackService = new FeedbackService();
+    this.scoringService = new LeadScoringMLService();
+  }
+
+  startAll() {
+    console.log('⚙️ Iniciando jobs automáticos...\n');
+
+    // Follow-ups: a cada 6 horas
+    cron.schedule('0 */6 * * *', async () => {
+      console.log('\n🔄 [CRON] Executando follow-ups...');
+      await this.followUpService.processFollowUps('default-tenant');
+    });
+
+    // Recuperação de leads: diariamente às 10h
+    cron.schedule('0 10 * * *', async () => {
+      console.log('\n🔄 [CRON] Executando recuperação de leads...');
+      await this.recoveryService.attemptRecovery('default-tenant');
+    });
+
+    // Lembretes: a cada 2 horas
+    cron.schedule('0 */2 * * *', async () => {
+      console.log('\n⏰ [CRON] Processando lembretes...');
+      await this.reminderService.processReminders();
+    });
+
+    // Feedback pós-visita: a cada 4 horas
+    cron.schedule('0 */4 * * *', async () => {
+      console.log('\n💬 [CRON] Coletando feedback de visitas...');
+      await this.feedbackService.collectPostVisitFeedback();
+    });
+
+    // Feedback pós-venda: diariamente às 15h
+    cron.schedule('0 15 * * *', async () => {
+      console.log('\n💬 [CRON] Coletando feedback pós-venda...');
+      await this.feedbackService.collectPostDealFeedback();
+    });
+
+    // Atualização de scores: diariamente às 2h (madrugada)
+    cron.schedule('0 2 * * *', async () => {
+      console.log('\n📊 [CRON] Atualizando scores de leads...');
+      await this.scoringService.batchUpdateScores('default-tenant');
+    });
+
+    console.log('✅ Jobs agendados:');
+    console.log('   - Follow-ups: a cada 6h');
+    console.log('   - Recuperação de leads: 10h diariamente');
+    console.log('   - Lembretes: a cada 2h');
+    console.log('   - Feedback visitas: a cada 4h');
+    console.log('   - Feedback vendas: 15h diariamente');
+    console.log('   - Score update: 2h diariamente\n');
+  }
+}
+
+// Exportar para uso no main.ts
+export function initializeAutomation() {
+  const scheduler = new AutomationScheduler();
+  scheduler.startAll();
+}</code></pre>
+                </div>
+
+                <div class="card card-success">
+                    <h3>🎉 Sistema 100% Automatizado!</h3>
+                    <p>Com todos os jobs configurados, o sistema agora:</p>
+                    <ul>
+                        <li>✅ Faz follow-up automático de leads</li>
+                        <li>✅ Recupera leads inativos</li>
+                        <li>✅ Envia lembretes de visitas e pagamentos</li>
+                        <li>✅ Coleta feedback automaticamente</li>
+                        <li>✅ Atualiza scores continuamente</li>
+                        <li>✅ Funciona 24/7 sem intervenção manual</li>
+                    </ul>
+                </div>
+            </section>
+
+            <div class="card card-info" style="margin-top: 50px;">
+                <h3>🎊 Parabéns! Fase 3 Concluída!</h3>
+                <p>Você implementou um sistema completamente automatizado de gestão de leads!</p>
+                <p><strong>Próximos passos:</strong></p>
+                <ul>
+                    <li><a href="guia-testes.html">Testes Completos do Sistema</a></li>
+                    <li><a href="guia-deploy.html">Deploy para Produção</a></li>
+                </ul>
+            </div>
+        </div>
+
+        <footer class="nav-footer">
+            <a href="guia-fase2.html" class="btn-nav">← Fase 2</a>
+            <a href="guia-index.html" class="btn-nav">🏠 Índice</a>
+            <a href="guia-testes.html" class="btn-nav">Testes →</a>
+        </footer>
+    </div>
+
+    <script src="guia-scripts.js"></script>
+</body>
+</html>

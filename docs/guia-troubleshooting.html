@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Troubleshooting | Guia BI + IA</title>
+    <link rel="stylesheet" href="guia-styles.css">
+</head>
+<body>
+    <div class="container">
+        <header class="phase-header phase2">
+            <div class="breadcrumb">
+                <a href="guia-index.html">🏠 Índice</a> →
+                <a href="guia-deploy.html">🚀 Deploy</a> →
+                <span>Troubleshooting</span>
+            </div>
+            <h1>🔧 Troubleshooting</h1>
+            <p>Soluções para Problemas Comuns</p>
+        </header>
+
+        <nav class="nav-sticky">
+            <a href="#api">APIs</a>
+            <a href="#whatsapp">WhatsApp</a>
+            <a href="#telegram">Telegram</a>
+            <a href="#database">Database</a>
+            <a href="#performance">Performance</a>
+        </nav>
+
+        <div class="content">
+            <section id="api">
+                <h2>🔌 Problemas com APIs (Claude/OpenAI)</h2>
+
+                <div class="card card-danger">
+                    <h3>❌ Erro: "Invalid API Key"</h3>
+                    <p><strong>Sintoma:</strong> Sistema não consegue se conectar à API do Claude</p>
+                    <p><strong>Solução:</strong></p>
+                    <ol>
+                        <li>Verificar se a chave está correta no .env</li>
+                        <li>Confirmar que não há espaços extras</li>
+                        <li>Testar a chave diretamente:
+                            <div class="command-box">
+curl https://api.anthropic.com/v1/messages \
+  -H "x-api-key: SUA_CHAVE" \
+  -H "Content-Type: application/json" \
+  -d '{"model":"claude-3-5-sonnet-20241022","max_tokens":10,"messages":[{"role":"user","content":"Hi"}]}'
+                            </div>
+                        </li>
+                        <li>Gerar nova chave em console.anthropic.com</li>
+                    </ol>
+                </div>
+
+                <div class="card card-danger">
+                    <h3>❌ Erro: "Rate Limit Exceeded"</h3>
+                    <p><strong>Sintoma:</strong> Erro 429 em chamadas à API</p>
+                    <p><strong>Solução:</strong></p>
+                    <ul>
+                        <li>Sistema já tem retry automático de 60s</li>
+                        <li>Se persistir, implementar rate limiting:</li>
+                    </ul>
+                    <div class="code-block">
+                        <pre><code>// Adicionar ao ClaudeService
+private queue = [];
+private processing = false;
+private RATE_LIMIT = 50; // requests por minuto
+
+async queueRequest(fn) {
+  this.queue.push(fn);
+  if (!this.processing) this.processQueue();
+}
+
+async processQueue() {
+  this.processing = true;
+  while (this.queue.length > 0) {
+    const fn = this.queue.shift();
+    await fn();
+    await this.sleep(60000 / this.RATE_LIMIT); // delay entre requests
+  }
+  this.processing = false;
+}</code></pre>
+                    </div>
+                </div>
+
+                <div class="card card-danger">
+                    <h3>❌ Erro: "Token Limit Exceeded"</h3>
+                    <p><strong>Sintoma:</strong> Mensagens muito longas quebram</p>
+                    <p><strong>Solução:</strong></p>
+                    <ul>
+                        <li>Limitar contexto em context-builder.service.ts:</li>
+                    </ul>
+                    <div class="code-block">
+                        <pre><code>// Limitar mensagens históricas
+const messages = await prisma.message.findMany({
+  take: 10, // Aumentar de 10 para 5 se necessário
+  // ...
+});
+
+// Truncar mensagens muito longas
+context = context.substring(0, 3000); // Max 3000 chars de contexto</code></pre>
+                    </div>
+                </div>
+            </section>
+
+            <section id="whatsapp">
+                <h2>📱 Problemas com WhatsApp</h2>
+
+                <div class="card card-danger">
+                    <h3>❌ WhatsApp não conecta / QR Code não aparece</h3>
+                    <p><strong>Soluções:</strong></p>
+                    <ol>
+                        <li>Verificar se Chromium está instalado:
+                            <div class="command-box">
+pnpm add puppeteer
+                            </div>
+                        </li>
+                        <li>Limpar sessões antigas:
+                            <div class="command-box">
+rm -rf whatsapp-sessions
+                            </div>
+                        </li>
+                        <li>Aumentar timeout:
+                            <div class="code-block">
+                                <pre><code>this.client = new Client({
+  authStrategy: new LocalAuth(),
+  puppeteer: {
+    headless: true,
+    args: ['--no-sandbox'],
+    timeout: 60000 // Aumentar timeout
+  }
+});</code></pre>
+                            </div>
+                        </li>
+                    </ol>
+                </div>
+
+                <div class="card card-danger">
+                    <h3>❌ WhatsApp desconecta frequentemente</h3>
+                    <p><strong>Causas comuns:</strong></p>
+                    <ul>
+                        <li>Servidor reiniciando (Render free tier)</li>
+                        <li>Sessão expirada</li>
+                        <li>Telefone ficou offline</li>
+                    </ul>
+                    <p><strong>Solução:</strong></p>
+                    <div class="code-block">
+                        <pre><code>// Adicionar reconexão automática
+this.client.on('disconnected', async (reason) => {
+  console.log('⚠️ WhatsApp desconectado:', reason);
+
+  // Tentar reconectar após 30s
+  setTimeout(async () => {
+    console.log('🔄 Tentando reconectar...');
+    await this.client.initialize();
+  }, 30000);
+});</code></pre>
+                    </div>
+                </div>
+
+                <div class="card card-danger">
+                    <h3>❌ Mensagens não são enviadas</h3>
+                    <p><strong>Debug:</strong></p>
+                    <div class="command-box">
+# Ver logs detalhados
+DEBUG=puppeteer:* pnpm dev
+                    </div>
+                    <p><strong>Verificar:</strong></p>
+                    <ul>
+                        <li>Formato do número: deve incluir código do país (55)</li>
+                        <li>Cliente está pronto: <code>isClientReady()</code></li>
+                        <li>Número não está bloqueado</li>
+                    </ul>
+                </div>
+            </section>
+
+            <section id="telegram">
+                <h2>💬 Problemas com Telegram</h2>
+
+                <div class="card card-danger">
+                    <h3>❌ Bot não responde</h3>
+                    <p><strong>Verificações:</strong></p>
+                    <ol>
+                        <li>Token correto:
+                            <div class="command-box">
+curl https://api.telegram.org/bot&lt;TOKEN&gt;/getMe
+                            </div>
+                        </li>
+                        <li>Polling ativado:
+                            <div class="code-block">
+                                <pre><code>this.bot = new TelegramBot(token, {
+  polling: true  // Certifique-se que está true
+});</code></pre>
+                            </div>
+                        </li>
+                        <li>Sem erros no console</li>
+                    </ol>
+                </div>
+
+                <div class="card card-danger">
+                    <h3>❌ Notificações não chegam aos corretores</h3>
+                    <p><strong>Causa:</strong> Chat ID não registrado</p>
+                    <p><strong>Solução:</strong></p>
+                    <ol>
+                        <li>Corretor deve enviar /start para o bot</li>
+                        <li>Sistema salva chatId automaticamente</li>
+                        <li>Verificar no banco:
+                            <div class="command-box">
+SELECT telegramUserId FROM users WHERE role='BROKER';
+                            </div>
+                        </li>
+                    </ol>
+                </div>
+            </section>
+
+            <section id="database">
+                <h2>🗄️ Problemas com Banco de Dados</h2>
+
+                <div class="card card-danger">
+                    <h3>❌ Erro: "Cannot connect to database"</h3>
+                    <p><strong>Soluções:</strong></p>
+                    <ol>
+                        <li>Verificar DATABASE_URL:
+                            <div class="command-box">
+echo $DATABASE_URL
+                            </div>
+                        </li>
+                        <li>Testar conexão direta:
+                            <div class="command-box">
+psql $DATABASE_URL
+                            </div>
+                        </li>
+                        <li>Verificar se banco está online (Render Dashboard)</li>
+                        <li>Checar SSL mode:
+                            <div class="code-block">
+                                <pre><code>DATABASE_URL="postgresql://user:pass@host/db?sslmode=require"</code></pre>
+                            </div>
+                        </li>
+                    </ol>
+                </div>
+
+                <div class="card card-danger">
+                    <h3>❌ Migrations falhando</h3>
+                    <p><strong>Debug:</strong></p>
+                    <div class="command-box">
+npx prisma migrate status
+npx prisma migrate resolve --rolled-back "migration_name"
+npx prisma migrate deploy
+                    </div>
+                </div>
+
+                <div class="card card-danger">
+                    <h3>❌ Dados não aparecem / Queries lentas</h3>
+                    <p><strong>Otimizar queries:</strong></p>
+                    <div class="code-block">
+                        <pre><code>// Adicionar índices
+// prisma/schema.prisma
+
+model Lead {
+  id    String @id @default(cuid())
+  phone String
+
+  @@index([phone])  // Índice para buscas por telefone
+  @@index([score])  // Índice para ordenação por score
+  @@index([createdAt])
+}</code></pre>
+                    </div>
+                    <div class="command-box">
+npx prisma migrate dev --name add-indexes
+                    </div>
+                </div>
+            </section>
+
+            <section id="performance">
+                <h2>⚡ Problemas de Performance</h2>
+
+                <div class="card card-danger">
+                    <h3>❌ Respostas muito lentas (&gt;10s)</h3>
+                    <p><strong>Diagnóstico:</strong></p>
+                    <div class="code-block">
+                        <pre><code>// Adicionar timers nos serviços
+const start = Date.now();
+const result = await this.claudeService.generateResponse(prompt);
+console.log(`⏱️ Claude respondeu em ${Date.now() - start}ms`);</code></pre>
+                    </div>
+                    <p><strong>Otimizações:</strong></p>
+                    <ul>
+                        <li>Reduzir maxTokens: 2000 → 500</li>
+                        <li>Processar em paralelo quando possível</li>
+                        <li>Cachear respostas comuns (Redis)</li>
+                        <li>Usar modelo mais rápido para tarefas simples</li>
+                    </ul>
+                </div>
+
+                <div class="card card-danger">
+                    <h3>❌ Memory Leak / Servidor crashando</h3>
+                    <p><strong>Monitorar:</strong></p>
+                    <div class="code-block">
+                        <pre><code>// Adicionar ao main.ts
+setInterval(() => {
+  const used = process.memoryUsage();
+  console.log('💾 Memória:', {
+    rss: `${Math.round(used.rss / 1024 / 1024)}MB`,
+    heapUsed: `${Math.round(used.heapUsed / 1024 / 1024)}MB`
+  });
+}, 60000); // A cada minuto</code></pre>
+                    </div>
+                    <p><strong>Fixes:</strong></p>
+                    <ul>
+                        <li>Fechar conexões Prisma: <code>await prisma.$disconnect()</code></li>
+                        <li>Limpar listeners de eventos</li>
+                        <li>Aumentar memória no Render (plano maior)</li>
+                    </ul>
+                </div>
+
+                <div class="card card-danger">
+                    <h3>❌ CPU 100% / Servidor travando</h3>
+                    <p><strong>Possíveis causas:</strong></p>
+                    <ul>
+                        <li>Loop infinito</li>
+                        <li>Muitas requisições simultâneas</li>
+                        <li>Processamento pesado sem async</li>
+                    </ul>
+                    <p><strong>Solução:</strong></p>
+                    <div class="code-block">
+                        <pre><code>// Implementar queue com limite
+import Bull from 'bull';
+
+const messageQueue = new Bull('messages', process.env.REDIS_URL);
+
+messageQueue.process(10, async (job) => { // Max 10 paralelos
+  return await processMessage(job.data);
+});</code></pre>
+                    </div>
+                </div>
+            </section>
+
+            <section id="logs">
+                <h2>📋 Logs e Debug</h2>
+
+                <div class="card card-info">
+                    <h3>Como visualizar logs</h3>
+                    <p><strong>Render:</strong></p>
+                    <ul>
+                        <li>Dashboard → Logs tab</li>
+                        <li>Filtrar por tipo (Error, Warning, Info)</li>
+                        <li>Download de logs via CLI</li>
+                    </ul>
+                    <p><strong>Local:</strong></p>
+                    <div class="command-box">
+# Ver logs em tempo real
+pnpm dev | tee logs.txt
+
+# Filtrar erros
+grep ERROR logs.txt
+                    </div>
+                </div>
+
+                <div class="card card-info">
+                    <h3>Estruturar logs melhor</h3>
+                    <div class="code-block">
+                        <pre><code>import winston from 'winston';
+
+const logger = winston.createLogger({
+  level: 'info',
+  format: winston.format.json(),
+  transports: [
+    new winston.transports.File({ filename: 'error.log', level: 'error' }),
+    new winston.transports.File({ filename: 'combined.log' }),
+    new winston.transports.Console()
+  ]
+});
+
+// Usar
+logger.error('Erro ao processar mensagem', { leadId, error });
+logger.info('Mensagem processada', { leadId, score });</code></pre>
+                    </div>
+                </div>
+            </section>
+
+            <div class="card card-success" style="margin-top: 50px;">
+                <h3>✅ Dica Final</h3>
+                <p>Se o problema persistir:</p>
+                <ol>
+                    <li>Ativar DEBUG mode: <code>DEBUG=* pnpm dev</code></li>
+                    <li>Reproduzir em ambiente local</li>
+                    <li>Verificar logs completos (não só o erro)</li>
+                    <li>Testar cada componente isoladamente</li>
+                    <li>Consultar documentação oficial das APIs</li>
+                </ol>
+                <p><strong>Próximo:</strong> <a href="guia-metricas.html">Métricas e Monitoramento</a></p>
+            </div>
+        </div>
+
+        <footer class="nav-footer">
+            <a href="guia-deploy.html" class="btn-nav">← Deploy</a>
+            <a href="guia-index.html" class="btn-nav">🏠 Índice</a>
+            <a href="guia-metricas.html" class="btn-nav">Métricas →</a>
+        </footer>
+    </div>
+
+    <script src="guia-scripts.js"></script>
+</body>
+</html>

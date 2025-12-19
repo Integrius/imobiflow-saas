@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, FormEvent } from 'react';
+import { useState, FormEvent, useRef, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -14,9 +14,24 @@ export default function LoginPage() {
   const [senha, setSenha] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const errorTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Limpa timeout ao desmontar componente
+  useEffect(() => {
+    return () => {
+      if (errorTimeoutRef.current) {
+        clearTimeout(errorTimeoutRef.current);
+      }
+    };
+  }, []);
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
+
+    // Limpa erro anterior e timeout
+    if (errorTimeoutRef.current) {
+      clearTimeout(errorTimeoutRef.current);
+    }
     setError('');
     setLoading(true);
 
@@ -29,14 +44,19 @@ export default function LoginPage() {
       setError(errorMessage);
       setLoading(false);
 
-      // Mantém a mensagem de erro visível por 10 segundos (tempo garantido)
-      setTimeout(() => {
+      // GARANTE que a mensagem fica 10 segundos - usa ref para prevenir limpeza prematura
+      errorTimeoutRef.current = setTimeout(() => {
         setError('');
+        errorTimeoutRef.current = null;
       }, 10000);
     }
   }
 
   async function handleGoogleSuccess(credentialResponse: CredentialResponse) {
+    // Limpa erro anterior e timeout
+    if (errorTimeoutRef.current) {
+      clearTimeout(errorTimeoutRef.current);
+    }
     setError('');
     setLoading(true);
 
@@ -56,19 +76,26 @@ export default function LoginPage() {
       setError(errorMessage);
       setLoading(false);
 
-      // Mantém a mensagem de erro visível por 10 segundos (tempo garantido)
-      setTimeout(() => {
+      // GARANTE que a mensagem fica 10 segundos
+      errorTimeoutRef.current = setTimeout(() => {
         setError('');
+        errorTimeoutRef.current = null;
       }, 10000);
     }
   }
 
   function handleGoogleError() {
+    // Limpa erro anterior
+    if (errorTimeoutRef.current) {
+      clearTimeout(errorTimeoutRef.current);
+    }
+
     setError('Erro ao fazer login com Google. Tente novamente.');
 
-    // Mantém a mensagem de erro visível por 10 segundos (tempo garantido)
-    setTimeout(() => {
+    // GARANTE que a mensagem fica 10 segundos
+    errorTimeoutRef.current = setTimeout(() => {
       setError('');
+      errorTimeoutRef.current = null;
     }, 10000);
   }
 

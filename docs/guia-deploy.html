@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Deploy para Produção | Guia BI + IA</title>
+    <link rel="stylesheet" href="guia-styles.css">
+</head>
+<body>
+    <div class="container">
+        <header class="phase-header phase3">
+            <div class="breadcrumb">
+                <a href="guia-index.html">🏠 Índice</a> →
+                <a href="guia-testes.html">🧪 Testes</a> →
+                <span>Deploy</span>
+            </div>
+            <h1>🚀 Deploy para Produção</h1>
+            <p>Colocando o Sistema no Ar</p>
+            <div class="phase-meta">
+                <span class="badge">⏱️ 2-4 horas</span>
+                <span class="badge">🚀 Produção</span>
+            </div>
+        </header>
+
+        <nav class="nav-sticky">
+            <a href="#visao">Visão Geral</a>
+            <a href="#preparacao">Preparação</a>
+            <a href="#database">Banco de Dados</a>
+            <a href="#backend">Backend</a>
+            <a href="#frontend">Frontend</a>
+            <a href="#verificacao">Verificação</a>
+        </nav>
+
+        <div class="content">
+            <section id="visao">
+                <h2>📋 Visão Geral do Deploy</h2>
+                <div class="card card-info">
+                    <h3>🎯 Objetivo</h3>
+                    <p>Fazer o deploy do sistema completo em produção usando Render (backend + banco) e Vercel (frontend).</p>
+                </div>
+
+                <div class="card card-warning">
+                    <h3>⚠️ Pré-requisitos</h3>
+                    <ul>
+                        <li>✅ Todos os testes passando</li>
+                        <li>✅ Conta no Render (render.com)</li>
+                        <li>✅ Conta no Vercel (vercel.com)</li>
+                        <li>✅ Conta GitHub com repositório</li>
+                        <li>✅ Variáveis de ambiente organizadas</li>
+                    </ul>
+                </div>
+            </section>
+
+            <section id="preparacao">
+                <h2>📝 Preparação para Deploy</h2>
+
+                <h3>Passo 1: Organizar Variáveis de Ambiente</h3>
+                <div class="code-block">
+                    <div class="code-header">
+                        <span>📁 .env.production (template)</span>
+                        <button onclick="copyCode(this)">📋 Copiar</button>
+                    </div>
+                    <pre><code># =================================
+# VARIÁVEIS DE PRODUÇÃO
+# =================================
+
+# Database
+DATABASE_URL="postgresql://user:pass@host/db?sslmode=require"
+
+# AI APIs
+ANTHROPIC_API_KEY="sk-ant-..."
+OPENAI_API_KEY="sk-..."
+
+# Messaging
+TELEGRAM_BOT_TOKEN="123456:ABC..."
+
+# Google Calendar (opcional)
+GOOGLE_CLIENT_ID="..."
+GOOGLE_CLIENT_SECRET="..."
+GOOGLE_REFRESH_TOKEN="..."
+
+# App Config
+NODE_ENV="production"
+PORT="3000"
+FRONTEND_URL="https://seu-app.vercel.app"
+
+# Redis (se usar)
+REDIS_URL="redis://..."</code></pre>
+                </div>
+
+                <h3>Passo 2: Atualizar package.json</h3>
+                <div class="code-block">
+                    <div class="code-header">
+                        <span>📁 apps/api/package.json</span>
+                        <button onclick="copyCode(this)">📋 Copiar</button>
+                    </div>
+                    <pre><code>{
+  "name": "vivoly-api",
+  "version": "1.0.0",
+  "scripts": {
+    "dev": "tsx watch src/main.ts",
+    "build": "tsc",
+    "start": "node dist/main.js",
+    "migrate": "prisma migrate deploy",
+    "postinstall": "prisma generate"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "pnpm": ">=8.0.0"
+  }
+}</code></pre>
+                </div>
+
+                <h3>Passo 3: Criar render.yaml</h3>
+                <div class="code-block">
+                    <div class="code-header">
+                        <span>📁 render.yaml</span>
+                        <button onclick="copyCode(this)">📋 Copiar</button>
+                    </div>
+                    <pre><code>services:
+  # Banco de Dados PostgreSQL
+  - type: pserv
+    name: vivoly-db
+    plan: starter
+    region: oregon
+    databaseName: vivoly_production
+    databaseUser: vivoly
+
+  # API Backend
+  - type: web
+    name: vivoly-api
+    runtime: node
+    region: oregon
+    plan: starter
+    buildCommand: pnpm install && pnpm run build
+    startCommand: pnpm run migrate && pnpm start
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: vivoly-db
+          property: connectionString
+      - key: NODE_ENV
+        value: production
+      - key: ANTHROPIC_API_KEY
+        sync: false
+      - key: OPENAI_API_KEY
+        sync: false
+      - key: TELEGRAM_BOT_TOKEN
+        sync: false</code></pre>
+                </div>
+            </section>
+
+            <section id="database">
+                <h2>🗄️ Deploy do Banco de Dados</h2>
+
+                <h3>Opção 1: Render PostgreSQL (Recomendado)</h3>
+                <div class="test-box">
+                    <h4>Passos:</h4>
+                    <ol>
+                        <li>Acesse <a href="https://render.com" target="_blank">render.com</a></li>
+                        <li>Clique em "New +" → "PostgreSQL"</li>
+                        <li>Preencha:
+                            <ul>
+                                <li>Name: <code>vivoly-db</code></li>
+                                <li>Database: <code>vivoly_production</code></li>
+                                <li>User: <code>vivoly</code></li>
+                                <li>Plan: Starter ($7/mês)</li>
+                            </ul>
+                        </li>
+                        <li>Clique em "Create Database"</li>
+                        <li>Copie a "Internal Database URL"</li>
+                        <li>Adicione ao .env de produção</li>
+                    </ol>
+                </div>
+
+                <h3>Executar Migrations</h3>
+                <div class="code-block">
+                    <div class="code-header">
+                        <span>Terminal</span>
+                    </div>
+                    <pre><code># Definir DATABASE_URL de produção
+export DATABASE_URL="postgresql://user:pass@host/db"
+
+# Executar migrations
+pnpm run migrate
+
+# Verificar
+pnpm prisma studio</code></pre>
+                </div>
+                <div class="command-box">
+DATABASE_URL="..." npx prisma migrate deploy
+                </div>
+
+                <div class="card card-success">
+                    <h3>✅ Banco de Dados Pronto</h3>
+                    <p>Aguarde alguns minutos para o banco ficar disponível. Você receberá um email quando estiver pronto.</p>
+                </div>
+            </section>
+
+            <section id="backend">
+                <h2>⚙️ Deploy do Backend (API)</h2>
+
+                <h3>Método 1: Deploy via GitHub</h3>
+                <div class="test-box">
+                    <h4>Passos:</h4>
+                    <ol>
+                        <li>Push do código para GitHub</li>
+                        <li>Acesse Render Dashboard</li>
+                        <li>Clique em "New +" → "Web Service"</li>
+                        <li>Conecte seu repositório GitHub</li>
+                        <li>Configure:
+                            <ul>
+                                <li>Name: <code>vivoly-api</code></li>
+                                <li>Region: Oregon</li>
+                                <li>Branch: <code>main</code></li>
+                                <li>Root Directory: <code>apps/api</code></li>
+                                <li>Runtime: Node</li>
+                                <li>Build Command: <code>pnpm install && pnpm run build</code></li>
+                                <li>Start Command: <code>pnpm start</code></li>
+                            </ul>
+                        </li>
+                        <li>Adicione variáveis de ambiente</li>
+                        <li>Clique em "Create Web Service"</li>
+                    </ol>
+                </div>
+
+                <h3>Configurar Variáveis de Ambiente no Render</h3>
+                <div class="card card-warning">
+                    <p>No painel do Render, vá em "Environment" e adicione:</p>
+                    <ul>
+                        <li><code>DATABASE_URL</code> - Conectar ao banco Render</li>
+                        <li><code>ANTHROPIC_API_KEY</code> - Sua chave Claude</li>
+                        <li><code>OPENAI_API_KEY</code> - Sua chave OpenAI</li>
+                        <li><code>TELEGRAM_BOT_TOKEN</code> - Token do bot</li>
+                        <li><code>NODE_ENV</code> = <code>production</code></li>
+                        <li><code>PORT</code> = <code>10000</code> (padrão Render)</li>
+                    </ul>
+                </div>
+
+                <h3>Verificar Deploy</h3>
+                <div class="command-box">
+curl https://vivoly-api.onrender.com/health
+                </div>
+
+                <p>Deve retornar:</p>
+                <div class="code-block">
+                    <pre><code>{
+  "status": "ok",
+  "timestamp": "2025-01-10T12:00:00.000Z",
+  "services": {
+    "database": "connected",
+    "claude": "available",
+    "whatsapp": "ready"
+  }
+}</code></pre>
+                </div>
+            </section>
+
+            <section id="frontend">
+                <h2>🎨 Deploy do Frontend</h2>
+
+                <h3>Deploy no Vercel</h3>
+                <div class="test-box">
+                    <h4>Via CLI (Recomendado):</h4>
+                    <div class="command-box">
+# Instalar Vercel CLI
+pnpm add -g vercel
+
+# Login
+vercel login
+
+# Deploy
+cd apps/web
+vercel --prod
+                    </div>
+                </div>
+
+                <h3>Via Dashboard</h3>
+                <div class="test-box">
+                    <ol>
+                        <li>Acesse <a href="https://vercel.com" target="_blank">vercel.com</a></li>
+                        <li>Clique em "Add New Project"</li>
+                        <li>Import do repositório GitHub</li>
+                        <li>Configure:
+                            <ul>
+                                <li>Framework Preset: Next.js</li>
+                                <li>Root Directory: <code>apps/web</code></li>
+                                <li>Build Command: <code>pnpm run build</code></li>
+                                <li>Output Directory: <code>.next</code></li>
+                            </ul>
+                        </li>
+                        <li>Adicione variáveis de ambiente:
+                            <ul>
+                                <li><code>NEXT_PUBLIC_API_URL</code> = URL da API Render</li>
+                            </ul>
+                        </li>
+                        <li>Clique em "Deploy"</li>
+                    </ol>
+                </div>
+
+                <div class="card card-success">
+                    <h3>✅ Frontend Deployed!</h3>
+                    <p>URL: <code>https://seu-projeto.vercel.app</code></p>
+                </div>
+            </section>
+
+            <section id="whatsapp">
+                <h2>📱 Configurar WhatsApp em Produção</h2>
+
+                <div class="card card-warning">
+                    <h3>⚠️ Importante</h3>
+                    <p>O WhatsApp Web precisa estar sempre conectado. Recomenda-se usar um número dedicado de negócios.</p>
+                </div>
+
+                <h3>Opção 1: WhatsApp Business API (Oficial)</h3>
+                <p>Para uso profissional, use a API oficial:</p>
+                <ul>
+                    <li>Acesse <a href="https://business.whatsapp.com/products/business-platform" target="_blank">Meta Business</a></li>
+                    <li>Solicite acesso à Business API</li>
+                    <li>Integre usando o SDK oficial</li>
+                    <li>Custo: variável por mensagem</li>
+                </ul>
+
+                <h3>Opção 2: whatsapp-web.js (Desenvolvimento)</h3>
+                <p>Para testes e MVP:</p>
+                <ol>
+                    <li>Acesse o servidor Render via SSH ou logs</li>
+                    <li>Execute o sistema</li>
+                    <li>Escaneie o QR Code que aparece nos logs</li>
+                    <li>Sessão fica salva em <code>./whatsapp-sessions</code></li>
+                </ol>
+
+                <div class="code-block">
+                    <div class="code-header">
+                        <span>Ver logs do Render</span>
+                    </div>
+                    <pre><code># No dashboard do Render, vá em "Logs"
+# Procure pelo QR Code ASCII art
+# Use app de QR scanner para escanear da tela</code></pre>
+                </div>
+            </section>
+
+            <section id="verificacao">
+                <h2>✅ Verificação Final</h2>
+
+                <div class="test-box">
+                    <h4>Checklist de Deploy:</h4>
+                    <ul>
+                        <li>☐ Banco de dados acessível</li>
+                        <li>☐ Migrations executadas</li>
+                        <li>☐ API respondendo em /health</li>
+                        <li>☐ Frontend carregando</li>
+                        <li>☐ Variáveis de ambiente configuradas</li>
+                        <li>☐ WhatsApp conectado</li>
+                        <li>☐ Telegram bot respondendo</li>
+                        <li>☐ Claude API funcionando</li>
+                        <li>☐ Logs sem erros críticos</li>
+                    </ul>
+                </div>
+
+                <h3>Testes em Produção</h3>
+                <div class="test-box">
+                    <h4>1. Teste a API</h4>
+                    <div class="command-box">
+curl https://sua-api.onrender.com/health
+                    </div>
+
+                    <h4>2. Teste WhatsApp</h4>
+                    <p>Envie uma mensagem de teste para o número configurado</p>
+
+                    <h4>3. Teste Telegram</h4>
+                    <p>Envie <code>/start</code> para o bot</p>
+
+                    <h4>4. Teste Fluxo Completo</h4>
+                    <ol>
+                        <li>Envie mensagem via WhatsApp</li>
+                        <li>Verifique resposta da IA</li>
+                        <li>Confirme notificação no Telegram</li>
+                        <li>Veja lead no dashboard</li>
+                    </ol>
+                </div>
+
+                <h3>Monitoramento</h3>
+                <div class="card card-info">
+                    <h4>Ferramentas de Monitoramento:</h4>
+                    <ul>
+                        <li><strong>Render Logs:</strong> Logs em tempo real</li>
+                        <li><strong>Vercel Analytics:</strong> Performance do frontend</li>
+                        <li><strong>Sentry:</strong> Error tracking (opcional)</li>
+                        <li><strong>Better Uptime:</strong> Monitoramento de uptime</li>
+                    </ul>
+                </div>
+            </section>
+
+            <section id="custos">
+                <h2>💰 Custos de Produção</h2>
+
+                <div class="card card-warning">
+                    <h3>Estimativa Mensal</h3>
+                    <table style="width: 100%; margin-top: 20px; border-collapse: collapse;">
+                        <tr style="background: #f0f0f0;">
+                            <th style="padding: 10px; text-align: left;">Serviço</th>
+                            <th style="padding: 10px; text-align: right;">Custo/mês</th>
+                        </tr>
+                        <tr>
+                            <td style="padding: 10px;">Render - API (Starter)</td>
+                            <td style="padding: 10px; text-align: right;">$7</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 10px;">Render - PostgreSQL (Starter)</td>
+                            <td style="padding: 10px; text-align: right;">$7</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 10px;">Vercel - Frontend (Hobby)</td>
+                            <td style="padding: 10px; text-align: right;">$0</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 10px;">Claude API (~5000 mensagens)</td>
+                            <td style="padding: 10px; text-align: right;">$15-30</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 10px;">OpenAI (backup)</td>
+                            <td style="padding: 10px; text-align: right;">$5-10</td>
+                        </tr>
+                        <tr style="background: #e8f5e9; font-weight: bold;">
+                            <td style="padding: 10px;">TOTAL</td>
+                            <td style="padding: 10px; text-align: right;">~$34-54</td>
+                        </tr>
+                    </table>
+                </div>
+            </section>
+
+            <div class="card card-success" style="margin-top: 50px;">
+                <h3>🎉 Sistema em Produção!</h3>
+                <p>Parabéns! Seu sistema de BI + IA está no ar e funcionando 24/7!</p>
+                <p><strong>Próximos passos:</strong></p>
+                <ul>
+                    <li><a href="guia-troubleshooting.html">Troubleshooting</a> - Resolver problemas comuns</li>
+                    <li><a href="guia-metricas.html">Métricas</a> - Acompanhar performance</li>
+                    <li><a href="guia-checklist.html">Checklist Final</a> - Verificação completa</li>
+                </ul>
+            </div>
+        </div>
+
+        <footer class="nav-footer">
+            <a href="guia-testes.html" class="btn-nav">← Testes</a>
+            <a href="guia-index.html" class="btn-nav">🏠 Índice</a>
+            <a href="guia-troubleshooting.html" class="btn-nav">Troubleshooting →</a>
+        </footer>
+    </div>
+
+    <script src="guia-scripts.js"></script>
+</body>
+</html>

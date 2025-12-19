@@ -1,0 +1,2122 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <meta name="author" content="Vivoly - Imobiliária Digital" />
+  <title>Planejamento BI + IA - Vivoly</title>
+  <style>
+    html {
+      font-size: 11pt;
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: blue;
+    }
+    a:visited {
+      color: blue;
+    }
+    img {
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      background-color: #1a1a1a;
+      border: none;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+    /* CSS for syntax highlighting */
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      {   }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+    code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+    code span.at { color: #7d9029; } /* Attribute */
+    code span.bn { color: #40a070; } /* BaseN */
+    code span.bu { color: #008000; } /* BuiltIn */
+    code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #4070a0; } /* Char */
+    code span.cn { color: #880000; } /* Constant */
+    code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+    code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+    code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+    code span.dt { color: #902000; } /* DataType */
+    code span.dv { color: #40a070; } /* DecVal */
+    code span.er { color: #ff0000; font-weight: bold; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #40a070; } /* Float */
+    code span.fu { color: #06287e; } /* Function */
+    code span.im { color: #008000; font-weight: bold; } /* Import */
+    code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+    code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+    code span.op { color: #666666; } /* Operator */
+    code span.ot { color: #007020; } /* Other */
+    code span.pp { color: #bc7a00; } /* Preprocessor */
+    code span.sc { color: #4070a0; } /* SpecialChar */
+    code span.ss { color: #bb6688; } /* SpecialString */
+    code span.st { color: #4070a0; } /* String */
+    code span.va { color: #19177c; } /* Variable */
+    code span.vs { color: #4070a0; } /* VerbatimString */
+    code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+  </style>
+</head>
+<body>
+<header id="title-block-header">
+<h1 class="title">Planejamento BI + IA - Vivoly</h1>
+<p class="subtitle">Sistema Inteligente de Comunicação e Negociação
+Imobiliária</p>
+<p class="author">Vivoly - Imobiliária Digital</p>
+<p class="date">Dezembro 2024</p>
+</header>
+<nav id="TOC" role="doc-toc">
+<ul>
+<li><a href="#sumário-executivo" id="toc-sumário-executivo">1. SUMÁRIO
+EXECUTIVO</a>
+<ul>
+<li><a href="#visão-geral" id="toc-visão-geral">1.1 Visão Geral</a></li>
+<li><a href="#objetivo-principal" id="toc-objetivo-principal">1.2
+Objetivo Principal</a></li>
+<li><a href="#diferenciais-competitivos"
+id="toc-diferenciais-competitivos">1.3 Diferenciais
+Competitivos</a></li>
+<li><a href="#roi-projetado" id="toc-roi-projetado">1.4 ROI
+Projetado</a></li>
+</ul></li>
+<li><a href="#análise-da-arquitetura-atual"
+id="toc-análise-da-arquitetura-atual">2. ANÁLISE DA ARQUITETURA
+ATUAL</a>
+<ul>
+<li><a href="#pontos-fortes-identificados"
+id="toc-pontos-fortes-identificados">2.1 Pontos Fortes Identificados</a>
+<ul>
+<li><a href="#backend-e-infraestrutura"
+id="toc-backend-e-infraestrutura">Backend e Infraestrutura</a></li>
+<li><a href="#modelos-de-dados" id="toc-modelos-de-dados">Modelos de
+Dados</a></li>
+</ul></li>
+<li><a href="#oportunidades-de-integração"
+id="toc-oportunidades-de-integração">2.2 Oportunidades de
+Integração</a></li>
+<li><a href="#stack-tecnológica-atual"
+id="toc-stack-tecnológica-atual">2.3 Stack Tecnológica Atual</a></li>
+</ul></li>
+<li><a href="#arquitetura-proposta-do-sistema-bi-ia"
+id="toc-arquitetura-proposta-do-sistema-bi-ia">3. ARQUITETURA PROPOSTA
+DO SISTEMA BI + IA</a>
+<ul>
+<li><a href="#visão-geral-da-arquitetura"
+id="toc-visão-geral-da-arquitetura">3.1 Visão Geral da
+Arquitetura</a></li>
+<li><a href="#componentes-principais"
+id="toc-componentes-principais">3.2 Componentes Principais</a>
+<ul>
+<li><a href="#motor-de-ia---orquestração"
+id="toc-motor-de-ia---orquestração">3.2.1 Motor de IA -
+Orquestração</a></li>
+<li><a href="#módulos-de-business-intelligence"
+id="toc-módulos-de-business-intelligence">3.2.2 Módulos de Business
+Intelligence</a></li>
+</ul></li>
+</ul></li>
+<li><a href="#fluxos-de-interação-detalhados"
+id="toc-fluxos-de-interação-detalhados">4. FLUXOS DE INTERAÇÃO
+DETALHADOS</a>
+<ul>
+<li><a href="#fluxo-cliente-ia-whatsapp"
+id="toc-fluxo-cliente-ia-whatsapp">4.1 Fluxo: Cliente → IA
+(WhatsApp)</a>
+<ul>
+<li><a href="#cenário-novo-lead---primeira-interação"
+id="toc-cenário-novo-lead---primeira-interação">4.1.1 Cenário: Novo Lead
+- Primeira Interação</a></li>
+<li><a href="#cenário-lead-qualificado---agendamento"
+id="toc-cenário-lead-qualificado---agendamento">4.1.2 Cenário: Lead
+Qualificado - Agendamento</a></li>
+</ul></li>
+<li><a href="#fluxo-ia-corretor-telegram"
+id="toc-fluxo-ia-corretor-telegram">4.2 Fluxo: IA → Corretor
+(Telegram)</a>
+<ul>
+<li><a href="#notificação-de-lead-quente"
+id="toc-notificação-de-lead-quente">4.2.1 Notificação de Lead
+Quente</a></li>
+<li><a href="#dashboard-diário-do-corretor"
+id="toc-dashboard-diário-do-corretor">4.2.2 Dashboard Diário do
+Corretor</a></li>
+</ul></li>
+<li><a href="#análise-psicológica-e-estratégica"
+id="toc-análise-psicológica-e-estratégica">4.3 Análise Psicológica e
+Estratégica</a>
+<ul>
+<li><a href="#análise-de-sentimento-em-tempo-real"
+id="toc-análise-de-sentimento-em-tempo-real">4.3.1 Análise de Sentimento
+em Tempo Real</a></li>
+<li><a href="#gatilhos-psicológicos-detectados"
+id="toc-gatilhos-psicológicos-detectados">4.3.2 Gatilhos Psicológicos
+Detectados</a></li>
+<li><a href="#momentos-para-intervenção-humana"
+id="toc-momentos-para-intervenção-humana">4.3.3 Momentos para
+Intervenção Humana</a></li>
+</ul></li>
+</ul></li>
+<li><a href="#implementação-técnica" id="toc-implementação-técnica">5.
+IMPLEMENTAÇÃO TÉCNICA</a>
+<ul>
+<li><a href="#stack-tecnológica-adicional"
+id="toc-stack-tecnológica-adicional">5.1 Stack Tecnológica Adicional</a>
+<ul>
+<li><a href="#novos-pacotes-npm" id="toc-novos-pacotes-npm">5.1.1 Novos
+Pacotes NPM</a></li>
+<li><a href="#variáveis-de-ambiente"
+id="toc-variáveis-de-ambiente">5.1.2 Variáveis de Ambiente</a></li>
+</ul></li>
+<li><a href="#estrutura-de-diretórios"
+id="toc-estrutura-de-diretórios">5.2 Estrutura de Diretórios</a></li>
+<li><a href="#modelos-de-dados-adicionais"
+id="toc-modelos-de-dados-adicionais">5.3 Modelos de Dados Adicionais</a>
+<ul>
+<li><a href="#schema-prisma---novas-tabelas"
+id="toc-schema-prisma---novas-tabelas">5.3.1 Schema Prisma - Novas
+Tabelas</a></li>
+</ul></li>
+</ul></li>
+<li><a href="#roadmap-de-implementação"
+id="toc-roadmap-de-implementação">6. ROADMAP DE IMPLEMENTAÇÃO</a>
+<ul>
+<li><a href="#fase-1-mvp---fundação-6-semanas"
+id="toc-fase-1-mvp---fundação-6-semanas">6.1 Fase 1: MVP - Fundação (6
+semanas)</a>
+<ul>
+<li><a href="#semana-1-2-setup-básico"
+id="toc-semana-1-2-setup-básico">Semana 1-2: Setup Básico</a></li>
+<li><a href="#semana-3-4-primeiro-agente-ia"
+id="toc-semana-3-4-primeiro-agente-ia">Semana 3-4: Primeiro Agente
+IA</a></li>
+<li><a href="#semana-5-6-notificações-para-corretores"
+id="toc-semana-5-6-notificações-para-corretores">Semana 5-6:
+Notificações para Corretores</a></li>
+</ul></li>
+<li><a href="#fase-2-inteligência-avançada-8-semanas"
+id="toc-fase-2-inteligência-avançada-8-semanas">6.2 Fase 2: Inteligência
+Avançada (8 semanas)</a>
+<ul>
+<li><a href="#semana-7-9-lead-scoring-automático"
+id="toc-semana-7-9-lead-scoring-automático">Semana 7-9: Lead Scoring
+Automático</a></li>
+<li><a href="#semana-10-12-sistema-de-recomendação"
+id="toc-semana-10-12-sistema-de-recomendação">Semana 10-12: Sistema de
+Recomendação</a></li>
+<li><a href="#semana-13-14-detector-de-oportunidades"
+id="toc-semana-13-14-detector-de-oportunidades">Semana 13-14: Detector
+de Oportunidades</a></li>
+</ul></li>
+<li><a href="#fase-3-automações-e-refinamento-6-semanas"
+id="toc-fase-3-automações-e-refinamento-6-semanas">6.3 Fase 3:
+Automações e Refinamento (6 semanas)</a>
+<ul>
+<li><a href="#semana-15-17-follow-ups-automáticos"
+id="toc-semana-15-17-follow-ups-automáticos">Semana 15-17: Follow-ups
+Automáticos</a></li>
+<li><a href="#semana-18-20-integração-completa"
+id="toc-semana-18-20-integração-completa">Semana 18-20: Integração
+Completa</a></li>
+</ul></li>
+<li><a href="#pós-lançamento-evolução-contínua"
+id="toc-pós-lançamento-evolução-contínua">6.4 Pós-Lançamento: Evolução
+Contínua</a>
+<ul>
+<li><a href="#mês-6" id="toc-mês-6">Mês 6+</a></li>
+</ul></li>
+</ul></li>
+<li><a href="#métricas-e-kpis-do-sistema"
+id="toc-métricas-e-kpis-do-sistema">7. MÉTRICAS E KPIs DO SISTEMA</a>
+<ul>
+<li><a href="#dashboard-gerencial" id="toc-dashboard-gerencial">7.1
+Dashboard Gerencial</a>
+<ul>
+<li><a href="#eficiência-da-ia" id="toc-eficiência-da-ia">7.1.1
+Eficiência da IA</a></li>
+<li><a href="#conversão-e-performance"
+id="toc-conversão-e-performance">7.1.2 Conversão e Performance</a></li>
+<li><a href="#performance-de-corretores"
+id="toc-performance-de-corretores">7.1.3 Performance de
+Corretores</a></li>
+<li><a href="#roi-e-financeiro" id="toc-roi-e-financeiro">7.1.4 ROI e
+Financeiro</a></li>
+</ul></li>
+<li><a href="#relatórios-automatizados"
+id="toc-relatórios-automatizados">7.2 Relatórios Automatizados</a>
+<ul>
+<li><a href="#diário-8h-da-manhã" id="toc-diário-8h-da-manhã">7.2.1
+Diário (8h da manhã)</a></li>
+<li><a href="#semanal-segunda-9h" id="toc-semanal-segunda-9h">7.2.2
+Semanal (Segunda, 9h)</a></li>
+<li><a href="#mensal-dia-1-10h" id="toc-mensal-dia-1-10h">7.2.3 Mensal
+(Dia 1, 10h)</a></li>
+</ul></li>
+</ul></li>
+<li><a href="#investimento-e-roi-detalhado"
+id="toc-investimento-e-roi-detalhado">8. INVESTIMENTO E ROI
+DETALHADO</a>
+<ul>
+<li><a href="#custos-operacionais-mensais"
+id="toc-custos-operacionais-mensais">8.1 Custos Operacionais Mensais</a>
+<ul>
+<li><a href="#apis-e-serviços" id="toc-apis-e-serviços">8.1.1 APIs e
+Serviços</a></li>
+<li><a href="#custos-de-implementação"
+id="toc-custos-de-implementação">8.1.2 Custos de Implementação</a></li>
+</ul></li>
+<li><a href="#análise-de-roi" id="toc-análise-de-roi">8.2 Análise de
+ROI</a>
+<ul>
+<li><a href="#cenário-base-sem-ia" id="toc-cenário-base-sem-ia">8.2.1
+Cenário Base (Sem IA)</a></li>
+<li><a href="#cenário-com-ia" id="toc-cenário-com-ia">8.2.2 Cenário Com
+IA</a></li>
+<li><a href="#comparação-roi" id="toc-comparação-roi">8.2.3 Comparação
+ROI</a></li>
+<li><a href="#projeção-anual-10-corretores"
+id="toc-projeção-anual-10-corretores">8.2.4 Projeção Anual (10
+Corretores)</a></li>
+</ul></li>
+<li><a href="#benefícios-intangíveis"
+id="toc-benefícios-intangíveis">8.3 Benefícios Intangíveis</a></li>
+</ul></li>
+<li><a href="#riscos-e-mitigações" id="toc-riscos-e-mitigações">9.
+RISCOS E MITIGAÇÕES</a>
+<ul>
+<li><a href="#riscos-técnicos" id="toc-riscos-técnicos">9.1 Riscos
+Técnicos</a>
+<ul>
+<li><a href="#indisponibilidade-da-api-claude"
+id="toc-indisponibilidade-da-api-claude">9.1.1 Indisponibilidade da API
+Claude</a></li>
+<li><a href="#custo-inesperado-de-apis"
+id="toc-custo-inesperado-de-apis">9.1.2 Custo Inesperado de
+APIs</a></li>
+<li><a href="#whatsapp-bloqueio" id="toc-whatsapp-bloqueio">9.1.3
+WhatsApp Bloqueio</a></li>
+</ul></li>
+<li><a href="#riscos-de-negócio" id="toc-riscos-de-negócio">9.2 Riscos
+de Negócio</a>
+<ul>
+<li><a href="#ia-com-respostas-inadequadas"
+id="toc-ia-com-respostas-inadequadas">9.2.1 IA com Respostas
+Inadequadas</a></li>
+<li><a href="#resistência-da-equipe"
+id="toc-resistência-da-equipe">9.2.2 Resistência da Equipe</a></li>
+<li><a href="#perda-de-toque-humano"
+id="toc-perda-de-toque-humano">9.2.3 Perda de Toque Humano</a></li>
+</ul></li>
+<li><a href="#riscos-legais-e-compliance"
+id="toc-riscos-legais-e-compliance">9.3 Riscos Legais e Compliance</a>
+<ul>
+<li><a href="#lgpd---proteção-de-dados"
+id="toc-lgpd---proteção-de-dados">9.3.1 LGPD - Proteção de
+Dados</a></li>
+<li><a href="#regulação-do-setor-imobiliário"
+id="toc-regulação-do-setor-imobiliário">9.3.2 Regulação do Setor
+Imobiliário</a></li>
+</ul></li>
+</ul></li>
+<li><a href="#considerações-finais" id="toc-considerações-finais">10.
+CONSIDERAÇÕES FINAIS</a>
+<ul>
+<li><a href="#fatores-críticos-de-sucesso"
+id="toc-fatores-críticos-de-sucesso">10.1 Fatores Críticos de
+Sucesso</a></li>
+<li><a href="#próximos-passos-recomendados"
+id="toc-próximos-passos-recomendados">10.2 Próximos Passos
+Recomendados</a>
+<ul>
+<li><a href="#imediato-esta-semana"
+id="toc-imediato-esta-semana">Imediato (Esta Semana)</a></li>
+<li><a href="#curto-prazo-próximas-2-semanas"
+id="toc-curto-prazo-próximas-2-semanas">Curto Prazo (Próximas 2
+Semanas)</a></li>
+<li><a href="#médio-prazo-2-meses" id="toc-médio-prazo-2-meses">Médio
+Prazo (2 Meses)</a></li>
+</ul></li>
+<li><a href="#conclusão" id="toc-conclusão">10.3 Conclusão</a></li>
+<li><a href="#contatos-e-suporte" id="toc-contatos-e-suporte">10.4
+Contatos e Suporte</a></li>
+</ul></li>
+<li><a href="#apêndices" id="toc-apêndices">APÊNDICES</a>
+<ul>
+<li><a href="#apêndice-a-exemplos-de-prompts"
+id="toc-apêndice-a-exemplos-de-prompts">Apêndice A: Exemplos de
+Prompts</a>
+<ul>
+<li><a href="#a.1-prompt-primeira-interação-com-lead"
+id="toc-a.1-prompt-primeira-interação-com-lead">A.1 Prompt: Primeira
+Interação com Lead</a></li>
+<li><a href="#a.2-prompt-análise-de-sentimento"
+id="toc-a.2-prompt-análise-de-sentimento">A.2 Prompt: Análise de
+Sentimento</a></li>
+</ul></li>
+<li><a href="#apêndice-b-exemplos-de-automações"
+id="toc-apêndice-b-exemplos-de-automações">Apêndice B: Exemplos de
+Automações</a>
+<ul>
+<li><a href="#b.1-follow-up-48h" id="toc-b.1-follow-up-48h">B.1
+Follow-up 48h</a></li>
+<li><a href="#b.2-alerta-lead-quente"
+id="toc-b.2-alerta-lead-quente">B.2 Alerta Lead Quente</a></li>
+</ul></li>
+<li><a href="#apêndice-c-glossário-de-termos"
+id="toc-apêndice-c-glossário-de-termos">Apêndice C: Glossário de
+Termos</a></li>
+</ul></li>
+</ul>
+</nav>
+<h1 id="sumário-executivo">1. SUMÁRIO EXECUTIVO</h1>
+<h2 id="visão-geral">1.1 Visão Geral</h2>
+<p>Este documento apresenta o planejamento completo para implementação
+de um <strong>sistema de Business Intelligence baseado em Inteligência
+Artificial</strong> que transformará a Vivoly em uma plataforma
+verdadeiramente disruptiva no mercado imobiliário.</p>
+<h2 id="objetivo-principal">1.2 Objetivo Principal</h2>
+<p>Criar um <strong>Assistente Virtual Inteligente</strong> que atua
+como:</p>
+<ol type="1">
+<li><strong>Primeiro ponto de contato</strong> com leads (WhatsApp)</li>
+<li><strong>Assistente estratégico</strong> para corretores
+(Telegram)</li>
+<li><strong>Analista de negócios</strong> identificando
+oportunidades</li>
+<li><strong>Coordenador de processos</strong> otimizando conversões</li>
+</ol>
+<h2 id="diferenciais-competitivos">1.3 Diferenciais Competitivos</h2>
+<ul>
+<li>✅ <strong>IA Conversacional Real</strong>: Não é chatbot com árvore
+de decisão</li>
+<li>✅ <strong>Análise Psicológica</strong>: Identifica padrões de
+comportamento</li>
+<li>✅ <strong>Dual-Agent</strong>: Assiste tanto clientes quanto
+corretores</li>
+<li>✅ <strong>Preditivo</strong>: Antecipa oportunidades antes da
+concorrência</li>
+<li>✅ <strong>Multi-canal</strong>: WhatsApp (clientes) + Telegram
+(time)</li>
+<li>✅ <strong>Contextual</strong>: Aprende com cada interação</li>
+<li>✅ <strong>Sempre Ativo</strong>: 24/7, respostas em segundos</li>
+</ul>
+<h2 id="roi-projetado">1.4 ROI Projetado</h2>
+<p><strong>Cenário Atual (Manual):</strong> - Corretor atende 50
+leads/mês - Taxa de conversão: 5% - Resultado: 2,5 fechamentos/mês -
+Comissão média: R$ 37.500/mês</p>
+<p><strong>Cenário Futuro (Com IA):</strong> - IA pré-qualifica 200
+leads/mês - Corretor foca em 50 leads quentes (score &gt;70) - Taxa de
+conversão: 12% - Resultado: 6 fechamentos/mês - Comissão média: R$
+90.000/mês</p>
+<p><strong>Ganho: +R$ 52.500/mês por corretor</strong></p>
+<p><strong>ROI: &gt;10.000% no primeiro mês</strong></p>
+<h1 id="análise-da-arquitetura-atual">2. ANÁLISE DA ARQUITETURA
+ATUAL</h1>
+<h2 id="pontos-fortes-identificados">2.1 Pontos Fortes
+Identificados</h2>
+<h3 id="backend-e-infraestrutura">Backend e Infraestrutura</h3>
+<ul>
+<li>✅ <strong>Backend Fastify</strong> robusto e performático</li>
+<li>✅ <strong>PostgreSQL 16</strong> como banco de dados</li>
+<li>✅ <strong>Schema Prisma</strong> bem estruturado com
+multi-tenancy</li>
+<li>✅ <strong>API RESTful</strong> documentada e versionada</li>
+</ul>
+<h3 id="modelos-de-dados">Modelos de Dados</h3>
+<ul>
+<li>✅ Sistema de <strong>Leads</strong> com score e temperatura</li>
+<li>✅ <strong>Timeline de interações</strong> já capturada (JSON)</li>
+<li>✅ Modelo de <strong>Automações</strong> configuráveis</li>
+<li>✅ Sistema de <strong>corretores</strong> com performance
+tracking</li>
+<li>✅ <strong>Negociações</strong> com status workflow completo</li>
+</ul>
+<h2 id="oportunidades-de-integração">2.2 Oportunidades de
+Integração</h2>
+<table>
+<thead>
+<tr class="header">
+<th>Campo/Modelo</th>
+<th>Utilização para IA</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>Lead.timeline</code></td>
+<td>Histórico completo de conversas para contexto</td>
+</tr>
+<tr class="even">
+<td><code>Lead.observacoes</code></td>
+<td>Notas e contexto para personalização</td>
+</tr>
+<tr class="odd">
+<td><code>Lead.score</code></td>
+<td>Alimentar decisões da IA sobre priorização</td>
+</tr>
+<tr class="even">
+<td><code>Automacao</code></td>
+<td>Triggers automáticos para ações da IA</td>
+</tr>
+<tr class="odd">
+<td><code>Negociacao.timeline</code></td>
+<td>Histórico de negociação para análise</td>
+</tr>
+<tr class="even">
+<td><code>Corretor.performance_score</code></td>
+<td>Atribuição inteligente de leads</td>
+</tr>
+</tbody>
+</table>
+<h2 id="stack-tecnológica-atual">2.3 Stack Tecnológica Atual</h2>
+<pre><code>Frontend:
+- Next.js 14
+- React 18
+- TypeScript
+- Tailwind CSS
+
+Backend:
+- Fastify 5
+- Prisma ORM
+- PostgreSQL 16
+- JWT Authentication
+
+Infraestrutura:
+- Render (hospedagem)
+- Vercel (frontend)</code></pre>
+<h1 id="arquitetura-proposta-do-sistema-bi-ia">3. ARQUITETURA PROPOSTA
+DO SISTEMA BI + IA</h1>
+<h2 id="visão-geral-da-arquitetura">3.1 Visão Geral da Arquitetura</h2>
+<pre><code>┌─────────────────────────────────────────────────────────┐
+│                   CAMADA DE CANAIS                      │
+│                                                         │
+│   WhatsApp (Clientes)    │    Telegram (Corretores)   │
+│   - WhatsApp Business    │    - Bot API Telegram      │
+│   - API Official         │    - Grupos privados       │
+│   - Webhook Receiver     │    - Notificações push     │
+└─────────────────────────────────────────────────────────┘
+                           ▼
+┌─────────────────────────────────────────────────────────┐
+│              CAMADA DE ORQUESTRAÇÃO DE IA               │
+│                                                         │
+│   ┌──────────────┐              ┌──────────────┐      │
+│   │  Claude AI   │◄────────────►│  ChatGPT-4   │      │
+│   │ (Principal)  │   Fallback   │  (Backup)    │      │
+│   └──────────────┘              └──────────────┘      │
+│          │                              │              │
+│          └────────────┬─────────────────┘              │
+│                       ▼                                │
+│          ┌────────────────────────┐                    │
+│          │   Context Manager      │                    │
+│          │  - Histórico Lead      │                    │
+│          │  - Dados Imóveis       │                    │
+│          │  - Perfil Corretor     │                    │
+│          │  - Regras de Negócio   │                    │
+│          └────────────────────────┘                    │
+└─────────────────────────────────────────────────────────┘
+                           ▼
+┌─────────────────────────────────────────────────────────┐
+│            CAMADA DE BUSINESS INTELLIGENCE              │
+│                                                         │
+│   📊 Lead Scoring Automático                           │
+│   🎯 Qualificação Inteligente                          │
+│   🔥 Detecção de Oportunidades                         │
+│   📈 Analytics Preditivo                               │
+│   💡 Recomendações Estratégicas                        │
+└─────────────────────────────────────────────────────────┘
+                           ▼
+┌─────────────────────────────────────────────────────────┐
+│                  CAMADA DE DADOS                        │
+│                                                         │
+│   PostgreSQL  │  Redis Cache  │  Message Queue         │
+└─────────────────────────────────────────────────────────┘</code></pre>
+<h2 id="componentes-principais">3.2 Componentes Principais</h2>
+<h3 id="motor-de-ia---orquestração">3.2.1 Motor de IA -
+Orquestração</h3>
+<p><strong>Claude AI (Anthropic) - Motor Principal</strong> - Análise de
+contexto profunda - Geração de respostas naturais - Raciocínio
+estratégico - Análise de sentimento</p>
+<p><strong>ChatGPT-4 (OpenAI) - Fallback</strong> - Backup em caso de
+indisponibilidade - Tarefas específicas complementares - Validação
+cruzada de decisões críticas</p>
+<p><strong>Context Manager</strong> - Gerencia histórico de conversas -
+Carrega dados relevantes do banco - Mantém estado da sessão - Otimiza
+chamadas à API</p>
+<h3 id="módulos-de-business-intelligence">3.2.2 Módulos de Business
+Intelligence</h3>
+<h4 id="lead-scoring-automático">Lead Scoring Automático</h4>
+<ul>
+<li>Análise de sentimento nas conversas (30%)</li>
+<li>Engajamento e tempo de resposta (25%)</li>
+<li>Qualificação de interesse (25%)</li>
+<li>Comportamento e ações (20%)</li>
+</ul>
+<h4 id="qualificação-inteligente">Qualificação Inteligente</h4>
+<ul>
+<li>Perguntas estratégicas contextuais</li>
+<li>Extração automática de requisitos</li>
+<li>Match com portfólio de imóveis</li>
+<li>Identificação de perfil de comprador</li>
+</ul>
+<h4 id="detecção-de-oportunidades">Detecção de Oportunidades</h4>
+<ul>
+<li>Leads “quentes” que esfriaram</li>
+<li>Momentos ideais para follow-up</li>
+<li>Padrões de comportamento de compra</li>
+<li>Cross-sell e up-sell</li>
+</ul>
+<h4 id="analytics-preditivo">Analytics Preditivo</h4>
+<ul>
+<li>Previsão de fechamento por corretor</li>
+<li>Análise de performance por região</li>
+<li>Sugestões de precificação</li>
+<li>Tendências de mercado</li>
+</ul>
+<h1 id="fluxos-de-interação-detalhados">4. FLUXOS DE INTERAÇÃO
+DETALHADOS</h1>
+<h2 id="fluxo-cliente-ia-whatsapp">4.1 Fluxo: Cliente → IA
+(WhatsApp)</h2>
+<h3 id="cenário-novo-lead---primeira-interação">4.1.1 Cenário: Novo Lead
+- Primeira Interação</h3>
+<p><strong>Passo 1: Cliente envia mensagem</strong></p>
+<pre><code>Cliente: &quot;Oi, vi um apartamento no site&quot;</code></pre>
+<p><strong>Passo 2: IA processa e responde</strong></p>
+<pre><code>IA: &quot;Olá! 😊 Que ótimo que você se interessou!
+Sou a Sofia, assistente virtual da Vivoly.
+Qual apartamento chamou sua atenção?
+Você pode me passar o código ou descrever.&quot;</code></pre>
+<p><strong>Passo 3: Sistema registra no banco</strong> - Cria Lead com
+origem=WHATSAPP - Adiciona evento na timeline: primeira_interacao -
+Define temperatura: MORNO (demonstrou interesse) - Score inicial: 40
+pontos</p>
+<p><strong>Passo 4: IA faz perguntas qualificadoras</strong></p>
+<pre><code>Cliente: &quot;É um de 2 quartos na Zona Sul&quot;
+
+IA: &quot;Perfeito! Temos opções incríveis de 2 quartos
+na Zona Sul. Para eu te ajudar melhor:
+
+1️⃣ Qual bairro te interessa mais?
+2️⃣ Qual sua faixa de investimento?
+3️⃣ É para morar ou investir?&quot;</code></pre>
+<p><strong>Passo 5: Sistema analisa e atualiza</strong> - Atualiza campo
+<code>interesse</code> no Lead - Recalcula score baseado em respostas:
++20 pontos - Busca imóveis compatíveis no banco - Se score &gt; 70:
+<strong>Notifica corretor via Telegram</strong></p>
+<h3 id="cenário-lead-qualificado---agendamento">4.1.2 Cenário: Lead
+Qualificado - Agendamento</h3>
+<p><strong>Passo 1: IA apresenta opções</strong></p>
+<pre><code>IA: &quot;Encontrei 3 opções perfeitas para você! 🏠
+
+📍 Apto Botafogo - R$ 850.000
+   2 quartos, 1 vaga, 65m²
+   Vista mar, piscina, próximo ao metrô
+
+📍 Apto Flamengo - R$ 920.000
+   2 quartos, 1 vaga, 72m²
+   Reformado, varanda gourmet
+
+📍 Apto Laranjeiras - R$ 780.000
+   2 quartos, sem vaga, 58m²
+   Prédio com portaria 24h
+
+Qual desses você gostaria de conhecer?&quot;</code></pre>
+<p><strong>Passo 2: Cliente demonstra interesse</strong></p>
+<pre><code>Cliente: &quot;O de Botafogo parece bom&quot;</code></pre>
+<p><strong>Passo 3: IA agenda visita</strong></p>
+<pre><code>IA: &quot;Excelente escolha!
+Que tal agendar uma visita? Você prefere:
+
+📅 Amanhã às 10h
+📅 Quarta às 15h
+📅 Sábado às 9h&quot;</code></pre>
+<p><strong>Passo 4: Sistema automatiza</strong> - Cria
+<code>Negociacao</code> com status=VISITA_AGENDADA - Notifica corretor
+responsável via Telegram - Adiciona evento ao Google Calendar - Agenda
+lembretes (24h e 2h antes) - Score atualizado: +25 pontos (total: 85) -
+Temperatura: QUENTE 🔥</p>
+<h2 id="fluxo-ia-corretor-telegram">4.2 Fluxo: IA → Corretor
+(Telegram)</h2>
+<h3 id="notificação-de-lead-quente">4.2.1 Notificação de Lead
+Quente</h3>
+<pre class="telegram"><code>🔥 LEAD QUENTE - Ação Imediata Necessária
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+👤 DADOS DO LEAD
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Nome: Maria Silva
+📱 Telefone: (21) 98765-4321
+📊 Score: 85/100 🔥
+🌡️ Temperatura: QUENTE
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+💼 INTERESSE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🏠 Tipo: Apartamento 2Q
+📍 Região: Zona Sul (Botafogo/Flamengo)
+💰 Budget: R$ 850k - R$ 950k
+🎯 Finalidade: Moradia própria
+⏰ Urgência: Alta (mudança em 60 dias)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+📋 INSIGHTS DA IA
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+✅ Está vendendo imóvel atual
+✅ Aprovação de crédito em andamento
+✅ Quer visitar ainda esta semana
+⚠️ Mencionou concorrente (QuintoAndar)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🏘️ IMÓVEIS SUGERIDOS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+1️⃣ #BOT-2847 - R$ 850k (98% match)
+   Botafogo, 2Q, 65m², vista mar
+
+2️⃣ #FLA-1923 - R$ 920k (95% match)
+   Flamengo, 2Q, 72m², reformado
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🎯 AÇÕES RECOMENDADAS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+1. Ligar nos próximos 30 minutos
+2. Destacar diferenciais vs concorrência
+3. Oferecer visita hoje/amanhã
+4. Enfatizar valorização da região
+
+[Assumir Lead] [Ver Histórico] [Agendar]</code></pre>
+<h3 id="dashboard-diário-do-corretor">4.2.2 Dashboard Diário do
+Corretor</h3>
+<pre class="telegram"><code>☀️ Bom dia, João! Seu briefing de 18/12/2024
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+📊 PIPELINE ATUAL
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+📅 3 visitas agendadas hoje
+📝 2 propostas aguardando resposta
+📞 5 leads para follow-up
+💰 R$ 3.2M em negociações ativas
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🎯 PRIORIDADES DE HOJE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+1. 🔥 Maria Silva - Visita 10h (Lead quente)
+   Score: 85 | #BOT-2847
+
+2. ⚠️ Pedro Santos - Proposta vence 18h
+   R$ 780k | Precisa resposta urgente
+
+3. 🧊 Ana Costa - 3 dias sem contato
+   Score caiu 72→58 | Risco de perder
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+💡 INSIGHTS DA IA
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+📈 Lead &quot;Carlos Mendes&quot; reengajou
+   → Abriu email #BOT-2847 3x ontem
+   → Recomendação: Ligar hoje
+
+💰 Imóvel #COP-4521 acima da média
+   → Preço atual: R$ 1.35M
+   → Sugestão: Ajustar para R$ 1.2M
+   → Potencial: +40% chance de venda
+
+🎖️ Você está 15% acima da meta
+   → Continue assim! 🚀
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+📈 PERFORMANCE MENSAL
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+├─ 12 negociações ativas
+├─ Meta: 67% atingida (R$ 201k/300k)
+├─ Previsão IA: 3 fechamentos esta semana
+└─ Projeção de meta: 95% até fim do mês
+
+[Ver Detalhes] [Ajustar Agenda] [Feedback]</code></pre>
+<h2 id="análise-psicológica-e-estratégica">4.3 Análise Psicológica e
+Estratégica</h2>
+<h3 id="análise-de-sentimento-em-tempo-real">4.3.1 Análise de Sentimento
+em Tempo Real</h3>
+<p>A IA analisa cada mensagem identificando:</p>
+<p><strong>Exemplo de Processamento:</strong></p>
+<div class="sourceCode" id="cb11"><pre
+class="sourceCode json"><code class="sourceCode json"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">{</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;mensagem_cliente&quot;</span><span class="fu">:</span> <span class="st">&quot;Gostei, mas acho caro...&quot;</span><span class="fu">,</span></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;analise&quot;</span><span class="fu">:</span> <span class="fu">{</span></span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;sentimento_geral&quot;</span><span class="fu">:</span> <span class="st">&quot;interessado_com_objecao&quot;</span><span class="fu">,</span></span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;nivel_interesse&quot;</span><span class="fu">:</span> <span class="fl">7.5</span><span class="fu">,</span></span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;nivel_urgencia&quot;</span><span class="fu">:</span> <span class="fl">5.0</span><span class="fu">,</span></span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;objecao_principal&quot;</span><span class="fu">:</span> <span class="st">&quot;preco&quot;</span><span class="fu">,</span></span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;poder_compra&quot;</span><span class="fu">:</span> <span class="st">&quot;verificar_budget&quot;</span><span class="fu">,</span></span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;probabilidade_fechamento&quot;</span><span class="fu">:</span> <span class="dv">65</span></span>
+<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">},</span></span>
+<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;estrategia_sugerida&quot;</span><span class="fu">:</span> <span class="fu">{</span></span>
+<span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;abordagem&quot;</span><span class="fu">:</span> <span class="st">&quot;mostrar_roi_e_comparativos&quot;</span><span class="fu">,</span></span>
+<span id="cb11-13"><a href="#cb11-13" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;proxima_acao&quot;</span><span class="fu">:</span> <span class="st">&quot;enviar_analise_mercado&quot;</span><span class="fu">,</span></span>
+<span id="cb11-14"><a href="#cb11-14" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;script_corretor&quot;</span><span class="fu">:</span> <span class="st">&quot;Mostre valorização histórica</span></span>
+<span id="cb11-15"><a href="#cb11-15" aria-hidden="true" tabindex="-1"></a><span class="st">    da região e compare com opções similares.</span></span>
+<span id="cb11-16"><a href="#cb11-16" aria-hidden="true" tabindex="-1"></a><span class="st">    Destaque economia a longo prazo.&quot;</span></span>
+<span id="cb11-17"><a href="#cb11-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">}</span></span>
+<span id="cb11-18"><a href="#cb11-18" aria-hidden="true" tabindex="-1"></a><span class="fu">}</span></span></code></pre></div>
+<h3 id="gatilhos-psicológicos-detectados">4.3.2 Gatilhos Psicológicos
+Detectados</h3>
+<table>
+<colgroup>
+<col style="width: 31%" />
+<col style="width: 31%" />
+<col style="width: 37%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Gatilho</th>
+<th>Exemplo</th>
+<th>Ação da IA</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Escassez</strong></td>
+<td>“Procuro há meses”</td>
+<td>Destacar exclusividade do imóvel</td>
+</tr>
+<tr class="even">
+<td><strong>Urgência</strong></td>
+<td>“Preciso mudar logo”</td>
+<td>Priorizar agendamento rápido</td>
+</tr>
+<tr class="odd">
+<td><strong>Prova Social</strong></td>
+<td>“Vi que tem muita procura”</td>
+<td>Informar interesse de outros clientes</td>
+</tr>
+<tr class="even">
+<td><strong>Autoridade</strong></td>
+<td>“Quero um bom investimento”</td>
+<td>Dados de valorização e ROI</td>
+</tr>
+<tr class="odd">
+<td><strong>Reciprocidade</strong></td>
+<td>“Obrigado pela atenção”</td>
+<td>Oferecer tour virtual exclusivo</td>
+</tr>
+</tbody>
+</table>
+<h3 id="momentos-para-intervenção-humana">4.3.3 Momentos para
+Intervenção Humana</h3>
+<p>A IA detecta e transfere para corretor quando:</p>
+<ol type="1">
+<li>✅ Cliente menciona concorrente direto</li>
+<li>✅ Objeção de preço acima de 15%</li>
+<li>✅ Solicitação explícita de desconto</li>
+<li>✅ Dúvidas técnicas complexas (estrutura, documentação)</li>
+<li>✅ Menção de prazo extremamente apertado</li>
+<li>✅ Proposta formal de negociação</li>
+<li>✅ Score atinge 85+ (altíssima probabilidade)</li>
+</ol>
+<h1 id="implementação-técnica">5. IMPLEMENTAÇÃO TÉCNICA</h1>
+<h2 id="stack-tecnológica-adicional">5.1 Stack Tecnológica
+Adicional</h2>
+<h3 id="novos-pacotes-npm">5.1.1 Novos Pacotes NPM</h3>
+<div class="sourceCode" id="cb12"><pre
+class="sourceCode json"><code class="sourceCode json"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">{</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;dependencies&quot;</span><span class="fu">:</span> <span class="fu">{</span></span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;@anthropic-ai/sdk&quot;</span><span class="fu">:</span> <span class="st">&quot;^0.10.0&quot;</span><span class="fu">,</span></span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;openai&quot;</span><span class="fu">:</span> <span class="st">&quot;^4.20.0&quot;</span><span class="fu">,</span></span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;whatsapp-web.js&quot;</span><span class="fu">:</span> <span class="st">&quot;^1.23.0&quot;</span><span class="fu">,</span></span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;node-telegram-bot-api&quot;</span><span class="fu">:</span> <span class="st">&quot;^0.64.0&quot;</span><span class="fu">,</span></span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;bull&quot;</span><span class="fu">:</span> <span class="st">&quot;^4.12.0&quot;</span><span class="fu">,</span></span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;ioredis&quot;</span><span class="fu">:</span> <span class="st">&quot;^5.3.0&quot;</span><span class="fu">,</span></span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;langchain&quot;</span><span class="fu">:</span> <span class="st">&quot;^0.1.0&quot;</span><span class="fu">,</span></span>
+<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;@langchain/anthropic&quot;</span><span class="fu">:</span> <span class="st">&quot;^0.1.0&quot;</span><span class="fu">,</span></span>
+<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;@langchain/openai&quot;</span><span class="fu">:</span> <span class="st">&quot;^0.0.14&quot;</span></span>
+<span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">}</span></span>
+<span id="cb12-13"><a href="#cb12-13" aria-hidden="true" tabindex="-1"></a><span class="fu">}</span></span></code></pre></div>
+<h3 id="variáveis-de-ambiente">5.1.2 Variáveis de Ambiente</h3>
+<div class="sourceCode" id="cb13"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="co"># IA APIs</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="va">ANTHROPIC_API_KEY</span><span class="op">=</span>sk-ant-xxx</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a><span class="va">OPENAI_API_KEY</span><span class="op">=</span>sk-xxx</span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a><span class="co"># WhatsApp</span></span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a><span class="va">WHATSAPP_SESSION_PATH</span><span class="op">=</span>/tmp/whatsapp-session</span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a><span class="va">WHATSAPP_WEBHOOK_URL</span><span class="op">=</span>https://api.vivoly.com/webhooks/whatsapp</span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Telegram</span></span>
+<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a><span class="va">TELEGRAM_BOT_TOKEN</span><span class="op">=</span>123456:ABC-DEF...</span>
+<span id="cb13-11"><a href="#cb13-11" aria-hidden="true" tabindex="-1"></a><span class="va">TELEGRAM_WEBHOOK_URL</span><span class="op">=</span>https://api.vivoly.com/webhooks/telegram</span>
+<span id="cb13-12"><a href="#cb13-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-13"><a href="#cb13-13" aria-hidden="true" tabindex="-1"></a><span class="co"># Redis</span></span>
+<span id="cb13-14"><a href="#cb13-14" aria-hidden="true" tabindex="-1"></a><span class="va">REDIS_URL</span><span class="op">=</span>redis://localhost:6379</span>
+<span id="cb13-15"><a href="#cb13-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-16"><a href="#cb13-16" aria-hidden="true" tabindex="-1"></a><span class="co"># Feature Flags</span></span>
+<span id="cb13-17"><a href="#cb13-17" aria-hidden="true" tabindex="-1"></a><span class="va">ENABLE_AI_RESPONSES</span><span class="op">=</span>true</span>
+<span id="cb13-18"><a href="#cb13-18" aria-hidden="true" tabindex="-1"></a><span class="va">ENABLE_AUTO_ASSIGNMENT</span><span class="op">=</span>true</span>
+<span id="cb13-19"><a href="#cb13-19" aria-hidden="true" tabindex="-1"></a><span class="va">AI_CONFIDENCE_THRESHOLD</span><span class="op">=</span>0.75</span></code></pre></div>
+<h2 id="estrutura-de-diretórios">5.2 Estrutura de Diretórios</h2>
+<pre><code>apps/api/src/
+├── ai/
+│   ├── agents/
+│   │   ├── lead-qualifier.agent.ts
+│   │   ├── negotiation-assistant.agent.ts
+│   │   ├── broker-advisor.agent.ts
+│   │   └── opportunity-detector.agent.ts
+│   ├── prompts/
+│   │   ├── lead-first-contact.prompt.ts
+│   │   ├── lead-qualification.prompt.ts
+│   │   ├── property-recommendation.prompt.ts
+│   │   ├── objection-handler.prompt.ts
+│   │   └── broker-briefing.prompt.ts
+│   ├── context/
+│   │   ├── context-builder.ts
+│   │   ├── memory-manager.ts
+│   │   └── conversation-history.ts
+│   └── services/
+│       ├── claude.service.ts
+│       ├── openai.service.ts
+│       ├── ai-router.service.ts
+│       └── prompt-optimizer.service.ts
+├── messaging/
+│   ├── whatsapp/
+│   │   ├── whatsapp.service.ts
+│   │   ├── webhook.handler.ts
+│   │   ├── message.formatter.ts
+│   │   └── media.handler.ts
+│   ├── telegram/
+│   │   ├── telegram.service.ts
+│   │   ├── bot.commands.ts
+│   │   ├── keyboard.builder.ts
+│   │   └── notification.service.ts
+│   └── queue/
+│       ├── message.queue.ts
+│       ├── processors/
+│       │   ├── lead-message.processor.ts
+│       │   └── broker-notification.processor.ts
+│       └── jobs/
+│           ├── follow-up.job.ts
+│           └── opportunity-alert.job.ts
+├── analytics/
+│   ├── lead-scoring.service.ts
+│   ├── sentiment-analysis.service.ts
+│   ├── opportunity-detector.service.ts
+│   ├── predictive-analytics.service.ts
+│   └── performance-tracker.service.ts
+├── integrations/
+│   ├── calendar.service.ts
+│   ├── crm-sync.service.ts
+│   └── webhook-manager.service.ts
+└── routes/
+    ├── ai.routes.ts
+    ├── webhooks.routes.ts
+    └── analytics.routes.ts</code></pre>
+<h2 id="modelos-de-dados-adicionais">5.3 Modelos de Dados
+Adicionais</h2>
+<h3 id="schema-prisma---novas-tabelas">5.3.1 Schema Prisma - Novas
+Tabelas</h3>
+<pre class="prisma"><code>// Conversas com IA
+model ConversaIA {
+  id                String    @id @default(uuid())
+  tenant_id         String
+  tenant            Tenant    @relation(fields: [tenant_id], references: [id])
+
+  lead_id           String?
+  lead              Lead?     @relation(fields: [lead_id], references: [id])
+
+  canal             String    // whatsapp, telegram, web
+  mensagens         Json[]    // histórico completo
+
+  // Análise
+  sentimento_medio  Decimal   @db.Decimal(3, 2)
+  score_final       Int
+  temperatura_final String
+
+  // Métricas
+  total_mensagens   Int       @default(0)
+  duracao_minutos   Int?
+
+  created_at        DateTime  @default(now())
+  updated_at        DateTime  @updatedAt
+
+  @@map(&quot;conversas_ia&quot;)
+  @@index([tenant_id])
+  @@index([lead_id])
+  @@index([canal])
+}
+
+// Automações com IA
+model AutomacaoIA {
+  id                String    @id @default(uuid())
+  tenant_id         String
+  tenant            Tenant    @relation(fields: [tenant_id], references: [id])
+
+  nome              String
+  tipo              TipoAutomacaoIA
+
+  // Configuração
+  condicoes         Json      // Quando executar
+  acoes             Json      // O que fazer
+  prompt_ia         String    @db.Text
+
+  // Estado
+  ativo             Boolean   @default(true)
+
+  // Métricas
+  total_execucoes   Int       @default(0)
+  taxa_sucesso      Decimal   @db.Decimal(5, 2)
+  ultima_execucao   DateTime?
+
+  created_at        DateTime  @default(now())
+  updated_at        DateTime  @updatedAt
+
+  @@map(&quot;automacoes_ia&quot;)
+  @@index([tenant_id])
+  @@index([tipo])
+  @@index([ativo])
+}
+
+enum TipoAutomacaoIA {
+  QUALIFICACAO_LEAD
+  FOLLOW_UP_AUTOMATICO
+  RECOMENDACAO_IMOVEL
+  ALERTA_OPORTUNIDADE
+  ANALISE_SENTIMENTO
+  PREVISAO_FECHAMENTO
+}
+
+// Oportunidades Detectadas
+model Oportunidade {
+  id                String    @id @default(uuid())
+  tenant_id         String
+  tenant            Tenant    @relation(fields: [tenant_id], references: [id])
+
+  tipo              TipoOportunidade
+  prioridade        Prioridade
+
+  // Relacionamentos
+  lead_id           String?
+  lead              Lead?     @relation(fields: [lead_id], references: [id])
+
+  negociacao_id     String?
+  negociacao        Negociacao? @relation(fields: [negociacao_id], references: [id])
+
+  imovel_id         String?
+  imovel            Imovel?   @relation(fields: [imovel_id], references: [id])
+
+  // Insights da IA
+  descricao         String    @db.Text
+  acao_sugerida     String    @db.Text
+  script_sugerido   String?   @db.Text
+  match_score       Int?
+
+  // Estado
+  status            StatusOportunidade @default(ABERTA)
+  atribuida_a       String?
+
+  created_at        DateTime  @default(now())
+  updated_at        DateTime  @updatedAt
+  fechada_em        DateTime?
+
+  @@map(&quot;oportunidades&quot;)
+  @@index([tenant_id])
+  @@index([tipo])
+  @@index([prioridade])
+  @@index([status])
+}
+
+enum TipoOportunidade {
+  REATIVACAO
+  NOVO_MATCH
+  DESTRAVAMENTO
+  CROSS_SELL
+  UP_SELL
+  FOLLOW_UP_URGENTE
+}
+
+enum Prioridade {
+  BAIXA
+  MEDIA
+  ALTA
+  CRITICA
+}
+
+enum StatusOportunidade {
+  ABERTA
+  EM_ANDAMENTO
+  CONCLUIDA
+  DESCARTADA
+}
+
+// Métricas de IA
+model MetricaIA {
+  id                    String    @id @default(uuid())
+  tenant_id             String
+  tenant                Tenant    @relation(fields: [tenant_id], references: [id])
+
+  data                  DateTime  @default(now())
+  periodo               String    // daily, weekly, monthly
+
+  // Eficiência da IA
+  total_mensagens       Int       @default(0)
+  taxa_resposta_ia      Decimal   @db.Decimal(5, 2)
+  taxa_qualificacao     Decimal   @db.Decimal(5, 2)
+  tempo_medio_qualif    Int       // minutos
+
+  // Conversão
+  leads_qualificados    Int       @default(0)
+  leads_convertidos     Int       @default(0)
+  taxa_conversao        Decimal   @db.Decimal(5, 2)
+
+  // Performance
+  acuracia_score        Decimal   @db.Decimal(5, 2)
+  acuracia_previsao     Decimal   @db.Decimal(5, 2)
+  oportunidades_detect  Int       @default(0)
+
+  // Custos
+  custo_api_claude      Decimal   @db.Decimal(10, 2)
+  custo_api_openai      Decimal   @db.Decimal(10, 2)
+
+  created_at            DateTime  @default(now())
+
+  @@map(&quot;metricas_ia&quot;)
+  @@index([tenant_id])
+  @@index([data])
+  @@index([periodo])
+}</code></pre>
+<h1 id="roadmap-de-implementação">6. ROADMAP DE IMPLEMENTAÇÃO</h1>
+<h2 id="fase-1-mvp---fundação-6-semanas">6.1 Fase 1: MVP - Fundação (6
+semanas)</h2>
+<h3 id="semana-1-2-setup-básico">Semana 1-2: Setup Básico</h3>
+<p><strong>Objetivos:</strong> - ✅ Configurar APIs Claude e OpenAI - ✅
+Implementar integração WhatsApp básica - ✅ Implementar integração
+Telegram básica - ✅ Criar estrutura de pastas e arquitetura</p>
+<p><strong>Entregas:</strong> 1. Conexão com WhatsApp funcionando 2. Bot
+Telegram respondendo comandos básicos 3. Primeira chamada à API Claude
+funcionando 4. Estrutura de código organizada</p>
+<p><strong>Critérios de Sucesso:</strong> - ✅ IA consegue receber e
+responder mensagens - ✅ Mensagens são salvas no banco de dados - ✅
+Timeline do Lead é atualizada</p>
+<h3 id="semana-3-4-primeiro-agente-ia">Semana 3-4: Primeiro Agente
+IA</h3>
+<p><strong>Objetivos:</strong> - ✅ Implementar agente “Qualificador de
+Leads” - ✅ Sistema de contexto e memória - ✅ Prompts otimizados para
+primeira interação</p>
+<p><strong>Entregas:</strong> 1. Agente capaz de conversar naturalmente
+2. Sistema de contexto carregando dados do banco 3. Atualização
+automática de score do lead 4. Identificação de temperatura
+(FRIO/MORNO/QUENTE)</p>
+<p><strong>Critérios de Sucesso:</strong> - ✅ Conversas naturais sem
+respostas robóticas - ✅ IA identifica corretamente interesse do cliente
+- ✅ Score reflete realidade (validado manualmente)</p>
+<h3 id="semana-5-6-notificações-para-corretores">Semana 5-6:
+Notificações para Corretores</h3>
+<p><strong>Objetivos:</strong> - ✅ Sistema de notificações Telegram -
+✅ Dashboards básicos para corretores - ✅ Atribuição automática de
+leads</p>
+<p><strong>Entregas:</strong> 1. Notificações em tempo real via Telegram
+2. Dashboard diário automatizado 3. Sistema de atribuição baseado em
+performance 4. Comandos Telegram para corretores</p>
+<p><strong>Critérios de Sucesso:</strong> - ✅ Corretores recebem leads
+quentes em &lt; 1 minuto - ✅ Dashboard matinal enviado todo dia às 8h -
+✅ Leads distribuídos equitativamente</p>
+<h2 id="fase-2-inteligência-avançada-8-semanas">6.2 Fase 2: Inteligência
+Avançada (8 semanas)</h2>
+<h3 id="semana-7-9-lead-scoring-automático">Semana 7-9: Lead Scoring
+Automático</h3>
+<p><strong>Objetivos:</strong> - ✅ Algoritmo de scoring preditivo - ✅
+Análise de sentimento avançada - ✅ Identificação de padrões de
+comportamento</p>
+<p><strong>Entregas:</strong> 1. Score calculado em tempo real 2.
+Análise de sentimento em cada mensagem 3. Identificação de urgência e
+poder de compra 4. Relatório de acurácia do score</p>
+<p><strong>KPIs:</strong> - Acurácia do score: &gt; 80% - Tempo de
+processamento: &lt; 2 segundos - Falsos positivos: &lt; 15%</p>
+<h3 id="semana-10-12-sistema-de-recomendação">Semana 10-12: Sistema de
+Recomendação</h3>
+<p><strong>Objetivos:</strong> - ✅ Match inteligente Lead x Imóvel - ✅
+Recomendações personalizadas - ✅ Análise de preferências</p>
+<p><strong>Entregas:</strong> 1. Algoritmo de matching com score 2.
+Recomendações automáticas via WhatsApp 3. Sistema de feedback (cliente
+gostou/não gostou) 4. Aprendizado com interações</p>
+<p><strong>KPIs:</strong> - Taxa de interesse nas recomendações: &gt;
+40% - Match score médio: &gt; 75% - Conversão recomendação → visita:
+&gt; 25%</p>
+<h3 id="semana-13-14-detector-de-oportunidades">Semana 13-14: Detector
+de Oportunidades</h3>
+<p><strong>Objetivos:</strong> - ✅ Identificação automática de
+oportunidades - ✅ Leads frios com potencial de reativação - ✅
+Negociações travadas</p>
+<p><strong>Entregas:</strong> 1. Dashboard de oportunidades 2. Alertas
+proativos para corretores 3. Scripts de reengajamento gerados por IA 4.
+Tracking de resultados</p>
+<p><strong>KPIs:</strong> - Oportunidades detectadas por dia: &gt; 10 -
+Taxa de reativação: &gt; 30% - ROI do módulo: &gt; 500%</p>
+<h2 id="fase-3-automações-e-refinamento-6-semanas">6.3 Fase 3:
+Automações e Refinamento (6 semanas)</h2>
+<h3 id="semana-15-17-follow-ups-automáticos">Semana 15-17: Follow-ups
+Automáticos</h3>
+<p><strong>Objetivos:</strong> - ✅ Sistema de follow-up inteligente -
+✅ Contexto personalizado - ✅ Timing otimizado</p>
+<p><strong>Entregas:</strong> 1. Follow-ups automáticos 24h, 48h, 7 dias
+2. Mensagens personalizadas por contexto 3. A/B testing de abordagens 4.
+Opt-out respeitado</p>
+<p><strong>KPIs:</strong> - Taxa de resposta aos follow-ups: &gt; 35% -
+Reativações por semana: &gt; 5 - Satisfação dos leads: &gt; 4.0/5.0</p>
+<h3 id="semana-18-20-integração-completa">Semana 18-20: Integração
+Completa</h3>
+<p><strong>Objetivos:</strong> - ✅ Integração com Google Calendar - ✅
+Lembretes automáticos - ✅ Sync com CRM</p>
+<p><strong>Entregas:</strong> 1. Agendamentos sincronizados 2. Lembretes
+por WhatsApp/Telegram 3. Dados sincronizados em tempo real 4. API
+webhooks para integrações futuras</p>
+<p><strong>KPIs:</strong> - Zero conflitos de agenda - Taxa de
+comparecimento: &gt; 85% - Sincronização: 100% em tempo real</p>
+<h2 id="pós-lançamento-evolução-contínua">6.4 Pós-Lançamento: Evolução
+Contínua</h2>
+<h3 id="mês-6">Mês 6+</h3>
+<p><strong>Roadmap Futuro:</strong></p>
+<ol type="1">
+<li><strong>Machine Learning para Scoring</strong>
+<ul>
+<li>Modelo treinado com dados históricos</li>
+<li>Predição de fechamento com 90%+ acurácia</li>
+</ul></li>
+<li><strong>Análise de Voz</strong>
+<ul>
+<li>Transcrição de chamadas</li>
+<li>Análise de sentimento por voz</li>
+<li>Coaching automático para corretores</li>
+</ul></li>
+<li><strong>Email Intelligence</strong>
+<ul>
+<li>Respostas automáticas inteligentes</li>
+<li>Análise de emails de clientes</li>
+<li>Newsletter personalizada</li>
+</ul></li>
+<li><strong>Portal do Cliente com IA</strong>
+<ul>
+<li>Chat web com IA</li>
+<li>Busca inteligente de imóveis</li>
+<li>Simulador de financiamento</li>
+</ul></li>
+<li><strong>App Mobile para Corretores</strong>
+<ul>
+<li>Push notifications inteligentes</li>
+<li>CRM mobile completo</li>
+<li>IA no bolso</li>
+</ul></li>
+</ol>
+<h1 id="métricas-e-kpis-do-sistema">7. MÉTRICAS E KPIs DO SISTEMA</h1>
+<h2 id="dashboard-gerencial">7.1 Dashboard Gerencial</h2>
+<h3 id="eficiência-da-ia">7.1.1 Eficiência da IA</h3>
+<table>
+<colgroup>
+<col style="width: 34%" />
+<col style="width: 23%" />
+<col style="width: 42%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Métrica</th>
+<th>Meta</th>
+<th>Descrição</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Taxa de Resposta IA</strong></td>
+<td>&gt; 90%</td>
+<td>% de mensagens respondidas sem intervenção humana</td>
+</tr>
+<tr class="even">
+<td><strong>Taxa de Qualificação</strong></td>
+<td>&gt; 70%</td>
+<td>% de leads qualificados pela IA</td>
+</tr>
+<tr class="odd">
+<td><strong>Tempo Médio de Qualificação</strong></td>
+<td>&lt; 15 min</td>
+<td>Tempo até lead estar qualificado</td>
+</tr>
+<tr class="even">
+<td><strong>Acurácia do Score</strong></td>
+<td>&gt; 80%</td>
+<td>% de scores que refletem conversão real</td>
+</tr>
+<tr class="odd">
+<td><strong>Satisfação do Lead</strong></td>
+<td>&gt; 4.0/5</td>
+<td>NPS da interação com IA</td>
+</tr>
+</tbody>
+</table>
+<h3 id="conversão-e-performance">7.1.2 Conversão e Performance</h3>
+<table>
+<colgroup>
+<col style="width: 34%" />
+<col style="width: 23%" />
+<col style="width: 42%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Métrica</th>
+<th>Meta</th>
+<th>Descrição</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Taxa Conversão IA → Corretor</strong></td>
+<td>&gt; 15%</td>
+<td>% leads da IA que viram negociação</td>
+</tr>
+<tr class="even">
+<td><strong>Taxa de Agendamento</strong></td>
+<td>&gt; 40%</td>
+<td>% leads qualificados que agendam visita</td>
+</tr>
+<tr class="odd">
+<td><strong>Taxa de Comparecimento</strong></td>
+<td>&gt; 85%</td>
+<td>% de visitas agendadas realizadas</td>
+</tr>
+<tr class="even">
+<td><strong>Taxa de Fechamento</strong></td>
+<td>&gt; 12%</td>
+<td>% de negociações que fecham</td>
+</tr>
+<tr class="odd">
+<td><strong>Ciclo de Venda</strong></td>
+<td>&lt; 45 dias</td>
+<td>Tempo médio até fechamento</td>
+</tr>
+</tbody>
+</table>
+<h3 id="performance-de-corretores">7.1.3 Performance de Corretores</h3>
+<table>
+<colgroup>
+<col style="width: 34%" />
+<col style="width: 23%" />
+<col style="width: 42%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Métrica</th>
+<th>Meta</th>
+<th>Descrição</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Tempo de Resposta</strong></td>
+<td>&lt; 30 min</td>
+<td>Tempo até corretor assumir lead quente</td>
+</tr>
+<tr class="even">
+<td><strong>Taxa de Aproveitamento</strong></td>
+<td>&gt; 25%</td>
+<td>% leads quentes convertidos pelo corretor</td>
+</tr>
+<tr class="odd">
+<td><strong>Leads Atendidos/Mês</strong></td>
+<td>&gt; 50</td>
+<td>Quantidade de leads por corretor</td>
+</tr>
+<tr class="even">
+<td><strong>Satisfação Cliente</strong></td>
+<td>&gt; 4.5/5</td>
+<td>NPS do atendimento do corretor</td>
+</tr>
+<tr class="odd">
+<td><strong>Meta Atingida</strong></td>
+<td>&gt; 90%</td>
+<td>% da meta mensal atingida</td>
+</tr>
+</tbody>
+</table>
+<h3 id="roi-e-financeiro">7.1.4 ROI e Financeiro</h3>
+<table>
+<thead>
+<tr class="header">
+<th>Métrica</th>
+<th>Meta</th>
+<th>Descrição</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Custo por Lead Qualificado</strong></td>
+<td>&lt; R$ 50</td>
+<td>CAC com IA</td>
+</tr>
+<tr class="even">
+<td><strong>Tempo Economizado</strong></td>
+<td>&gt; 20h/sem</td>
+<td>Horas economizadas por corretor</td>
+</tr>
+<tr class="odd">
+<td><strong>Aumento de Conversão</strong></td>
+<td>&gt; 140%</td>
+<td>% aumento vs período anterior</td>
+</tr>
+<tr class="even">
+<td><strong>Receita por Corretor</strong></td>
+<td>&gt; R$ 90k/mês</td>
+<td>Comissões mensais</td>
+</tr>
+<tr class="odd">
+<td><strong>ROI do Sistema</strong></td>
+<td>&gt; 1000%</td>
+<td>Retorno sobre investimento em IA</td>
+</tr>
+</tbody>
+</table>
+<h2 id="relatórios-automatizados">7.2 Relatórios Automatizados</h2>
+<h3 id="diário-8h-da-manhã">7.2.1 Diário (8h da manhã)</h3>
+<p><strong>Para Corretores:</strong> - Briefing do dia - Prioridades
+(top 3) - Insights de oportunidades - Previsão de conversões</p>
+<p><strong>Para Gestores:</strong> - Performance do time - Leads
+qualificados (últimas 24h) - Oportunidades críticas - Alertas de
+risco</p>
+<h3 id="semanal-segunda-9h">7.2.2 Semanal (Segunda, 9h)</h3>
+<p><strong>Para Corretores:</strong> - Performance da semana anterior -
+Ranking no time - Metas da semana - Treinamentos sugeridos</p>
+<p><strong>Para Gestores:</strong> - Funil de vendas - Taxa de conversão
+por etapa - Performance por corretor - Análise de perdas</p>
+<h3 id="mensal-dia-1-10h">7.2.3 Mensal (Dia 1, 10h)</h3>
+<p><strong>Para Corretores:</strong> - Resultado do mês - Comissões
+ganhas - Comparativo com meta - Plano para próximo mês</p>
+<p><strong>Para Gestores:</strong> - ROI do sistema de IA - Performance
+geral - Benchmarks de mercado - Sugestões estratégicas</p>
+<h1 id="investimento-e-roi-detalhado">8. INVESTIMENTO E ROI
+DETALHADO</h1>
+<h2 id="custos-operacionais-mensais">8.1 Custos Operacionais
+Mensais</h2>
+<h3 id="apis-e-serviços">8.1.1 APIs e Serviços</h3>
+<table>
+<thead>
+<tr class="header">
+<th>Item</th>
+<th>Custo Mensal</th>
+<th>Observações</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>API Claude (Anthropic)</td>
+<td>$150 - $300</td>
+<td>Uso moderado, ~1M tokens</td>
+</tr>
+<tr class="even">
+<td>API OpenAI (Fallback)</td>
+<td>$100</td>
+<td>Backup e tarefas específicas</td>
+</tr>
+<tr class="odd">
+<td>WhatsApp Business API</td>
+<td>$0 - $50</td>
+<td>Gratuito até volume alto</td>
+</tr>
+<tr class="even">
+<td>Telegram Bot API</td>
+<td>$0</td>
+<td>Completamente gratuito</td>
+</tr>
+<tr class="odd">
+<td>Redis Cloud</td>
+<td>$15 - $30</td>
+<td>Cache e filas</td>
+</tr>
+<tr class="even">
+<td>Servidor adicional</td>
+<td>$50 - $100</td>
+<td>Worker para processamento</td>
+</tr>
+<tr class="odd">
+<td><strong>TOTAL</strong></td>
+<td><strong>$315 - $530</strong></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h3 id="custos-de-implementação">8.1.2 Custos de Implementação</h3>
+<table>
+<thead>
+<tr class="header">
+<th>Fase</th>
+<th>Duração</th>
+<th>Custo Estimado</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Fase 1: MVP</td>
+<td>6 semanas</td>
+<td>Desenvolvimento interno</td>
+</tr>
+<tr class="even">
+<td>Fase 2: Inteligência</td>
+<td>8 semanas</td>
+<td>Desenvolvimento interno</td>
+</tr>
+<tr class="odd">
+<td>Fase 3: Automações</td>
+<td>6 semanas</td>
+<td>Desenvolvimento interno</td>
+</tr>
+<tr class="even">
+<td><strong>TOTAL</strong></td>
+<td><strong>20 semanas</strong></td>
+<td><strong>~5 meses</strong></td>
+</tr>
+</tbody>
+</table>
+<h2 id="análise-de-roi">8.2 Análise de ROI</h2>
+<h3 id="cenário-base-sem-ia">8.2.1 Cenário Base (Sem IA)</h3>
+<p><strong>Por Corretor:</strong></p>
+<pre><code>Leads recebidos/mês: 100
+Leads qualificados: 50 (50%)
+Tempo de qualificação: 20 min/lead
+Leads atendidos efetivamente: 50
+Taxa de conversão: 5%
+Fechamentos: 2,5/mês
+
+Ticket médio: R$ 500.000
+Comissão: 3%
+Receita: R$ 37.500/mês</code></pre>
+<p><strong>Custos de Tempo:</strong></p>
+<pre><code>Qualificação manual: 33h/mês (20min × 100 leads)
+Custo de oportunidade: Alto
+Leads perdidos por falta de tempo: ~30/mês</code></pre>
+<h3 id="cenário-com-ia">8.2.2 Cenário Com IA</h3>
+<p><strong>Por Corretor:</strong></p>
+<pre><code>Leads recebidos/mês: 200 (IA capta mais)
+Leads qualificados pela IA: 100 (50%)
+Leads com score &gt;70: 50
+Tempo de qualificação IA: 5 min/lead
+Corretor foca em 50 leads quentes
+Taxa de conversão: 12% (melhor qualidade)
+Fechamentos: 6/mês
+
+Ticket médio: R$ 500.000
+Comissão: 3%
+Receita: R$ 90.000/mês</code></pre>
+<p><strong>Ganhos de Tempo:</strong></p>
+<pre><code>Qualificação automática: 8h/mês (IA qualifica)
+Tempo economizado: 25h/mês
+Corretor foca em negociação
+Zero leads perdidos por falta de resposta</code></pre>
+<h3 id="comparação-roi">8.2.3 Comparação ROI</h3>
+<table>
+<thead>
+<tr class="header">
+<th>Métrica</th>
+<th>Sem IA</th>
+<th>Com IA</th>
+<th>Ganho</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Leads Qualificados</strong></td>
+<td>50</td>
+<td>100</td>
+<td>+100%</td>
+</tr>
+<tr class="even">
+<td><strong>Fechamentos</strong></td>
+<td>2,5</td>
+<td>6</td>
+<td>+140%</td>
+</tr>
+<tr class="odd">
+<td><strong>Receita Mensal</strong></td>
+<td>R$ 37,5k</td>
+<td>R$ 90k</td>
+<td>+140%</td>
+</tr>
+<tr class="even">
+<td><strong>Tempo Livre</strong></td>
+<td>0h</td>
+<td>25h</td>
+<td>-</td>
+</tr>
+<tr class="odd">
+<td><strong>Custo Operacional</strong></td>
+<td>R$ 0</td>
+<td>R$ 500</td>
+<td>-</td>
+</tr>
+<tr class="even">
+<td><strong>Ganho Líquido</strong></td>
+<td>-</td>
+<td>R$ 52k</td>
+<td>-</td>
+</tr>
+<tr class="odd">
+<td><strong>ROI</strong></td>
+<td>-</td>
+<td><strong>10.400%</strong></td>
+<td>-</td>
+</tr>
+</tbody>
+</table>
+<h3 id="projeção-anual-10-corretores">8.2.4 Projeção Anual (10
+Corretores)</h3>
+<pre><code>Ganho por corretor: R$ 52.500/mês
+Ganho total: R$ 525.000/mês
+Ganho anual: R$ 6.300.000/ano
+
+Custo operacional: R$ 6.000/ano
+ROI anual: 105.000%
+
+Payback: &lt; 1 mês</code></pre>
+<h2 id="benefícios-intangíveis">8.3 Benefícios Intangíveis</h2>
+<ol type="1">
+<li><strong>Marca e Reputação</strong>
+<ul>
+<li>Diferencial competitivo único</li>
+<li>Tecnologia de ponta no setor</li>
+<li>Referências e marketing boca-a-boca</li>
+</ul></li>
+<li><strong>Satisfação do Time</strong>
+<ul>
+<li>Corretores mais produtivos</li>
+<li>Menos tarefas repetitivas</li>
+<li>Foco em relacionamento</li>
+</ul></li>
+<li><strong>Experiência do Cliente</strong>
+<ul>
+<li>Resposta imediata 24/7</li>
+<li>Atendimento personalizado</li>
+<li>Zero esquecimento de follow-up</li>
+</ul></li>
+<li><strong>Dados e Aprendizado</strong>
+<ul>
+<li>Base de conhecimento crescente</li>
+<li>Insights de mercado</li>
+<li>Previsibilidade de resultados</li>
+</ul></li>
+</ol>
+<h1 id="riscos-e-mitigações">9. RISCOS E MITIGAÇÕES</h1>
+<h2 id="riscos-técnicos">9.1 Riscos Técnicos</h2>
+<h3 id="indisponibilidade-da-api-claude">9.1.1 Indisponibilidade da API
+Claude</h3>
+<p><strong>Risco:</strong> API Claude fora do ar ou com problemas</p>
+<p><strong>Impacto:</strong> Alto</p>
+<p><strong>Probabilidade:</strong> Baixa</p>
+<p><strong>Mitigação:</strong> - ✅ Fallback automático para OpenAI - ✅
+Cache de respostas comuns - ✅ Modo degradado (respostas
+pré-programadas) - ✅ SLA monitoring e alertas</p>
+<h3 id="custo-inesperado-de-apis">9.1.2 Custo Inesperado de APIs</h3>
+<p><strong>Risco:</strong> Uso acima do esperado aumenta custos</p>
+<p><strong>Impacto:</strong> Médio</p>
+<p><strong>Probabilidade:</strong> Média</p>
+<p><strong>Mitigação:</strong> - ✅ Rate limiting por tenant - ✅
+Alertas de budget - ✅ Cache agressivo de contextos - ✅ Otimização de
+prompts</p>
+<h3 id="whatsapp-bloqueio">9.1.3 WhatsApp Bloqueio</h3>
+<p><strong>Risco:</strong> WhatsApp bloquear número por spam</p>
+<p><strong>Impacto:</strong> Alto</p>
+<p><strong>Probabilidade:</strong> Baixa</p>
+<p><strong>Mitigação:</strong> - ✅ Usar WhatsApp Business API oficial -
+✅ Respeitar limites de mensagens - ✅ Opt-in explícito dos clientes -
+✅ Sistema de opt-out claro</p>
+<h2 id="riscos-de-negócio">9.2 Riscos de Negócio</h2>
+<h3 id="ia-com-respostas-inadequadas">9.2.1 IA com Respostas
+Inadequadas</h3>
+<p><strong>Risco:</strong> IA responder algo inapropriado ou errado</p>
+<p><strong>Impacto:</strong> Alto</p>
+<p><strong>Probabilidade:</strong> Baixa</p>
+<p><strong>Mitigação:</strong> - ✅ Prompts com guardrails - ✅
+Validação de respostas - ✅ Monitoramento humano inicial - ✅ Sistema de
+feedback e correção - ✅ Disclaimers claros</p>
+<h3 id="resistência-da-equipe">9.2.2 Resistência da Equipe</h3>
+<p><strong>Risco:</strong> Corretores não adotarem a ferramenta</p>
+<p><strong>Impacto:</strong> Médio</p>
+<p><strong>Probabilidade:</strong> Média</p>
+<p><strong>Mitigação:</strong> - ✅ Treinamento completo - ✅
+Demonstração de benefícios - ✅ Período de adaptação - ✅ Gamificação e
+incentivos - ✅ Coleta de feedback contínuo</p>
+<h3 id="perda-de-toque-humano">9.2.3 Perda de Toque Humano</h3>
+<p><strong>Risco:</strong> Clientes preferirem atendimento 100%
+humano</p>
+<p><strong>Impacto:</strong> Médio</p>
+<p><strong>Probabilidade:</strong> Baixa</p>
+<p><strong>Mitigação:</strong> - ✅ Transparência sobre uso de IA - ✅
+Opção de falar com humano sempre disponível - ✅ IA complementa, não
+substitui - ✅ Monitorar satisfação continuamente</p>
+<h2 id="riscos-legais-e-compliance">9.3 Riscos Legais e Compliance</h2>
+<h3 id="lgpd---proteção-de-dados">9.3.1 LGPD - Proteção de Dados</h3>
+<p><strong>Risco:</strong> Violação de privacidade de dados</p>
+<p><strong>Impacto:</strong> Crítico</p>
+<p><strong>Probabilidade:</strong> Baixa</p>
+<p><strong>Mitigação:</strong> - ✅ Consentimento explícito (opt-in) -
+✅ Dados criptografados em trânsito e repouso - ✅ Retenção conforme
+legislação - ✅ Direito de exclusão implementado - ✅ Auditoria e logs
+completos - ✅ DPO (Data Protection Officer)</p>
+<h3 id="regulação-do-setor-imobiliário">9.3.2 Regulação do Setor
+Imobiliário</h3>
+<p><strong>Risco:</strong> CRECI ou órgãos reguladores questionarem
+automação</p>
+<p><strong>Impacto:</strong> Médio</p>
+<p><strong>Probabilidade:</strong> Baixa</p>
+<p><strong>Mitigação:</strong> - ✅ IA não substitui corretor - ✅
+Corretor sempre responsável final - ✅ Documentação clara de processos -
+✅ Compliance com todas normas</p>
+<h1 id="considerações-finais">10. CONSIDERAÇÕES FINAIS</h1>
+<h2 id="fatores-críticos-de-sucesso">10.1 Fatores Críticos de
+Sucesso</h2>
+<ol type="1">
+<li>✅ <strong>Qualidade dos Prompts</strong>
+<ul>
+<li>Investir tempo em prompts otimizados</li>
+<li>Testar e refinar continuamente</li>
+<li>Documentar aprendizados</li>
+</ul></li>
+<li>✅ <strong>Adoção pela Equipe</strong>
+<ul>
+<li>Treinamento completo</li>
+<li>Suporte constante</li>
+<li>Celebrar vitórias rápidas</li>
+</ul></li>
+<li>✅ <strong>Monitoramento Contínuo</strong>
+<ul>
+<li>Revisar métricas diariamente</li>
+<li>Ajustar estratégias rapidamente</li>
+<li>Feedback loop com corretores</li>
+</ul></li>
+<li>✅ <strong>Experiência do Cliente</strong>
+<ul>
+<li>Cliente em primeiro lugar sempre</li>
+<li>Transição suave para humano</li>
+<li>Zero falhas críticas</li>
+</ul></li>
+<li>✅ <strong>Evolução Constante</strong>
+<ul>
+<li>Aprender com cada interação</li>
+<li>Atualizar prompts regularmente</li>
+<li>Incorporar novos recursos</li>
+</ul></li>
+</ol>
+<h2 id="próximos-passos-recomendados">10.2 Próximos Passos
+Recomendados</h2>
+<h3 id="imediato-esta-semana">Imediato (Esta Semana)</h3>
+<ol type="1">
+<li><strong>Aprovação do Plano</strong>
+<ul>
+<li>Revisar orçamento</li>
+<li>Validar timeline</li>
+<li>Definir responsáveis</li>
+</ul></li>
+<li><strong>Setup Inicial</strong>
+<ul>
+<li>Criar contas nas APIs</li>
+<li>Configurar ambientes</li>
+<li>Preparar infraestrutura</li>
+</ul></li>
+<li><strong>Equipe</strong>
+<ul>
+<li>Comunicar visão ao time</li>
+<li>Definir piloto inicial</li>
+<li>Preparar treinamento</li>
+</ul></li>
+</ol>
+<h3 id="curto-prazo-próximas-2-semanas">Curto Prazo (Próximas 2
+Semanas)</h3>
+<ol type="1">
+<li><strong>Início Desenvolvimento</strong>
+<ul>
+<li>Sprint 1 da Fase MVP</li>
+<li>Setup WhatsApp e Telegram</li>
+<li>Primeiras integrações</li>
+</ul></li>
+<li><strong>Testes Internos</strong>
+<ul>
+<li>Ambiente de staging</li>
+<li>Testes com equipe interna</li>
+<li>Ajustes iniciais</li>
+</ul></li>
+<li><strong>Preparação Piloto</strong>
+<ul>
+<li>Selecionar 1-2 corretores</li>
+<li>Definir métricas de sucesso</li>
+<li>Plano de contingência</li>
+</ul></li>
+</ol>
+<h3 id="médio-prazo-2-meses">Médio Prazo (2 Meses)</h3>
+<ol type="1">
+<li><strong>Piloto em Produção</strong>
+<ul>
+<li>Lançar com corretores selecionados</li>
+<li>Monitorar intensamente</li>
+<li>Coletar feedback</li>
+</ul></li>
+<li><strong>Ajustes e Otimização</strong>
+<ul>
+<li>Corrigir problemas identificados</li>
+<li>Otimizar prompts</li>
+<li>Melhorar UX</li>
+</ul></li>
+<li><strong>Expansão Gradual</strong>
+<ul>
+<li>Adicionar mais corretores</li>
+<li>Escalar infraestrutura</li>
+<li>Documentar processos</li>
+</ul></li>
+</ol>
+<h2 id="conclusão">10.3 Conclusão</h2>
+<p>A implementação deste sistema de Business Intelligence com IA
+representa uma <strong>oportunidade única</strong> de posicionar a
+Vivoly como <strong>líder tecnológico</strong> no mercado imobiliário
+brasileiro.</p>
+<p>Os números projetados são <strong>extremamente promissores</strong>:
+- ROI de <strong>10.400%</strong> no primeiro mês - Aumento de
+<strong>140%</strong> na taxa de conversão - <strong>25
+horas/mês</strong> economizadas por corretor - <strong>R$ 6.3
+milhões/ano</strong> de ganho adicional (10 corretores)</p>
+<p>Mas além dos números, este sistema traz benefícios estratégicos
+fundamentais: - <strong>Diferenciação competitiva</strong> impossível de
+replicar rapidamente - <strong>Escalabilidade</strong> sem limites de
+crescimento - <strong>Dados e insights</strong> que melhoram
+continuamente - <strong>Experiência superior</strong> para clientes e
+corretores</p>
+<p>O plano é <strong>viável</strong>, o investimento é
+<strong>mínimo</strong> comparado ao retorno, e os <strong>riscos são
+gerenciáveis</strong> com as mitigações propostas.</p>
+<p><strong>Recomendação:</strong> Aprovar e iniciar implementação
+imediatamente.</p>
+<hr />
+<h2 id="contatos-e-suporte">10.4 Contatos e Suporte</h2>
+<p><strong>Equipe Técnica:</strong> - Backend: Fastify + Prisma +
+PostgreSQL - Frontend: Next.js + React + TypeScript - IA: Claude
+(Anthropic) + OpenAI</p>
+<p><strong>Documentação:</strong> - Repositório:
+<code>/home/hans/imobiflow</code> - Documentação técnica:
+<code>/docs</code> - API Docs: <code>/api/docs</code></p>
+<p><strong>Próxima Revisão:</strong> 30 dias após aprovação</p>
+<hr />
+<h1 id="apêndices">APÊNDICES</h1>
+<h2 id="apêndice-a-exemplos-de-prompts">Apêndice A: Exemplos de
+Prompts</h2>
+<h3 id="a.1-prompt-primeira-interação-com-lead">A.1 Prompt: Primeira
+Interação com Lead</h3>
+<div class="sourceCode" id="cb21"><pre
+class="sourceCode typescript"><code class="sourceCode typescript"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> promptPrimeiroContato <span class="op">=</span> <span class="vs">`</span></span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a><span class="vs">Você é Sofia, assistente virtual da Vivoly, uma imobiliária premium</span></span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a><span class="vs">especializada em imóveis de alto padrão no Rio de Janeiro.</span></span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a><span class="vs">PERSONALIDADE:</span></span>
+<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a><span class="vs">- Amigável e acolhedora, mas profissional</span></span>
+<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a><span class="vs">- Consultiva, não vendedora</span></span>
+<span id="cb21-8"><a href="#cb21-8" aria-hidden="true" tabindex="-1"></a><span class="vs">- Paciente e atenta aos detalhes</span></span>
+<span id="cb21-9"><a href="#cb21-9" aria-hidden="true" tabindex="-1"></a><span class="vs">- Usa linguagem natural e moderna</span></span>
+<span id="cb21-10"><a href="#cb21-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-11"><a href="#cb21-11" aria-hidden="true" tabindex="-1"></a><span class="vs">CONTEXTO DO LEAD:</span></span>
+<span id="cb21-12"><a href="#cb21-12" aria-hidden="true" tabindex="-1"></a><span class="vs">Nome: </span><span class="sc">${</span>lead<span class="op">.</span><span class="at">nome</span> <span class="op">||</span> <span class="st">&#39;Cliente&#39;</span><span class="sc">}</span></span>
+<span id="cb21-13"><a href="#cb21-13" aria-hidden="true" tabindex="-1"></a><span class="vs">Telefone: </span><span class="sc">${</span>lead<span class="op">.</span><span class="at">telefone</span><span class="sc">}</span></span>
+<span id="cb21-14"><a href="#cb21-14" aria-hidden="true" tabindex="-1"></a><span class="vs">Origem: </span><span class="sc">${</span>lead<span class="op">.</span><span class="at">origem</span><span class="sc">}</span></span>
+<span id="cb21-15"><a href="#cb21-15" aria-hidden="true" tabindex="-1"></a><span class="vs">Mensagem: &quot;</span><span class="sc">${</span>mensagem<span class="sc">}</span><span class="vs">&quot;</span></span>
+<span id="cb21-16"><a href="#cb21-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-17"><a href="#cb21-17" aria-hidden="true" tabindex="-1"></a><span class="vs">MISSÃO:</span></span>
+<span id="cb21-18"><a href="#cb21-18" aria-hidden="true" tabindex="-1"></a><span class="vs">1. Cumprimentar de forma natural</span></span>
+<span id="cb21-19"><a href="#cb21-19" aria-hidden="true" tabindex="-1"></a><span class="vs">2. Identificar necessidade: tipo de imóvel, localização, budget</span></span>
+<span id="cb21-20"><a href="#cb21-20" aria-hidden="true" tabindex="-1"></a><span class="vs">3. Fazer perguntas abertas</span></span>
+<span id="cb21-21"><a href="#cb21-21" aria-hidden="true" tabindex="-1"></a><span class="vs">4. Sugerir próximo passo</span></span>
+<span id="cb21-22"><a href="#cb21-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-23"><a href="#cb21-23" aria-hidden="true" tabindex="-1"></a><span class="vs">REGRAS:</span></span>
+<span id="cb21-24"><a href="#cb21-24" aria-hidden="true" tabindex="-1"></a><span class="vs">- Máximo 3 perguntas por mensagem</span></span>
+<span id="cb21-25"><a href="#cb21-25" aria-hidden="true" tabindex="-1"></a><span class="vs">- Use 1-2 emojis apenas</span></span>
+<span id="cb21-26"><a href="#cb21-26" aria-hidden="true" tabindex="-1"></a><span class="vs">- Seja genuinamente útil</span></span>
+<span id="cb21-27"><a href="#cb21-27" aria-hidden="true" tabindex="-1"></a><span class="vs">- NUNCA invente informações sobre imóveis</span></span>
+<span id="cb21-28"><a href="#cb21-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-29"><a href="#cb21-29" aria-hidden="true" tabindex="-1"></a><span class="vs">Responda à mensagem do cliente:</span></span>
+<span id="cb21-30"><a href="#cb21-30" aria-hidden="true" tabindex="-1"></a><span class="vs">`</span><span class="op">;</span></span></code></pre></div>
+<h3 id="a.2-prompt-análise-de-sentimento">A.2 Prompt: Análise de
+Sentimento</h3>
+<div class="sourceCode" id="cb22"><pre
+class="sourceCode typescript"><code class="sourceCode typescript"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> promptAnalise <span class="op">=</span> <span class="vs">`</span></span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a><span class="vs">Analise o sentimento e intenção de compra desta conversa imobiliária.</span></span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a><span class="vs">CONVERSA:</span></span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a><span class="sc">${</span>conversaCompleta<span class="sc">}</span></span>
+<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-7"><a href="#cb22-7" aria-hidden="true" tabindex="-1"></a><span class="vs">ANÁLISE REQUERIDA:</span></span>
+<span id="cb22-8"><a href="#cb22-8" aria-hidden="true" tabindex="-1"></a><span class="vs">1. Sentimento geral (0-10)</span></span>
+<span id="cb22-9"><a href="#cb22-9" aria-hidden="true" tabindex="-1"></a><span class="vs">2. Nível de interesse (0-10)</span></span>
+<span id="cb22-10"><a href="#cb22-10" aria-hidden="true" tabindex="-1"></a><span class="vs">3. Urgência percebida (0-10)</span></span>
+<span id="cb22-11"><a href="#cb22-11" aria-hidden="true" tabindex="-1"></a><span class="vs">4. Objeções identificadas</span></span>
+<span id="cb22-12"><a href="#cb22-12" aria-hidden="true" tabindex="-1"></a><span class="vs">5. Próxima ação recomendada</span></span>
+<span id="cb22-13"><a href="#cb22-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-14"><a href="#cb22-14" aria-hidden="true" tabindex="-1"></a><span class="vs">Retorne JSON:</span></span>
+<span id="cb22-15"><a href="#cb22-15" aria-hidden="true" tabindex="-1"></a><span class="vs">{</span></span>
+<span id="cb22-16"><a href="#cb22-16" aria-hidden="true" tabindex="-1"></a><span class="vs">  &quot;sentimento&quot;: 8,</span></span>
+<span id="cb22-17"><a href="#cb22-17" aria-hidden="true" tabindex="-1"></a><span class="vs">  &quot;interesse&quot;: 9,</span></span>
+<span id="cb22-18"><a href="#cb22-18" aria-hidden="true" tabindex="-1"></a><span class="vs">  &quot;urgencia&quot;: 6,</span></span>
+<span id="cb22-19"><a href="#cb22-19" aria-hidden="true" tabindex="-1"></a><span class="vs">  &quot;objecoes&quot;: [&quot;preço&quot;, &quot;localização&quot;],</span></span>
+<span id="cb22-20"><a href="#cb22-20" aria-hidden="true" tabindex="-1"></a><span class="vs">  &quot;proxima_acao&quot;: &quot;agendar_visita&quot;,</span></span>
+<span id="cb22-21"><a href="#cb22-21" aria-hidden="true" tabindex="-1"></a><span class="vs">  &quot;justificativa&quot;: &quot;Cliente demonstrou...&quot;</span></span>
+<span id="cb22-22"><a href="#cb22-22" aria-hidden="true" tabindex="-1"></a><span class="vs">}</span></span>
+<span id="cb22-23"><a href="#cb22-23" aria-hidden="true" tabindex="-1"></a><span class="vs">`</span><span class="op">;</span></span></code></pre></div>
+<h2 id="apêndice-b-exemplos-de-automações">Apêndice B: Exemplos de
+Automações</h2>
+<h3 id="b.1-follow-up-48h">B.1 Follow-up 48h</h3>
+<div class="sourceCode" id="cb23"><pre
+class="sourceCode json"><code class="sourceCode json"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="fu">{</span></span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;nome&quot;</span><span class="fu">:</span> <span class="st">&quot;Follow-up 48h sem resposta&quot;</span><span class="fu">,</span></span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;tipo&quot;</span><span class="fu">:</span> <span class="st">&quot;FOLLOW_UP_AUTOMATICO&quot;</span><span class="fu">,</span></span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;condicoes&quot;</span><span class="fu">:</span> <span class="fu">{</span></span>
+<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;temperatura&quot;</span><span class="fu">:</span> <span class="ot">[</span><span class="st">&quot;MORNO&quot;</span><span class="ot">,</span> <span class="st">&quot;QUENTE&quot;</span><span class="ot">]</span><span class="fu">,</span></span>
+<span id="cb23-6"><a href="#cb23-6" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;horas_sem_resposta&quot;</span><span class="fu">:</span> <span class="dv">48</span><span class="fu">,</span></span>
+<span id="cb23-7"><a href="#cb23-7" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;score_minimo&quot;</span><span class="fu">:</span> <span class="dv">50</span><span class="fu">,</span></span>
+<span id="cb23-8"><a href="#cb23-8" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;total_mensagens_minimo&quot;</span><span class="fu">:</span> <span class="dv">3</span></span>
+<span id="cb23-9"><a href="#cb23-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">},</span></span>
+<span id="cb23-10"><a href="#cb23-10" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;acoes&quot;</span><span class="fu">:</span> <span class="fu">{</span></span>
+<span id="cb23-11"><a href="#cb23-11" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;canal&quot;</span><span class="fu">:</span> <span class="st">&quot;whatsapp&quot;</span><span class="fu">,</span></span>
+<span id="cb23-12"><a href="#cb23-12" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;tipo_mensagem&quot;</span><span class="fu">:</span> <span class="st">&quot;reengajamento_contextual&quot;</span><span class="fu">,</span></span>
+<span id="cb23-13"><a href="#cb23-13" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;horario_envio&quot;</span><span class="fu">:</span> <span class="st">&quot;entre_9h_e_18h&quot;</span></span>
+<span id="cb23-14"><a href="#cb23-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">},</span></span>
+<span id="cb23-15"><a href="#cb23-15" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;prompt_ia&quot;</span><span class="fu">:</span> <span class="st">&quot;Crie uma mensagem de follow-up natural...&quot;</span></span>
+<span id="cb23-16"><a href="#cb23-16" aria-hidden="true" tabindex="-1"></a><span class="fu">}</span></span></code></pre></div>
+<h3 id="b.2-alerta-lead-quente">B.2 Alerta Lead Quente</h3>
+<div class="sourceCode" id="cb24"><pre
+class="sourceCode json"><code class="sourceCode json"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="fu">{</span></span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;nome&quot;</span><span class="fu">:</span> <span class="st">&quot;Alerta corretor - lead quente&quot;</span><span class="fu">,</span></span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;tipo&quot;</span><span class="fu">:</span> <span class="st">&quot;ALERTA_OPORTUNIDADE&quot;</span><span class="fu">,</span></span>
+<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;condicoes&quot;</span><span class="fu">:</span> <span class="fu">{</span></span>
+<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;score_minimo&quot;</span><span class="fu">:</span> <span class="dv">75</span><span class="fu">,</span></span>
+<span id="cb24-6"><a href="#cb24-6" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;palavras_urgencia&quot;</span><span class="fu">:</span> <span class="ot">[</span><span class="st">&quot;urgente&quot;</span><span class="ot">,</span> <span class="st">&quot;rápido&quot;</span><span class="ot">,</span> <span class="st">&quot;hoje&quot;</span><span class="ot">]</span><span class="fu">,</span></span>
+<span id="cb24-7"><a href="#cb24-7" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;mencao_concorrente&quot;</span><span class="fu">:</span> <span class="kw">true</span></span>
+<span id="cb24-8"><a href="#cb24-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">},</span></span>
+<span id="cb24-9"><a href="#cb24-9" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;acoes&quot;</span><span class="fu">:</span> <span class="fu">{</span></span>
+<span id="cb24-10"><a href="#cb24-10" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;notificar_corretor&quot;</span><span class="fu">:</span> <span class="kw">true</span><span class="fu">,</span></span>
+<span id="cb24-11"><a href="#cb24-11" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;canal&quot;</span><span class="fu">:</span> <span class="st">&quot;telegram&quot;</span><span class="fu">,</span></span>
+<span id="cb24-12"><a href="#cb24-12" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;prioridade&quot;</span><span class="fu">:</span> <span class="st">&quot;ALTA&quot;</span><span class="fu">,</span></span>
+<span id="cb24-13"><a href="#cb24-13" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;sugerir_ligacao&quot;</span><span class="fu">:</span> <span class="kw">true</span></span>
+<span id="cb24-14"><a href="#cb24-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">}</span></span>
+<span id="cb24-15"><a href="#cb24-15" aria-hidden="true" tabindex="-1"></a><span class="fu">}</span></span></code></pre></div>
+<h2 id="apêndice-c-glossário-de-termos">Apêndice C: Glossário de
+Termos</h2>
+<table>
+<thead>
+<tr class="header">
+<th>Termo</th>
+<th>Definição</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Lead</strong></td>
+<td>Cliente potencial em contato inicial</td>
+</tr>
+<tr class="even">
+<td><strong>Score</strong></td>
+<td>Pontuação de 0-100 indicando probabilidade de conversão</td>
+</tr>
+<tr class="odd">
+<td><strong>Temperatura</strong></td>
+<td>Classificação: FRIO, MORNO, QUENTE</td>
+</tr>
+<tr class="even">
+<td><strong>Timeline</strong></td>
+<td>Histórico cronológico de interações</td>
+</tr>
+<tr class="odd">
+<td><strong>Match Score</strong></td>
+<td>Compatibilidade entre lead e imóvel</td>
+</tr>
+<tr class="even">
+<td><strong>Context Window</strong></td>
+<td>Janela de contexto da conversa para IA</td>
+</tr>
+<tr class="odd">
+<td><strong>Token</strong></td>
+<td>Unidade de cobrança das APIs de IA</td>
+</tr>
+<tr class="even">
+<td><strong>Prompt</strong></td>
+<td>Instrução dada à IA para gerar resposta</td>
+</tr>
+<tr class="odd">
+<td><strong>Guardrails</strong></td>
+<td>Regras de segurança nos prompts</td>
+</tr>
+<tr class="even">
+<td><strong>Fallback</strong></td>
+<td>Sistema backup em caso de falha</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<p><strong>Fim do Documento</strong></p>
+<p><em>Planejamento elaborado para Vivoly - Imobiliária Digital</em>
+<em>Versão 1.0 - Dezembro 2024</em></p>
+</body>
+</html>

@@ -1,0 +1,1122 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guia Completo de Implementação - BI + IA | Vivoly</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #3498db;
+            --secondary: #2c3e50;
+            --success: #27ae60;
+            --warning: #f39c12;
+            --danger: #e74c3c;
+            --info: #17a2b8;
+            --light: #ecf0f1;
+            --dark: #2c3e50;
+            --code-bg: #1e1e1e;
+            --code-text: #d4d4d4;
+            --purple: #764ba2;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 60px 40px;
+            text-align: center;
+        }
+
+        header h1 {
+            font-size: 3.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        header p {
+            font-size: 1.4em;
+            opacity: 0.95;
+        }
+
+        .version-badge {
+            display: inline-block;
+            background: rgba(255,255,255,0.2);
+            padding: 8px 16px;
+            border-radius: 20px;
+            margin-top: 15px;
+            font-size: 0.9em;
+        }
+
+        .print-button {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 18px 35px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-size: 18px;
+            font-weight: bold;
+            box-shadow: 0 6px 20px rgba(52, 152, 219, 0.5);
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+
+        .print-button:hover {
+            background: #2980b9;
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(52, 152, 219, 0.7);
+        }
+
+        nav {
+            background: var(--secondary);
+            padding: 25px 40px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        nav ul {
+            list-style: none;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 25px;
+            justify-content: center;
+        }
+
+        nav a {
+            color: white;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s;
+            padding: 8px 15px;
+            border-radius: 5px;
+        }
+
+        nav a:hover {
+            background: rgba(52, 152, 219, 0.2);
+            color: var(--primary);
+        }
+
+        .content {
+            padding: 50px;
+        }
+
+        .section {
+            margin-bottom: 80px;
+        }
+
+        h2 {
+            color: var(--secondary);
+            font-size: 2.5em;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 4px solid var(--primary);
+        }
+
+        h3 {
+            color: var(--secondary);
+            font-size: 1.8em;
+            margin: 35px 0 20px;
+            padding-left: 15px;
+            border-left: 5px solid var(--primary);
+        }
+
+        h4 {
+            color: #555;
+            font-size: 1.4em;
+            margin: 25px 0 15px;
+        }
+
+        p {
+            margin-bottom: 18px;
+            line-height: 1.9;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+
+        .badge-success { background: var(--success); color: white; }
+        .badge-warning { background: var(--warning); color: white; }
+        .badge-info { background: var(--info); color: white; }
+        .badge-danger { background: var(--danger); color: white; }
+        .badge-primary { background: var(--primary); color: white; }
+
+        .card {
+            background: #f8f9fa;
+            border-left: 5px solid var(--primary);
+            padding: 25px;
+            margin: 25px 0;
+            border-radius: 10px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+        }
+
+        .card-success {
+            border-left-color: var(--success);
+            background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+        }
+
+        .card-warning {
+            border-left-color: var(--warning);
+            background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
+        }
+
+        .card-danger {
+            border-left-color: var(--danger);
+            background: linear-gradient(135deg, #f8d7da 0%, #f5c6cb 100%);
+        }
+
+        .card-info {
+            border-left-color: var(--info);
+            background: linear-gradient(135deg, #d1ecf1 0%, #bee5eb 100%);
+        }
+
+        code {
+            background: #f4f4f4;
+            padding: 3px 10px;
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.95em;
+            color: #e74c3c;
+            border: 1px solid #ddd;
+        }
+
+        pre {
+            background: var(--code-bg);
+            color: var(--code-text);
+            padding: 25px;
+            border-radius: 10px;
+            overflow-x: auto;
+            margin: 25px 0;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            position: relative;
+            line-height: 1.5;
+        }
+
+        pre code {
+            background: none;
+            color: inherit;
+            padding: 0;
+            font-size: 0.95em;
+            border: none;
+        }
+
+        .code-header {
+            background: #2c3e50;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 10px 10px 0 0;
+            font-size: 0.9em;
+            font-weight: bold;
+            margin-bottom: -25px;
+            margin-top: 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .copy-button {
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.3);
+            color: white;
+            padding: 5px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.85em;
+            transition: all 0.3s;
+        }
+
+        .copy-button:hover {
+            background: rgba(255,255,255,0.2);
+        }
+
+        ul, ol {
+            margin: 18px 0 18px 35px;
+        }
+
+        li {
+            margin: 10px 0;
+            line-height: 1.7;
+        }
+
+        .checklist {
+            list-style: none;
+            margin-left: 0;
+        }
+
+        .checklist li {
+            padding: 15px;
+            background: #f8f9fa;
+            margin: 8px 0;
+            border-radius: 8px;
+            transition: all 0.3s;
+            border-left: 4px solid var(--light);
+            cursor: pointer;
+        }
+
+        .checklist li:hover {
+            background: #e9ecef;
+            transform: translateX(8px);
+            border-left-color: var(--primary);
+        }
+
+        .checklist li::before {
+            content: "☐ ";
+            font-size: 1.3em;
+            margin-right: 12px;
+            color: var(--primary);
+        }
+
+        .checklist li.checked {
+            background: #d4edda;
+            text-decoration: line-through;
+            opacity: 0.7;
+            border-left-color: var(--success);
+        }
+
+        .checklist li.checked::before {
+            content: "✓ ";
+            color: var(--success);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 25px 0;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        th, td {
+            padding: 18px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        th {
+            background: var(--primary);
+            color: white;
+            font-weight: bold;
+            text-transform: uppercase;
+            font-size: 0.9em;
+            letter-spacing: 0.5px;
+        }
+
+        tr:hover {
+            background: #f8f9fa;
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        .timeline {
+            position: relative;
+            padding-left: 50px;
+            margin: 35px 0;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 15px;
+            top: 0;
+            bottom: 0;
+            width: 4px;
+            background: linear-gradient(180deg, var(--primary) 0%, var(--purple) 100%);
+            border-radius: 2px;
+        }
+
+        .timeline-item {
+            position: relative;
+            margin-bottom: 35px;
+            padding: 25px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+            transition: all 0.3s;
+        }
+
+        .timeline-item:hover {
+            transform: translateX(10px);
+            box-shadow: 0 5px 20px rgba(0,0,0,0.15);
+        }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -39px;
+            top: 30px;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: var(--primary);
+            border: 4px solid white;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+
+        .flow-diagram {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px;
+            border-radius: 15px;
+            margin: 30px 0;
+            text-align: center;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+        }
+
+        .flow-step {
+            background: rgba(255,255,255,0.15);
+            padding: 20px;
+            margin: 15px 0;
+            border-radius: 10px;
+            backdrop-filter: blur(10px);
+            font-size: 1.1em;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+
+        .flow-step:hover {
+            background: rgba(255,255,255,0.25);
+            transform: scale(1.02);
+        }
+
+        .emoji {
+            font-size: 1.8em;
+        }
+
+        .highlight {
+            background: linear-gradient(120deg, #fef29e 0%, #fef29e 100%);
+            background-repeat: no-repeat;
+            background-size: 100% 40%;
+            background-position: 0 85%;
+            padding: 2px 0;
+            font-weight: 600;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 25px;
+            margin: 30px 0;
+        }
+
+        .grid-item {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            padding: 25px;
+            border-radius: 10px;
+            border-left: 5px solid var(--primary);
+            transition: all 0.3s;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .grid-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 20px rgba(0,0,0,0.15);
+        }
+
+        .alert {
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 10px;
+            border-left: 5px solid;
+        }
+
+        .alert-info {
+            background: #d1ecf1;
+            border-color: var(--info);
+            color: #0c5460;
+        }
+
+        .alert-warning {
+            background: #fff3cd;
+            border-color: var(--warning);
+            color: #856404;
+        }
+
+        .alert-success {
+            background: #d4edda;
+            border-color: var(--success);
+            color: #155724;
+        }
+
+        .alert-danger {
+            background: #f8d7da;
+            border-color: var(--danger);
+            color: #721c24;
+        }
+
+        .step-number {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            background: var(--primary);
+            color: white;
+            border-radius: 50%;
+            font-weight: bold;
+            margin-right: 15px;
+            font-size: 1.2em;
+        }
+
+        .command-box {
+            background: #1e1e1e;
+            color: #4CAF50;
+            padding: 20px;
+            border-radius: 10px;
+            font-family: 'Courier New', monospace;
+            margin: 20px 0;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.3);
+        }
+
+        .command-box::before {
+            content: '$ ';
+            color: #2196F3;
+        }
+
+        .example-box {
+            background: #f0f7ff;
+            border: 2px dashed var(--info);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+
+        .example-box h5 {
+            color: var(--info);
+            margin-bottom: 15px;
+            font-size: 1.2em;
+        }
+
+        .metric-card {
+            text-align: center;
+            padding: 30px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+        }
+
+        .metric-card h3 {
+            font-size: 3em;
+            color: var(--primary);
+            margin: 10px 0;
+            border: none;
+            padding: 0;
+        }
+
+        .metric-card p {
+            color: #666;
+            font-size: 1.1em;
+        }
+
+        .toc {
+            background: #f8f9fa;
+            padding: 30px;
+            border-radius: 10px;
+            margin: 30px 0;
+        }
+
+        .toc h3 {
+            border: none;
+            padding: 0;
+            margin-bottom: 20px;
+        }
+
+        .toc ul {
+            list-style: none;
+            margin: 0;
+        }
+
+        .toc li {
+            margin: 10px 0;
+        }
+
+        .toc a {
+            color: var(--secondary);
+            text-decoration: none;
+            transition: all 0.3s;
+            padding: 5px 10px;
+            display: block;
+            border-radius: 5px;
+        }
+
+        .toc a:hover {
+            background: white;
+            color: var(--primary);
+            padding-left: 20px;
+        }
+
+        @media print {
+            body {
+                background: white;
+                padding: 0;
+            }
+
+            .container {
+                box-shadow: none;
+            }
+
+            .print-button, nav, .copy-button {
+                display: none;
+            }
+
+            pre, .card {
+                page-break-inside: avoid;
+            }
+
+            h2, h3 {
+                page-break-after: avoid;
+            }
+        }
+
+        @media (max-width: 768px) {
+            header h1 {
+                font-size: 2.2em;
+            }
+
+            .content {
+                padding: 25px;
+            }
+
+            nav ul {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .print-button {
+                bottom: 20px;
+                right: 20px;
+                padding: 12px 20px;
+                font-size: 14px;
+            }
+
+            .grid {
+                grid-template-columns: 1fr;
+            }
+
+            .timeline {
+                padding-left: 35px;
+            }
+
+            .step-number {
+                width: 35px;
+                height: 35px;
+                font-size: 1em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <button class="print-button" onclick="window.print()">🖨️ Imprimir / Salvar PDF</button>
+
+    <div class="container">
+        <header>
+            <h1>🚀 Guia Completo de Implementação</h1>
+            <p>Sistema de Business Intelligence com IA</p>
+            <p style="font-size: 1em; margin-top: 10px; opacity: 0.9;">Vivoly - Imobiliária Digital</p>
+            <span class="version-badge">📦 Versão Completa 2.0</span>
+        </header>
+
+        <nav>
+            <ul>
+                <li><a href="#indice">📚 Índice</a></li>
+                <li><a href="#preparacao">📝 Preparação</a></li>
+                <li><a href="#fase1">🎯 Fase 1: MVP</a></li>
+                <li><a href="#processador">⚙️ Processador</a></li>
+                <li><a href="#testes">🧪 Testes</a></li>
+                <li><a href="#fase2">🧠 Fase 2</a></li>
+                <li><a href="#fase3">⚡ Fase 3</a></li>
+                <li><a href="#deploy">🚀 Deploy</a></li>
+                <li><a href="#troubleshooting">🔧 Troubleshooting</a></li>
+                <li><a href="#checklist">✅ Checklist</a></li>
+            </ul>
+        </nav>
+
+        <div class="content">
+            <!-- ÍNDICE -->
+            <section id="indice" class="section">
+                <h2>📚 Índice Completo</h2>
+
+                <div class="toc">
+                    <h3>Navegação Rápida</h3>
+                    <ul>
+                        <li><a href="#preparacao">1. Preparação Inicial (1-2 horas)</a></li>
+                        <li><a href="#fase1">2. Fase 1: MVP - Fundação (6 semanas)</a>
+                            <ul style="margin-left: 20px;">
+                                <li><a href="#sprint1">→ Sprint 1: Setup Básico</a></li>
+                                <li><a href="#sprint2">→ Sprint 2: Integração IA</a></li>
+                                <li><a href="#sprint3">→ Sprint 3: Sistema Completo</a></li>
+                            </ul>
+                        </li>
+                        <li><a href="#processador">3. Processador de Mensagens Completo</a></li>
+                        <li><a href="#testes">4. Testes e Validação</a></li>
+                        <li><a href="#fase2">5. Fase 2: Inteligência Avançada (8 semanas)</a></li>
+                        <li><a href="#fase3">6. Fase 3: Automações (6 semanas)</a></li>
+                        <li><a href="#deploy">7. Deploy e Produção</a></li>
+                        <li><a href="#troubleshooting">8. Troubleshooting Comum</a></li>
+                        <li><a href="#metricas">9. Métricas e Monitoramento</a></li>
+                        <li><a href="#checklist">10. Checklist Final</a></li>
+                    </ul>
+                </div>
+
+                <div class="grid">
+                    <div class="metric-card">
+                        <p>⏱️ Tempo Total</p>
+                        <h3>20</h3>
+                        <p>Semanas</p>
+                    </div>
+                    <div class="metric-card">
+                        <p>💰 ROI Esperado</p>
+                        <h3>10.400%</h3>
+                        <p>No primeiro mês</p>
+                    </div>
+                    <div class="metric-card">
+                        <p>📈 Aumento Conversão</p>
+                        <h3>+140%</h3>
+                        <p>Taxa de fechamento</p>
+                    </div>
+                    <div class="metric-card">
+                        <p>⚡ Tempo Resposta</p>
+                        <h3>&lt;5s</h3>
+                        <p>Para leads</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- PREPARAÇÃO INICIAL EXPANDIDA -->
+            <section id="preparacao" class="section">
+                <h2>📝 1. Preparação Inicial Detalhada</h2>
+
+                <div class="alert alert-info">
+                    <strong>⏱️ Tempo estimado:</strong> 1-2 horas<br>
+                    <strong>🎯 Objetivo:</strong> Configurar todo o ambiente de desenvolvimento e obter credenciais necessárias
+                </div>
+
+                <h3><span class="step-number">1</span>Criar Conta e API Key - Anthropic (Claude)</h3>
+
+                <div class="timeline">
+                    <div class="timeline-item">
+                        <h4>Passo 1.1: Cadastro na Anthropic</h4>
+                        <ol>
+                            <li>Acesse: <a href="https://console.anthropic.com/" target="_blank">https://console.anthropic.com/</a></li>
+                            <li>Clique em "Sign Up" no canto superior direito</li>
+                            <li>Use seu email corporativo (recomendado) ou Gmail</li>
+                            <li>Verifique seu email e conclua o cadastro</li>
+                        </ol>
+                    </div>
+
+                    <div class="timeline-item">
+                        <h4>Passo 1.2: Configurar Pagamento</h4>
+                        <div class="alert alert-warning">
+                            <strong>⚠️ Importante:</strong> A Anthropic exige um método de pagamento cadastrado, mesmo que você esteja no período trial.
+                        </div>
+                        <ol>
+                            <li>Vá em "Billing" no menu lateral</li>
+                            <li>Clique em "Add Payment Method"</li>
+                            <li>Adicione um cartão de crédito</li>
+                            <li>Configure alertas de gasto (recomendado: $300/mês)</li>
+                        </ol>
+                    </div>
+
+                    <div class="timeline-item">
+                        <h4>Passo 1.3: Gerar API Key</h4>
+                        <ol>
+                            <li>No menu lateral, clique em "API Keys"</li>
+                            <li>Clique em "Create Key"</li>
+                            <li>Dê um nome descritivo: "Vivoly Production"</li>
+                            <li><strong>COPIE A CHAVE IMEDIATAMENTE</strong> - ela só aparece uma vez!</li>
+                            <li>Salve em um local seguro (gerenciador de senhas)</li>
+                        </ol>
+
+                        <div class="card card-danger">
+                            <h4>🔐 Segurança da API Key</h4>
+                            <ul>
+                                <li>✅ NUNCA commite a key no Git</li>
+                                <li>✅ Use apenas em arquivos .env</li>
+                                <li>✅ Adicione .env no .gitignore</li>
+                                <li>✅ Rotacione a key se suspeitar de vazamento</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <h3><span class="step-number">2</span>Criar Conta e API Key - OpenAI (Backup)</h3>
+
+                <div class="timeline">
+                    <div class="timeline-item">
+                        <h4>Passo 2.1: Cadastro na OpenAI</h4>
+                        <ol>
+                            <li>Acesse: <a href="https://platform.openai.com/" target="_blank">https://platform.openai.com/</a></li>
+                            <li>Clique em "Sign Up"</li>
+                            <li>Cadastre-se com email ou conta Google</li>
+                            <li>Verifique seu email</li>
+                        </ol>
+                    </div>
+
+                    <div class="timeline-item">
+                        <h4>Passo 2.2: Adicionar Créditos</h4>
+                        <ol>
+                            <li>Vá em "Billing" → "Payment methods"</li>
+                            <li>Adicione um cartão de crédito</li>
+                            <li>Configure alertas de uso (recomendado: $100/mês)</li>
+                            <li>Considere adicionar $20 de crédito inicial para testes</li>
+                        </ol>
+                    </div>
+
+                    <div class="timeline-item">
+                        <h4>Passo 2.3: Gerar API Key</h4>
+                        <ol>
+                            <li>Clique em seu perfil → "View API Keys"</li>
+                            <li>Clique em "Create new secret key"</li>
+                            <li>Dê um nome: "Vivoly Backup System"</li>
+                            <li>Copie e salve a chave imediatamente</li>
+                        </ol>
+                    </div>
+                </div>
+
+                <h3><span class="step-number">3</span>Configurar Variáveis de Ambiente</h3>
+
+                <div class="code-header">
+                    <span>📁 apps/api/.env</span>
+                    <button class="copy-button" onclick="copyCode(this)">📋 Copiar</button>
+                </div>
+                <pre><code># ============================================
+# APIS DE INTELIGÊNCIA ARTIFICIAL
+# ============================================
+
+# Anthropic Claude (Principal)
+ANTHROPIC_API_KEY=sk-ant-api03-COLE-SUA-KEY-AQUI
+
+# OpenAI (Fallback/Backup)
+OPENAI_API_KEY=sk-COLE-SUA-KEY-AQUI
+
+# Configurações de IA
+AI_CONFIDENCE_THRESHOLD=0.75
+MAX_TOKENS_PER_REQUEST=2000
+AI_TEMPERATURE=0.7
+
+# ============================================
+# WHATSAPP
+# ============================================
+
+# Caminho para salvar sessão do WhatsApp
+WHATSAPP_SESSION_PATH=/tmp/whatsapp-session
+
+# Secret para webhooks (gere um aleatório)
+WHATSAPP_WEBHOOK_SECRET=gere-um-secret-aleatorio-aqui-123
+
+# Número de teste (opcional, para desenvolvimento)
+WHATSAPP_TEST_NUMBER=5521987654321
+
+# ============================================
+# TELEGRAM
+# ============================================
+
+# Token do Bot (obter com @BotFather)
+TELEGRAM_BOT_TOKEN=123456789:COLE-SEU-TOKEN-AQUI
+
+# Chat ID do admin/gestor (seu chat_id pessoal)
+TELEGRAM_ADMIN_CHAT_ID=seu-chat-id-aqui
+
+# Secret para webhooks
+TELEGRAM_WEBHOOK_SECRET=outro-secret-aleatorio-456
+
+# ============================================
+# REDIS (Filas e Cache)
+# ============================================
+
+# URL local (desenvolvimento)
+REDIS_URL=redis://localhost:6379
+
+# URL produção (usar Redis Cloud ou similar)
+# REDIS_URL=redis://usuario:senha@host:port
+
+# ============================================
+# BANCO DE DADOS
+# ============================================
+
+# URL já existente no seu .env
+# DATABASE_URL=postgresql://...
+
+# ============================================
+# FEATURE FLAGS
+# ============================================
+
+# Habilitar respostas automáticas da IA
+ENABLE_AI_RESPONSES=true
+
+# Habilitar atribuição automática de leads
+ENABLE_AUTO_ASSIGNMENT=false
+
+# Habilitar follow-ups automáticos
+ENABLE_AUTO_FOLLOWUP=false
+
+# Modo debug (mais logs)
+DEBUG_MODE=true
+
+# ============================================
+# TENANT PADRÃO
+# ============================================
+
+# ID do tenant padrão para testes
+DEFAULT_TENANT_ID=cole-seu-tenant-id-aqui
+
+# ============================================
+# LIMITES E SEGURANÇA
+# ============================================
+
+# Máximo de mensagens por minuto
+RATE_LIMIT_PER_MINUTE=30
+
+# Máximo de custo por dia (USD)
+MAX_DAILY_COST=50
+
+# JWT Secret (já deve existir)
+# JWT_SECRET=...</code></pre>
+
+                <div class="card card-warning">
+                    <h4>⚠️ Como gerar secrets aleatórios</h4>
+                    <p>Execute no terminal:</p>
+                    <div class="command-box">node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"</div>
+                    <p>Ou use um gerador online: <a href="https://randomkeygen.com/" target="_blank">randomkeygen.com</a></p>
+                </div>
+
+                <h3><span class="step-number">4</span>Instalar Dependências</h3>
+
+                <div class="code-header">
+                    <span>💻 Terminal - Backend</span>
+                </div>
+                <pre><code># Navegar até o diretório da API
+cd /home/hans/imobiflow/apps/api
+
+# Instalar pacotes de IA
+pnpm add @anthropic-ai/sdk@latest
+pnpm add openai@latest
+
+# Instalar pacotes de mensageria
+pnpm add whatsapp-web.js@latest
+pnpm add qrcode-terminal@latest
+pnpm add node-telegram-bot-api@latest
+pnpm add @types/node-telegram-bot-api -D
+
+# Instalar sistema de filas
+pnpm add bull@latest
+pnpm add ioredis@latest
+pnpm add @types/bull -D
+
+# Instalar processamento de IA
+pnpm add langchain@latest
+pnpm add @langchain/anthropic@latest
+pnpm add @langchain/openai@latest
+
+# Análise de texto (opcional mas recomendado)
+pnpm add sentiment@latest
+pnpm add natural@latest
+
+# Utilitários
+pnpm add dotenv@latest
+pnpm add axios@latest
+
+# Verificar instalação
+pnpm list --depth=0</code></pre>
+
+                <div class="alert alert-success">
+                    <strong>✅ Verificação:</strong> Execute <code>pnpm list</code> e confirme que todos os pacotes foram instalados sem erros.
+                </div>
+
+                <h3><span class="step-number">5</span>Criar Estrutura de Pastas</h3>
+
+                <div class="code-header">
+                    <span>💻 Terminal</span>
+                </div>
+                <pre><code>cd /home/hans/imobiflow/apps/api/src
+
+# Criar estrutura completa
+mkdir -p ai/{agents,prompts,context,services,utils}
+mkdir -p messaging/{whatsapp,telegram,queue/{processors,jobs}}
+mkdir -p analytics
+mkdir -p integrations/{calendar,crm}
+mkdir -p automation
+mkdir -p utils/validators
+
+# Criar arquivos index vazios
+touch ai/index.ts
+touch messaging/index.ts
+touch analytics/index.ts
+
+# Verificar estrutura criada
+tree -L 3 -d</code></pre>
+
+                <div class="example-box">
+                    <h5>📁 Estrutura Final Esperada:</h5>
+                    <pre style="background: white; color: #333; padding: 15px; border-radius: 5px;"><code>src/
+├── ai/
+│   ├── agents/
+│   ├── prompts/
+│   ├── context/
+│   ├── services/
+│   └── utils/
+├── messaging/
+│   ├── whatsapp/
+│   ├── telegram/
+│   └── queue/
+│       ├── processors/
+│       └── jobs/
+├── analytics/
+├── automation/
+├── integrations/
+│   ├── calendar/
+│   └── crm/
+└── utils/
+    └── validators/</code></pre>
+                </div>
+
+                <h3><span class="step-number">6</span>Criar Bot do Telegram</h3>
+
+                <div class="timeline">
+                    <div class="timeline-item">
+                        <h4>Criar o Bot</h4>
+                        <ol>
+                            <li>Abra o Telegram no seu celular ou computador</li>
+                            <li>Busque por: <code>@BotFather</code></li>
+                            <li>Envie o comando: <code>/newbot</code></li>
+                            <li>Responda as perguntas:
+                                <ul>
+                                    <li><strong>Nome:</strong> Vivoly BI Assistant</li>
+                                    <li><strong>Username:</strong> vivoly_bi_bot (deve terminar com _bot)</li>
+                                </ul>
+                            </li>
+                            <li>Copie o token que o BotFather enviou</li>
+                            <li>Cole no <code>.env</code> como <code>TELEGRAM_BOT_TOKEN</code></li>
+                        </ol>
+                    </div>
+
+                    <div class="timeline-item">
+                        <h4>Obter seu Chat ID</h4>
+                        <ol>
+                            <li>Busque por: <code>@userinfobot</code> no Telegram</li>
+                            <li>Envie qualquer mensagem</li>
+                            <li>Ele responderá com seu <code>Id:</code></li>
+                            <li>Copie o número e cole no <code>.env</code> como <code>TELEGRAM_ADMIN_CHAT_ID</code></li>
+                        </ol>
+                    </div>
+
+                    <div class="timeline-item">
+                        <h4>Configurar Comandos do Bot (Opcional)</h4>
+                        <p>Envie para o @BotFather:</p>
+                        <div class="command-box">/setcommands</div>
+                        <p>Selecione seu bot e cole:</p>
+                        <pre><code>start - Iniciar o bot
+status - Ver status do sistema
+leads - Ver leads quentes
+briefing - Briefing do dia
+ajuda - Mostrar ajuda</code></pre>
+                    </div>
+                </div>
+
+                <div class="card card-success">
+                    <h3>✅ Preparação Concluída!</h3>
+                    <p>Neste ponto você deve ter:</p>
+                    <ul>
+                        <li>✅ API Key da Anthropic (Claude)</li>
+                        <li>✅ API Key da OpenAI</li>
+                        <li>✅ Arquivo .env configurado</li>
+                        <li>✅ Todas as dependências instaladas</li>
+                        <li>✅ Estrutura de pastas criada</li>
+                        <li>✅ Bot do Telegram configurado</li>
+                    </ul>
+                    <p><strong>Próximo passo:</strong> Começar a implementação da Fase 1!</p>
+                </div>
+            </section>
+
+            <!-- CONTINUA NA PRÓXIMA SEÇÃO... -->
+
+        </div>
+    </div>
+
+    <script>
+        // Copiar código
+        function copyCode(button) {
+            const codeBlock = button.closest('.code-header').nextElementSibling;
+            const code = codeBlock.querySelector('code').textContent;
+            navigator.clipboard.writeText(code).then(() => {
+                button.textContent = '✅ Copiado!';
+                setTimeout(() => {
+                    button.textContent = '📋 Copiar';
+                }, 2000);
+            });
+        }
+
+        // Smooth scroll
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            });
+        });
+
+        // Checklist interativo
+        document.querySelectorAll('.checklist li').forEach(item => {
+            item.addEventListener('click', function() {
+                this.classList.toggle('checked');
+            });
+        });
+
+        // Highlight código ao passar mouse
+        document.querySelectorAll('pre code').forEach(block => {
+            block.addEventListener('mouseenter', function() {
+                this.parentElement.style.boxShadow = '0 6px 25px rgba(0,0,0,0.4)';
+            });
+            block.addEventListener('mouseleave', function() {
+                this.parentElement.style.boxShadow = '0 4px 15px rgba(0,0,0,0.3)';
+            });
+        });
+
+        // Contador de progresso
+        let totalChecks = document.querySelectorAll('.checklist li').length;
+        setInterval(() => {
+            let checked = document.querySelectorAll('.checklist li.checked').length;
+            if (totalChecks > 0) {
+                let progress = Math.round((checked / totalChecks) * 100);
+                console.log(`Progresso: ${progress}% (${checked}/${totalChecks})`);
+            }
+        }, 5000);
+    </script>
+</body>
+</html>

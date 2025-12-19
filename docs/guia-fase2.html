@@ -1,0 +1,1204 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fase 2: Inteligência Avançada | Guia BI + IA</title>
+    <link rel="stylesheet" href="guia-styles.css">
+</head>
+<body>
+    <div class="container">
+        <header class="phase-header phase2">
+            <div class="breadcrumb">
+                <a href="guia-index.html">🏠 Índice</a> →
+                <a href="guia-fase1.html">🎯 Fase 1</a> →
+                <span>Fase 2</span>
+            </div>
+            <h1>🧠 Fase 2: Inteligência Avançada</h1>
+            <p>Machine Learning e Analytics Preditivo</p>
+            <div class="phase-meta">
+                <span class="badge">⏱️ 8 semanas</span>
+                <span class="badge">📊 Avançado</span>
+                <span class="badge">🧠 IA Completa</span>
+            </div>
+        </header>
+
+        <nav class="nav-sticky">
+            <a href="#visao">Visão Geral</a>
+            <a href="#scoring">Lead Scoring</a>
+            <a href="#sentiment">Análise Sentimento</a>
+            <a href="#recomendacao">Recomendação</a>
+            <a href="#analytics">Analytics</a>
+            <a href="#dashboard">Dashboard</a>
+        </nav>
+
+        <div class="content">
+            <section id="visao">
+                <h2>📋 Visão Geral da Fase 2</h2>
+                <div class="card card-info">
+                    <h3>🎯 Objetivo</h3>
+                    <p>Ao final desta fase, você terá:</p>
+                    <ul>
+                        <li>✅ Sistema de scoring avançado com Machine Learning</li>
+                        <li>✅ Análise de sentimento em tempo real</li>
+                        <li>✅ Recomendação inteligente de imóveis</li>
+                        <li>✅ Detector automático de oportunidades</li>
+                        <li>✅ Analytics preditivo com forecasting</li>
+                        <li>✅ Dashboard de métricas e insights</li>
+                    </ul>
+                </div>
+
+                <div class="timeline-overview">
+                    <div class="timeline-item">
+                        <strong>Semanas 1-2: Lead Scoring ML</strong>
+                        <p>Modelo preditivo para qualificação de leads</p>
+                    </div>
+                    <div class="timeline-item">
+                        <strong>Semanas 3-4: Análise de Sentimento</strong>
+                        <p>Detecção de emoções e intenções profundas</p>
+                    </div>
+                    <div class="timeline-item">
+                        <strong>Semanas 5-6: Sistema de Recomendação</strong>
+                        <p>Matching inteligente lead ↔ imóvel</p>
+                    </div>
+                    <div class="timeline-item">
+                        <strong>Semanas 7-8: Analytics & Dashboard</strong>
+                        <p>Previsões e visualização de dados</p>
+                    </div>
+                </div>
+            </section>
+
+            <section id="scoring">
+                <h2>⭐ Lead Scoring com Machine Learning</h2>
+
+                <div class="card card-warning">
+                    <h3>💡 Conceito</h3>
+                    <p>Em vez de scoring manual baseado em regras, vamos usar ML para aprender padrões de leads que convertem vs. leads que não convertem.</p>
+                </div>
+
+                <h3>Tarefa 2.1: Modelo de Scoring ML</h3>
+                <div class="code-block">
+                    <div class="code-header">
+                        <span>📁 apps/api/src/ai/ml/lead-scoring.service.ts</span>
+                        <button onclick="copyCode(this)">📋 Copiar</button>
+                    </div>
+                    <pre><code>import { ClaudeService } from '../services/claude.service';
+import { PrismaClient } from '@prisma/client';
+
+const prisma = new PrismaClient();
+
+interface ScoringFeatures {
+  responseTime: number; // em segundos
+  messageCount: number;
+  questionCount: number;
+  budgetMentioned: boolean;
+  urgencyLevel: number; // 1-3
+  sentimentScore: number; // -1 a 1
+  propertyViewsCount: number;
+  daysSinceFirstContact: number;
+  previousDealsCount: number;
+  sourceChannel: string;
+}
+
+export class LeadScoringMLService {
+  private claudeService: ClaudeService;
+
+  constructor() {
+    this.claudeService = new ClaudeService();
+  }
+
+  async calculateAdvancedScore(leadId: string): Promise<{
+    score: number;
+    confidence: number;
+    factors: Record<string, number>;
+    recommendation: string;
+  }> {
+    // 1. Extrair features do lead
+    const features = await this.extractFeatures(leadId);
+
+    // 2. Usar Claude como "modelo" (em produção, usar modelo treinado)
+    const analysis = await this.analyzeWithAI(features);
+
+    // 3. Calcular score final
+    const finalScore = this.calculateFinalScore(features, analysis);
+
+    return {
+      score: finalScore,
+      confidence: analysis.confidence || 0.75,
+      factors: this.getScoreFactors(features),
+      recommendation: this.getRecommendation(finalScore, features)
+    };
+  }
+
+  private async extractFeatures(leadId: string): Promise<ScoringFeatures> {
+    const lead = await prisma.lead.findUnique({
+      where: { id: leadId },
+      include: {
+        messages: {
+          orderBy: { createdAt: 'desc' },
+          take: 50
+        },
+        propertyViews: true,
+        deals: true
+      }
+    });
+
+    if (!lead) {
+      throw new Error('Lead não encontrado');
+    }
+
+    // Calcular tempo médio de resposta
+    const responseTimes = this.calculateResponseTimes(lead.messages);
+    const avgResponseTime = responseTimes.length > 0
+      ? responseTimes.reduce((a, b) => a + b) / responseTimes.length
+      : 0;
+
+    // Contar perguntas feitas pelo lead
+    const questionCount = lead.messages.filter(
+      m => m.content.includes('?') && m.direction === 'inbound'
+    ).length;
+
+    // Detectar urgência
+    const urgencyWords = ['urgente', 'rápido', 'hoje', 'amanhã', 'agora'];
+    const urgencyScore = lead.messages.some(m =>
+      urgencyWords.some(w => m.content.toLowerCase().includes(w))
+    ) ? 3 : 1;
+
+    // Calcular dias desde primeiro contato
+    const firstMessage = lead.messages[lead.messages.length - 1];
+    const daysSince = firstMessage
+      ? Math.floor((Date.now() - firstMessage.createdAt.getTime()) / (1000 * 60 * 60 * 24))
+      : 0;
+
+    return {
+      responseTime: avgResponseTime,
+      messageCount: lead.messages.length,
+      questionCount,
+      budgetMentioned: lead.budgetMax !== null,
+      urgencyLevel: urgencyScore,
+      sentimentScore: 0, // Será preenchido pela análise de sentimento
+      propertyViewsCount: lead.propertyViews?.length || 0,
+      daysSinceFirstContact: daysSince,
+      previousDealsCount: lead.deals?.length || 0,
+      sourceChannel: lead.source || 'unknown'
+    };
+  }
+
+  private calculateResponseTimes(messages: any[]): number[] {
+    const times: number[] = [];
+
+    for (let i = 1; i < messages.length; i++) {
+      const prev = messages[i - 1];
+      const curr = messages[i];
+
+      if (prev.direction === 'outbound' && curr.direction === 'inbound') {
+        const diff = (curr.createdAt.getTime() - prev.createdAt.getTime()) / 1000;
+        times.push(diff);
+      }
+    }
+
+    return times;
+  }
+
+  private async analyzeWithAI(features: ScoringFeatures): Promise<any> {
+    const prompt = `
+Você é um especialista em qualificação de leads imobiliários.
+
+Analise as seguintes características de um lead e retorne um JSON:
+
+FEATURES:
+- Tempo médio de resposta: ${features.responseTime.toFixed(1)}s
+- Mensagens trocadas: ${features.messageCount}
+- Perguntas feitas: ${features.questionCount}
+- Orçamento mencionado: ${features.budgetMentioned ? 'Sim' : 'Não'}
+- Nível de urgência: ${features.urgencyLevel}/3
+- Visualizações de imóveis: ${features.propertyViewsCount}
+- Dias desde 1º contato: ${features.daysSinceFirstContact}
+- Negociações anteriores: ${features.previousDealsCount}
+
+Retorne JSON:
+{
+  "conversion_probability": 0.0-1.0,
+  "confidence": 0.0-1.0,
+  "key_indicators": ["indicador1", "indicador2"],
+  "risk_factors": ["risco1", "risco2"],
+  "recommended_action": "string"
+}
+    `;
+
+    return await this.claudeService.analyze(prompt);
+  }
+
+  private calculateFinalScore(
+    features: ScoringFeatures,
+    aiAnalysis: any
+  ): number {
+    // Combina análise AI com regras de negócio
+    const baseScore = (aiAnalysis.conversion_probability || 0.5) * 100;
+
+    // Ajustes baseados em features
+    let adjustments = 0;
+
+    // Engagement alto
+    if (features.messageCount > 10) adjustments += 10;
+    if (features.questionCount > 5) adjustments += 5;
+
+    // Urgência
+    if (features.urgencyLevel === 3) adjustments += 15;
+
+    // Orçamento definido
+    if (features.budgetMentioned) adjustments += 10;
+
+    // Visualizou imóveis
+    adjustments += Math.min(features.propertyViewsCount * 3, 15);
+
+    // Negociações anteriores (cliente recorrente)
+    if (features.previousDealsCount > 0) adjustments += 20;
+
+    // Responde rápido
+    if (features.responseTime < 300) adjustments += 5;
+
+    // Penalidades
+    if (features.daysSinceFirstContact > 30) adjustments -= 10;
+    if (features.messageCount < 3) adjustments -= 10;
+
+    const finalScore = Math.max(0, Math.min(100, baseScore + adjustments));
+    return Math.round(finalScore);
+  }
+
+  private getScoreFactors(features: ScoringFeatures): Record<string, number> {
+    return {
+      engagement: Math.min(features.messageCount * 2, 30),
+      urgency: features.urgencyLevel * 10,
+      budget_clarity: features.budgetMentioned ? 20 : 0,
+      property_interest: Math.min(features.propertyViewsCount * 5, 20),
+      response_speed: features.responseTime < 300 ? 15 : 5,
+      recency: features.daysSinceFirstContact < 7 ? 15 : 5
+    };
+  }
+
+  private getRecommendation(score: number, features: ScoringFeatures): string {
+    if (score >= 80) {
+      return '🔥 LEAD QUENTE - Contato imediato do corretor';
+    } else if (score >= 60) {
+      return '⚡ LEAD QUALIFICADO - Agendar visita nas próximas 24h';
+    } else if (score >= 40) {
+      return '📱 LEAD MORNO - Continuar nutrição com conteúdo';
+    } else {
+      return '❄️ LEAD FRIO - Automação de follow-up semanal';
+    }
+  }
+
+  async batchUpdateScores(tenantId: string): Promise<void> {
+    const leads = await prisma.lead.findMany({
+      where: { tenantId, status: { not: 'closed' } }
+    });
+
+    console.log(`📊 Atualizando scores de ${leads.length} leads...`);
+
+    for (const lead of leads) {
+      try {
+        const result = await this.calculateAdvancedScore(lead.id);
+
+        await prisma.lead.update({
+          where: { id: lead.id },
+          data: {
+            score: result.score,
+            scoringFactors: result.factors,
+            lastScoredAt: new Date()
+          }
+        });
+
+        console.log(`✅ Lead ${lead.id}: ${result.score} pontos`);
+      } catch (error) {
+        console.error(`❌ Erro ao pontuar lead ${lead.id}:`, error);
+      }
+    }
+
+    console.log('🎉 Atualização de scores concluída!');
+  }
+}</code></pre>
+                </div>
+            </section>
+
+            <section id="sentiment">
+                <h2>😊 Análise de Sentimento Avançada</h2>
+
+                <h3>Tarefa 2.2: Sentiment Analysis Service</h3>
+                <div class="code-block">
+                    <div class="code-header">
+                        <span>📁 apps/api/src/ai/ml/sentiment-analysis.service.ts</span>
+                        <button onclick="copyCode(this)">📋 Copiar</button>
+                    </div>
+                    <pre><code>import { ClaudeService } from '../services/claude.service';
+
+export interface SentimentResult {
+  overall: 'positive' | 'neutral' | 'negative';
+  score: number; // -1 a 1
+  emotions: {
+    joy: number;
+    trust: number;
+    fear: number;
+    surprise: number;
+    sadness: number;
+    disgust: number;
+    anger: number;
+    anticipation: number;
+  };
+  urgency: 'low' | 'medium' | 'high';
+  engagement: number; // 0-1
+  insights: string[];
+}
+
+export class SentimentAnalysisService {
+  private claudeService: ClaudeService;
+
+  constructor() {
+    this.claudeService = new ClaudeService();
+  }
+
+  async analyzeMessage(message: string): Promise<SentimentResult> {
+    const prompt = `
+Analise o sentimento e emoções desta mensagem de um lead imobiliário.
+
+MENSAGEM: "${message}"
+
+Retorne JSON com:
+{
+  "overall": "positive" | "neutral" | "negative",
+  "score": -1.0 a 1.0,
+  "emotions": {
+    "joy": 0.0-1.0,
+    "trust": 0.0-1.0,
+    "fear": 0.0-1.0,
+    "surprise": 0.0-1.0,
+    "sadness": 0.0-1.0,
+    "disgust": 0.0-1.0,
+    "anger": 0.0-1.0,
+    "anticipation": 0.0-1.0
+  },
+  "urgency": "low" | "medium" | "high",
+  "engagement": 0.0-1.0,
+  "insights": ["insight 1", "insight 2"]
+}
+
+CRITÉRIOS:
+- Joy: felicidade, entusiasmo, empolgação
+- Trust: confiança, segurança
+- Fear: medo, ansiedade, preocupação
+- Anticipation: expectativa, esperança
+- Urgency: indicadores de pressa (urgente, rápido, hoje)
+- Engagement: nível de interesse demonstrado
+
+Seja preciso e contextualizado para mercado imobiliário brasileiro.
+    `;
+
+    try {
+      const analysis = await this.claudeService.analyze(prompt);
+      return this.normalizeResult(analysis);
+    } catch (error) {
+      console.error('Erro na análise de sentimento:', error);
+      return this.getDefaultResult();
+    }
+  }
+
+  async analyzeConversation(messages: Array<{
+    content: string;
+    direction: 'inbound' | 'outbound';
+    createdAt: Date;
+  }>): Promise<{
+    timeline: Array<{ timestamp: Date; sentiment: number }>;
+    trends: {
+      improving: boolean;
+      stable: boolean;
+      declining: boolean;
+    };
+    averageSentiment: number;
+    finalSentiment: SentimentResult;
+  }> {
+    // Analisar últimas 10 mensagens do lead
+    const leadMessages = messages
+      .filter(m => m.direction === 'inbound')
+      .slice(-10);
+
+    const timeline: Array<{ timestamp: Date; sentiment: number }> = [];
+
+    for (const msg of leadMessages) {
+      const result = await this.analyzeMessage(msg.content);
+      timeline.push({
+        timestamp: msg.createdAt,
+        sentiment: result.score
+      });
+    }
+
+    // Calcular tendência
+    const sentiments = timeline.map(t => t.sentiment);
+    const avgSentiment = sentiments.reduce((a, b) => a + b, 0) / sentiments.length;
+
+    // Tendência: comparar primeira metade vs segunda metade
+    const mid = Math.floor(sentiments.length / 2);
+    const firstHalf = sentiments.slice(0, mid);
+    const secondHalf = sentiments.slice(mid);
+
+    const avgFirst = firstHalf.reduce((a, b) => a + b, 0) / firstHalf.length;
+    const avgSecond = secondHalf.reduce((a, b) => a + b, 0) / secondHalf.length;
+
+    const improving = avgSecond > avgFirst + 0.1;
+    const declining = avgSecond < avgFirst - 0.1;
+    const stable = !improving && !declining;
+
+    // Análise da última mensagem
+    const lastMessage = leadMessages[leadMessages.length - 1];
+    const finalSentiment = await this.analyzeMessage(lastMessage.content);
+
+    return {
+      timeline,
+      trends: { improving, stable, declining },
+      averageSentiment: avgSentiment,
+      finalSentiment
+    };
+  }
+
+  private normalizeResult(raw: any): SentimentResult {
+    return {
+      overall: raw.overall || 'neutral',
+      score: raw.score || 0,
+      emotions: raw.emotions || this.getDefaultEmotions(),
+      urgency: raw.urgency || 'medium',
+      engagement: raw.engagement || 0.5,
+      insights: raw.insights || []
+    };
+  }
+
+  private getDefaultEmotions() {
+    return {
+      joy: 0,
+      trust: 0,
+      fear: 0,
+      surprise: 0,
+      sadness: 0,
+      disgust: 0,
+      anger: 0,
+      anticipation: 0
+    };
+  }
+
+  private getDefaultResult(): SentimentResult {
+    return {
+      overall: 'neutral',
+      score: 0,
+      emotions: this.getDefaultEmotions(),
+      urgency: 'medium',
+      engagement: 0.5,
+      insights: []
+    };
+  }
+}</code></pre>
+                </div>
+            </section>
+
+            <section id="recomendacao">
+                <h2>🏠 Sistema de Recomendação de Imóveis</h2>
+
+                <h3>Tarefa 2.3: Property Recommender</h3>
+                <div class="code-block">
+                    <div class="code-header">
+                        <span>📁 apps/api/src/ai/ml/property-recommender.service.ts</span>
+                        <button onclick="copyCode(this)">📋 Copiar</button>
+                    </div>
+                    <pre><code>import { PrismaClient } from '@prisma/client';
+import { ClaudeService } from '../services/claude.service';
+
+const prisma = new PrismaClient();
+
+interface LeadPreferences {
+  propertyType?: string;
+  bedrooms?: number;
+  bathrooms?: number;
+  parkingSpots?: number;
+  budgetMin?: number;
+  budgetMax?: number;
+  location?: string;
+  amenities?: string[];
+  mustHaves?: string[];
+}
+
+interface RecommendedProperty {
+  propertyId: string;
+  matchScore: number;
+  reasons: string[];
+  property: any;
+}
+
+export class PropertyRecommenderService {
+  private claudeService: ClaudeService;
+
+  constructor() {
+    this.claudeService = new ClaudeService();
+  }
+
+  async recommendProperties(
+    leadId: string,
+    limit: number = 5
+  ): Promise<RecommendedProperty[]> {
+    // 1. Extrair preferências do lead
+    const preferences = await this.extractLeadPreferences(leadId);
+
+    // 2. Buscar imóveis candidatos
+    const candidates = await this.fetchCandidateProperties(preferences);
+
+    // 3. Calcular score de match para cada imóvel
+    const scored = await Promise.all(
+      candidates.map(async property => {
+        const matchScore = await this.calculateMatchScore(
+          preferences,
+          property
+        );
+        return {
+          propertyId: property.id,
+          matchScore: matchScore.score,
+          reasons: matchScore.reasons,
+          property
+        };
+      })
+    );
+
+    // 4. Ordenar e retornar top N
+    return scored
+      .sort((a, b) => b.matchScore - a.matchScore)
+      .slice(0, limit);
+  }
+
+  private async extractLeadPreferences(
+    leadId: string
+  ): Promise<LeadPreferences> {
+    const lead = await prisma.lead.findUnique({
+      where: { id: leadId },
+      include: {
+        messages: {
+          where: { direction: 'inbound' },
+          orderBy: { createdAt: 'desc' },
+          take: 20
+        },
+        propertyViews: {
+          include: { property: true }
+        }
+      }
+    });
+
+    if (!lead) {
+      throw new Error('Lead não encontrado');
+    }
+
+    // Usar IA para extrair preferências das mensagens
+    const conversationText = lead.messages
+      .map(m => m.content)
+      .join('\n');
+
+    const prompt = `
+Analise estas mensagens de um lead imobiliário e extraia as preferências.
+
+MENSAGENS:
+${conversationText}
+
+IMÓVEIS VISUALIZADOS:
+${lead.propertyViews?.map(pv =>
+  `- ${pv.property.title} (${pv.property.bedrooms}Q, R$ ${pv.property.price})`
+).join('\n')}
+
+Retorne JSON:
+{
+  "propertyType": "casa" | "apartamento" | "terreno" | null,
+  "bedrooms": number | null,
+  "bathrooms": number | null,
+  "parkingSpots": number | null,
+  "budgetMin": number | null,
+  "budgetMax": number | null,
+  "location": "string" | null,
+  "amenities": ["piscina", "academia", ...] | [],
+  "mustHaves": ["requisito obrigatório", ...] | []
+}
+    `;
+
+    try {
+      const extracted = await this.claudeService.analyze(prompt);
+
+      return {
+        propertyType: extracted.propertyType || undefined,
+        bedrooms: extracted.bedrooms || lead.bedrooms || undefined,
+        bathrooms: extracted.bathrooms || undefined,
+        parkingSpots: extracted.parkingSpots || undefined,
+        budgetMin: extracted.budgetMin || lead.budgetMin || undefined,
+        budgetMax: extracted.budgetMax || lead.budgetMax || undefined,
+        location: extracted.location || undefined,
+        amenities: extracted.amenities || [],
+        mustHaves: extracted.mustHaves || []
+      };
+    } catch (error) {
+      console.error('Erro ao extrair preferências:', error);
+      return {};
+    }
+  }
+
+  private async fetchCandidateProperties(
+    preferences: LeadPreferences
+  ): Promise<any[]> {
+    const where: any = {
+      status: 'active',
+      deletedAt: null
+    };
+
+    // Filtros básicos
+    if (preferences.propertyType) {
+      where.type = preferences.propertyType;
+    }
+
+    if (preferences.bedrooms) {
+      where.bedrooms = { gte: preferences.bedrooms };
+    }
+
+    if (preferences.budgetMin || preferences.budgetMax) {
+      where.price = {};
+      if (preferences.budgetMin) where.price.gte = preferences.budgetMin;
+      if (preferences.budgetMax) where.price.lte = preferences.budgetMax;
+    }
+
+    return await prisma.property.findMany({
+      where,
+      take: 20, // Buscar 20 candidatos para scoring
+      orderBy: { createdAt: 'desc' }
+    });
+  }
+
+  private async calculateMatchScore(
+    preferences: LeadPreferences,
+    property: any
+  ): Promise<{ score: number; reasons: string[] }> {
+    let score = 0;
+    const reasons: string[] = [];
+
+    // Match perfeito de tipo
+    if (preferences.propertyType === property.type) {
+      score += 20;
+      reasons.push(`Tipo exato: ${property.type}`);
+    }
+
+    // Quartos
+    if (preferences.bedrooms === property.bedrooms) {
+      score += 20;
+      reasons.push(`${property.bedrooms} quartos conforme solicitado`);
+    } else if (
+      preferences.bedrooms &&
+      property.bedrooms >= preferences.bedrooms
+    ) {
+      score += 10;
+      reasons.push(`${property.bedrooms} quartos (mínimo: ${preferences.bedrooms})`);
+    }
+
+    // Orçamento
+    if (preferences.budgetMax && property.price <= preferences.budgetMax) {
+      const percentInBudget =
+        ((preferences.budgetMax - property.price) / preferences.budgetMax) * 100;
+      if (percentInBudget <= 10) {
+        score += 25; // Dentro do orçamento, próximo do máximo
+        reasons.push('Preço ideal dentro do orçamento');
+      } else {
+        score += 15; // Bem abaixo do orçamento
+        reasons.push('Preço abaixo do orçamento');
+      }
+    }
+
+    // Vagas de garagem
+    if (
+      preferences.parkingSpots &&
+      property.parkingSpots >= preferences.parkingSpots
+    ) {
+      score += 10;
+      reasons.push(`${property.parkingSpots} vagas de garagem`);
+    }
+
+    // Localização (usar IA para match semântico)
+    if (preferences.location && property.address) {
+      const locationMatch = await this.matchLocation(
+        preferences.location,
+        property.address
+      );
+      if (locationMatch > 0.7) {
+        score += 15;
+        reasons.push('Localização compatível');
+      }
+    }
+
+    // Amenidades
+    if (preferences.amenities && preferences.amenities.length > 0) {
+      const propertyAmenities = property.amenities || [];
+      const matchingAmenities = preferences.amenities.filter(a =>
+        propertyAmenities.some((pa: string) =>
+          pa.toLowerCase().includes(a.toLowerCase())
+        )
+      );
+
+      if (matchingAmenities.length > 0) {
+        const amenityScore = (matchingAmenities.length / preferences.amenities.length) * 10;
+        score += amenityScore;
+        reasons.push(`Possui ${matchingAmenities.length} amenidades desejadas`);
+      }
+    }
+
+    return {
+      score: Math.min(100, score),
+      reasons
+    };
+  }
+
+  private async matchLocation(
+    preferredLocation: string,
+    propertyAddress: string
+  ): Promise<number> {
+    const prompt = `
+Compare estas duas localizações e retorne um score de compatibilidade (0-1).
+
+PREFERÊNCIA DO LEAD: "${preferredLocation}"
+ENDEREÇO DO IMÓVEL: "${propertyAddress}"
+
+Retorne apenas um número entre 0 e 1.
+Exemplo: 0.85
+    `;
+
+    try {
+      const response = await this.claudeService.generateResponse(prompt);
+      const score = parseFloat(response.trim());
+      return isNaN(score) ? 0 : Math.max(0, Math.min(1, score));
+    } catch {
+      return 0;
+    }
+  }
+}</code></pre>
+                </div>
+            </section>
+
+            <section id="analytics">
+                <h2>📊 Analytics Preditivo</h2>
+
+                <h3>Tarefa 2.4: Predictive Analytics Service</h3>
+                <div class="code-block">
+                    <div class="code-header">
+                        <span>📁 apps/api/src/ai/ml/predictive-analytics.service.ts</span>
+                        <button onclick="copyCode(this)">📋 Copiar</button>
+                    </div>
+                    <pre><code>import { PrismaClient } from '@prisma/client';
+import { ClaudeService } from '../services/claude.service';
+
+const prisma = new PrismaClient();
+
+export class PredictiveAnalyticsService {
+  private claudeService: ClaudeService;
+
+  constructor() {
+    this.claudeService = new ClaudeService();
+  }
+
+  async forecastConversions(
+    tenantId: string,
+    daysAhead: number = 30
+  ): Promise<{
+    predicted_conversions: number;
+    confidence_interval: { low: number; high: number };
+    factors: string[];
+  }> {
+    // Buscar dados históricos
+    const historicalData = await this.getHistoricalConversions(tenantId, 90);
+
+    const prompt = `
+Você é um analista de dados especializado em previsões.
+
+DADOS HISTÓRICOS (últimos 90 dias):
+${historicalData.map((d, i) => `Dia ${i + 1}: ${d.conversions} conversões`).join('\n')}
+
+MÉTRICAS:
+- Total de conversões: ${historicalData.reduce((a, b) => a + b.conversions, 0)}
+- Média diária: ${(historicalData.reduce((a, b) => a + b.conversions, 0) / historicalData.length).toFixed(2)}
+- Tendência: ${this.calculateTrend(historicalData)}
+
+Preveja quantas conversões teremos nos próximos ${daysAhead} dias.
+
+Retorne JSON:
+{
+  "predicted_conversions": number,
+  "confidence_interval": { "low": number, "high": number },
+  "factors": ["fator 1", "fator 2", ...]
+}
+    `;
+
+    try {
+      return await this.claudeService.analyze(prompt);
+    } catch (error) {
+      console.error('Erro na previsão:', error);
+      return {
+        predicted_conversions: 0,
+        confidence_interval: { low: 0, high: 0 },
+        factors: []
+      };
+    }
+  }
+
+  async detectOpportunities(tenantId: string): Promise<Array<{
+    type: string;
+    description: string;
+    priority: 'high' | 'medium' | 'low';
+    impact: string;
+    action: string;
+  }>> {
+    // Buscar leads com padrões interessantes
+    const leads = await prisma.lead.findMany({
+      where: { tenantId },
+      include: {
+        messages: {
+          orderBy: { createdAt: 'desc' },
+          take: 10
+        },
+        propertyViews: true
+      }
+    });
+
+    const opportunities: any[] = [];
+
+    for (const lead of leads) {
+      // Oportunidade 1: Alto engagement mas sem agendamento
+      if (
+        lead.messages.length > 15 &&
+        lead.score > 60 &&
+        lead.status === 'active'
+      ) {
+        opportunities.push({
+          type: 'high_engagement_no_schedule',
+          description: `Lead ${lead.name || lead.phone} tem alto engajamento mas ainda não agendou visita`,
+          priority: 'high',
+          impact: 'Possível conversão próxima',
+          action: 'Corretor deve entrar em contato para agendar'
+        });
+      }
+
+      // Oportunidade 2: Visualizou múltiplos imóveis
+      if ((lead.propertyViews?.length || 0) > 5 && lead.score > 50) {
+        opportunities.push({
+          type: 'high_interest',
+          description: `Lead ${lead.name || lead.phone} visualizou ${lead.propertyViews?.length} imóveis`,
+          priority: 'high',
+          impact: 'Lead está comparando opções, momento de fechar',
+          action: 'Oferecer condições especiais'
+        });
+      }
+
+      // Oportunidade 3: Lead antigo reativado
+      const lastMessage = lead.messages[0];
+      const firstMessage = lead.messages[lead.messages.length - 1];
+
+      if (lastMessage && firstMessage) {
+        const daysSinceFirst =
+          (Date.now() - firstMessage.createdAt.getTime()) / (1000 * 60 * 60 * 24);
+        const daysSinceLast =
+          (Date.now() - lastMessage.createdAt.getTime()) / (1000 * 60 * 60 * 24);
+
+        if (daysSinceFirst > 30 && daysSinceLast < 2) {
+          opportunities.push({
+            type: 'reactivated_lead',
+            description: `Lead ${lead.name || lead.phone} voltou após ${Math.floor(daysSinceFirst)} dias`,
+            priority: 'medium',
+            impact: 'Lead pode estar pronto para decidir',
+            action: 'Verificar mudanças nas necessidades'
+          });
+        }
+      }
+    }
+
+    return opportunities.slice(0, 10); // Top 10 oportunidades
+  }
+
+  private async getHistoricalConversions(
+    tenantId: string,
+    days: number
+  ): Promise<Array<{ date: Date; conversions: number }>> {
+    const startDate = new Date();
+    startDate.setDate(startDate.getDate() - days);
+
+    const deals = await prisma.deal.groupBy({
+      by: ['createdAt'],
+      where: {
+        tenantId,
+        status: 'closed_won',
+        createdAt: { gte: startDate }
+      },
+      _count: true
+    });
+
+    // Agrupar por dia
+    const dailyData: Record<string, number> = {};
+
+    deals.forEach(deal => {
+      const dateKey = deal.createdAt.toISOString().split('T')[0];
+      dailyData[dateKey] = (dailyData[dateKey] || 0) + deal._count;
+    });
+
+    return Object.entries(dailyData).map(([date, conversions]) => ({
+      date: new Date(date),
+      conversions
+    }));
+  }
+
+  private calculateTrend(data: Array<{ conversions: number }>): string {
+    if (data.length < 2) return 'stable';
+
+    const mid = Math.floor(data.length / 2);
+    const firstHalf = data.slice(0, mid);
+    const secondHalf = data.slice(mid);
+
+    const avgFirst =
+      firstHalf.reduce((a, b) => a + b.conversions, 0) / firstHalf.length;
+    const avgSecond =
+      secondHalf.reduce((a, b) => a + b.conversions, 0) / secondHalf.length;
+
+    if (avgSecond > avgFirst * 1.1) return 'growing';
+    if (avgSecond < avgFirst * 0.9) return 'declining';
+    return 'stable';
+  }
+}</code></pre>
+                </div>
+            </section>
+
+            <section id="dashboard">
+                <h2>📈 Dashboard de Métricas e Insights</h2>
+
+                <h3>Tarefa 2.5: Metrics Dashboard Service</h3>
+                <div class="code-block">
+                    <div class="code-header">
+                        <span>📁 apps/api/src/ai/ml/metrics-dashboard.service.ts</span>
+                        <button onclick="copyCode(this)">📋 Copiar</button>
+                    </div>
+                    <pre><code>import { PrismaClient } from '@prisma/client';
+
+const prisma = new PrismaClient();
+
+export class MetricsDashboardService {
+  async getDashboardData(tenantId: string, period: 'day' | 'week' | 'month' = 'week') {
+    const startDate = this.getStartDate(period);
+
+    const [
+      totalLeads,
+      activeConversations,
+      conversions,
+      avgResponseTime,
+      topPerformingBrokers,
+      leadsBySource,
+      scoreDistribution,
+      sentimentTrend
+    ] = await Promise.all([
+      this.getTotalLeads(tenantId, startDate),
+      this.getActiveConversations(tenantId),
+      this.getConversions(tenantId, startDate),
+      this.getAvgResponseTime(tenantId, startDate),
+      this.getTopBrokers(tenantId, startDate),
+      this.getLeadsBySource(tenantId, startDate),
+      this.getScoreDistribution(tenantId),
+      this.getSentimentTrend(tenantId, startDate)
+    ]);
+
+    return {
+      overview: {
+        totalLeads,
+        activeConversations,
+        conversions,
+        conversionRate: totalLeads > 0 ? (conversions / totalLeads) * 100 : 0,
+        avgResponseTime: `${avgResponseTime}s`
+      },
+      performance: {
+        topBrokers: topPerformingBrokers,
+        leadsBySource
+      },
+      intelligence: {
+        scoreDistribution,
+        sentimentTrend
+      },
+      period,
+      generatedAt: new Date()
+    };
+  }
+
+  private getStartDate(period: 'day' | 'week' | 'month'): Date {
+    const now = new Date();
+    switch (period) {
+      case 'day':
+        now.setDate(now.getDate() - 1);
+        break;
+      case 'week':
+        now.setDate(now.getDate() - 7);
+        break;
+      case 'month':
+        now.setDate(now.getDate() - 30);
+        break;
+    }
+    return now;
+  }
+
+  private async getTotalLeads(tenantId: string, since: Date): Promise<number> {
+    return await prisma.lead.count({
+      where: { tenantId, createdAt: { gte: since } }
+    });
+  }
+
+  private async getActiveConversations(tenantId: string): Promise<number> {
+    const oneDayAgo = new Date();
+    oneDayAgo.setDate(oneDayAgo.getDate() - 1);
+
+    return await prisma.lead.count({
+      where: {
+        tenantId,
+        messages: {
+          some: { createdAt: { gte: oneDayAgo } }
+        }
+      }
+    });
+  }
+
+  private async getConversions(tenantId: string, since: Date): Promise<number> {
+    return await prisma.deal.count({
+      where: {
+        tenantId,
+        status: 'closed_won',
+        closedAt: { gte: since }
+      }
+    });
+  }
+
+  private async getAvgResponseTime(tenantId: string, since: Date): Promise<number> {
+    // Simplificado - em produção, calcular a partir dos timestamps das mensagens
+    return 45; // placeholder
+  }
+
+  private async getTopBrokers(tenantId: string, since: Date) {
+    const deals = await prisma.deal.groupBy({
+      by: ['brokerId'],
+      where: {
+        tenantId,
+        status: 'closed_won',
+        closedAt: { gte: since }
+      },
+      _count: true,
+      orderBy: { _count: { brokerId: 'desc' } },
+      take: 5
+    });
+
+    return Promise.all(
+      deals.map(async d => {
+        const broker = await prisma.user.findUnique({
+          where: { id: d.brokerId }
+        });
+        return {
+          name: broker?.name || 'Desconhecido',
+          deals: d._count
+        };
+      })
+    );
+  }
+
+  private async getLeadsBySource(tenantId: string, since: Date) {
+    const leads = await prisma.lead.groupBy({
+      by: ['source'],
+      where: { tenantId, createdAt: { gte: since } },
+      _count: true
+    });
+
+    return leads.map(l => ({
+      source: l.source || 'unknown',
+      count: l._count
+    }));
+  }
+
+  private async getScoreDistribution(tenantId: string) {
+    const leads = await prisma.lead.findMany({
+      where: { tenantId },
+      select: { score: true }
+    });
+
+    const distribution = {
+      cold: 0,    // 0-40
+      warm: 0,    // 41-60
+      hot: 0,     // 61-80
+      veryHot: 0  // 81-100
+    };
+
+    leads.forEach(lead => {
+      if (lead.score <= 40) distribution.cold++;
+      else if (lead.score <= 60) distribution.warm++;
+      else if (lead.score <= 80) distribution.hot++;
+      else distribution.veryHot++;
+    });
+
+    return distribution;
+  }
+
+  private async getSentimentTrend(tenantId: string, since: Date) {
+    // Placeholder - implementar análise real de sentimento ao longo do tempo
+    return {
+      positive: 65,
+      neutral: 25,
+      negative: 10
+    };
+  }
+}</code></pre>
+                </div>
+
+                <div class="test-box">
+                    <h4>🧪 Teste do Dashboard</h4>
+                    <div class="code-block">
+                        <div class="code-header">
+                            <span>📁 apps/api/src/tests/test-dashboard.ts</span>
+                            <button onclick="copyCode(this)">📋 Copiar</button>
+                        </div>
+                        <pre><code>import { MetricsDashboardService } from '../ai/ml/metrics-dashboard.service';
+
+async function testDashboard() {
+  console.log('🧪 Testando Dashboard...\n');
+
+  const dashboard = new MetricsDashboardService();
+
+  const data = await dashboard.getDashboardData('default-tenant', 'week');
+
+  console.log('📊 DASHBOARD DATA:');
+  console.log(JSON.stringify(data, null, 2));
+
+  console.log('\n✅ Dashboard funcionando!');
+}
+
+testDashboard().catch(console.error);</code></pre>
+                    </div>
+                    <div class="command-box">
+npx tsx src/tests/test-dashboard.ts
+                    </div>
+                </div>
+            </section>
+
+            <div class="card card-success" style="margin-top: 50px;">
+                <h3>🎉 Fase 2 Concluída!</h3>
+                <p>Você agora tem um sistema de BI com inteligência artificial avançada!</p>
+                <ul>
+                    <li>✅ Lead scoring com ML</li>
+                    <li>✅ Análise de sentimento profunda</li>
+                    <li>✅ Recomendações inteligentes</li>
+                    <li>✅ Analytics preditivo</li>
+                    <li>✅ Dashboard completo</li>
+                </ul>
+                <p><strong>Próximo passo:</strong> <a href="guia-fase3.html">Fase 3 - Automações Avançadas</a></p>
+            </div>
+        </div>
+
+        <footer class="nav-footer">
+            <a href="guia-fase1.html" class="btn-nav">← Fase 1</a>
+            <a href="guia-index.html" class="btn-nav">🏠 Índice</a>
+            <a href="guia-fase3.html" class="btn-nav">Fase 3 →</a>
+        </footer>
+    </div>
+
+    <script src="guia-scripts.js"></script>
+</body>
+</html>
