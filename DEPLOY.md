@@ -1,6 +1,25 @@
-# Deploy ImobiFlow na Vercel
+# 🚀 Deploy ImobiFlow - Guia Completo
 
-Este guia explica como fazer o deploy do projeto ImobiFlow na Vercel.
+**Última atualização**: 2025-12-19
+
+## 📦 Arquitetura de Deploy (Atual)
+
+### ✅ Backend (API) - Render
+- **URL Produção**: https://imobiflow-saas-1.onrender.com
+- **Plataforma**: Render
+- **Auto-deploy**: ✅ Ativo (push para `main`)
+- **Configuração**: `render.yaml`
+
+### ✅ Frontend (Web) - Vercel
+- **URL Produção**: https://imobiflow-frontend-bdnqa7ebp-hans-dohmanns-projects.vercel.app
+- **Plataforma**: Vercel
+- **Auto-deploy**: ✅ Ativo (push para `main`)
+- **Configuração**: `vercel.json`
+
+### ❌ NÃO usar Frontend no Render
+O Render está configurado APENAS para rodar a API. Todo o frontend roda exclusivamente no Vercel.
+
+---
 
 ## Pré-requisitos
 
@@ -106,19 +125,57 @@ Configure estas variáveis no painel da Vercel:
 - Certifique-se de que a API está acessível publicamente
 - Verifique CORS na API
 
-## Deploy do Backend (API)
+## 🔄 Workflow de Deploy
 
-O backend (Fastify + Prisma) precisa ser deployado separadamente:
+### Desenvolvimento Local
+```bash
+# Terminal 1 - Backend
+cd apps/api
+pnpm dev
 
-### Opções para Backend:
-1. **Railway**: https://railway.app
-2. **Render**: https://render.com
-3. **Heroku**: https://heroku.com
-4. **DigitalOcean App Platform**: https://www.digitalocean.com/products/app-platform
+# Terminal 2 - Frontend
+cd apps/web
+pnpm dev
+```
 
-### Depois de fazer deploy do backend:
-1. Atualize a variável `NEXT_PUBLIC_API_URL` na Vercel
-2. Faça um novo deploy ou aguarde o auto-deploy
+### Deploy Automático (Recomendado)
+```bash
+git add .
+git commit -m "feat: sua alteração"
+git push origin main
+```
+
+**Resultado:**
+- ✅ Render faz rebuild da API automaticamente
+- ✅ Vercel faz rebuild do Frontend automaticamente
+
+### Deploy Manual Frontend (se necessário)
+```bash
+cd apps/web
+vercel --prod
+```
+
+### Deploy Manual Backend (se necessário)
+- Acesse https://dashboard.render.com
+- Selecione `imobiflow-saas-1`
+- Click "Manual Deploy" → "Deploy latest commit"
+
+## 🔐 Variáveis de Ambiente
+
+### Backend (Render Dashboard)
+```env
+DATABASE_URL=postgresql://...
+JWT_SECRET=...
+ANTHROPIC_API_KEY=sk-ant-...
+CLOUDINARY_CLOUD_NAME=...
+CLOUDINARY_API_KEY=...
+CLOUDINARY_API_SECRET=...
+```
+
+### Frontend (Vercel Dashboard)
+```env
+NEXT_PUBLIC_API_URL=https://imobiflow-saas-1.onrender.com
+```
 
 ## Domínio Customizado
 
