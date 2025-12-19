@@ -24,7 +24,16 @@ export default function LoginPage() {
       await login({ email, senha });
       router.push('/dashboard');
     } catch (err: any) {
-      setError(err.response?.data?.error || 'Erro ao fazer login');
+      const errorMessage = err.response?.data?.error || 'Erro ao fazer login';
+      setError(errorMessage);
+      setLoading(false);
+
+      // Mantém a mensagem de erro visível por 5 segundos
+      setTimeout(() => {
+        setError('');
+      }, 5000);
+
+      return; // Não executa o finally
     } finally {
       setLoading(false);
     }
@@ -45,14 +54,28 @@ export default function LoginPage() {
         router.push('/dashboard');
       }
     } catch (err: any) {
-      setError(err.response?.data?.error || 'Erro ao fazer login com Google');
+      const errorMessage = err.response?.data?.error || 'Erro ao fazer login com Google';
+      setError(errorMessage);
+      setLoading(false);
+
+      // Mantém a mensagem de erro visível por 5 segundos
+      setTimeout(() => {
+        setError('');
+      }, 5000);
+
+      return; // Não executa o finally
     } finally {
       setLoading(false);
     }
   }
 
   function handleGoogleError() {
-    setError('Erro ao fazer login com Google');
+    setError('Erro ao fazer login com Google. Tente novamente.');
+
+    // Mantém a mensagem de erro visível por 5 segundos
+    setTimeout(() => {
+      setError('');
+    }, 5000);
   }
 
   return (
