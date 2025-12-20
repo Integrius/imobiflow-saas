@@ -1,0 +1,32 @@
+# Configuração para rodar Puppeteer no Render
+services:
+  - type: web
+    name: imobiflow-api-whatsapp
+    env: node
+    region: ohio
+    plan: starter
+    buildCommand: |
+      # Instalar dependências do Chromium
+      apt-get update
+      apt-get install -y chromium chromium-driver
+      cd apps/api && pnpm install && pnpm run build
+    startCommand: cd apps/api && node dist/server.js
+    envVars:
+      - key: DATABASE_URL
+        sync: false
+      - key: JWT_SECRET
+        sync: false
+      - key: ANTHROPIC_API_KEY
+        sync: false
+      - key: OPENAI_API_KEY
+        sync: false
+      - key: AI_ENABLED
+        value: true
+      - key: AI_AUTO_RESPOND
+        value: true
+      - key: PUPPETEER_SKIP_CHROMIUM_DOWNLOAD
+        value: true
+      - key: PUPPETEER_EXECUTABLE_PATH
+        value: /usr/bin/chromium
+      - key: WHATSAPP_SESSION_PATH
+        value: /opt/render/project/whatsapp-session
