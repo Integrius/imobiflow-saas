@@ -4,7 +4,11 @@ services:
     env: node
     region: ohio
     plan: starter
-    buildCommand: cd apps/api && npm install -g pnpm && pnpm install && pnpm run build
+    buildCommand: |
+      # Instalar Chromium para WhatsApp
+      apt-get update && apt-get install -y chromium chromium-driver
+      # Build do projeto
+      cd apps/api && npm install -g pnpm && pnpm install && pnpm run build
     startCommand: cd apps/api && pnpm start
     envVars:
       - key: DATABASE_URL
@@ -39,3 +43,7 @@ services:
         value: 10.00
       - key: WHATSAPP_SESSION_PATH
         value: ./whatsapp-session
+      - key: PUPPETEER_SKIP_CHROMIUM_DOWNLOAD
+        value: true
+      - key: PUPPETEER_EXECUTABLE_PATH
+        value: /usr/bin/chromium
