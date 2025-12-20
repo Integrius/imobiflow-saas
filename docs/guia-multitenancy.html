@@ -1,0 +1,752 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Multi-Tenancy | ImobiFlow SaaS</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #8FD14F 0%, #006D77 100%);
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        header {
+            background: linear-gradient(135deg, #8FD14F 0%, #006D77 100%);
+            color: white;
+            padding: 60px 40px;
+            text-align: center;
+        }
+
+        header h1 {
+            font-size: 3.5em;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        header p {
+            font-size: 1.3em;
+            opacity: 0.95;
+        }
+
+        .breadcrumb {
+            background: #f8f9fa;
+            padding: 15px 40px;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        .breadcrumb a {
+            color: #006D77;
+            text-decoration: none;
+            margin-right: 10px;
+        }
+
+        .breadcrumb a:hover {
+            text-decoration: underline;
+        }
+
+        .content {
+            padding: 60px 40px;
+        }
+
+        h2 {
+            color: #2c3e50;
+            margin: 40px 0 20px 0;
+            font-size: 2.2em;
+            border-left: 5px solid #8FD14F;
+            padding-left: 20px;
+        }
+
+        h3 {
+            color: #34495e;
+            margin: 30px 0 15px 0;
+            font-size: 1.6em;
+        }
+
+        p {
+            line-height: 1.8;
+            color: #555;
+            margin-bottom: 20px;
+            font-size: 1.1em;
+        }
+
+        .architecture-diagram {
+            background: #f8f9fa;
+            border: 2px solid #8FD14F;
+            border-radius: 10px;
+            padding: 30px;
+            margin: 30px 0;
+            font-family: 'Courier New', monospace;
+            white-space: pre-wrap;
+            overflow-x: auto;
+        }
+
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 30px 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .comparison-table th {
+            background: #8FD14F;
+            color: white;
+            padding: 15px;
+            text-align: left;
+            font-size: 1.1em;
+        }
+
+        .comparison-table td {
+            padding: 15px;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        .comparison-table tr:nth-child(even) {
+            background: #f8f9fa;
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+            margin: 40px 0;
+        }
+
+        .feature-card {
+            background: white;
+            border: 2px solid #e9ecef;
+            border-radius: 15px;
+            padding: 30px;
+            transition: all 0.3s;
+        }
+
+        .feature-card:hover {
+            border-color: #8FD14F;
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(143, 209, 79, 0.2);
+        }
+
+        .feature-card .icon {
+            font-size: 3em;
+            margin-bottom: 15px;
+        }
+
+        .feature-card h4 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+
+        .feature-card p {
+            color: #666;
+            font-size: 0.95em;
+        }
+
+        .code-block {
+            background: #2c3e50;
+            color: #fff;
+            padding: 25px;
+            border-radius: 10px;
+            margin: 20px 0;
+            overflow-x: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            line-height: 1.6;
+        }
+
+        .code-block .comment {
+            color: #95a5a6;
+        }
+
+        .code-block .keyword {
+            color: #8FD14F;
+        }
+
+        .code-block .string {
+            color: #e74c3c;
+        }
+
+        .highlight-box {
+            background: #fff3cd;
+            border-left: 5px solid #ffc107;
+            padding: 25px;
+            margin: 30px 0;
+            border-radius: 8px;
+        }
+
+        .highlight-box h3 {
+            color: #856404;
+            margin-top: 0;
+        }
+
+        .success-box {
+            background: #d4edda;
+            border-left: 5px solid #28a745;
+            padding: 25px;
+            margin: 30px 0;
+            border-radius: 8px;
+        }
+
+        .success-box h3 {
+            color: #155724;
+            margin-top: 0;
+        }
+
+        .example-flow {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            padding: 30px;
+            border-radius: 15px;
+            margin: 30px 0;
+        }
+
+        .example-flow h4 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+        }
+
+        .flow-step {
+            background: white;
+            border-left: 4px solid #8FD14F;
+            padding: 20px;
+            margin: 15px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .flow-step strong {
+            color: #006D77;
+        }
+
+        .tenant-visual {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin: 40px 0;
+        }
+
+        .tenant-box {
+            background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+            border: 3px solid #8FD14F;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 5px 20px rgba(143, 209, 79, 0.2);
+        }
+
+        .tenant-box h4 {
+            color: #006D77;
+            margin-bottom: 20px;
+            font-size: 1.4em;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .tenant-box .emoji {
+            font-size: 1.5em;
+        }
+
+        .tenant-box ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .tenant-box li {
+            padding: 10px 0;
+            border-bottom: 1px solid #e9ecef;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .tenant-box li:last-child {
+            border-bottom: none;
+        }
+
+        .tenant-box .label {
+            color: #666;
+            font-size: 0.9em;
+        }
+
+        .tenant-box .value {
+            color: #2c3e50;
+            font-weight: bold;
+        }
+
+        .back-link {
+            display: inline-block;
+            background: #8FD14F;
+            color: white;
+            padding: 15px 30px;
+            border-radius: 8px;
+            text-decoration: none;
+            margin: 30px 0;
+            transition: all 0.3s;
+        }
+
+        .back-link:hover {
+            background: #006D77;
+            transform: scale(1.05);
+        }
+
+        footer {
+            background: #2c3e50;
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+
+        footer p {
+            color: #ecf0f1;
+            margin-bottom: 10px;
+        }
+
+        .isolation-diagram {
+            background: white;
+            border: 2px solid #8FD14F;
+            border-radius: 15px;
+            padding: 40px;
+            margin: 30px 0;
+            text-align: center;
+        }
+
+        .isolation-level {
+            display: inline-block;
+            background: linear-gradient(135deg, #8FD14F 0%, #006D77 100%);
+            color: white;
+            padding: 20px 40px;
+            border-radius: 10px;
+            margin: 10px;
+            font-weight: bold;
+            font-size: 1.2em;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🏢 Multi-Tenancy</h1>
+            <p>Arquitetura SaaS com Isolamento Completo por Cliente</p>
+        </header>
+
+        <div class="breadcrumb">
+            <a href="guia-index.html">← Voltar ao Índice</a> / Multi-Tenancy
+        </div>
+
+        <div class="content">
+            <h2>🎯 O Que É Multi-Tenancy?</h2>
+            <p>
+                <strong>Multi-tenancy</strong> é uma arquitetura de software onde <strong>uma única instância da aplicação serve múltiplos clientes (tenants)</strong>,
+                mantendo os dados de cada cliente <strong>completamente isolados e seguros</strong>.
+            </p>
+
+            <p>
+                No ImobiFlow, cada <strong>imobiliária é um tenant independente</strong> com:
+            </p>
+
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <div class="icon">📞</div>
+                    <h4>WhatsApp Próprio</h4>
+                    <p>Cada cliente conecta seu próprio número de WhatsApp Business para automação.</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="icon">👥</div>
+                    <h4>Leads Isolados</h4>
+                    <p>Leads de uma imobiliária nunca aparecem para outra. Isolamento total.</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="icon">🏠</div>
+                    <h4>Portfólio Próprio</h4>
+                    <p>Cada imobiliária gerencia seu próprio catálogo de imóveis.</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="icon">👨‍💼</div>
+                    <h4>Equipe Separada</h4>
+                    <p>Corretores e usuários de cada empresa ficam isolados.</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="icon">🤖</div>
+                    <h4>IA Personalizada</h4>
+                    <p>Sofia pode ter personalidade e regras diferentes para cada cliente.</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="icon">📊</div>
+                    <h4>Dashboard Exclusivo</h4>
+                    <p>Estatísticas e BI mostram apenas dados da própria empresa.</p>
+                </div>
+            </div>
+
+            <h2>🏗️ Arquitetura Multi-Tenant</h2>
+
+            <div class="architecture-diagram">
+ImobiFlow SaaS (Uma Única Aplicação)
+│
+├─ 🏢 Tenant 1: Imobiliária ABC Ltda
+│  ├─ 📞 WhatsApp: (11) 98888-8888
+│  ├─ 👥 Leads: 150
+│  ├─ 🏠 Imóveis: 80
+│  ├─ 👨‍💼 Corretores: 5
+│  ├─ 💰 Negociações: 120
+│  ├─ 🤖 Sofia: Personalidade profissional
+│  └─ 📊 Dashboard: Métricas próprias
+│
+├─ 🏢 Tenant 2: Imobiliária XYZ S.A.
+│  ├─ 📞 WhatsApp: (21) 97777-7777
+│  ├─ 👥 Leads: 200
+│  ├─ 🏠 Imóveis: 120
+│  ├─ 👨‍💼 Corretores: 8
+│  ├─ 💰 Negociações: 180
+│  ├─ 🤖 Sofia: Personalidade descontraída
+│  └─ 📊 Dashboard: Métricas próprias
+│
+└─ 🏢 Tenant 3: Imóveis Prime
+   ├─ 📞 WhatsApp: (48) 96666-6666
+   ├─ 👥 Leads: 50
+   ├─ 🏠 Imóveis: 30
+   ├─ 👨‍💼 Corretores: 3
+   ├─ 💰 Negociações: 40
+   ├─ 🤖 Sofia: Personalidade consultiva
+   └─ 📊 Dashboard: Métricas próprias
+
+✅ Cada tenant totalmente ISOLADO e INDEPENDENTE
+            </div>
+
+            <h2>🔒 Como Funciona o Isolamento?</h2>
+
+            <h3>1. Banco de Dados - Campo `tenant_id`</h3>
+            <p>
+                <strong>TODAS as tabelas</strong> do banco de dados têm um campo <code>tenant_id</code> que identifica a qual cliente pertence cada registro.
+            </p>
+
+            <div class="code-block">
+<span class="comment">// Exemplo: Tabela de Leads</span>
+<span class="keyword">model</span> Lead {
+  id        String   @id @default(uuid())
+
+  <span class="comment">// Campo que identifica o tenant</span>
+  <span class="keyword">tenant_id</span> String  <span class="comment">← Chave do isolamento!</span>
+  tenant    Tenant   @relation(...)
+
+  nome      String
+  telefone  String
+  email     String?
+  score     Int
+
+  @@<span class="keyword">index</span>([tenant_id])  <span class="comment">← Índice para performance</span>
+}
+            </div>
+
+            <h3>2. Middleware de Autenticação</h3>
+            <p>
+                Quando você faz login, o sistema:
+            </p>
+
+            <div class="example-flow">
+                <h4>Fluxo de Autenticação:</h4>
+
+                <div class="flow-step">
+                    <strong>1. Login:</strong> Usuário envia email + senha
+                </div>
+
+                <div class="flow-step">
+                    <strong>2. Verificação:</strong> Sistema valida credenciais e identifica o tenant
+                </div>
+
+                <div class="flow-step">
+                    <strong>3. Token JWT:</strong> Gera token contendo <code>userId</code> + <code>tenantId</code>
+                </div>
+
+                <div class="flow-step">
+                    <strong>4. Requisições:</strong> Todas as chamadas API incluem o token
+                </div>
+
+                <div class="flow-step">
+                    <strong>5. Filtro Automático:</strong> Sistema filtra TODOS os dados por <code>tenant_id</code>
+                </div>
+            </div>
+
+            <div class="code-block">
+<span class="comment">// Token JWT contém:</span>
+{
+  <span class="string">"userId"</span>: <span class="string">"abc-123"</span>,
+  <span class="string">"tenantId"</span>: <span class="string">"tenant-xyz"</span>,  <span class="comment">← Identifica a imobiliária</span>
+  <span class="string">"email"</span>: <span class="string">"joao@imobiliariaABC.com"</span>
+}
+
+<span class="comment">// Todas as queries são filtradas automaticamente:</span>
+<span class="keyword">const</span> leads = <span class="keyword">await</span> prisma.lead.findMany({
+  <span class="keyword">where</span>: {
+    tenant_id: tenantId  <span class="comment">← Sempre filtrado!</span>
+  }
+})
+            </div>
+
+            <h3>3. Isolamento em Todas as Camadas</h3>
+
+            <div class="isolation-diagram">
+                <div class="isolation-level">🗄️ Banco de Dados</div>
+                <div class="isolation-level">🔌 API / Backend</div>
+                <div class="isolation-level">🎨 Frontend / UI</div>
+                <div class="isolation-level">🤖 IA / Sofia</div>
+                <div class="isolation-level">📱 WhatsApp</div>
+                <p style="margin-top: 30px; color: #2c3e50;">
+                    <strong>Isolamento completo em TODAS as camadas!</strong>
+                </p>
+            </div>
+
+            <h2>🏢 Exemplo Prático: 3 Imobiliárias</h2>
+
+            <div class="tenant-visual">
+                <div class="tenant-box">
+                    <h4><span class="emoji">🏢</span> Imobiliária ABC</h4>
+                    <ul>
+                        <li>
+                            <span class="label">Tenant ID:</span>
+                            <span class="value">tenant-001</span>
+                        </li>
+                        <li>
+                            <span class="label">WhatsApp:</span>
+                            <span class="value">(11) 98888-8888</span>
+                        </li>
+                        <li>
+                            <span class="label">Leads:</span>
+                            <span class="value">150 leads</span>
+                        </li>
+                        <li>
+                            <span class="label">Imóveis:</span>
+                            <span class="value">80 imóveis</span>
+                        </li>
+                        <li>
+                            <span class="label">Corretores:</span>
+                            <span class="value">5 corretores</span>
+                        </li>
+                        <li>
+                            <span class="label">Sofia:</span>
+                            <span class="value">Tom profissional</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="tenant-box">
+                    <h4><span class="emoji">🏢</span> Imobiliária XYZ</h4>
+                    <ul>
+                        <li>
+                            <span class="label">Tenant ID:</span>
+                            <span class="value">tenant-002</span>
+                        </li>
+                        <li>
+                            <span class="label">WhatsApp:</span>
+                            <span class="value">(21) 97777-7777</span>
+                        </li>
+                        <li>
+                            <span class="label">Leads:</span>
+                            <span class="value">200 leads</span>
+                        </li>
+                        <li>
+                            <span class="label">Imóveis:</span>
+                            <span class="value">120 imóveis</span>
+                        </li>
+                        <li>
+                            <span class="label">Corretores:</span>
+                            <span class="value">8 corretores</span>
+                        </li>
+                        <li>
+                            <span class="label">Sofia:</span>
+                            <span class="value">Tom descontraído</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="tenant-box">
+                    <h4><span class="emoji">🏢</span> Imóveis Prime</h4>
+                    <ul>
+                        <li>
+                            <span class="label">Tenant ID:</span>
+                            <span class="value">tenant-003</span>
+                        </li>
+                        <li>
+                            <span class="label">WhatsApp:</span>
+                            <span class="value">(48) 96666-6666</span>
+                        </li>
+                        <li>
+                            <span class="label">Leads:</span>
+                            <span class="value">50 leads</span>
+                        </li>
+                        <li>
+                            <span class="label">Imóveis:</span>
+                            <span class="value">30 imóveis</span>
+                        </li>
+                        <li>
+                            <span class="label">Corretores:</span>
+                            <span class="value">3 corretores</span>
+                        </li>
+                        <li>
+                            <span class="label">Sofia:</span>
+                            <span class="value">Tom consultivo</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <h2>❓ Perguntas Frequentes</h2>
+
+            <h3>1. Preciso de um número WhatsApp novo?</h3>
+            <div class="highlight-box">
+                <p>
+                    <strong>NÃO!</strong> Você usa seu número comercial atual. Conecta ele na API via QR Code (igual WhatsApp Web).
+                    Cada tenant conecta seu próprio número.
+                </p>
+            </div>
+
+            <h3>2. Meus dados ficam misturados com outros clientes?</h3>
+            <div class="success-box">
+                <p>
+                    <strong>JAMAIS!</strong> Isolamento 100% garantido. Você NUNCA vê dados de outras imobiliárias, e elas NUNCA veem os seus.
+                    É como ter seu próprio sistema exclusivo.
+                </p>
+            </div>
+
+            <h3>3. A Sofia é compartilhada entre clientes?</h3>
+            <div class="highlight-box">
+                <p>
+                    <strong>Não!</strong> Cada tenant tem sua própria "instância" da Sofia. Você pode personalizar:
+                </p>
+                <ul>
+                    <li>Tom de voz (profissional, descontraído, consultivo)</li>
+                    <li>Regras de qualificação</li>
+                    <li>Horário de atendimento</li>
+                    <li>Limites de mensagens</li>
+                    <li>Critérios de score</li>
+                </ul>
+            </div>
+
+            <h3>4. Como sei que estou vendo apenas meus dados?</h3>
+            <div class="success-box">
+                <p>
+                    O sistema usa seu <strong>token de autenticação</strong> (JWT) que contém seu <code>tenant_id</code>.
+                    <strong>TODAS</strong> as consultas ao banco de dados são automaticamente filtradas por esse ID.
+                    É impossível ver dados de outro tenant.
+                </p>
+            </div>
+
+            <h3>5. O que acontece se um tenant apagar?</h3>
+            <div class="highlight-box">
+                <p>
+                    Quando um tenant é deletado, <strong>todos os dados relacionados</strong> são deletados automaticamente (cascade delete):
+                </p>
+                <ul>
+                    <li>Leads</li>
+                    <li>Imóveis</li>
+                    <li>Negociações</li>
+                    <li>Usuários</li>
+                    <li>Mensagens</li>
+                    <li>Histórico completo</li>
+                </ul>
+                <p><strong>Outros tenants não são afetados.</strong></p>
+            </div>
+
+            <h2>🔐 Segurança e Compliance</h2>
+
+            <table class="comparison-table">
+                <thead>
+                    <tr>
+                        <th>Aspecto</th>
+                        <th>Implementação</th>
+                        <th>Benefício</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Isolamento de Dados</strong></td>
+                        <td>Campo <code>tenant_id</code> em todas tabelas</td>
+                        <td>Impossível acessar dados de outros clientes</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Autenticação</strong></td>
+                        <td>JWT com <code>tenantId</code> embutido</td>
+                        <td>Filtro automático em todas requisições</td>
+                    </tr>
+                    <tr>
+                        <td><strong>LGPD</strong></td>
+                        <td>Dados isolados por cliente</td>
+                        <td>Conformidade com privacidade</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Backup</strong></td>
+                        <td>PostgreSQL com backup automático</td>
+                        <td>Dados seguros e recuperáveis</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Cascade Delete</strong></td>
+                        <td>Exclusão automática de dados relacionados</td>
+                        <td>Não deixa dados órfãos</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h2>✅ Resumo Final</h2>
+
+            <div class="success-box">
+                <h3>Multi-Tenancy no ImobiFlow:</h3>
+                <ul style="list-style: none; padding: 0;">
+                    <li style="padding: 10px 0; border-bottom: 1px solid #c3e6cb;">
+                        ✅ <strong>Uma aplicação</strong> serve múltiplos clientes
+                    </li>
+                    <li style="padding: 10px 0; border-bottom: 1px solid #c3e6cb;">
+                        ✅ <strong>Isolamento total</strong> de dados por <code>tenant_id</code>
+                    </li>
+                    <li style="padding: 10px 0; border-bottom: 1px solid #c3e6cb;">
+                        ✅ <strong>Cada cliente</strong> conecta seu próprio WhatsApp
+                    </li>
+                    <li style="padding: 10px 0; border-bottom: 1px solid #c3e6cb;">
+                        ✅ <strong>Sofia personalizada</strong> para cada imobiliária
+                    </li>
+                    <li style="padding: 10px 0; border-bottom: 1px solid #c3e6cb;">
+                        ✅ <strong>Dashboard exclusivo</strong> com métricas próprias
+                    </li>
+                    <li style="padding: 10px 0; border-bottom: 1px solid #c3e6cb;">
+                        ✅ <strong>Segurança garantida</strong> - impossível ver dados alheios
+                    </li>
+                    <li style="padding: 10px 0;">
+                        ✅ <strong>Escalável</strong> - suporta centenas de imobiliárias
+                    </li>
+                </ul>
+            </div>
+
+            <div style="text-align: center; margin: 50px 0;">
+                <p style="font-size: 1.3em; color: #2c3e50; margin-bottom: 30px;">
+                    <strong>É como ter seu próprio sistema exclusivo, mas com custo e manutenção de SaaS! 🚀</strong>
+                </p>
+                <a href="guia-index.html" class="back-link">← Voltar ao Índice de Guias</a>
+            </div>
+        </div>
+
+        <footer>
+            <p><strong>ImobiFlow SaaS</strong> - Multi-Tenancy Architecture</p>
+            <p>Última atualização: 20 de Dezembro de 2025</p>
+            <p>Documentação Técnica v1.0</p>
+        </footer>
+    </div>
+</body>
+</html>
