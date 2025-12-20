@@ -1,15 +1,11 @@
 services:
   - type: web
     name: imobiflow-saas-1
-    env: node
+    env: docker
     region: ohio
     plan: starter
-    buildCommand: |
-      # Instalar Chromium para WhatsApp
-      apt-get update && apt-get install -y chromium chromium-driver
-      # Build do projeto
-      cd apps/api && npm install -g pnpm && pnpm install && pnpm run build
-    startCommand: cd apps/api && pnpm start
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
     envVars:
       - key: DATABASE_URL
         sync: false

@@ -1,0 +1,12 @@
+node_modules
+dist
+.git
+.env
+*.log
+.DS_Store
+whatsapp-session
+.vscode
+.idea
+docs
+*.md
+!README.md
