@@ -212,6 +212,79 @@ export async function whatsappRoutes(server: FastifyInstance) {
     }
   });
 
+  /**
+   * GET /api/v1/whatsapp/diagnostics
+   * Diagnóstico do ambiente Puppeteer/Chromium
+   */
+  server.get('/diagnostics', async (request, reply) => {
+    try {
+      const { execSync } = await import('child_process');
+      const fs = await import('fs');
+
+      const diagnostics: any = {
+        environment: {
+          NODE_ENV: process.env.NODE_ENV,
+          PUPPETEER_EXECUTABLE_PATH: process.env.PUPPETEER_EXECUTABLE_PATH,
+          PUPPETEER_SKIP_CHROMIUM_DOWNLOAD: process.env.PUPPETEER_SKIP_CHROMIUM_DOWNLOAD,
+          WHATSAPP_SESSION_PATH: process.env.WHATSAPP_SESSION_PATH,
+        },
+        chromium: {
+          exists: false,
+          path: null,
+          version: null
+        },
+        sessionPath: {
+          exists: false,
+          writable: false
+        }
+      };
+
+      // Verifica se Chromium existe
+      const chromiumPath = process.env.PUPPETEER_EXECUTABLE_PATH || '/usr/bin/chromium';
+      try {
+        diagnostics.chromium.exists = fs.existsSync(chromiumPath);
+        diagnostics.chromium.path = chromiumPath;
+
+        if (diagnostics.chromium.exists) {
+          try {
+            const version = execSync(`${chromiumPath} --version`, { encoding: 'utf-8' });
+            diagnostics.chromium.version = version.trim();
+          } catch (e: any) {
+            diagnostics.chromium.version = `Error: ${e.message}`;
+          }
+        }
+      } catch (e: any) {
+        diagnostics.chromium.error = e.message;
+      }
+
+      // Verifica diretório de sessão
+      const sessionPath = process.env.WHATSAPP_SESSION_PATH || './whatsapp-session';
+      try {
+        diagnostics.sessionPath.exists = fs.existsSync(sessionPath);
+        try {
+          fs.accessSync(sessionPath, fs.constants.W_OK);
+          diagnostics.sessionPath.writable = true;
+        } catch {
+          diagnostics.sessionPath.writable = false;
+        }
+      } catch (e: any) {
+        diagnostics.sessionPath.error = e.message;
+      }
+
+      return {
+        success: true,
+        data: diagnostics
+      };
+
+    } catch (error: any) {
+      server.log.error('Erro no diagnóstico:', error);
+      return reply.status(500).send({
+        error: 'Erro no diagnóstico',
+        message: error.message
+      });
+    }
+  });
+
 }
 
 /**
