@@ -34,44 +34,80 @@
 
 ### 1.3 Configurar Build
 
-Preencha os campos:
+Preencha os campos EXATAMENTE como aparecem na interface:
 
-**Project name**: `imobiflow-frontend` (ou nome que preferir)
+**Project name**: `imobiflow`
 
-**Production branch**: `main`
-
-**Build command**:
+**Build command** (comando que gera o build):
 ```bash
 cd apps/web && npm install && npm run build
 ```
 
-**Build output directory**:
+**Build output directory** (deixe vazio ou use):
 ```
 apps/web/.next
 ```
 
-**Root directory**: deixe vazio (ou `/`)
+**Root directory (advanced)** - Se tiver esse campo, deixe vazio
 
-**Framework preset**: Selecione **"Next.js"**
+**IMPORTANTE**:
+- Use `npm run build` (build normal do Next.js)
+- **NÃO** preencha "Deploy command" nem "Non-production branch deploy command"
+- Deixe esses campos vazios - o Cloudflare faz deploy automaticamente
 
 ### 1.4 Configurar Variáveis de Ambiente
 
-Ainda na mesma página, role para baixo até **"Environment variables"**
+**ATENÇÃO**: Na tela de "Create and deploy", você ainda NÃO vê opção para adicionar variáveis.
 
-Click em **"Add variable"**:
+Por enquanto, **pule esta etapa** e click em **"Deploy"** primeiro.
+
+Você configurará as variáveis DEPOIS, nas configurações do projeto.
+
+As variáveis necessárias são:
 
 | Variable name | Value |
 |---------------|-------|
 | `NEXT_PUBLIC_API_URL` | `https://imobiflow-saas-1.onrender.com` |
 | `NODE_VERSION` | `18` |
 
-**Importante**: Marque como **"Production"** e **"Preview"**
+**Vamos adicionar estas variáveis no próximo passo, após o primeiro deploy.**
 
-### 1.5 Finalizar Criação
+### 1.5 Iniciar Primeiro Deploy
 
-1. Click em **"Save and Deploy"**
+1. Click em **"Deploy"** (botão azul no canto inferior direito)
 2. Aguarde o build (3-5 minutos)
 3. Você verá logs em tempo real
+
+### 1.6 Adicionar Variáveis de Ambiente (APÓS primeiro deploy)
+
+**IMPORTANTE**: Faça isso APÓS o primeiro deploy completar (pode falhar, mas tudo bem!)
+
+1. Após deploy, você será redirecionado para a página do projeto
+2. Click em **"Settings"** (no menu superior)
+3. No menu lateral, click em **"Environment variables"**
+4. Click em **"Add variable"**
+
+Adicione estas variáveis:
+
+**Variável 1:**
+- Variable name: `NEXT_PUBLIC_API_URL`
+- Value: `https://imobiflow-saas-1.onrender.com`
+- Environment: Marque **Production** e **Preview**
+- Click **"Save"**
+
+**Variável 2:**
+- Variable name: `NODE_VERSION`
+- Value: `18`
+- Environment: Marque **Production** e **Preview**
+- Click **"Save"**
+
+### 1.7 Refazer Deploy com Variáveis
+
+1. Após adicionar as variáveis, vá para **"Deployments"** (menu superior)
+2. Localize o último deployment
+3. Click nos 3 pontinhos (...) à direita
+4. Click em **"Retry deployment"**
+5. Aguarde novo build (3-5 minutos)
 
 ---
 
