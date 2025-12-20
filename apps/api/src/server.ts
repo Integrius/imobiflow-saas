@@ -11,6 +11,7 @@ import { imoveisRoutes } from './modules/imoveis/imoveis.routes'
 import { negociacoesRoutes } from './modules/negociacoes/negociacoes.routes'
 import { dashboardRoutes } from './modules/dashboard/dashboard.routes'
 import { aiRoutes } from './modules/ai/ai.routes'
+import { whatsappRoutes } from './modules/whatsapp/whatsapp.routes'
 
 const server = Fastify({
   logger: true
@@ -59,6 +60,7 @@ server.register(imoveisRoutes, { prefix: '/api/v1/imoveis' })
 server.register(negociacoesRoutes, { prefix: '/api/v1/negociacoes' })
 server.register(dashboardRoutes, { prefix: '/api/v1/dashboard' })
 server.register(aiRoutes, { prefix: '/api/v1/ai' })
+server.register(whatsappRoutes, { prefix: '/api/v1/whatsapp' })
 
 const start = async () => {
   try {

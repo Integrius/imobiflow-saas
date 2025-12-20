@@ -16,18 +16,8 @@ export default function Home() {
     const token = getToken();
     if (token) {
       setIsAuthenticated(true);
-      router.push('/dashboard');
     }
   }, [router]);
-
-  // Não renderizar a landing page se o usuário está autenticado
-  if (isAuthenticated) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-[#FAF8F5]">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#8FD14F]"></div>
-      </div>
-    );
-  }
 
   return (
     <div className="min-h-screen bg-[#FAF8F5] relative">
@@ -65,18 +55,29 @@ export default function Home() {
               </a>
             </div>
             <div className="flex items-center gap-4">
-              <Link
-                href="/login"
-                className="px-6 py-2.5 text-[#2C2C2C] hover:text-[#8FD14F] transition-all font-semibold text-base border-2 border-[#8FD14F] rounded-full hover:bg-[#8FD14F] hover:text-white hover:shadow-lg hover:scale-105"
-              >
-                Entrar
-              </Link>
-              <Link
-                href="/register"
-                className="btn-primary"
-              >
-                Começar Grátis
-              </Link>
+              {isAuthenticated ? (
+                <Link
+                  href="/dashboard"
+                  className="btn-primary"
+                >
+                  Ir para Dashboard
+                </Link>
+              ) : (
+                <>
+                  <Link
+                    href="/login"
+                    className="px-6 py-2.5 text-[#2C2C2C] hover:text-[#8FD14F] transition-all font-semibold text-base border-2 border-[#8FD14F] rounded-full hover:bg-[#8FD14F] hover:text-white hover:shadow-lg hover:scale-105"
+                  >
+                    Entrar
+                  </Link>
+                  <Link
+                    href="/register"
+                    className="btn-primary"
+                  >
+                    Começar Grátis
+                  </Link>
+                </>
+              )}
             </div>
           </div>
         </div>
