@@ -6,6 +6,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { getToken } from '@/lib/auth';
 import ChristmasFloat from '@/components/ChristmasFloat';
+import { landingConfig } from '@/config/landing';
 
 export default function Home() {
   const router = useRouter();
@@ -175,20 +176,19 @@ export default function Home() {
               </div>
             </div>
 
-            {/* Coluna Direita - Placeholder para Screenshot */}
+            {/* Coluna Direita - Imagem Hero */}
             <div className="relative hidden md:block animate-fade-in">
-              <div className="relative glass-card rounded-2xl overflow-hidden shadow-2xl glow-green">
-                {/* Placeholder para screenshot do dashboard */}
-                <div className="aspect-[4/3] flex items-center justify-center bg-gradient-to-br from-[#F4EFE9] to-[#E5CEBB]">
-                  <div className="text-center p-12">
-                    <div className="w-20 h-20 mx-auto mb-4 bg-gradient-to-br from-[#8FD14F] to-[#006D77] rounded-2xl flex items-center justify-center glow-green">
-                      <svg className="w-10 h-10 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-                      </svg>
-                    </div>
-                    <h3 className="text-[#2C2C2C] font-semibold text-lg mb-2">Dashboard Inteligente</h3>
-                    <p className="text-[#8B7F76] text-sm">Métricas em tempo real para decisões mais inteligentes</p>
-                  </div>
+              <div className="relative glass-card rounded-2xl overflow-hidden shadow-2xl glow-green p-8">
+                {/* Imagem configurável - gerenciável via config/landing.ts */}
+                <div className="relative aspect-square flex items-center justify-center">
+                  <Image
+                    src={landingConfig.hero.imagePath}
+                    alt={landingConfig.hero.imageAlt}
+                    width={landingConfig.hero.imageWidth}
+                    height={landingConfig.hero.imageHeight}
+                    priority
+                    className="object-contain w-full h-full max-w-md mx-auto drop-shadow-2xl hover:scale-105 transition-transform duration-300"
+                  />
                 </div>
 
                 {/* Floating Stats Cards */}
@@ -725,13 +725,13 @@ export default function Home() {
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <a
-              href="mailto:contato@vivoly.com.br"
+              href={`mailto:${landingConfig.contact.email}`}
               className="px-6 py-3 bg-[#A97E6F] text-white rounded-lg hover:bg-[#8B6F5C] transition-all font-medium shadow-md hover:shadow-lg"
             >
-              📧 contato@vivoly.com.br
+              📧 {landingConfig.contact.email}
             </a>
             <a
-              href="https://wa.me/5511999999999"
+              href={`https://wa.me/${landingConfig.contact.whatsapp}`}
               target="_blank"
               rel="noopener noreferrer"
               className="px-6 py-3 bg-[#8FD14F] text-white rounded-lg hover:bg-[#7FB344] transition-all font-medium shadow-md hover:shadow-lg"
