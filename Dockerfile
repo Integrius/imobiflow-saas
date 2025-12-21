@@ -67,6 +67,8 @@ COPY . .
 
 # Build do projeto
 WORKDIR /app/apps/api
+# Prisma precisa de DATABASE_URL no build, mas pode ser qualquer valor válido
+ENV DATABASE_URL="postgresql://temp:temp@localhost:5432/temp"
 RUN pnpm run build
 
 # Criar diretório para sessão WhatsApp
