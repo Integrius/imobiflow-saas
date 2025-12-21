@@ -197,6 +197,9 @@ model Corretor {
   telefone String
   foto_url String?
 
+  // Notificações
+  telegram_chat_id String? // ID do chat Telegram para notificações
+
   // Configurações
   especializacoes String[]
   meta_mensal     Decimal? @db.Decimal(10, 2)

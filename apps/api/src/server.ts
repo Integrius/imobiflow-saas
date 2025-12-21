@@ -14,6 +14,7 @@ import { aiRoutes } from './modules/ai/ai.routes'
 import { whatsappRoutes } from './modules/whatsapp/whatsapp.routes'
 import { localidadesRoutes } from './modules/localidades/localidades.routes'
 import { leadsCapturaRoutes } from './modules/leads/leads-captura.routes'
+import { telegramRoutes } from './modules/telegram/telegram.routes'
 
 const server = Fastify({
   logger: true
@@ -65,6 +66,7 @@ server.register(dashboardRoutes, { prefix: '/api/v1/dashboard' })
 server.register(aiRoutes, { prefix: '/api/v1/ai' })
 server.register(whatsappRoutes, { prefix: '/api/v1/whatsapp' })
 server.register(localidadesRoutes, { prefix: '/api/v1/localidades' }) // Rotas públicas IBGE
+server.register(telegramRoutes, { prefix: '/api/v1/telegram' }) // Rotas de notificações Telegram
 
 const start = async () => {
   try {

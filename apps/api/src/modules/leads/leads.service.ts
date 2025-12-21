@@ -1,6 +1,8 @@
 import { LeadsRepository } from './leads.repository'
 import { CreateLeadDTO, UpdateLeadDTO, ListLeadsQuery, TimelineEvent } from './leads.schema'
 import { AppError } from '../../shared/errors/app-error'
+import { telegramService } from '../../shared/services/telegram.service'
+import { prisma } from '../../shared/database/prisma'
 
 export class LeadsService {
   constructor(private leadsRepository: LeadsRepository) {}
@@ -87,6 +89,75 @@ export class LeadsService {
       descricao: 'Lead atribuído ao corretor',
       detalhes: { corretor_id: corretorId },
     }, tenantId)
+
+    // Enviar notificação Telegram (se configurado)
+    try {
+      if (telegramService.isConfigured()) {
+        // Buscar corretor com telegram_chat_id
+        const corretor = await prisma.corretor.findUnique({
+          where: { id: corretorId },
+          include: { user: true }
+        })
+
+        if (corretor?.telegram_chat_id) {
+          // Formatar localização
+          const localizacaoParts: string[] = []
+          if (lead.bairro) localizacaoParts.push(lead.bairro)
+          if (lead.municipio) localizacaoParts.push(lead.municipio)
+          if (lead.estado) localizacaoParts.push(lead.estado)
+          const localizacao = localizacaoParts.length > 0 ? localizacaoParts.join(', ') : undefined
+
+          // Formatar quartos
+          let quartos: string | undefined
+          if (lead.quartos_min || lead.quartos_max) {
+            if (lead.quartos_min && lead.quartos_max) {
+              quartos = `${lead.quartos_min} - ${lead.quartos_max}`
+            } else if (lead.quartos_min) {
+              quartos = `Mínimo ${lead.quartos_min}`
+            } else {
+              quartos = `Máximo ${lead.quartos_max}`
+            }
+          }
+
+          // Formatar vagas
+          let vagas: string | undefined
+          if (lead.vagas_min || lead.vagas_max) {
+            if (lead.vagas_min && lead.vagas_max) {
+              vagas = `${lead.vagas_min} - ${lead.vagas_max}`
+            } else if (lead.vagas_min) {
+              vagas = `Mínimo ${lead.vagas_min}`
+            } else {
+              vagas = `Máximo ${lead.vagas_max}`
+            }
+          }
+
+          await telegramService.notificarNovoLead(corretor.telegram_chat_id, {
+            leadId: lead.id,
+            leadNome: lead.nome,
+            leadTelefone: lead.telefone,
+            leadEmail: lead.email,
+            tipoNegocio: lead.tipo_negocio || undefined,
+            tipoImovel: lead.tipo_imovel_desejado || undefined,
+            valorMinimo: lead.valor_minimo ? parseFloat(lead.valor_minimo.toString()) : undefined,
+            valorMaximo: lead.valor_maximo ? parseFloat(lead.valor_maximo.toString()) : undefined,
+            localizacao,
+            quartos,
+            vagas,
+            areaminima: lead.area_minima ? parseFloat(lead.area_minima.toString()) : undefined,
+            aceitaPets: lead.aceita_pets || undefined,
+            observacoes: lead.observacoes || undefined,
+            corretorNome: corretor.user.nome
+          })
+
+          console.log(`✅ Notificação Telegram enviada para ${corretor.user.nome}`)
+        } else {
+          console.warn(`⚠️  Corretor ${corretor?.user.nome} não possui telegram_chat_id configurado`)
+        }
+      }
+    } catch (error: any) {
+      console.error('Erro ao enviar notificação Telegram:', error.message)
+      // Não falhar a atribuição se o Telegram falhar
+    }
 
     return updatedLead
   }
