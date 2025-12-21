@@ -157,7 +157,11 @@ Este é um teste do sistema de notificações ImobiFlow.
       const lead = await prisma.lead.findUnique({
         where: { id: lead_id },
         include: {
-          corretor: true
+          corretor: {
+            include: {
+              user: true
+            }
+          }
         }
       });
 
@@ -218,7 +222,7 @@ Este é um teste do sistema de notificações ImobiFlow.
         leadId: lead.id,
         leadNome: lead.nome,
         leadTelefone: lead.telefone,
-        leadEmail: lead.email,
+        leadEmail: lead.email || '',
         tipoNegocio: lead.tipo_negocio || undefined,
         tipoImovel: lead.tipo_imovel_desejado || undefined,
         valorMinimo: lead.valor_minimo ? parseFloat(lead.valor_minimo.toString()) : undefined,
@@ -229,7 +233,7 @@ Este é um teste do sistema de notificações ImobiFlow.
         areaminima: lead.area_minima ? parseFloat(lead.area_minima.toString()) : undefined,
         aceitaPets: lead.aceita_pets || undefined,
         observacoes: lead.observacoes || undefined,
-        corretorNome: lead.corretor?.nome || 'Você'
+        corretorNome: lead.corretor?.user.nome || 'Você'
       });
 
       return {
