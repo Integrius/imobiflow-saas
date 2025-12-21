@@ -7,6 +7,7 @@ import Image from 'next/image';
 import { getToken } from '@/lib/auth';
 import ChristmasFloat from '@/components/ChristmasFloat';
 import { landingConfig } from '@/config/landing';
+import LeadCaptureForm from '@/components/LeadCaptureForm';
 
 export default function Home() {
   const router = useRouter();
@@ -44,6 +45,9 @@ export default function Home() {
               </Link>
             </div>
             <div className="hidden md:flex items-center gap-8">
+              <a href="#buscar-imovel" className="text-[#8FD14F] hover:text-[#6E9B3B] transition-colors font-bold text-sm">
+                🏡 Buscar Imóvel
+              </a>
               <a href="#features" className="text-[#8B7F76] hover:text-[#2C2C2C] transition-colors font-medium text-sm">
                 Recursos
               </a>
@@ -710,6 +714,57 @@ export default function Home() {
               <p className="text-sm text-white/90 mt-4">
                 Sem cartão de crédito • Cancele quando quiser
               </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Lead Capture Form Section */}
+      <section id="buscar-imovel" className="py-24 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-[#DFF9C7] via-[#FAF8F5] to-[#F4E2CE] relative overflow-hidden">
+        {/* Background decorativo */}
+        <div className="absolute top-0 left-0 w-full h-full opacity-30">
+          <div className="absolute top-20 left-10 w-64 h-64 bg-[#8FD14F] rounded-full blur-3xl"></div>
+          <div className="absolute bottom-20 right-10 w-96 h-96 bg-[#A3DB6D] rounded-full blur-3xl"></div>
+        </div>
+
+        <div className="relative max-w-7xl mx-auto">
+          {/* Header da seção */}
+          <div className="text-center mb-16 animate-slide-up">
+            <div className="inline-flex items-center gap-2 px-6 py-3 bg-white/80 backdrop-blur-sm border-2 border-[#8FD14F] rounded-full text-[#6E9B3B] font-bold mb-6 shadow-lg">
+              <span className="w-3 h-3 bg-[#8FD14F] rounded-full animate-pulse"></span>
+              Encontre seu imóvel ideal
+            </div>
+
+            <h2 className="text-4xl md:text-6xl font-black text-[#2C2C2C] mb-6 leading-tight">
+              Procurando um <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#8FD14F] to-[#6E9B3B]">imóvel perfeito</span>?
+            </h2>
+
+            <p className="text-xl md:text-2xl text-[#8B7F76] max-w-3xl mx-auto leading-relaxed">
+              Preencha o formulário abaixo e receba <strong className="text-[#6E9B3B]">sugestões personalizadas</strong> de imóveis que combinam com você por <strong className="text-[#6E9B3B]">email e WhatsApp</strong>! 🏡✨
+            </p>
+          </div>
+
+          {/* Formulário */}
+          <div className="animate-slide-up animation-delay-200">
+            <LeadCaptureForm />
+          </div>
+
+          {/* Benefícios */}
+          <div className="mt-16 grid md:grid-cols-3 gap-8 text-center">
+            <div className="glass-card p-6">
+              <div className="text-4xl mb-4">🎯</div>
+              <h3 className="font-bold text-[#2C2C2C] mb-2">Sugestões Personalizadas</h3>
+              <p className="text-sm text-[#8B7F76]">Imóveis selecionados especialmente para seu perfil</p>
+            </div>
+            <div className="glass-card p-6">
+              <div className="text-4xl mb-4">⚡</div>
+              <h3 className="font-bold text-[#2C2C2C] mb-2">Resposta Rápida</h3>
+              <p className="text-sm text-[#8B7F76]">Retorno em até 24 horas com as melhores opções</p>
+            </div>
+            <div className="glass-card p-6">
+              <div className="text-4xl mb-4">🤝</div>
+              <h3 className="font-bold text-[#2C2C2C] mb-2">Atendimento Especializado</h3>
+              <p className="text-sm text-[#8B7F76]">Corretor dedicado para te ajudar em todo processo</p>
             </div>
           </div>
         </div>
