@@ -7,6 +7,30 @@ export default function ChristmasFloat() {
   const [showMessage, setShowMessage] = useState(false);
 
   useEffect(() => {
+    // Verificar se deve exibir baseado na data
+    const checkDateVisibility = () => {
+      const now = new Date();
+      const currentYear = now.getFullYear();
+
+      // Período 1: Até 21 de dezembro de 2025 (inclusive)
+      const endFirstPeriod = new Date(2025, 11, 21, 23, 59, 59); // 21/12/2025 23:59:59
+
+      // Período 2: De 24 de dezembro de 2025 até 20 de janeiro de 2026
+      const startSecondPeriod = new Date(2025, 11, 24, 0, 0, 0); // 24/12/2025 00:00:00
+      const endSecondPeriod = new Date(2026, 0, 20, 23, 59, 59); // 20/01/2026 23:59:59
+
+      // Exibir se estiver dentro de um dos períodos
+      const shouldShow =
+        (now <= endFirstPeriod) ||
+        (now >= startSecondPeriod && now <= endSecondPeriod);
+
+      if (!shouldShow) {
+        setIsVisible(false);
+      }
+    };
+
+    checkDateVisibility();
+
     // Mostra a mensagem após 2 segundos
     const timer = setTimeout(() => {
       setShowMessage(true);
