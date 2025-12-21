@@ -12,6 +12,8 @@ import { negociacoesRoutes } from './modules/negociacoes/negociacoes.routes'
 import { dashboardRoutes } from './modules/dashboard/dashboard.routes'
 import { aiRoutes } from './modules/ai/ai.routes'
 import { whatsappRoutes } from './modules/whatsapp/whatsapp.routes'
+import { localidadesRoutes } from './modules/localidades/localidades.routes'
+import { leadsCapturaRoutes } from './modules/leads/leads-captura.routes'
 
 const server = Fastify({
   logger: true
@@ -54,6 +56,7 @@ server.get('/health', async () => {
 server.register(authRoutes, { prefix: '/api/v1/auth' })
 server.register(tenantRoutes, { prefix: '/api/v1' })
 server.register(leadsRoutes, { prefix: '/api/v1/leads' })
+server.register(leadsCapturaRoutes, { prefix: '/api/v1/leads' }) // Rotas públicas de captura
 server.register(corretoresRoutes, { prefix: '/api/v1/corretores' })
 server.register(proprietariosRoutes, { prefix: '/api/v1/proprietarios' })
 server.register(imoveisRoutes, { prefix: '/api/v1/imoveis' })
@@ -61,6 +64,7 @@ server.register(negociacoesRoutes, { prefix: '/api/v1/negociacoes' })
 server.register(dashboardRoutes, { prefix: '/api/v1/dashboard' })
 server.register(aiRoutes, { prefix: '/api/v1/ai' })
 server.register(whatsappRoutes, { prefix: '/api/v1/whatsapp' })
+server.register(localidadesRoutes, { prefix: '/api/v1/localidades' }) // Rotas públicas IBGE
 
 const start = async () => {
   try {

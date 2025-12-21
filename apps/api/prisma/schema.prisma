@@ -243,9 +243,37 @@ model Lead {
   temperatura Temperatura @default(FRIO)
   score       Int         @default(0)
 
-  // Interesse
-  interesse   Json
+  // Interesse (LEGADO - manter para compatibilidade)
+  interesse   Json?
   observacoes String? @db.Text
+
+  // ==========================================
+  // DADOS DO FORMULÁRIO DE CAPTURA
+  // ==========================================
+
+  // Tipo de negócio desejado
+  tipo_negocio TipoNegocio? // COMPRA, ALUGUEL, TEMPORADA
+
+  // Tipo de imóvel desejado (melhor que property_type genérico)
+  tipo_imovel_desejado TipoImovel? // APARTAMENTO, CASA, LOJA, etc
+
+  // Faixa de valor
+  valor_minimo Decimal? @db.Decimal(10, 2)
+  valor_maximo Decimal? @db.Decimal(10, 2)
+
+  // Localização detalhada
+  estado     String? // UF (ex: SP, RJ)
+  municipio  String? // Nome da cidade
+  bairro     String? // Nome do bairro
+  complemento_localizacao String? @db.Text // Detalhes adicionais
+
+  // Características desejadas
+  quartos_min    Int? // Mínimo de quartos
+  quartos_max    Int? // Máximo de quartos
+  vagas_min      Int? // Mínimo de vagas
+  vagas_max      Int? // Máximo de vagas
+  area_minima    Decimal? @db.Decimal(10, 2) // Área mínima em m²
+  aceita_pets    Boolean? // Aceita animais de estimação
 
   // Timeline de interações
   timeline Json[]
@@ -499,6 +527,13 @@ enum CategoriaImovel {
   VENDA
   LOCACAO
   TEMPORADA
+}
+
+enum TipoNegocio {
+  COMPRA
+  ALUGUEL
+  TEMPORADA
+  VENDA // Para quem quer vender
 }
 
 enum StatusImovel {
