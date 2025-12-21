@@ -48,6 +48,9 @@ export default function Home() {
               <a href="#buscar-imovel" className="text-[#8FD14F] hover:text-[#6E9B3B] transition-colors font-bold text-sm">
                 🏡 Buscar Imóvel
               </a>
+              <a href="#para-corretores" className="text-[#A97E6F] hover:text-[#8B6F5C] transition-colors font-bold text-sm">
+                👔 Para Corretores
+              </a>
               <a href="#features" className="text-[#8B7F76] hover:text-[#2C2C2C] transition-colors font-medium text-sm">
                 Recursos
               </a>
@@ -690,31 +693,117 @@ export default function Home() {
         </div>
       </section>
 
-      {/* CTA Section */}
-      <section className="relative py-20 px-4 sm:px-6 lg:px-8 bg-[#FAF8F5]">
-        <div className="max-w-4xl mx-auto text-center">
-          <div className="relative bg-gradient-to-br from-[#8FD14F] to-[#006D77] rounded-3xl p-12 shadow-2xl glow-green-strong overflow-hidden">
-            {/* Floating decorative shapes */}
-            <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-3xl"></div>
-            <div className="absolute bottom-0 left-0 w-48 h-48 bg-[#FF006E]/20 rounded-full blur-2xl"></div>
+      {/* Dual CTA Section - Corretores e Leads */}
+      <section className="relative py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-[#FAF8F5] via-[#F4E2CE] to-[#DFF9C7]">
+        <div className="max-w-7xl mx-auto">
+          <div className="grid md:grid-cols-2 gap-8">
 
-            <div className="relative z-10">
-              <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
-                Pronto para Revolucionar Sua Gestão?
-              </h2>
-              <p className="text-xl text-white/90 mb-8">
-                Junte-se a centenas de imobiliárias que já transformaram seus resultados com o Vivoly
-              </p>
-              <Link
-                href="/register"
-                className="inline-block px-8 py-4 bg-white text-[#006D77] rounded-xl hover:bg-[#FAF8F5] transition-all font-bold text-lg shadow-2xl hover:scale-105 transform"
-              >
-                Começar Agora - 14 Dias Grátis
-              </Link>
-              <p className="text-sm text-white/90 mt-4">
-                Sem cartão de crédito • Cancele quando quiser
-              </p>
-            </div>
+            {/* CTA Para Leads - Buscar Imóvel */}
+            <a href="#buscar-imovel" className="group block">
+              <div className="relative bg-gradient-to-br from-[#8FD14F] to-[#6E9B3B] rounded-3xl p-10 shadow-2xl glow-green-strong overflow-hidden h-full transition-all duration-300 hover:scale-105 hover:shadow-3xl cursor-pointer">
+                {/* Floating decorative shapes */}
+                <div className="absolute top-0 right-0 w-48 h-48 bg-white/10 rounded-full blur-3xl group-hover:scale-150 transition-transform duration-500"></div>
+                <div className="absolute bottom-0 left-0 w-32 h-32 bg-[#A3DB6D]/30 rounded-full blur-2xl"></div>
+
+                <div className="relative z-10 flex flex-col h-full">
+                  <div className="mb-6">
+                    <div className="inline-flex items-center justify-center w-16 h-16 bg-white/20 backdrop-blur-sm rounded-2xl mb-4">
+                      <span className="text-4xl">🏡</span>
+                    </div>
+                    <h2 className="text-3xl md:text-4xl font-black text-white mb-4">
+                      Procurando um Imóvel?
+                    </h2>
+                    <p className="text-lg text-white/90 mb-6">
+                      Encontre o imóvel dos seus sonhos! Nossa IA busca as melhores opções para você.
+                    </p>
+                  </div>
+
+                  <div className="mt-auto space-y-3">
+                    <div className="flex items-center gap-3 text-white/90">
+                      <svg className="w-5 h-5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                      </svg>
+                      <span>Sugestões personalizadas por IA</span>
+                    </div>
+                    <div className="flex items-center gap-3 text-white/90">
+                      <svg className="w-5 h-5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                      </svg>
+                      <span>Atendimento especializado</span>
+                    </div>
+                    <div className="flex items-center gap-3 text-white/90">
+                      <svg className="w-5 h-5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                      </svg>
+                      <span>100% gratuito para você</span>
+                    </div>
+
+                    <div className="pt-4">
+                      <div className="inline-flex items-center gap-2 px-8 py-4 bg-white text-[#6E9B3B] rounded-xl hover:bg-[#FAF8F5] transition-all font-bold text-lg shadow-2xl group-hover:scale-110 transform">
+                        Buscar Imóvel Agora
+                        <svg className="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                        </svg>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </a>
+
+            {/* CTA Para Corretores - Cadastro */}
+            <a href="#para-corretores" className="group block">
+              <div className="relative bg-gradient-to-br from-[#A97E6F] to-[#8B6F5C] rounded-3xl p-10 shadow-2xl overflow-hidden h-full transition-all duration-300 hover:scale-105 hover:shadow-3xl cursor-pointer">
+                {/* Floating decorative shapes */}
+                <div className="absolute top-0 right-0 w-48 h-48 bg-white/10 rounded-full blur-3xl group-hover:scale-150 transition-transform duration-500"></div>
+                <div className="absolute bottom-0 left-0 w-32 h-32 bg-[#C7A695]/30 rounded-full blur-2xl"></div>
+
+                <div className="relative z-10 flex flex-col h-full">
+                  <div className="mb-6">
+                    <div className="inline-flex items-center justify-center w-16 h-16 bg-white/20 backdrop-blur-sm rounded-2xl mb-4">
+                      <span className="text-4xl">👔</span>
+                    </div>
+                    <h2 className="text-3xl md:text-4xl font-black text-white mb-4">
+                      É Corretor ou Imobiliária?
+                    </h2>
+                    <p className="text-lg text-white/90 mb-6">
+                      Multiplique suas vendas com nossa plataforma completa de gestão imobiliária.
+                    </p>
+                  </div>
+
+                  <div className="mt-auto space-y-3">
+                    <div className="flex items-center gap-3 text-white/90">
+                      <svg className="w-5 h-5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                      </svg>
+                      <span>IA Sofia analisa seus leads</span>
+                    </div>
+                    <div className="flex items-center gap-3 text-white/90">
+                      <svg className="w-5 h-5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                      </svg>
+                      <span>Dashboard BI completo</span>
+                    </div>
+                    <div className="flex items-center gap-3 text-white/90">
+                      <svg className="w-5 h-5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                      </svg>
+                      <span>14 dias grátis, sem cartão</span>
+                    </div>
+
+                    <div className="pt-4">
+                      <div className="inline-flex items-center gap-2 px-8 py-4 bg-white text-[#8B6F5C] rounded-xl hover:bg-[#FAF8F5] transition-all font-bold text-lg shadow-2xl group-hover:scale-110 transform">
+                        Começar Grátis Agora
+                        <svg className="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                        </svg>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </a>
+
           </div>
         </div>
       </section>
@@ -794,6 +883,177 @@ export default function Home() {
             >
               💬 WhatsApp: (11) 99999-9999
             </a>
+          </div>
+        </div>
+      </section>
+
+      {/* Seção Para Corretores */}
+      <section id="para-corretores" className="relative py-24 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-[#A97E6F] via-[#8B6F5C] to-[#6F5A4A] text-white overflow-hidden">
+        {/* Background decorativo */}
+        <div className="absolute inset-0 opacity-20">
+          <div className="absolute top-20 right-10 w-96 h-96 bg-white rounded-full blur-3xl"></div>
+          <div className="absolute bottom-20 left-10 w-80 h-80 bg-[#C7A695] rounded-full blur-3xl"></div>
+        </div>
+
+        <div className="relative max-w-7xl mx-auto">
+          {/* Header */}
+          <div className="text-center mb-16">
+            <div className="inline-flex items-center gap-2 px-6 py-3 bg-white/20 backdrop-blur-sm border-2 border-white/30 rounded-full font-bold mb-6 shadow-lg">
+              <span className="w-3 h-3 bg-white rounded-full animate-pulse"></span>
+              Para Corretores e Imobiliárias
+            </div>
+
+            <h2 className="text-4xl md:text-6xl font-black mb-6">
+              Transforme Sua Gestão
+              <span className="block text-[#DFF9C7]">
+                Com Inteligência Artificial
+              </span>
+            </h2>
+
+            <p className="text-xl text-white/90 max-w-3xl mx-auto mb-8">
+              Plataforma completa que une leads, imóveis, negociações e IA em um só lugar.
+              Aumente suas vendas em até 300% com automação inteligente.
+            </p>
+          </div>
+
+          {/* Benefits Grid */}
+          <div className="grid md:grid-cols-3 gap-8 mb-16">
+            <div className="bg-white/10 backdrop-blur-sm border-2 border-white/20 rounded-2xl p-8 hover:bg-white/15 transition-all">
+              <div className="w-14 h-14 bg-white/20 rounded-xl flex items-center justify-center mb-4">
+                <span className="text-3xl">🤖</span>
+              </div>
+              <h3 className="text-2xl font-bold mb-3">IA Sofia</h3>
+              <p className="text-white/80 mb-4">
+                Nossa inteligência artificial analisa leads, qualifica clientes e sugere os melhores imóveis automaticamente.
+              </p>
+              <ul className="space-y-2 text-white/70 text-sm">
+                <li className="flex items-start gap-2">
+                  <svg className="w-5 h-5 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                  </svg>
+                  <span>Análise automática de leads</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <svg className="w-5 h-5 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                  </svg>
+                  <span>Scoring inteligente 0-100</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <svg className="w-5 h-5 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                  </svg>
+                  <span>Sugestões personalizadas</span>
+                </li>
+              </ul>
+            </div>
+
+            <div className="bg-white/10 backdrop-blur-sm border-2 border-white/20 rounded-2xl p-8 hover:bg-white/15 transition-all">
+              <div className="w-14 h-14 bg-white/20 rounded-xl flex items-center justify-center mb-4">
+                <span className="text-3xl">📊</span>
+              </div>
+              <h3 className="text-2xl font-bold mb-3">Dashboard BI</h3>
+              <p className="text-white/80 mb-4">
+                Visualize métricas em tempo real, tendências de vendas e performance da equipe em um dashboard poderoso.
+              </p>
+              <ul className="space-y-2 text-white/70 text-sm">
+                <li className="flex items-start gap-2">
+                  <svg className="w-5 h-5 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                  </svg>
+                  <span>Gráficos interativos</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <svg className="w-5 h-5 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                  </svg>
+                  <span>Análise de funil de vendas</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <svg className="w-5 h-5 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                  </svg>
+                  <span>Relatórios detalhados</span>
+                </li>
+              </ul>
+            </div>
+
+            <div className="bg-white/10 backdrop-blur-sm border-2 border-white/20 rounded-2xl p-8 hover:bg-white/15 transition-all">
+              <div className="w-14 h-14 bg-white/20 rounded-xl flex items-center justify-center mb-4">
+                <span className="text-3xl">⚡</span>
+              </div>
+              <h3 className="text-2xl font-bold mb-3">Automação Total</h3>
+              <p className="text-white/80 mb-4">
+                Automatize captação de leads, distribuição, follow-ups e muito mais. Foque no que importa: fechar negócios.
+              </p>
+              <ul className="space-y-2 text-white/70 text-sm">
+                <li className="flex items-start gap-2">
+                  <svg className="w-5 h-5 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                  </svg>
+                  <span>Captura de leads automática</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <svg className="w-5 h-5 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                  </svg>
+                  <span>Notificações Telegram/Email</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <svg className="w-5 h-5 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                  </svg>
+                  <span>Timeline de interações</span>
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          {/* CTA Final */}
+          <div className="text-center">
+            <div className="inline-flex flex-col sm:flex-row gap-4">
+              <Link
+                href="/register"
+                className="group px-10 py-5 bg-white text-[#8B6F5C] rounded-xl hover:bg-[#FAF8F5] transition-all font-bold text-xl shadow-2xl hover:scale-105 transform flex items-center justify-center gap-3"
+              >
+                Começar Grátis Agora
+                <svg className="w-6 h-6 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                </svg>
+              </Link>
+
+              <a
+                href="#features"
+                className="px-10 py-5 bg-white/10 backdrop-blur-sm border-2 border-white/30 text-white rounded-xl hover:bg-white/20 transition-all font-bold text-xl flex items-center justify-center gap-3"
+              >
+                <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                Ver Como Funciona
+              </a>
+            </div>
+
+            <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-8 text-white/80">
+              <div className="flex items-center gap-2">
+                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                </svg>
+                <span>14 dias grátis</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                </svg>
+                <span>Sem cartão de crédito</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                </svg>
+                <span>Suporte dedicado</span>
+              </div>
+            </div>
           </div>
         </div>
       </section>
