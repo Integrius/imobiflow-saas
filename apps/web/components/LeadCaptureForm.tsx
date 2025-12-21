@@ -36,6 +36,8 @@ interface Municipio {
 }
 
 export default function LeadCaptureForm() {
+  const API_URL = 'https://api.integrius.com.br';
+
   const [formData, setFormData] = useState<FormData>({
     nome: '',
     telefone: '',
@@ -77,7 +79,7 @@ export default function LeadCaptureForm() {
 
   const fetchEstados = async () => {
     try {
-      const response = await fetch('https://api.integrius.com.br/api/v1/localidades/estados');
+      const response = await fetch(`${API_URL}/api/v1/localidades/estados`);
       const data = await response.json();
       if (data.success) {
         setEstados(data.data);
@@ -89,7 +91,7 @@ export default function LeadCaptureForm() {
 
   const fetchMunicipios = async (uf: string) => {
     try {
-      const response = await fetch(`https://api.integrius.com.br/api/v1/localidades/estados/${uf}/municipios`);
+      const response = await fetch(`${API_URL}/api/v1/localidades/estados/${uf}/municipios`);
       const data = await response.json();
       if (data.success) {
         setMunicipios(data.data);
@@ -157,7 +159,7 @@ export default function LeadCaptureForm() {
         area_minima: formData.area_minima ? parseFloat(formData.area_minima) : undefined,
       };
 
-      const response = await fetch('https://api.integrius.com.br/api/v1/leads/captura', {
+      const response = await fetch(`${API_URL}/api/v1/leads/captura`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
