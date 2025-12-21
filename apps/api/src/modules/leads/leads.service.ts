@@ -135,7 +135,7 @@ export class LeadsService {
             leadId: lead.id,
             leadNome: lead.nome,
             leadTelefone: lead.telefone,
-            leadEmail: lead.email,
+            leadEmail: lead.email || '',
             tipoNegocio: lead.tipo_negocio || undefined,
             tipoImovel: lead.tipo_imovel_desejado || undefined,
             valorMinimo: lead.valor_minimo ? parseFloat(lead.valor_minimo.toString()) : undefined,

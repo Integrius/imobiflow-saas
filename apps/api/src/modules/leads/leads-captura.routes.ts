@@ -204,19 +204,21 @@ export async function leadsCapturaRoutes(server: FastifyInstance) {
         server.log.info(`✅ Lead capturado: ${lead.nome} (${lead.id})`);
 
         // Enviar email de boas-vindas (não bloquear response)
-        sendGridService.enviarBoasVindasLead({
-          leadNome: lead.nome,
-          leadEmail: lead.email,
-          tipoNegocio: lead.tipo_negocio || undefined,
-          tipoImovel: lead.tipo_imovel_desejado || undefined,
-          localizacao: ibgeService.formatLocalizacao(
-            lead.estado || undefined,
-            lead.municipio || undefined,
-            lead.bairro || undefined
-          )
-        }).catch((error) => {
-          server.log.error('Erro ao enviar email de boas-vindas:', error);
-        });
+        if (lead.email) {
+          sendGridService.enviarBoasVindasLead({
+            leadNome: lead.nome,
+            leadEmail: lead.email,
+            tipoNegocio: lead.tipo_negocio || undefined,
+            tipoImovel: lead.tipo_imovel_desejado || undefined,
+            localizacao: ibgeService.formatLocalizacao(
+              lead.estado || undefined,
+              lead.municipio || undefined,
+              lead.bairro || undefined
+            )
+          }).catch((error) => {
+            server.log.error('Erro ao enviar email de boas-vindas:', error);
+          });
+        }
 
         // TODO: Disparar eventos assíncronos adicionais:
         // 1. Sofia analisa e busca imóveis

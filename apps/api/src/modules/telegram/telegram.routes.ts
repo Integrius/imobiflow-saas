@@ -6,7 +6,7 @@
 
 import { FastifyInstance } from 'fastify';
 import { telegramService } from '../../shared/services/telegram.service';
-import { prisma } from '../../shared/database';
+import { prisma } from '../../shared/database/prisma';
 
 export async function telegramRoutes(server: FastifyInstance) {
   /**
