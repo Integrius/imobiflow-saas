@@ -1,0 +1,43 @@
+# Configuração do Fly.io para ImobiFlow API
+app = "imobiflow-api"
+primary_region = "gru"  # São Paulo (mais próximo do Brasil)
+
+[build]
+  dockerfile = "Dockerfile"
+
+[env]
+  NODE_ENV = "production"
+  PORT = "3333"
+  JWT_EXPIRES_IN = "7d"
+  SMTP_FROM = "noreply@integrius.com.br"
+  AI_ENABLED = "true"
+  AI_AUTO_RESPOND = "true"
+  AI_FALLBACK_TO_OPENAI = "false"
+  AI_MAX_COST_PER_DAY = "10.00"
+  WHATSAPP_SESSION_PATH = "/app/whatsapp-session"
+  PUPPETEER_SKIP_CHROMIUM_DOWNLOAD = "true"
+
+[http_service]
+  internal_port = 3333
+  force_https = true
+  auto_stop_machines = false
+  auto_start_machines = true
+  min_machines_running = 1
+  processes = ["app"]
+
+  [[http_service.checks]]
+    interval = "30s"
+    timeout = "5s"
+    grace_period = "10s"
+    method = "GET"
+    path = "/health"
+
+[[vm]]
+  cpu_kind = "shared"
+  cpus = 1
+  memory_mb = 512
+
+# Volume persistente para sessão do WhatsApp
+[[mounts]]
+  source = "whatsapp_data"
+  destination = "/app/whatsapp-session"
