@@ -7,6 +7,7 @@
 import { FastifyInstance } from 'fastify';
 import { PrismaClient, TipoNegocio, TipoImovel } from '@prisma/client';
 import { ibgeService } from '../../shared/services/ibge.service';
+import { sendGridService } from '../../shared/services/sendgrid.service';
 
 const prisma = new PrismaClient();
 
@@ -202,11 +203,26 @@ export async function leadsCapturaRoutes(server: FastifyInstance) {
 
         server.log.info(`✅ Lead capturado: ${lead.nome} (${lead.id})`);
 
-        // TODO: Disparar eventos assíncronos:
+        // Enviar email de boas-vindas (não bloquear response)
+        sendGridService.enviarBoasVindasLead({
+          leadNome: lead.nome,
+          leadEmail: lead.email,
+          tipoNegocio: lead.tipo_negocio || undefined,
+          tipoImovel: lead.tipo_imovel_desejado || undefined,
+          localizacao: ibgeService.formatLocalizacao(
+            lead.estado || undefined,
+            lead.municipio || undefined,
+            lead.bairro || undefined
+          )
+        }).catch((error) => {
+          server.log.error('Erro ao enviar email de boas-vindas:', error);
+        });
+
+        // TODO: Disparar eventos assíncronos adicionais:
         // 1. Sofia analisa e busca imóveis
-        // 2. Enviar email com sugestões
+        // 2. Enviar email com sugestões de imóveis (após Sofia processar)
         // 3. (Futuro) Enviar WhatsApp com Dialog360
-        // 4. Quando corretor atribuído: notificar via Telegram
+        // 4. Quando corretor atribuído: notificar via Telegram (já implementado)
 
         return {
           success: true,
