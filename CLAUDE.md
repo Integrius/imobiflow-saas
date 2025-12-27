@@ -484,42 +484,186 @@ enum TipoImovel {
 
 ## Sistema de IA (Sofia)
 
+**Sofia** é a assistente virtual inteligente do ImobiFlow, responsável por qualificar leads automaticamente e fornecer insights para os corretores.
+
 ### Provedores
-1. **Anthropic Claude Sonnet 4.5** (principal)
-2. **OpenAI GPT-4** (fallback)
+1. **Anthropic Claude 3 Haiku** (principal) - Rápido e econômico
+2. **OpenAI GPT-4** (fallback - configurável)
+
+---
 
 ### Funcionalidades
 
-#### 1. Qualificação de Leads
-- Análise de perfil
-- Score automático (0-100)
-- Temperatura (Frio, Morno, Quente)
+#### 1. Qualificação Automática de Leads ✅
 
-#### 2. Sugestões de Imóveis
+Toda vez que um lead é capturado via formulário, Sofia analisa automaticamente:
+
+**Score (0-100):**
+- 0-30: Lead frio (baixa probabilidade de conversão)
+- 31-60: Lead morno (média probabilidade)
+- 61-100: Lead quente (alta probabilidade)
+
+**Critérios de Pontuação:**
+- Orçamento definido: +20 pontos
+- Localização específica: +15 pontos
+- Características detalhadas (quartos, vagas): +15 pontos
+- Email fornecido: +10 pontos
+- Observações detalhadas: +10 pontos
+- Urgência implícita nas observações: +20 pontos
+
+**Temperatura:**
+- ❄️ **FRIO**: Sem urgência, explorando opções, sem orçamento claro
+- 🌡️ **MORNO**: Alguma urgência, orçamento definido, necessidades claras
+- 🔥 **QUENTE**: Urgência explícita, orçamento alto, detalhes completos
+
+**Análise Detalhada:**
+- **Poder de Compra**: BAIXO (< R$ 300k) | MÉDIO (R$ 300k-1M) | ALTO (> R$ 1M)
+- **Clareza das Necessidades**: BAIXA | MÉDIA | ALTA
+- **Urgência**: BAIXA | MÉDIA | ALTA
+- **Probabilidade de Conversão**: 0-100%
+
+**Insights Gerados:**
+- ✅ Pontos Fortes (até 5)
+- ❌ Pontos Fracos (até 5)
+- 💡 Recomendação para o corretor
+
+**Onde os Dados São Salvos:**
+```typescript
+// Campo ai_qualificacao (JSON) no modelo Lead
+{
+  score: 75,
+  temperatura: "QUENTE",
+  insights: {
+    pontos_fortes: [
+      "Orçamento alto definido (R$ 800k-1M)",
+      "Localização específica (Jardins, SP)",
+      "Urgência explícita (mudança em 30 dias)"
+    ],
+    pontos_fracos: [
+      "Preferências de metragem não especificadas"
+    ],
+    recomendacao: "Lead quente! Entrar em contato em até 2 horas. Priorizar imóveis na região dos Jardins com 3+ quartos."
+  },
+  analise: {
+    poder_compra: "ALTO",
+    clareza_necessidades: "ALTA",
+    urgencia: "ALTA",
+    probabilidade_conversao: 85
+  },
+  data_qualificacao: "2025-12-27T14:30:00Z"
+}
+```
+
+**Notificação Telegram:**
+Quando um lead é atribuído a um corretor, a notificação Telegram inclui:
+- 🔥 Ícone de temperatura (❄️ FRIO | 🌡️ MORNO | 🔥 QUENTE)
+- Score de conversão (ex: 75%)
+- Pontos fortes do lead
+- Recomendação da Sofia
+
+#### 2. Sugestões de Imóveis (Futuro)
 - Matching inteligente
 - Ranking por relevância
 - Personalização
 
-#### 3. Respostas Automáticas
-- WhatsApp (futuro)
+#### 3. Respostas Automáticas (Futuro)
+- WhatsApp (via Dialog360)
 - Email
 - Telegram
 
-### Configuração
-```typescript
-// apps/api/src/ai/ai.config.ts
-{
-  provider: 'anthropic',
-  model: 'claude-sonnet-4.5',
-  temperature: 0.7,
-  maxTokens: 4000,
-  fallback: {
-    enabled: true,
-    provider: 'openai',
-    model: 'gpt-4'
-  }
-}
+---
+
+### Arquivos do Sistema Sofia
+
+**Serviço de Qualificação:**
+- `/apps/api/src/ai/services/lead-qualification.service.ts` - Qualificação automática
+- `/apps/api/src/ai/services/claude.service.ts` - Cliente Anthropic Claude
+
+**Prompts:**
+- `/apps/api/src/ai/prompts/sofia-prompts.ts` - Prompts de sistema e análise
+
+**Integrações:**
+- `/apps/api/src/modules/leads/leads-captura.routes.ts` - Captura com qualificação
+- `/apps/api/src/shared/services/telegram.service.ts` - Notificações com temperatura
+
+---
+
+### Fluxo de Qualificação
+
 ```
+1. Lead preenche formulário → POST /api/v1/leads/captura
+   ↓
+2. Sofia analisa dados via Anthropic Claude API
+   ↓
+3. Score, temperatura e insights são calculados
+   ↓
+4. Dados salvos no campo ai_qualificacao (JSON)
+   ↓
+5. Lead criado com score e temperatura
+   ↓
+6. (Se atribuído) Telegram envia notificação com análise
+   ↓
+7. Corretor recebe lead qualificado com insights
+```
+
+---
+
+### Exemplo de Notificação Telegram
+
+```
+🔥 NOVO LEAD QUENTE (85%)
+
+👤 Cliente: João Silva
+📱 WhatsApp: (11) 98765-4321
+📧 Email: joao@email.com
+
+━━━━━━━━━━━━━━━━━━━━
+
+🏡 PREFERÊNCIAS:
+📋 Tipo: 🏠 Compra
+🏢 Imóvel: Apartamento
+💰 Valor: R$ 800.000 - R$ 1.000.000
+📍 Local: Jardins, São Paulo, SP
+🛏️ Quartos: 3-4
+🚗 Vagas: 2
+
+💬 Observações:
+Preciso urgente, mudança prevista para fevereiro. Prefiro prédios novos com academia.
+
+🤖 ANÁLISE IA SOFIA:
+
+✅ Pontos Fortes:
+  • Orçamento alto e bem definido
+  • Localização específica (bairro nobre)
+  • Urgência explícita (mudança em 60 dias)
+
+💡 Recomendação: Lead quente! Priorizar contato em até 2 horas. Focar em imóveis novos na região dos Jardins com infraestrutura completa.
+
+━━━━━━━━━━━━━━━━━━━━
+
+✅ Atribuído para: Carlos Corretor
+🆔 ID do Lead: abc123-def456
+⏰ Entre em contato o quanto antes!
+```
+
+---
+
+### Configuração
+
+**Variável de Ambiente:**
+```env
+ANTHROPIC_API_KEY="sk-ant-api03-xxxxxxxxxxxxx"
+```
+
+**Modelo Utilizado:**
+- `claude-3-haiku-20240307` (rápido e econômico)
+- Custo: ~$0.25 por milhão de tokens de input
+- Custo: ~$1.25 por milhão de tokens de output
+
+**Custos Estimados:**
+- Qualificação de 1 lead: ~500 tokens (~$0.0003)
+- 1.000 leads/mês: ~$0.30
+- 10.000 leads/mês: ~$3.00
 
 ---
 

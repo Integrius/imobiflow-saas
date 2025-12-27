@@ -8,6 +8,7 @@ import { FastifyInstance } from 'fastify';
 import { PrismaClient, TipoNegocio, TipoImovel } from '@prisma/client';
 import { ibgeService } from '../../shared/services/ibge.service';
 import { sendGridService } from '../../shared/services/sendgrid.service';
+import { leadQualificationService } from '../../ai/services/lead-qualification.service';
 
 const prisma = new PrismaClient();
 
@@ -130,6 +131,31 @@ export async function leadsCapturaRoutes(server: FastifyInstance) {
           });
         }
 
+        // Qualificar lead com IA Sofia (não bloquear)
+        let qualificacao: any = null;
+        try {
+          qualificacao = await leadQualificationService.qualificarLead({
+            nome,
+            telefone: telefoneLimpo,
+            email,
+            tipo_negocio,
+            tipo_imovel_desejado,
+            valor_minimo,
+            valor_maximo,
+            localizacao: ibgeService.formatLocalizacao(estado, municipio, bairro),
+            quartos: quartos_min && quartos_max ? `${quartos_min}-${quartos_max}` : undefined,
+            vagas: vagas_min && vagas_max ? `${vagas_min}-${vagas_max}` : undefined,
+            area_minima,
+            aceita_pets,
+            observacoes
+          });
+
+          server.log.info(`🤖 Sofia qualificou lead: ${qualificacao.temperatura} (${qualificacao.score})`);
+        } catch (error) {
+          server.log.error('Erro ao qualificar lead com Sofia:', error);
+          // Continua mesmo se a qualificação falhar
+        }
+
         // Criar lead
         const lead = await prisma.lead.create({
           data: {
@@ -142,8 +168,8 @@ export async function leadsCapturaRoutes(server: FastifyInstance) {
 
             // Origem
             origem: 'SITE',
-            temperatura: 'MORNO', // Lead de formulário começa morno
-            score: 50, // Score inicial médio
+            temperatura: qualificacao?.temperatura || 'MORNO',
+            score: qualificacao?.score || 50,
 
             // Tipo de negócio e imóvel
             tipo_negocio,
@@ -172,6 +198,13 @@ export async function leadsCapturaRoutes(server: FastifyInstance) {
 
             // IA habilitada
             ai_enabled: true,
+            ai_qualificacao: qualificacao ? {
+              score: qualificacao.score,
+              temperatura: qualificacao.temperatura,
+              insights: qualificacao.insights,
+              analise: qualificacao.analise_detalhada,
+              data_qualificacao: new Date().toISOString()
+            } : null,
 
             // Timeline inicial
             timeline: [

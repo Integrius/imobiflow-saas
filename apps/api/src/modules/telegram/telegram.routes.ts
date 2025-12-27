@@ -217,6 +217,9 @@ Este é um teste do sistema de notificações ImobiFlow.
         }
       }
 
+      // Extrair dados de qualificação IA
+      const aiQualificacao = lead.ai_qualificacao as any;
+
       // Enviar notificação
       const success = await telegramService.notificarNovoLead(targetChatId, {
         leadId: lead.id,
@@ -233,7 +236,12 @@ Este é um teste do sistema de notificações ImobiFlow.
         areaminima: lead.area_minima ? parseFloat(lead.area_minima.toString()) : undefined,
         aceitaPets: lead.aceita_pets || undefined,
         observacoes: lead.observacoes || undefined,
-        corretorNome: lead.corretor?.user.nome || 'Você'
+        corretorNome: lead.corretor?.user.nome || 'Você',
+
+        // Qualificação IA Sofia
+        temperatura: lead.temperatura as any,
+        score: lead.score,
+        insights: aiQualificacao?.insights
       });
 
       return {

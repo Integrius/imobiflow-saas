@@ -28,6 +28,15 @@ export interface LeadNotification {
   aceitaPets?: boolean;
   observacoes?: string;
   corretorNome: string;
+
+  // Qualificação IA Sofia
+  temperatura?: 'FRIO' | 'MORNO' | 'QUENTE';
+  score?: number;
+  insights?: {
+    pontos_fortes?: string[];
+    pontos_fracos?: string[];
+    recomendacao?: string;
+  };
 }
 
 class TelegramService {
@@ -116,8 +125,10 @@ class TelegramService {
   private formatLeadMessage(lead: LeadNotification): string {
     const sections: string[] = [];
 
-    // Cabeçalho
-    sections.push(`🎯 <b>NOVO LEAD ATRIBUÍDO</b>\n`);
+    // Cabeçalho com temperatura
+    const temperaturaIcon = this.getTemperaturaIcon(lead.temperatura);
+    const scoreText = lead.score ? ` (${lead.score}%)` : '';
+    sections.push(`${temperaturaIcon} <b>NOVO LEAD ${lead.temperatura || 'MORNO'}</b>${scoreText}\n`);
 
     // Informações do lead
     sections.push(`👤 <b>Cliente:</b> ${lead.leadNome}`);
@@ -171,6 +182,22 @@ class TelegramService {
       sections.push(`\n💬 <b>Observações:</b>\n${lead.observacoes}`);
     }
 
+    // Insights da IA Sofia
+    if (lead.insights) {
+      sections.push('\n🤖 <b>ANÁLISE IA SOFIA:</b>');
+
+      if (lead.insights.pontos_fortes && lead.insights.pontos_fortes.length > 0) {
+        sections.push(`\n✅ <b>Pontos Fortes:</b>`);
+        lead.insights.pontos_fortes.slice(0, 3).forEach(ponto => {
+          sections.push(`  • ${ponto}`);
+        });
+      }
+
+      if (lead.insights.recomendacao) {
+        sections.push(`\n💡 <b>Recomendação:</b> ${lead.insights.recomendacao}`);
+      }
+    }
+
     // Rodapé
     sections.push('\n━━━━━━━━━━━━━━━━━━━━');
     sections.push(`\n✅ <b>Atribuído para:</b> ${lead.corretorNome}`);
@@ -178,6 +205,18 @@ class TelegramService {
     sections.push(`\n⏰ <i>Entre em contato o quanto antes!</i>`);
 
     return sections.join('\n');
+  }
+
+  /**
+   * Retorna ícone baseado na temperatura do lead
+   */
+  private getTemperaturaIcon(temperatura?: string): string {
+    const icons: Record<string, string> = {
+      'FRIO': '❄️',
+      'MORNO': '🌡️',
+      'QUENTE': '🔥'
+    };
+    return icons[temperatura || 'MORNO'] || '🎯';
   }
 
   /**
