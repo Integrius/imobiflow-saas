@@ -9,7 +9,8 @@ Conectar leads (pessoas procurando imóveis) com corretores e imobiliárias de f
 
 ### Arquitetura Multi-Tenant
 - **Modelo**: Multi-tenant com isolamento por tenant_id
-- **Subdomínios**: Cada tenant possui um subdomínio único (ex: `imobiliaria.imobiflow.com.br`)
+- **Subdomínios**: Cada tenant possui um subdomínio único (ex: `vivoly.integrius.com.br`)
+- **Domínio Base**: `integrius.com.br` (imobiflow.com.br NÃO é um domínio registrado)
 - **Banco de Dados**: Compartilhado com segregação lógica via `tenant_id`
 - **Customização**: Cada tenant pode ter branding, configurações e workflows próprios
 
@@ -146,29 +147,54 @@ NEXT_PUBLIC_API_URL="https://imobiflow-saas-1.onrender.com"
 
 Cada tenant (imobiliária) possui um **subdomínio único** para acessar sua versão da plataforma:
 
-- **Formato**: `{tenant-slug}.imobiflow.com.br`
-- **Exemplo**: `integrius.imobiflow.com.br`
+- **Domínio Base**: `integrius.com.br`
+- **Formato**: `{tenant-slug}.integrius.com.br`
+- **Exemplos**:
+  - `vivoly.integrius.com.br` → Tenant Vivoly (Frontend)
+  - `imobiliaria-abc.integrius.com.br` → Tenant ABC
+
+**IMPORTANTE:** `imobiflow.com.br` NÃO é um domínio registrado. Todos os subdomínios devem usar `integrius.com.br`.
 
 ### Criação de Novo Tenant
 
 Quando um novo tenant é cadastrado:
 
 1. **Slug gerado**: Nome da imobiliária convertido para slug (ex: "Imobiliária ABC" → `imobiliaria-abc`)
-2. **Subdomínio criado**: Automaticamente fica disponível em `imobiliaria-abc.imobiflow.com.br`
-3. **DNS configurado**: Wildcard DNS (`*.imobiflow.com.br`) aponta para o servidor
+2. **Subdomínio criado**: Automaticamente fica disponível em `imobiliaria-abc.integrius.com.br`
+3. **DNS configurado**: Wildcard DNS (`*.integrius.com.br`) aponta para o servidor Frontend no Render
 4. **Roteamento**: Aplicação identifica tenant pelo subdomínio e carrega dados específicos
 
 ### Identificação do Tenant
 
 ```typescript
 // No frontend/backend
-const hostname = request.headers.host; // ex: "integrius.imobiflow.com.br"
-const subdomain = hostname.split('.')[0]; // "integrius"
+const hostname = request.headers.host; // ex: "vivoly.integrius.com.br"
+const subdomain = hostname.split('.')[0]; // "vivoly"
 
 // Buscar tenant pelo slug
 const tenant = await prisma.tenant.findUnique({
   where: { slug: subdomain }
 });
+```
+
+### Configuração DNS (Cloudflare)
+
+**No Cloudflare para integrius.com.br:**
+
+1. **Wildcard DNS** para todos os tenants:
+```
+Type: CNAME
+Name: *
+Target: {URL-DO-FRONTEND-NO-RENDER}
+Proxy: DNS only (nuvem cinza)
+```
+
+2. **Subdomínio específico Vivoly**:
+```
+Type: CNAME
+Name: vivoly
+Target: integrius.com.br (ou URL do Frontend no Render)
+Proxy: DNS only (nuvem cinza)
 ```
 
 ### Domínios Customizados (Futuro)
@@ -333,7 +359,7 @@ O ImobiFlow utiliza um modelo **multi-tenant com banco de dados compartilhado**:
 - **Isolamento**: Cada registro possui `tenant_id` que identifica a qual imobiliária/tenant pertence
 - **Segurança**: Todas as queries devem filtrar por `tenant_id` para garantir isolamento de dados
 - **Escalabilidade**: Permite múltiplos tenants no mesmo banco sem duplicação de infraestrutura
-- **Subdomínios**: Cada tenant acessa via subdomínio único (ex: `imobiliaria-nome.imobiflow.com.br`)
+- **Subdomínios**: Cada tenant acessa via subdomínio único (ex: `imobiliaria-nome.integrius.com.br`)
 
 ### Modelos Principais
 
@@ -637,11 +663,15 @@ DATABASE_URL="..." npx prisma generate
 - **Telegram**: @HC_Dohm
 
 ### URLs Importantes
-- **Landing Page**: https://imobiflow.com.br (ou https://imobiflow-web.onrender.com)
-- **API**: https://imobiflow-saas-1.onrender.com
+- **Domínio Principal**: integrius.com.br
+- **Landing Page Vivoly**: https://vivoly.integrius.com.br
+- **Frontend (Render)**: https://imobiflow-web.onrender.com (ou similar)
+- **API (Render)**: https://imobiflow-saas-1.onrender.com
 - **SendGrid**: https://app.sendgrid.com
 - **Render Dashboard**: https://dashboard.render.com
 - **Cloudflare**: https://dash.cloudflare.com
+
+**NOTA:** `imobiflow.com.br` NÃO é um domínio registrado. Use sempre `integrius.com.br`.
 
 ### Documentação Externa
 - [Next.js](https://nextjs.org/docs)
