@@ -431,6 +431,211 @@ class SendGridService {
       currency: 'BRL'
     });
   }
+
+  /**
+   * Email de confirmação de agendamento de visita
+   */
+  async enviarConfirmacaoAgendamento(data: {
+    leadNome: string;
+    leadEmail: string;
+    dataVisita: Date;
+    imovelTitulo: string;
+    corretorNome: string;
+    corretorTelefone: string;
+    tipoVisita: string;
+  }): Promise<boolean> {
+    const primeiroNome = data.leadNome.split(' ')[0];
+
+    const dataFormatada = data.dataVisita.toLocaleDateString('pt-BR', {
+      weekday: 'long',
+      day: '2-digit',
+      month: 'long',
+      year: 'numeric'
+    });
+
+    const horaFormatada = data.dataVisita.toLocaleTimeString('pt-BR', {
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+
+    const tipoVisitaFormatado = data.tipoVisita === 'PRESENCIAL' ? 'Presencial' :
+                                data.tipoVisita === 'VIRTUAL' ? 'Virtual (Online)' : 'Híbrida';
+
+    const html = `
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      line-height: 1.6;
+      color: #2C2C2C;
+      background-color: #FAF8F5;
+      margin: 0;
+      padding: 0;
+    }
+    .container {
+      max-width: 600px;
+      margin: 40px auto;
+      background: white;
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    }
+    .header {
+      background: linear-gradient(135deg, #8FD14F 0%, #6E9B3B 100%);
+      padding: 40px 30px;
+      text-align: center;
+      color: white;
+    }
+    .header h1 {
+      margin: 0;
+      font-size: 28px;
+      font-weight: 800;
+    }
+    .content {
+      padding: 40px 30px;
+    }
+    .greeting {
+      font-size: 18px;
+      margin-bottom: 20px;
+      color: #2C2C2C;
+    }
+    .info-box {
+      background: linear-gradient(135deg, #F8F9FA 0%, #E9ECEF 100%);
+      border-left: 4px solid #8FD14F;
+      padding: 20px;
+      margin: 20px 0;
+      border-radius: 8px;
+    }
+    .info-item {
+      margin: 12px 0;
+      display: flex;
+      align-items: start;
+    }
+    .info-icon {
+      margin-right: 12px;
+      font-size: 20px;
+      min-width: 24px;
+    }
+    .info-label {
+      font-weight: 600;
+      color: #495057;
+      margin-bottom: 4px;
+    }
+    .info-value {
+      color: #2C2C2C;
+      font-size: 16px;
+    }
+    .cta-button {
+      display: inline-block;
+      background: linear-gradient(135deg, #8FD14F 0%, #6E9B3B 100%);
+      color: white;
+      text-decoration: none;
+      padding: 16px 32px;
+      border-radius: 8px;
+      font-weight: 700;
+      margin: 20px 0;
+      text-align: center;
+    }
+    .footer {
+      background: #F8F9FA;
+      padding: 30px;
+      text-align: center;
+      font-size: 14px;
+      color: #6C757D;
+      border-top: 1px solid #E9ECEF;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>📅 Visita Agendada com Sucesso!</h1>
+    </div>
+
+    <div class="content">
+      <p class="greeting">
+        Olá, <strong>${primeiroNome}</strong>! 👋
+      </p>
+
+      <p>
+        Sua visita foi agendada com sucesso! Estamos ansiosos para apresentar o imóvel perfeito para você.
+      </p>
+
+      <div class="info-box">
+        <div class="info-item">
+          <div class="info-icon">🏢</div>
+          <div>
+            <div class="info-label">Imóvel:</div>
+            <div class="info-value">${data.imovelTitulo}</div>
+          </div>
+        </div>
+
+        <div class="info-item">
+          <div class="info-icon">📅</div>
+          <div>
+            <div class="info-label">Data:</div>
+            <div class="info-value">${dataFormatada}</div>
+          </div>
+        </div>
+
+        <div class="info-item">
+          <div class="info-icon">⏰</div>
+          <div>
+            <div class="info-label">Horário:</div>
+            <div class="info-value">${horaFormatada}</div>
+          </div>
+        </div>
+
+        <div class="info-item">
+          <div class="info-icon">🎯</div>
+          <div>
+            <div class="info-label">Tipo de Visita:</div>
+            <div class="info-value">${tipoVisitaFormatado}</div>
+          </div>
+        </div>
+
+        <div class="info-item">
+          <div class="info-icon">👨‍💼</div>
+          <div>
+            <div class="info-label">Corretor Responsável:</div>
+            <div class="info-value">${data.corretorNome}</div>
+            <div class="info-value" style="color: #6C757D; font-size: 14px;">${data.corretorTelefone}</div>
+          </div>
+        </div>
+      </div>
+
+      <p>
+        <strong>Importante:</strong> Você receberá lembretes automáticos 24 horas e 1 hora antes da visita.
+      </p>
+
+      <p>
+        Em caso de imprevistos ou necessidade de reagendamento, entre em contato com seu corretor o quanto antes.
+      </p>
+    </div>
+
+    <div class="footer">
+      <p style="margin: 0 0 10px 0;">
+        <strong>ImobiFlow</strong> - Sua plataforma imobiliária inteligente
+      </p>
+      <p style="margin: 0; font-size: 12px;">
+        Este é um email automático, não responda diretamente.
+      </p>
+    </div>
+  </div>
+</body>
+</html>
+    `.trim();
+
+    return this.sendEmail({
+      to: data.leadEmail,
+      subject: `✅ Visita Agendada - ${data.imovelTitulo}`,
+      html,
+      replyTo: 'noreply@integrius.com.br'
+    });
+  }
 }
 
 // Singleton

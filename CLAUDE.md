@@ -735,6 +735,262 @@ POST https://imobiflow-saas-1.onrender.com/api/v1/test/sendgrid
 
 ---
 
+## Sistema de Agendamento de Visitas
+
+O ImobiFlow possui um sistema completo de agendamento de visitas presenciais e virtuais, com notificações automáticas para leads e corretores.
+
+### Modelo de Dados
+
+#### Agendamento
+
+```prisma
+model Agendamento {
+  id String @id @default(uuid())
+
+  // Multi-tenant
+  tenant_id String
+  tenant    Tenant @relation(...)
+
+  // Relacionamentos
+  lead_id     String
+  lead        Lead @relation(...)
+  imovel_id   String
+  imovel      Imovel @relation(...)
+  corretor_id String
+  corretor    Corretor @relation(...)
+
+  // Data e horário
+  data_visita     DateTime
+  duracao_minutos Int @default(60)
+
+  // Status e tipo
+  status      StatusAgendamento @default(PENDENTE)
+  tipo_visita TipoVisita @default(PRESENCIAL)
+
+  // Confirmações
+  confirmado_lead     Boolean @default(false)
+  confirmado_corretor Boolean @default(false)
+  data_confirmacao    DateTime?
+
+  // Realização
+  realizado         Boolean @default(false)
+  data_realizacao   DateTime?
+  feedback_lead     String?
+  feedback_corretor String?
+  nota_lead         Int? // 1-5 estrelas
+
+  // Cancelamento
+  motivo_cancelamento String?
+  cancelado_por       String?
+  data_cancelamento   DateTime?
+
+  // Lembretes
+  lembrete_24h_enviado Boolean @default(false)
+  lembrete_1h_enviado  Boolean @default(false)
+
+  // Auditoria
+  timeline   Json[]
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+}
+
+enum StatusAgendamento {
+  PENDENTE       // Aguardando confirmação
+  CONFIRMADO     // Confirmado por ambas as partes
+  REALIZADO      // Visita realizada
+  CANCELADO      // Cancelado
+  NAO_COMPARECEU // Lead não compareceu
+}
+
+enum TipoVisita {
+  PRESENCIAL // Visita presencial no imóvel
+  VIRTUAL    // Visita virtual (vídeo chamada)
+  HIBRIDA    // Combinação de presencial e virtual
+}
+```
+
+### Fluxo de Agendamento
+
+#### 1. Criação do Agendamento
+
+**Endpoint**: `POST /api/v1/agendamentos`
+
+```json
+{
+  "lead_id": "uuid",
+  "imovel_id": "uuid",
+  "corretor_id": "uuid",
+  "data_visita": "2025-12-30T14:00:00.000Z",
+  "duracao_minutos": 60,
+  "tipo_visita": "PRESENCIAL",
+  "observacoes": "Cliente prefere horário de tarde"
+}
+```
+
+**Validações Automáticas**:
+- ✅ Data da visita deve ser futura
+- ✅ Corretor não pode ter conflito de horário (±1h)
+- ✅ Lead, imóvel e corretor devem pertencer ao mesmo tenant
+- ✅ Todos os relacionamentos devem existir
+
+**Notificações Enviadas**:
+- 📧 Email para o lead confirmando agendamento
+- 📱 Telegram para o corretor notificando nova visita
+
+#### 2. Confirmação
+
+**Endpoint**: `POST /api/v1/agendamentos/:id/confirmar`
+
+```json
+{
+  "confirmado_por": "LEAD" // ou "CORRETOR"
+}
+```
+
+- Lead confirma presença
+- Corretor confirma disponibilidade
+- Quando ambos confirmam → Status muda para `CONFIRMADO`
+
+#### 3. Realização
+
+**Endpoint**: `POST /api/v1/agendamentos/:id/realizar`
+
+- Marca visita como realizada
+- Permite adicionar feedback posteriormente
+
+#### 4. Feedback
+
+**Endpoint**: `POST /api/v1/agendamentos/:id/feedback`
+
+```json
+{
+  "feedback_lead": "Imóvel muito bom, gostei bastante!",
+  "feedback_corretor": "Cliente demonstrou interesse, próximo passo: proposta",
+  "nota_lead": 5
+}
+```
+
+#### 5. Cancelamento
+
+**Endpoint**: `POST /api/v1/agendamentos/:id/cancelar`
+
+```json
+{
+  "motivo_cancelamento": "Imprevisto pessoal",
+  "cancelado_por": "user_id"
+}
+```
+
+### Endpoints Disponíveis
+
+| Método | Endpoint | Descrição |
+|--------|----------|-----------|
+| POST | `/api/v1/agendamentos` | Criar novo agendamento |
+| GET | `/api/v1/agendamentos` | Listar agendamentos (com filtros) |
+| GET | `/api/v1/agendamentos/:id` | Buscar agendamento por ID |
+| PATCH | `/api/v1/agendamentos/:id` | Atualizar agendamento |
+| POST | `/api/v1/agendamentos/:id/confirmar` | Confirmar presença |
+| POST | `/api/v1/agendamentos/:id/cancelar` | Cancelar agendamento |
+| POST | `/api/v1/agendamentos/:id/realizar` | Marcar como realizado |
+| POST | `/api/v1/agendamentos/:id/feedback` | Adicionar feedback |
+
+### Filtros de Listagem
+
+```
+GET /api/v1/agendamentos?tenant_id=xxx&status=CONFIRMADO&data_inicio=2025-12-27
+```
+
+**Parâmetros**:
+- `tenant_id` (obrigatório)
+- `lead_id`
+- `corretor_id`
+- `imovel_id`
+- `status`
+- `data_inicio`
+- `data_fim`
+
+### Notificações Automáticas
+
+#### Email para Lead (SendGrid)
+
+Enviado automaticamente ao criar agendamento:
+
+- ✅ Data e horário formatados
+- ✅ Informações do imóvel
+- ✅ Dados do corretor (nome e telefone)
+- ✅ Tipo de visita (presencial/virtual)
+- ✅ Aviso sobre lembretes automáticos
+
+**Template**: Email responsivo com gradiente verde (#8FD14F)
+
+#### Telegram para Corretor
+
+Enviado automaticamente ao criar agendamento:
+
+```
+🏠 NOVA VISITA AGENDADA
+
+📅 Data: Quarta-feira, 01 de janeiro de 2025
+⏰ Horário: 14:00
+🎯 Tipo: 🏠 Presencial
+
+━━━━━━━━━━━━━━━━━━━━
+
+👤 CLIENTE:
+  • Nome: João Silva
+  • Telefone: (11) 98765-4321
+
+🏢 IMÓVEL:
+  • Título: Apartamento 2 Quartos Centro
+  • Endereço: Rua Principal, 123
+
+━━━━━━━━━━━━━━━━━━━━
+
+🆔 ID: uuid-do-agendamento
+⏰ Lembrete: Você receberá lembretes 24h e 1h antes
+✅ Prepare-se e confirme sua presença!
+```
+
+### Regras de Negócio
+
+1. **Validação de Horário**:
+   - Corretor não pode ter dois agendamentos no mesmo horário (±1h)
+   - Data deve ser futura
+
+2. **Status e Transições**:
+   - `PENDENTE` → `CONFIRMADO` (quando ambos confirmam)
+   - `CONFIRMADO` → `REALIZADO` (após visita)
+   - `PENDENTE/CONFIRMADO` → `CANCELADO` (a qualquer momento)
+   - `CONFIRMADO` → `NAO_COMPARECEU` (lead não apareceu)
+
+3. **Alterações**:
+   - Agendamentos `REALIZADO` ou `CANCELADO` não podem ser editados
+   - Reagendamento requer cancelamento e nova criação
+
+4. **Feedback**:
+   - Apenas agendamentos `REALIZADO` podem receber feedback
+   - Nota do lead: 1-5 estrelas (opcional)
+
+### Sistema de Lembretes (Futuro)
+
+**TODO**: Implementar job assíncrono (cron) para enviar:
+- Lembrete 24h antes da visita
+- Lembrete 1h antes da visita
+- Marcar flags `lembrete_24h_enviado` e `lembrete_1h_enviado`
+
+**Tecnologias Sugeridas**:
+- **BullMQ** ou **Agenda** (job queue)
+- **Node-cron** (agendador simples)
+
+### Integração com Negociações
+
+Quando uma visita é marcada como `REALIZADO`, considerar:
+1. Atualizar status da negociação para `VISITA_REALIZADA`
+2. Se feedback positivo → escalar para `PROPOSTA`
+3. Se feedback negativo → analisar motivo
+
+---
+
 ## Guias de Desenvolvimento
 
 ### Adicionar Nova Rota
@@ -841,6 +1097,15 @@ DATABASE_URL="..." npx prisma generate
 
 ## Histórico de Configurações
 
+### 2025-12-27
+- ✅ **Sistema de Agendamento de Visitas Implementado**
+  - Database: Modelo `Agendamento` com todos relacionamentos
+  - Backend: Rotas CRUD completas (/api/v1/agendamentos)
+  - Integrações: Notificações via Email (SendGrid) e Telegram
+  - Validações: Conflito de horários, tenant_id, data futura
+  - Status: PENDENTE → CONFIRMADO → REALIZADO → Feedback
+  - Documentação completa em CLAUDE.md
+
 ### 2025-12-26
 - ✅ ChristmasFloat configurado com datas específicas
 - ✅ SendGrid 100% configurado e testado
@@ -848,9 +1113,11 @@ DATABASE_URL="..." npx prisma generate
 - ✅ CTAs para corretores e leads adicionados à landing page
 - ✅ Sistema completo testado end-to-end
 - ✅ Documentação CLAUDE.md criada
+- ✅ IA Sofia configurada para qualificação de leads
+- ✅ Sistema de subagentes criado (.claude/agents-config.md)
 
 ---
 
-**Última atualização**: 26 de dezembro de 2025
-**Versão**: 1.0.0
+**Última atualização**: 27 de dezembro de 2025
+**Versão**: 1.1.0
 **Status**: Em produção ✅

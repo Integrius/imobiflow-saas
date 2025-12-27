@@ -62,6 +62,7 @@ model Tenant {
   automacoes    Automacao[]
   assinaturas   Assinatura[]
   messages      Message[]
+  agendamentos  Agendamento[]
 
   @@index([slug])
   @@index([plano])
@@ -218,6 +219,7 @@ model Corretor {
   leads               Lead[]
   negociacoes         Negociacao[]
   imoveis_responsavel Imovel[]
+  agendamentos        Agendamento[]
 
   @@unique([tenant_id, creci])
   @@index([tenant_id])
@@ -311,8 +313,9 @@ model Lead {
   ultimo_contato DateTime?
 
   // Relacionamentos
-  negociacoes Negociacao[]
-  messages    Message[] // Mensagens da conversa
+  negociacoes  Negociacao[]
+  messages     Message[] // Mensagens da conversa
+  agendamentos Agendamento[]
 
   @@index([tenant_id])
   @@index([corretor_id])
@@ -501,7 +504,8 @@ model Imovel {
   publicado_em DateTime?
 
   // Relacionamentos
-  negociacoes Negociacao[]
+  negociacoes  Negociacao[]
+  agendamentos Agendamento[]
 
   @@unique([tenant_id, codigo])
   @@index([tenant_id])
@@ -621,6 +625,89 @@ enum StatusNegociacao {
   FECHADO
   PERDIDO
   CANCELADO
+}
+
+// ============================================
+// AGENDAMENTOS DE VISITAS
+// ============================================
+
+model Agendamento {
+  id String @id @default(uuid())
+
+  // Multi-tenant
+  tenant_id String
+  tenant    Tenant @relation(fields: [tenant_id], references: [id], onDelete: Cascade)
+
+  // Relacionamentos principais
+  lead_id String
+  lead    Lead   @relation(fields: [lead_id], references: [id], onDelete: Cascade)
+
+  imovel_id String
+  imovel    Imovel @relation(fields: [imovel_id], references: [id], onDelete: Restrict)
+
+  corretor_id String
+  corretor    Corretor @relation(fields: [corretor_id], references: [id], onDelete: Restrict)
+
+  // Data e horário
+  data_visita DateTime
+  duracao_minutos Int @default(60) // Duração estimada em minutos
+
+  // Status
+  status StatusAgendamento @default(PENDENTE)
+
+  // Detalhes
+  observacoes String? @db.Text
+  tipo_visita TipoVisita @default(PRESENCIAL)
+
+  // Confirmação
+  confirmado_lead     Boolean   @default(false)
+  confirmado_corretor Boolean   @default(false)
+  data_confirmacao    DateTime?
+
+  // Realização
+  realizado        Boolean   @default(false)
+  data_realizacao  DateTime?
+  feedback_lead    String?   @db.Text
+  feedback_corretor String?  @db.Text
+  nota_lead        Int? // 1-5 estrelas
+
+  // Cancelamento
+  motivo_cancelamento String? @db.Text
+  cancelado_por       String? // user_id de quem cancelou
+  data_cancelamento   DateTime?
+
+  // Lembretes enviados
+  lembrete_24h_enviado Boolean @default(false)
+  lembrete_1h_enviado  Boolean @default(false)
+
+  // Timeline de eventos
+  timeline Json[]
+
+  // Timestamps
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  @@index([tenant_id])
+  @@index([lead_id])
+  @@index([imovel_id])
+  @@index([corretor_id])
+  @@index([data_visita])
+  @@index([status])
+  @@map("agendamentos")
+}
+
+enum StatusAgendamento {
+  PENDENTE      // Aguardando confirmação
+  CONFIRMADO    // Confirmado por ambas as partes
+  REALIZADO     // Visita realizada
+  CANCELADO     // Cancelado
+  NAO_COMPARECEU // Lead não compareceu
+}
+
+enum TipoVisita {
+  PRESENCIAL // Visita presencial no imóvel
+  VIRTUAL    // Visita virtual (vídeo chamada)
+  HIBRIDA    // Combinação de presencial e virtual
 }
 
 // ============================================

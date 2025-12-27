@@ -120,6 +120,102 @@ class TelegramService {
   }
 
   /**
+   * Envia notificação de novo agendamento para corretor
+   */
+  async notificarNovoAgendamento(chatId: string, agendamento: {
+    agendamentoId: string;
+    leadNome: string;
+    leadTelefone: string;
+    imovelTitulo: string;
+    imovelEndereco: string;
+    dataVisita: Date;
+    tipoVisita: string;
+    observacoes?: string;
+  }): Promise<boolean> {
+    const message = this.formatAgendamentoMessage(agendamento);
+    return this.sendMessage(chatId, message);
+  }
+
+  /**
+   * Formata mensagem de agendamento para Telegram (HTML)
+   */
+  private formatAgendamentoMessage(agendamento: {
+    agendamentoId: string;
+    leadNome: string;
+    leadTelefone: string;
+    imovelTitulo: string;
+    imovelEndereco: string;
+    dataVisita: Date;
+    tipoVisita: string;
+    observacoes?: string;
+  }): string {
+    const sections: string[] = [];
+
+    // Ícone baseado no tipo de visita
+    const tipoIcon = agendamento.tipoVisita === 'PRESENCIAL' ? '🏠' :
+                     agendamento.tipoVisita === 'VIRTUAL' ? '💻' : '🔄';
+
+    // Cabeçalho
+    sections.push(`${tipoIcon} <b>NOVA VISITA AGENDADA</b>\n`);
+
+    // Data e horário formatados
+    const dataFormatada = agendamento.dataVisita.toLocaleDateString('pt-BR', {
+      weekday: 'long',
+      day: '2-digit',
+      month: 'long',
+      year: 'numeric'
+    });
+
+    const horaFormatada = agendamento.dataVisita.toLocaleTimeString('pt-BR', {
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+
+    sections.push(`📅 <b>Data:</b> ${dataFormatada}`);
+    sections.push(`⏰ <b>Horário:</b> ${horaFormatada}`);
+    sections.push(`🎯 <b>Tipo:</b> ${this.formatTipoVisita(agendamento.tipoVisita)}\n`);
+
+    // Separador
+    sections.push('━━━━━━━━━━━━━━━━━━━━\n');
+
+    // Informações do lead
+    sections.push('👤 <b>CLIENTE:</b>');
+    sections.push(`  • <b>Nome:</b> ${agendamento.leadNome}`);
+    sections.push(`  • <b>Telefone:</b> ${this.formatPhone(agendamento.leadTelefone)}\n`);
+
+    // Informações do imóvel
+    sections.push('🏢 <b>IMÓVEL:</b>');
+    sections.push(`  • <b>Título:</b> ${agendamento.imovelTitulo}`);
+    sections.push(`  • <b>Endereço:</b> ${agendamento.imovelEndereco}\n`);
+
+    // Observações
+    if (agendamento.observacoes) {
+      sections.push('💬 <b>Observações:</b>');
+      sections.push(`${agendamento.observacoes}\n`);
+    }
+
+    // Rodapé
+    sections.push('━━━━━━━━━━━━━━━━━━━━');
+    sections.push(`\n🆔 <b>ID:</b> <code>${agendamento.agendamentoId}</code>`);
+    sections.push(`\n⏰ <b>Lembrete:</b> Você receberá lembretes 24h e 1h antes da visita`);
+    sections.push(`\n✅ <i>Prepare-se e confirme sua presença!</i>`);
+
+    return sections.join('\n');
+  }
+
+  /**
+   * Formata tipo de visita
+   */
+  private formatTipoVisita(tipo: string): string {
+    const tipos: Record<string, string> = {
+      'PRESENCIAL': '🏠 Presencial',
+      'VIRTUAL': '💻 Virtual (Online)',
+      'HIBRIDA': '🔄 Híbrida'
+    };
+    return tipos[tipo] || tipo;
+  }
+
+  /**
    * Formata mensagem de lead para Telegram (HTML)
    */
   private formatLeadMessage(lead: LeadNotification): string {
