@@ -181,21 +181,37 @@ const tenant = await prisma.tenant.findUnique({
 
 **No Cloudflare para integrius.com.br:**
 
-1. **Wildcard DNS** para todos os tenants:
+1. **Domínio Base** (já configurado):
+```
+Type: CNAME
+Name: @
+Target: imobiflow-web.onrender.com
+Proxy: Proxied (nuvem laranja) ✅
+TTL: Auto
+```
+
+2. **Wildcard DNS** para todos os tenants:
 ```
 Type: CNAME
 Name: *
-Target: {URL-DO-FRONTEND-NO-RENDER}
+Target: imobiflow-web.onrender.com
 Proxy: DNS only (nuvem cinza)
+TTL: Auto
 ```
 
-2. **Subdomínio específico Vivoly**:
+3. **Subdomínio específico Vivoly** (opcional, já coberto pelo wildcard):
 ```
 Type: CNAME
 Name: vivoly
-Target: integrius.com.br (ou URL do Frontend no Render)
+Target: imobiflow-web.onrender.com
 Proxy: DNS only (nuvem cinza)
+TTL: Auto
 ```
+
+**IMPORTANTE**:
+- O domínio base (`integrius.com.br`) pode usar Proxy (nuvem laranja) para CDN e proteção
+- Subdomínios de tenants (`*.integrius.com.br`) devem usar DNS only (nuvem cinza)
+- Todos apontam para `imobiflow-web.onrender.com`
 
 ### Domínios Customizados (Futuro)
 
@@ -519,7 +535,10 @@ enum TipoImovel {
 **IMPORTANTE**: Tanto o Frontend quanto o Backend estão hospedados no **Render.com**.
 
 ### Frontend (Render.com - Web Service)
-- **URL**: https://imobiflow-web.onrender.com (ou similar)
+- **Nome do Serviço**: `imobiflow-web`
+- **URLs**:
+  - Render: https://imobiflow-web.onrender.com
+  - Domínio Custom: https://integrius.com.br
 - **Build Command**: `cd apps/web && pnpm install && pnpm run build`
 - **Start Command**: `cd apps/web && pnpm start`
 - **Node Version**: 20.x
@@ -663,9 +682,9 @@ DATABASE_URL="..." npx prisma generate
 - **Telegram**: @HC_Dohm
 
 ### URLs Importantes
-- **Domínio Principal**: integrius.com.br
+- **Domínio Principal**: https://integrius.com.br
 - **Landing Page Vivoly**: https://vivoly.integrius.com.br
-- **Frontend (Render)**: https://imobiflow-web.onrender.com (ou similar)
+- **Frontend (Render)**: https://imobiflow-web.onrender.com
 - **API (Render)**: https://imobiflow-saas-1.onrender.com
 - **SendGrid**: https://app.sendgrid.com
 - **Render Dashboard**: https://dashboard.render.com
