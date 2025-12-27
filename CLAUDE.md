@@ -18,7 +18,7 @@ Conectar leads (pessoas procurando imóveis) com corretores e imobiliárias de f
 - **Linguagem**: TypeScript
 - **Estilização**: TailwindCSS
 - **UI Components**: Componentes customizados
-- **Hospedagem**: Vercel
+- **Hospedagem**: Render.com
 
 #### Backend (API)
 - **Framework**: Fastify (Node.js)
@@ -106,7 +106,7 @@ CLOUDINARY_API_KEY="sua-api-key"
 CLOUDINARY_API_SECRET="seu-api-secret"
 ```
 
-#### Produção (Vercel - Web)
+#### Produção (Render.com - Web)
 ```env
 NEXT_PUBLIC_API_URL="https://imobiflow-saas-1.onrender.com"
 ```
@@ -413,14 +413,16 @@ enum TipoImovel {
 
 ## Deploy e CI/CD
 
-### Frontend (Vercel)
-- **URL**: https://imobiflow.com.br (ou similar)
-- **Build Command**: `pnpm run build`
-- **Output Directory**: `.next`
+**IMPORTANTE**: Tanto o Frontend quanto o Backend estão hospedados no **Render.com**.
+
+### Frontend (Render.com - Web Service)
+- **URL**: https://imobiflow-web.onrender.com (ou similar)
+- **Build Command**: `cd apps/web && pnpm install && pnpm run build`
+- **Start Command**: `cd apps/web && pnpm start`
 - **Node Version**: 20.x
 - **Auto Deploy**: Push para `main`
 
-### Backend (Render.com)
+### Backend (Render.com - Web Service)
 - **URL**: https://imobiflow-saas-1.onrender.com
 - **Build Command**: `cd apps/api && pnpm install && pnpm run build`
 - **Start Command**: `cd apps/api && pnpm start`
@@ -545,7 +547,7 @@ DATABASE_URL="..." npx prisma generate
 4. Confirmar todas env vars
 
 ### Erro de CORS
-1. Verificar `NEXT_PUBLIC_API_URL` no Vercel
+1. Verificar `NEXT_PUBLIC_API_URL` no Render (Frontend)
 2. Checar headers no Fastify
 3. Confirmar domínios permitidos
 
@@ -558,11 +560,10 @@ DATABASE_URL="..." npx prisma generate
 - **Telegram**: @HC_Dohm
 
 ### URLs Importantes
-- **Landing Page**: https://imobiflow.com.br
+- **Landing Page**: https://imobiflow.com.br (ou https://imobiflow-web.onrender.com)
 - **API**: https://imobiflow-saas-1.onrender.com
 - **SendGrid**: https://app.sendgrid.com
-- **Render**: https://dashboard.render.com
-- **Vercel**: https://vercel.com/dashboard
+- **Render Dashboard**: https://dashboard.render.com
 - **Cloudflare**: https://dash.cloudflare.com
 
 ### Documentação Externa
