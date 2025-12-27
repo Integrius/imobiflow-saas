@@ -199,19 +199,12 @@ Proxy: DNS only (nuvem cinza)
 TTL: Auto
 ```
 
-3. **Subdomínio específico Vivoly** (opcional, já coberto pelo wildcard):
-```
-Type: CNAME
-Name: vivoly
-Target: imobiflow-web.onrender.com
-Proxy: DNS only (nuvem cinza)
-TTL: Auto
-```
-
 **IMPORTANTE**:
 - O domínio base (`integrius.com.br`) pode usar Proxy (nuvem laranja) para CDN e proteção
-- Subdomínios de tenants (`*.integrius.com.br`) devem usar DNS only (nuvem cinza)
+- O wildcard (`*.integrius.com.br`) DEVE usar **DNS only (nuvem cinza)** - NUNCA habilite proxy
 - Todos apontam para `imobiflow-web.onrender.com`
+- NÃO é necessário criar registros específicos por tenant (vivoly, abc, etc.) - o wildcard cobre tudo
+- Qualquer subdomínio criado (`novotenenant.integrius.com.br`) funciona automaticamente ✅
 
 ### Domínios Customizados (Futuro)
 
