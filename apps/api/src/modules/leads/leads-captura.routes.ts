@@ -5,7 +5,7 @@
  */
 
 import { FastifyInstance } from 'fastify';
-import { PrismaClient, TipoNegocio, TipoImovel } from '@prisma/client';
+import { PrismaClient, TipoNegocio, TipoImovel, Prisma } from '@prisma/client';
 import { ibgeService } from '../../shared/services/ibge.service';
 import { sendGridService } from '../../shared/services/sendgrid.service';
 import { leadQualificationService } from '../../ai/services/lead-qualification.service';
@@ -151,7 +151,7 @@ export async function leadsCapturaRoutes(server: FastifyInstance) {
           });
 
           server.log.info(`🤖 Sofia qualificou lead: ${qualificacao.temperatura} (${qualificacao.score})`);
-        } catch (error) {
+        } catch (error: any) {
           server.log.error('Erro ao qualificar lead com Sofia:', error);
           // Continua mesmo se a qualificação falhar
         }
@@ -198,13 +198,13 @@ export async function leadsCapturaRoutes(server: FastifyInstance) {
 
             // IA habilitada
             ai_enabled: true,
-            ai_qualificacao: qualificacao ? {
+            ai_qualificacao: qualificacao ? JSON.parse(JSON.stringify({
               score: qualificacao.score,
               temperatura: qualificacao.temperatura,
               insights: qualificacao.insights,
               analise: qualificacao.analise_detalhada,
               data_qualificacao: new Date().toISOString()
-            } : null,
+            })) : Prisma.JsonNull,
 
             // Timeline inicial
             timeline: [

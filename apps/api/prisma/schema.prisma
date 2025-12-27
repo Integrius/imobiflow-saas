@@ -304,6 +304,7 @@ model Lead {
 
   // Controle IA
   ai_enabled          Boolean @default(true) // IA habilitada para este lead?
+  ai_qualificacao     Json? // Análise completa da IA Sofia
   escalated_to_broker Boolean @default(false) // Escalado para corretor?
   escalation_reason   String? @db.Text // Por que foi escalado?
 

@@ -414,11 +414,11 @@ export async function agendamentosRoutes(server: FastifyInstance) {
           ...updateData,
           data_visita: updateData.data_visita ? new Date(updateData.data_visita) : undefined,
           timeline: {
-            push: {
+            push: JSON.parse(JSON.stringify({
               evento: 'AGENDAMENTO_ATUALIZADO',
               data: new Date().toISOString(),
               detalhes: updateData
-            }
+            }))
           }
         },
         include: {
