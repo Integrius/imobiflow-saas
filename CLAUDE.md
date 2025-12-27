@@ -2,10 +2,16 @@
 
 ## Visão Geral do Projeto
 
-**ImobiFlow** é uma plataforma SaaS de gestão imobiliária com inteligência artificial, projetada para automatizar e otimizar o processo de captação, qualificação e conversão de leads no mercado imobiliário.
+**ImobiFlow** é uma plataforma SaaS **multi-tenant** de gestão imobiliária com inteligência artificial, projetada para automatizar e otimizar o processo de captação, qualificação e conversão de leads no mercado imobiliário.
 
 ### Objetivo
 Conectar leads (pessoas procurando imóveis) com corretores e imobiliárias de forma inteligente, usando IA para qualificação automática, sugestões personalizadas e comunicação multicanal.
+
+### Arquitetura Multi-Tenant
+- **Modelo**: Multi-tenant com isolamento por tenant_id
+- **Subdomínios**: Cada tenant possui um subdomínio único (ex: `imobiliaria.imobiflow.com.br`)
+- **Banco de Dados**: Compartilhado com segregação lógica via `tenant_id`
+- **Customização**: Cada tenant pode ter branding, configurações e workflows próprios
 
 ---
 
@@ -131,6 +137,45 @@ NEXT_PUBLIC_API_URL="https://imobiflow-saas-1.onrender.com"
 - **DNS**: Gerenciado
 - **Email Routing**: Configurado (noreply@integrius.com.br → ia.hcdoh@gmail.com)
 - **Proxy**: Desabilitado para registros SendGrid
+
+---
+
+## Sistema de Subdomínios e Roteamento
+
+### Como Funciona
+
+Cada tenant (imobiliária) possui um **subdomínio único** para acessar sua versão da plataforma:
+
+- **Formato**: `{tenant-slug}.imobiflow.com.br`
+- **Exemplo**: `integrius.imobiflow.com.br`
+
+### Criação de Novo Tenant
+
+Quando um novo tenant é cadastrado:
+
+1. **Slug gerado**: Nome da imobiliária convertido para slug (ex: "Imobiliária ABC" → `imobiliaria-abc`)
+2. **Subdomínio criado**: Automaticamente fica disponível em `imobiliaria-abc.imobiflow.com.br`
+3. **DNS configurado**: Wildcard DNS (`*.imobiflow.com.br`) aponta para o servidor
+4. **Roteamento**: Aplicação identifica tenant pelo subdomínio e carrega dados específicos
+
+### Identificação do Tenant
+
+```typescript
+// No frontend/backend
+const hostname = request.headers.host; // ex: "integrius.imobiflow.com.br"
+const subdomain = hostname.split('.')[0]; // "integrius"
+
+// Buscar tenant pelo slug
+const tenant = await prisma.tenant.findUnique({
+  where: { slug: subdomain }
+});
+```
+
+### Domínios Customizados (Futuro)
+
+Tenants premium poderão usar domínios próprios:
+- `www.imobiliariaabc.com.br` → mapeado para tenant específico
+- Configurado via `dominio_customizado` no modelo Tenant
 
 ---
 
@@ -281,7 +326,39 @@ const shouldShow =
 
 ## Banco de Dados (Prisma)
 
+### Arquitetura Multi-Tenant
+
+O ImobiFlow utiliza um modelo **multi-tenant com banco de dados compartilhado**:
+
+- **Isolamento**: Cada registro possui `tenant_id` que identifica a qual imobiliária/tenant pertence
+- **Segurança**: Todas as queries devem filtrar por `tenant_id` para garantir isolamento de dados
+- **Escalabilidade**: Permite múltiplos tenants no mesmo banco sem duplicação de infraestrutura
+- **Subdomínios**: Cada tenant acessa via subdomínio único (ex: `imobiliaria-nome.imobiflow.com.br`)
+
 ### Modelos Principais
+
+#### Tenant
+```prisma
+model Tenant {
+  id                String @id @default(uuid())
+  slug              String @unique  // usado no subdomínio
+  nome              String
+  email             String
+  telefone          String?
+
+  // Configurações
+  dominio_customizado String?
+  logo_url           String?
+
+  // Relacionamentos
+  leads              Lead[]
+  corretores         Corretor[]
+  imoveis            Imovel[]
+
+  created_at         DateTime @default(now())
+  updated_at         DateTime @updatedAt
+}
+```
 
 #### Lead
 ```prisma
