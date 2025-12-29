@@ -197,11 +197,11 @@ CREATE INDEX "propostas_status_idx" ON "propostas"("status");
 
 ## ✅ Checklist Final
 
-- [ ] Push do código para `main`
-- [ ] Aguardar deploy automático no Render
-- [ ] Aplicar migration (`npx prisma db push`)
-- [ ] Gerar Prisma Client (`npx prisma generate`)
-- [ ] Reiniciar serviço
+- [x] Push do código para `main`
+- [x] Aguardar deploy automático no Render
+- [x] Aplicar migration (`npx prisma db push`) - ✅ CONCLUÍDO em 29/12/2025
+- [x] Gerar Prisma Client (`npx prisma generate`) - ✅ CONCLUÍDO em 29/12/2025
+- [ ] Reiniciar serviço no Render (ou aguardar próximo deploy)
 - [ ] Testar criação de proposta via frontend
 - [ ] Verificar exibição de "Melhor Oferta"
 - [ ] Verificar edição de "Sua Oferta"
