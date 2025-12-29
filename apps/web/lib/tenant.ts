@@ -76,8 +76,21 @@ export function getTenantInfo(): TenantInfo {
 
 /**
  * Retorna o tenant_id se disponível
+ *
+ * Ordem de prioridade:
+ * 1. localStorage (armazenado durante login)
+ * 2. URL (query param ou subdomínio)
  */
 export function getTenantId(): string | null {
+  // Primeiro verifica localStorage (armazenado durante login)
+  if (typeof window !== 'undefined') {
+    const storedTenantId = localStorage.getItem('tenant_id');
+    if (storedTenantId) {
+      return storedTenantId;
+    }
+  }
+
+  // Fallback para detecção via URL
   const info = getTenantInfo();
   return info.tenantId;
 }
