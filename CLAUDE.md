@@ -1,5 +1,28 @@
 # ImobiFlow - Documentação para Claude Code
 
+## ⚠️ IMPORTANTE: Manutenção da Documentação
+
+**TODAS as mudanças relevantes no projeto DEVEM ser registradas neste arquivo CLAUDE.md.**
+
+Quando você fizer alterações importantes (novo módulo, nova feature, mudança de configuração, correção crítica, etc.), você DEVE:
+
+1. ✅ Atualizar a seção relevante do CLAUDE.md
+2. ✅ Adicionar entry no "Histórico de Configurações" com data
+3. ✅ Atualizar "Última atualização" e "Versão" no rodapé
+4. ✅ Commitar as mudanças do CLAUDE.md junto com o código
+
+**Exemplos de mudanças que DEVEM ser documentadas:**
+- Novo módulo/feature implementado
+- Mudança de banco de dados ou configuração de infraestrutura
+- Nova integração (API externa, serviço, etc.)
+- Mudança em fluxos principais ou regras de negócio
+- Correções críticas que afetam arquitetura
+- Novos endpoints ou alteração de contratos de API
+
+**Este arquivo é a fonte única de verdade para o projeto. Mantenha-o atualizado!**
+
+---
+
 ## Visão Geral do Projeto
 
 **ImobiFlow** é uma plataforma SaaS **multi-tenant** de gestão imobiliária com inteligência artificial, projetada para automatizar e otimizar o processo de captação, qualificação e conversão de leads no mercado imobiliário.
@@ -31,7 +54,7 @@ Conectar leads (pessoas procurando imóveis) com corretores e imobiliárias de f
 - **Framework**: Fastify (Node.js)
 - **Linguagem**: TypeScript
 - **ORM**: Prisma
-- **Banco de Dados**: PostgreSQL (Render.com)
+- **Banco de Dados**: PostgreSQL (Supabase)
 - **Hospedagem**: Render.com
 
 #### Inteligência Artificial
@@ -87,8 +110,8 @@ imobiflow/
 
 #### Produção (Render.com - API)
 ```env
-# Database
-DATABASE_URL="postgresql://user:pass@host:5432/db"
+# Database (Supabase)
+DATABASE_URL="postgresql://postgres.qdleggkqdaecehtrdfsa:YF2MhSk_-nDb%26c9@aws-1-sa-east-1.pooler.supabase.com:5432/postgres?sslmode=require&connection_limit=3&pool_timeout=0"
 
 # JWT
 JWT_SECRET="seu-secret-seguro"
@@ -688,10 +711,15 @@ ANTHROPIC_API_KEY="sk-ant-api03-xxxxxxxxxxxxx"
 - **Node Version**: 20.x
 - **Auto Deploy**: Push para `main`
 
-### Database (Render.com PostgreSQL)
-- **Host**: dpg-d4kgd33e5dus73f7b480-a.ohio-postgres.render.com
-- **Database**: imobiflow
-- **Backup**: Automático diário
+### Database (Supabase PostgreSQL)
+- **Provider**: Supabase
+- **Host (Pooler)**: aws-1-sa-east-1.pooler.supabase.com
+- **Database**: postgres
+- **User**: postgres.qdleggkqdaecehtrdfsa
+- **Connection String**: `postgresql://postgres.qdleggkqdaecehtrdfsa:YF2MhSk_-nDb%26c9@aws-1-sa-east-1.pooler.supabase.com:5432/postgres?sslmode=require&connection_limit=3&pool_timeout=0`
+- **Backup**: Automático (Supabase)
+- **Acesso**: Via Supabase Dashboard ou connection pooler
+- **IMPORTANTE**: Usar sempre o pooler (aws-1-sa-east-1.pooler.supabase.com), não a conexão direta
 
 ---
 
@@ -732,6 +760,277 @@ GET https://imobiflow-saas-1.onrender.com/api/v1/telegram/status
 # Teste SendGrid (quando implementado)
 POST https://imobiflow-saas-1.onrender.com/api/v1/test/sendgrid
 ```
+
+---
+
+## Sistema de Propostas/Lances Competitivos
+
+O ImobiFlow possui um sistema completo de propostas competitivas, permitindo que múltiplos leads façam ofertas (lances) no mesmo imóvel, criando um ambiente de leilão/competição.
+
+### Conceito
+
+- **Múltiplas Propostas**: Vários leads podem fazer propostas para o mesmo imóvel
+- **Melhor Oferta**: Sistema identifica automaticamente a maior oferta de todos os usuários
+- **Edição de Proposta**: Cada lead pode atualizar sua própria proposta a qualquer momento
+- **Constraint Única**: Um lead só pode ter UMA proposta ativa por imóvel (upsert automático)
+- **Multi-Tenant**: Isolamento completo por tenant_id
+
+### Modelo de Dados
+
+#### Proposta
+
+```prisma
+model Proposta {
+  id String @id @default(uuid())
+
+  // Multi-tenant
+  tenant_id String
+  tenant Tenant @relation(fields: [tenant_id], references: [id], onDelete: Cascade)
+
+  // Relacionamentos
+  lead_id String
+  lead Lead @relation(fields: [lead_id], references: [id], onDelete: Cascade)
+
+  imovel_id String
+  imovel Imovel @relation(fields: [imovel_id], references: [id], onDelete: Restrict)
+
+  corretor_id String?
+  corretor Corretor? @relation(fields: [corretor_id], references: [id], onDelete: SetNull)
+
+  // Valor da proposta
+  valor Decimal @db.Decimal(10, 2)
+
+  // Status
+  status StatusProposta @default(PENDENTE)
+
+  // Observações e resposta
+  observacoes String? @db.Text
+  resposta String? @db.Text
+  data_resposta DateTime?
+  respondido_por_id String?
+
+  // Timestamps
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  // Constraint: um lead só pode ter uma proposta ativa por imóvel
+  @@unique([tenant_id, lead_id, imovel_id])
+  @@index([tenant_id])
+  @@index([lead_id])
+  @@index([imovel_id])
+  @@index([status])
+  @@map("propostas")
+}
+
+enum StatusProposta {
+  PENDENTE   // Aguardando resposta
+  ACEITA     // Proposta aceita
+  RECUSADA   // Proposta recusada
+  CONTRA     // Contraproposta feita
+  CANCELADA  // Cancelada pelo lead
+}
+```
+
+### Endpoints da API
+
+**Base URL**: `/api/v1/propostas`
+
+| Método | Endpoint | Descrição |
+|--------|----------|-----------|
+| POST | `/` | Criar ou atualizar proposta (upsert) |
+| GET | `/imovel/:imovel_id/best-offer` | Buscar melhor oferta para um imóvel |
+| GET | `/imovel/:imovel_id/my-offer?lead_id=xxx` | Buscar proposta do usuário para um imóvel |
+| GET | `/imovel/:imovel_id` | Listar todas as propostas de um imóvel |
+| GET | `/lead/:lead_id` | Listar todas as propostas de um lead |
+| POST | `/:proposta_id/accept` | Aceitar proposta |
+| POST | `/:proposta_id/reject` | Recusar proposta |
+| POST | `/:proposta_id/counter` | Fazer contraproposta |
+| POST | `/:proposta_id/cancel` | Cancelar proposta |
+
+### Fluxo de Uso
+
+#### 1. Criar/Atualizar Proposta
+
+**Request**:
+```bash
+POST /api/v1/propostas
+Authorization: Bearer <token>
+
+{
+  "lead_id": "uuid-do-lead",
+  "imovel_id": "uuid-do-imovel",
+  "valor": 450000,
+  "observacoes": "Proposta inicial, aguardando resposta"
+}
+```
+
+**Comportamento**:
+- Se já existe proposta deste lead para este imóvel → **UPDATE** (valor, observações, status volta para PENDENTE)
+- Se não existe → **CREATE** nova proposta
+
+#### 2. Buscar Melhor Oferta (Frontend)
+
+**Request**:
+```bash
+GET /api/v1/propostas/imovel/uuid-do-imovel/best-offer
+Authorization: Bearer <token>
+```
+
+**Response**:
+```json
+{
+  "success": true,
+  "bestOffer": {
+    "id": "uuid",
+    "valor": 500000,
+    "lead": {
+      "id": "uuid",
+      "nome": "João Silva"
+    },
+    "created_at": "2025-12-29T10:00:00.000Z"
+  }
+}
+```
+
+**Lógica**:
+- Busca propostas com status `PENDENTE` ou `CONTRA`
+- Ordena por `valor DESC` (maior valor primeiro)
+- Retorna a primeira (maior oferta)
+
+#### 3. Buscar Proposta do Usuário
+
+**Request**:
+```bash
+GET /api/v1/propostas/imovel/uuid-do-imovel/my-offer?lead_id=uuid-do-lead
+Authorization: Bearer <token>
+```
+
+**Response**:
+```json
+{
+  "success": true,
+  "myOffer": {
+    "id": "uuid",
+    "valor": 480000,
+    "observacoes": "Minha proposta",
+    "status": "PENDENTE",
+    "created_at": "2025-12-29T09:00:00.000Z"
+  }
+}
+```
+
+### Integração Frontend
+
+**Arquivo**: `/apps/web/app/dashboard/negociacoes/page.tsx`
+
+**Modal de Negociação**:
+
+```tsx
+{/* 🏆 Melhor Oferta - Read-only, verde */}
+{bestOffer && (
+  <div className="bg-gradient-to-r from-[#8FD14F]/10 to-[#8FD14F]/5 border-2 border-[#8FD14F]/30 rounded-lg p-3">
+    <label className="block text-sm font-bold text-[#2C2C2C] mb-1 flex items-center gap-2">
+      🏆 Melhor Oferta no Imóvel
+    </label>
+    <div className="text-2xl font-bold text-[#7FB344]">
+      R$ {formatCurrencyForEdit(bestOffer.valor)}
+    </div>
+    <p className="text-xs text-[#8B7F76] mt-1">
+      Oferta de: {bestOffer.lead.nome}
+    </p>
+  </div>
+)}
+
+{/* 💰 Sua Oferta - Editável, marrom */}
+<div className="bg-gradient-to-r from-[#A97E6F]/10 to-[#A97E6F]/5 border-2 border-[#A97E6F]/30 rounded-lg p-3">
+  <label className="block text-sm font-bold text-[#2C2C2C] mb-1">
+    💰 Sua Oferta para este Imóvel *
+  </label>
+  <input
+    type="text"
+    required
+    value={formData.valor_proposta}
+    onChange={(e) => {
+      const formatted = formatCurrencyInput(e.target.value);
+      handleFormChange('valor_proposta', formatted);
+    }}
+    className="w-full px-3 py-2 border border-[#A97E6F]/30 rounded-lg"
+  />
+  {myOffer && (
+    <p className="text-xs text-[#7FB344] font-medium mt-1">
+      ✓ Você já fez uma proposta. Altere o valor acima para atualizar.
+    </p>
+  )}
+</div>
+```
+
+**Carregamento Automático**:
+
+```typescript
+const loadImovelDetails = async (imovelId: string, leadId?: string) => {
+  // 1. Carregar detalhes do imóvel
+  const response = await api.get(`/imoveis/${imovelId}`);
+  setSelectedImovelDetails(response.data);
+
+  // 2. Carregar melhor oferta (de todos os usuários)
+  try {
+    const bestOfferResponse = await api.get(`/propostas/imovel/${imovelId}/best-offer`);
+    setBestOffer(bestOfferResponse.data.bestOffer);
+  } catch {
+    setBestOffer(null);
+  }
+
+  // 3. Carregar oferta do usuário atual
+  if (leadId) {
+    try {
+      const myOfferResponse = await api.get(`/propostas/imovel/${imovelId}/my-offer?lead_id=${leadId}`);
+      setMyOffer(myOfferResponse.data.myOffer);
+
+      // Preencher formulário com valor da proposta existente
+      if (myOfferResponse.data.myOffer?.valor) {
+        setFormData(prev => ({
+          ...prev,
+          valor_proposta: formatCurrencyForEdit(myOfferResponse.data.myOffer.valor)
+        }));
+      }
+    } catch {
+      setMyOffer(null);
+    }
+  }
+};
+```
+
+### Regras de Negócio
+
+1. **Upsert Automático**:
+   - Um lead só pode ter UMA proposta ativa por imóvel
+   - Ao criar nova proposta para imóvel que já tem proposta → UPDATE automático
+
+2. **Melhor Oferta**:
+   - Considera apenas propostas com status `PENDENTE` ou `CONTRA`
+   - Exclui propostas `ACEITA`, `RECUSADA`, `CANCELADA`
+   - Ordenação por maior valor
+
+3. **Atualização de Proposta**:
+   - Ao atualizar valor, status volta para `PENDENTE`
+   - Permite lead aumentar ou diminuir sua oferta
+
+4. **Status e Transições**:
+   - `PENDENTE` → `ACEITA` (corretor aceita)
+   - `PENDENTE` → `RECUSADA` (corretor recusa)
+   - `PENDENTE` → `CONTRA` (corretor faz contraproposta)
+   - Qualquer status → `CANCELADA` (lead cancela)
+
+### Arquivos Relacionados
+
+**Backend**:
+- [/apps/api/prisma/schema.prisma](apps/api/prisma/schema.prisma) - Modelo Proposta
+- [/apps/api/src/modules/propostas/propostas.service.ts](apps/api/src/modules/propostas/propostas.service.ts) - Lógica de negócio
+- [/apps/api/src/modules/propostas/propostas.routes.ts](apps/api/src/modules/propostas/propostas.routes.ts) - Endpoints da API
+- [/apps/api/src/server.ts](apps/api/src/server.ts) - Registro das rotas
+
+**Frontend**:
+- [/apps/web/app/dashboard/negociacoes/page.tsx](apps/web/app/dashboard/negociacoes/page.tsx) - Modal com propostas
 
 ---
 
@@ -1767,6 +2066,34 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 
 ## Histórico de Configurações
 
+### 2025-12-29
+
+#### Migração para Supabase PostgreSQL ✅
+- ✅ **Banco de Dados Migrado para Supabase**
+  - Migrado de Render PostgreSQL para Supabase PostgreSQL
+  - DATABASE_URL atualizado para usar connection pooler do Supabase
+  - Host: `aws-1-sa-east-1.pooler.supabase.com`
+  - Connection string com `sslmode=require` e `connection_limit=3`
+  - Arquivos `.env` e `.env.supabase` atualizados
+  - IMPORTANTE: Sempre usar pooler, não conexão direta
+
+#### Sistema de Propostas/Lances Competitivos ✅
+- ✅ **Sistema Completo de Propostas Implementado**
+  - Database: Modelo `Proposta` com constraint única (tenant_id, lead_id, imovel_id)
+  - Backend: Service e Routes completos (/api/v1/propostas)
+  - Endpoints: POST criar/atualizar, GET best-offer, GET my-offer, accept, reject, counter, cancel
+  - Frontend: Modal de negociações com cards "Melhor Oferta" (verde) e "Sua Oferta" (marrom)
+  - Lógica: Upsert automático, um lead só pode ter uma proposta ativa por imóvel
+  - Status: PENDENTE, ACEITA, RECUSADA, CONTRA, CANCELADA
+  - Migration aplicada via `npx prisma db push` em 29/12/2025
+  - Documentação completa adicionada ao CLAUDE.md
+
+- ✅ **Correções no Frontend**
+  - Fix: Reordenação do `loadImovelDetails` em `openEditModal`
+  - Garantido que `formData` é setado ANTES de carregar propostas
+  - Priorização do valor da proposta sobre valor da negociação
+  - Uso de `formatCurrencyForEdit` para valores existentes
+
 ### 2025-12-28
 
 #### Sistema de Autenticação Frontend ✅
@@ -1868,14 +2195,14 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 
 ---
 
-**Última atualização**: 28 de dezembro de 2025
-**Versão**: 1.3.0
+**Última atualização**: 29 de dezembro de 2025
+**Versão**: 1.4.0
 **Status**: Em produção ✅
 
-**Novidades da versão 1.3.0**:
-- Sistema de autenticação frontend completo (login + Google OAuth)
-- Middleware Next.js com proteção de rotas e multi-tenant
-- Utilitários de tenant para extração automática de subdomínio
-- Armazenamento seguro de tokens (localStorage + cookies)
-- Google OAuth com tenant isolation e validações de segurança
-- Documentação completa de integração frontend
+**Novidades da versão 1.4.0**:
+- ✅ Sistema de Propostas/Lances Competitivos completo (backend + frontend)
+- ✅ Migração para Supabase PostgreSQL com connection pooler
+- ✅ Modal de negociações com "Melhor Oferta" e "Sua Oferta"
+- ✅ Upsert automático de propostas (um lead, uma proposta por imóvel)
+- ✅ API completa: criar, buscar, aceitar, recusar, contraproposta, cancelar
+- ✅ Documentação CLAUDE.md com instrução de manutenção obrigatória
