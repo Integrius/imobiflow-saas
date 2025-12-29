@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { api } from '@/lib/api';
 import { toast } from '@/lib/toast';
 import Modal from '@/components/Modal';
+import EmptyState, { EmptyStateIcons } from '@/components/EmptyState';
 import { formatPhone, unformatNumbers } from '@/lib/formatters';
 
 interface Corretor {
@@ -265,9 +266,17 @@ export default function CorretoresPage() {
           <tbody className="bg-white divide-y divide-[rgba(169,126,111,0.1)]">
             {filteredCorretores.length === 0 ? (
               <tr>
-                <td colSpan={6} className="px-6 py-12 text-center text-[#8B7F76]">
-                  <div className="text-lg font-medium">{searchTerm ? 'Nenhum corretor encontrado' : 'Nenhum corretor cadastrado'}</div>
-                  <p className="text-sm text-[#8B7F76] mt-2">Clique em &ldquo;+ Novo Corretor&rdquo; para adicionar</p>
+                <td colSpan={6} className="px-6 py-4">
+                  <EmptyState
+                    icon={EmptyStateIcons.UserGroup}
+                    title={searchTerm ? 'Nenhum corretor encontrado' : 'Nenhum corretor cadastrado'}
+                    description={searchTerm
+                      ? 'Tente ajustar os filtros de busca ou limpar a pesquisa.'
+                      : 'Comece adicionando seu primeiro corretor à equipe. Eles poderão gerenciar leads e imóveis.'
+                    }
+                    actionLabel={!searchTerm ? 'Novo Corretor' : undefined}
+                    onAction={!searchTerm ? openCreateModal : undefined}
+                  />
                 </td>
               </tr>
             ) : (
