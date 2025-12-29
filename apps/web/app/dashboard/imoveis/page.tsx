@@ -282,7 +282,17 @@ export default function ImoveisPage() {
       loadImoveis();
     } catch (error: any) {
       console.error('Erro ao salvar:', error);
-      toast.error(error.response?.data?.error || 'Erro ao salvar imóvel');
+
+      // Mostrar erros de validação detalhados
+      if (error.response?.data?.detalhes && Array.isArray(error.response.data.detalhes)) {
+        const erros = error.response.data.detalhes
+          .map((e: any) => `${e.campo}: ${e.mensagem}`)
+          .join('\n');
+        toast.error(`Erro de validação:\n${erros}`);
+        console.error('Detalhes de validação:', error.response.data.detalhes);
+      } else {
+        toast.error(error.response?.data?.error || error.response?.data?.mensagem || 'Erro ao salvar imóvel');
+      }
     } finally {
       setSubmitting(false);
     }
