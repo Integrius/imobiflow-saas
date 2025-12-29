@@ -54,9 +54,10 @@ export async function login(data: LoginData): Promise<AuthResponse> {
   const response = await api.post('/auth/login', data, config);
 
   if (response.data.token) {
-    // Armazenar tenant_id se disponível
-    if (tenantId) {
-      localStorage.setItem('tenant_id', tenantId);
+    // Armazenar tenant_id (do subdomínio OU da resposta do backend)
+    const finalTenantId = tenantId || response.data.user?.tenant_id;
+    if (finalTenantId) {
+      localStorage.setItem('tenant_id', finalTenantId);
     }
 
     localStorage.setItem('token', response.data.token);
@@ -95,9 +96,10 @@ export async function loginWithGoogle(credential: string): Promise<AuthResponse>
   const response = await api.post('/auth/google', { credential }, config);
 
   if (response.data.token) {
-    // Armazenar tenant_id se disponível
-    if (tenantId) {
-      localStorage.setItem('tenant_id', tenantId);
+    // Armazenar tenant_id (do subdomínio OU da resposta do backend)
+    const finalTenantId = tenantId || response.data.user?.tenant_id;
+    if (finalTenantId) {
+      localStorage.setItem('tenant_id', finalTenantId);
     }
 
     localStorage.setItem('token', response.data.token);
