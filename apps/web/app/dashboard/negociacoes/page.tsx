@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { api } from '@/lib/api';
 import { toast } from '@/lib/toast';
 import Modal from '@/components/Modal';
-import { formatCurrencyInput, parseCurrency } from '@/lib/formatters';
+import { formatCurrencyInput, formatCurrencyForEdit, parseCurrency } from '@/lib/formatters';
 
 interface Negociacao {
   id: string;
@@ -51,6 +51,9 @@ interface Lead {
 interface Imovel {
   id: string;
   titulo: string;
+  valor?: number;
+  preco?: number;
+  fotos?: string[];
 }
 
 interface Corretor {
@@ -72,6 +75,7 @@ export default function NegociacoesPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const [originalFormData, setOriginalFormData] = useState<any>(null);
+  const [selectedImovelDetails, setSelectedImovelDetails] = useState<Imovel | null>(null);
 
   const [formData, setFormData] = useState<NegociacaoForm>({
     lead_id: '',
@@ -157,6 +161,23 @@ export default function NegociacoesPage() {
     }
   };
 
+  const loadImovelDetails = async (imovelId: string) => {
+    try {
+      const response = await api.get(`/imoveis/${imovelId}`);
+      const imovelData = response.data;
+      setSelectedImovelDetails(imovelData);
+
+      // Auto-preencher o valor da proposta com o valor do imóvel
+      const valorImovel = imovelData.valor || imovelData.preco || 0;
+      if (valorImovel > 0 && !formData.valor_proposta) {
+        handleFormChange('valor_proposta', formatCurrencyForEdit(valorImovel));
+      }
+    } catch (error: any) {
+      console.error('Erro ao carregar detalhes do imóvel:', error);
+      setSelectedImovelDetails(null);
+    }
+  };
+
   const handleFormChange = (field: string, value: any) => {
     setFormData({ ...formData, [field]: value });
     setHasUnsavedChanges(true);
@@ -175,6 +196,7 @@ export default function NegociacoesPage() {
 
   const openCreateModal = () => {
     setEditingNegociacao(null);
+    setSelectedImovelDetails(null);
     setFormData({
       lead_id: '',
       imovel_id: '',
@@ -192,8 +214,14 @@ export default function NegociacoesPage() {
     setModalOpen(true);
   };
 
-  const openEditModal = (negociacao: Negociacao) => {
+  const openEditModal = async (negociacao: Negociacao) => {
     setEditingNegociacao(negociacao);
+
+    // Carregar detalhes do imóvel se tiver imovel_id
+    if (negociacao.imovel_id) {
+      await loadImovelDetails(negociacao.imovel_id);
+    }
+
     const formDataToSet = {
       lead_id: negociacao.lead_id,
       imovel_id: negociacao.imovel_id,
@@ -395,9 +423,61 @@ export default function NegociacoesPage() {
         isOpen={modalOpen}
         onClose={handleCloseModal}
         title={editingNegociacao ? 'Consultar Negociação' : 'Nova Negociação'}
-        size="lg"
+        size="xl"
       >
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-6">
+          {/* Fotos do Imóvel - Exibir apenas se houver imóvel selecionado */}
+          {selectedImovelDetails && selectedImovelDetails.fotos && selectedImovelDetails.fotos.length > 0 && (
+            <div className="bg-gradient-to-br from-[#F4E2CE]/30 to-white border-2 border-[#A97E6F]/20 rounded-xl p-4">
+              <h4 className="text-sm font-bold text-[#2C2C2C] mb-3 flex items-center gap-2">
+                🏠 Fotos do Imóvel
+              </h4>
+              <div className="flex gap-3">
+                {/* Primeira foto - maior (2/3 do espaço) */}
+                <div className="w-2/3">
+                  <div className="relative aspect-[4/3] rounded-lg overflow-hidden shadow-lg border-2 border-[#8FD14F]/30">
+                    <img
+                      src={selectedImovelDetails.fotos[0]}
+                      alt="Foto principal do imóvel"
+                      className="w-full h-full object-cover"
+                    />
+                    <div className="absolute top-2 left-2 bg-[#8FD14F] text-white text-xs font-bold px-2 py-1 rounded shadow-lg">
+                      Principal
+                    </div>
+                  </div>
+                </div>
+
+                {/* Segunda e terceira fotos - menores (1/3 do espaço, empilhadas) */}
+                <div className="flex flex-col gap-3 w-1/3">
+                  {selectedImovelDetails.fotos[1] && (
+                    <div className="relative flex-1 rounded-lg overflow-hidden shadow-md border border-[#A97E6F]/20">
+                      <img
+                        src={selectedImovelDetails.fotos[1]}
+                        alt="Foto 2 do imóvel"
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                  )}
+                  {selectedImovelDetails.fotos[2] && (
+                    <div className="relative flex-1 rounded-lg overflow-hidden shadow-md border border-[#A97E6F]/20">
+                      <img
+                        src={selectedImovelDetails.fotos[2]}
+                        alt="Foto 3 do imóvel"
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                  )}
+                </div>
+              </div>
+              {selectedImovelDetails.fotos.length > 3 && (
+                <p className="text-xs text-[#8B7F76] mt-2 text-center">
+                  +{selectedImovelDetails.fotos.length - 3} foto(s) adicional(is)
+                </p>
+              )}
+            </div>
+          )}
+
+          {/* Formulário */}
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -425,7 +505,15 @@ export default function NegociacoesPage() {
               <select
                 required
                 value={formData.imovel_id}
-                onChange={(e) => handleFormChange('imovel_id', e.target.value)}
+                onChange={(e) => {
+                  const imovelId = e.target.value;
+                  handleFormChange('imovel_id', imovelId);
+                  if (imovelId) {
+                    loadImovelDetails(imovelId);
+                  } else {
+                    setSelectedImovelDetails(null);
+                  }
+                }}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               >
                 <option value="">Selecione...</option>
