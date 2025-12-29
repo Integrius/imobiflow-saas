@@ -381,17 +381,72 @@ Ao fazer uma solicitação, especifique qual agente deve trabalhar:
 
 ---
 
+### 8. Design/UI Agent 🎨
+
+**Contexto**: `apps/web/**/*`, design visual, UX/UI
+
+**Responsabilidades:**
+- **OBRIGATÓRIO**: Seguir estilo "Tech Clean Premium"
+- **OBRIGATÓRIO**: Usar paleta de cores aprovada
+- **OBRIGATÓRIO**: Aplicar tipografia consistente
+- Design de páginas e layouts
+- UX/UI patterns e componentes
+- Responsividade mobile-first
+- Acessibilidade (a11y)
+
+**Regras CRÍTICAS:**
+- ⚠️ **SEMPRE** usar paleta aprovada:
+  - Azul profundo: `#0A2540`
+  - Verde tech: `#00C48C`
+  - Azul neon: `#3B82F6`
+  - Background: `#F4F6F8`
+- ⚠️ **SEMPRE** fontes aprovadas (Inter, Poppins, Roboto)
+- ⚠️ **SEMPRE** mobile-first e responsivo
+- ⚠️ **SEMPRE** animações suaves (<0.6s)
+- ❌ **NUNCA** cores antigas (#8FD14F verde, #A97E6F marrom)
+- ❌ **NUNCA** gradientes excessivos
+- ❌ **NUNCA** múltiplas fontes (máx 2)
+
+**Workflow Obrigatório:**
+1. Analisar solicitação e objetivo
+2. Planejar estrutura e hierarquia
+3. Aplicar "Tech Clean Premium"
+4. Implementar microinterações
+5. Testar responsividade
+6. Validar checklist de design
+
+**📚 Guia Completo:**
+Ver `.claude/agents/design-ui.md` para:
+- Paleta de cores detalhada
+- Tipografia e tamanhos
+- Layout e espaçamentos
+- Botões e CTAs
+- Ícones e ilustrações
+- Animações permitidas
+- Tom de comunicação
+- Checklist completo
+
+**Referência de Estilo:**
+Ver `docs/estilo_visual_reformulacao_do_site_integruis_com.md`
+
+**Aplicação:**
+- ✅ Fase 1: Landing page (aprovação)
+- ⏳ Fase 2: Todas as páginas (após aprovação)
+
+---
+
 ## 🔄 Coordenação entre Agentes
 
 ### Feature Completa: "Sistema de Favoritos"
 
 1. **@database-agent**: Criar modelo `Favorito`
 2. **@backend-agent**: Criar rotas CRUD
-3. **@frontend-agent**: Criar botão de favoritar + lista
-4. **@integrations-agent**: Enviar email com favoritos
-5. **@ia-agent**: Sofia sugere imóveis baseado em favoritos
-6. **@testing-agent**: Testes do fluxo completo
-7. **@documentation-agent**: Atualizar CLAUDE.md
+3. **@frontend-agent**: Criar botão de favoritar + lista (código)
+4. **@design-ui-agent**: Design visual do botão e lista (estilo)
+5. **@integrations-agent**: Enviar email com favoritos
+6. **@ia-agent**: Sofia sugere imóveis baseado em favoritos
+7. **@testing-agent**: Testes do fluxo completo
+8. **@documentation-agent**: Atualizar CLAUDE.md
 
 ---
 
@@ -407,4 +462,4 @@ Ao fazer uma solicitação, especifique qual agente deve trabalhar:
 
 ---
 
-**Última atualização**: 27 de dezembro de 2025
+**Última atualização**: 29 de dezembro de 2025
