@@ -18,53 +18,92 @@ export interface LoginData {
   senha: string;
 }
 
+/**
+ * Helper para buscar tenant_id pelo slug do subdomínio
+ */
+async function getTenantIdBySubdomain(subdomain: string): Promise<string | null> {
+  try {
+    const tenantResponse = await api.get(`/tenants/slug/${subdomain}`);
+    return tenantResponse.data.id;
+  } catch (error) {
+    console.error('Erro ao buscar tenant por slug:', error);
+    return null;
+  }
+}
+
 export async function login(data: LoginData): Promise<AuthResponse> {
   // Se estiver usando subdomínio, precisamos buscar o tenant_id pelo slug
   const subdomain = getSubdomain();
+  let tenantId: string | null = null;
 
   if (subdomain) {
-    try {
-      // Buscar tenant pelo slug do subdomínio
-      const tenantResponse = await api.get(`/tenants/slug/${subdomain}`);
-      const tenantId = tenantResponse.data.id;
+    tenantId = await getTenantIdBySubdomain(subdomain);
 
-      // Fazer login com o tenant_id correto no header
-      const response = await api.post('/auth/login', data, {
-        headers: {
-          'X-Tenant-ID': tenantId
-        }
-      });
-
-      if (response.data.token) {
-        // Armazenar tenant_id também
-        localStorage.setItem('tenant_id', tenantId);
-        localStorage.setItem('token', response.data.token);
-        localStorage.setItem('user', JSON.stringify(response.data.user));
-
-        // Também armazenar em cookie para usar no middleware
-        document.cookie = `token=${response.data.token}; path=/; max-age=${7 * 24 * 60 * 60}; SameSite=Lax`;
-      }
-
-      return response.data;
-    } catch (error: any) {
-      // Se não encontrar tenant pelo slug, mostrar erro amigável
-      if (error.response?.status === 404) {
-        throw new Error('Imobiliária não encontrada. Verifique a URL.');
-      }
-      throw error;
+    if (!tenantId) {
+      throw new Error('Imobiliária não encontrada. Verifique a URL.');
     }
   }
 
-  // Se não tiver subdomínio, fazer login normal (desenvolvimento com query param)
-  const response = await api.post('/auth/login', data);
+  // Fazer login com ou sem tenant_id
+  const config = tenantId ? {
+    headers: {
+      'X-Tenant-ID': tenantId
+    }
+  } : undefined;
+
+  const response = await api.post('/auth/login', data, config);
 
   if (response.data.token) {
-    // Armazenar em localStorage (compatibilidade com código existente)
+    // Armazenar tenant_id se disponível
+    if (tenantId) {
+      localStorage.setItem('tenant_id', tenantId);
+    }
+
     localStorage.setItem('token', response.data.token);
     localStorage.setItem('user', JSON.stringify(response.data.user));
 
     // Também armazenar em cookie para usar no middleware
-    // NOTA: Para produção, considere usar httpOnly cookies via backend
+    document.cookie = `token=${response.data.token}; path=/; max-age=${7 * 24 * 60 * 60}; SameSite=Lax`;
+  }
+
+  return response.data;
+}
+
+/**
+ * Login com Google OAuth
+ */
+export async function loginWithGoogle(credential: string): Promise<AuthResponse> {
+  // Se estiver usando subdomínio, buscar tenant_id primeiro
+  const subdomain = getSubdomain();
+  let tenantId: string | null = null;
+
+  if (subdomain) {
+    tenantId = await getTenantIdBySubdomain(subdomain);
+
+    if (!tenantId) {
+      throw new Error('Imobiliária não encontrada. Verifique a URL.');
+    }
+  }
+
+  // Fazer login Google com ou sem tenant_id
+  const config = tenantId ? {
+    headers: {
+      'X-Tenant-ID': tenantId
+    }
+  } : undefined;
+
+  const response = await api.post('/auth/google', { credential }, config);
+
+  if (response.data.token) {
+    // Armazenar tenant_id se disponível
+    if (tenantId) {
+      localStorage.setItem('tenant_id', tenantId);
+    }
+
+    localStorage.setItem('token', response.data.token);
+    localStorage.setItem('user', JSON.stringify(response.data.user));
+
+    // Também armazenar em cookie para usar no middleware
     document.cookie = `token=${response.data.token}; path=/; max-age=${7 * 24 * 60 * 60}; SameSite=Lax`;
   }
 

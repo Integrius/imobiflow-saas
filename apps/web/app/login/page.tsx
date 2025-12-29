@@ -5,13 +5,13 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
 import { GoogleLogin, CredentialResponse } from '@react-oauth/google';
-import { login } from '@/lib/auth';
-import { api } from '@/lib/api';
+import { login, loginWithGoogle } from '@/lib/auth';
 
 export default function LoginPage() {
   const router = useRouter();
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const errorTimeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -63,23 +63,15 @@ export default function LoginPage() {
     setLoading(true);
 
     try {
-      const response = await api.post('/auth/google', {
-        credential: credentialResponse.credential
-      });
-
-      if (response.data.token) {
-        // Armazenar em localStorage
-        localStorage.setItem('token', response.data.token);
-        localStorage.setItem('user', JSON.stringify(response.data.user));
-
-        // Armazenar em cookie para middleware
-        document.cookie = `token=${response.data.token}; path=/; max-age=${7 * 24 * 60 * 60}; SameSite=Lax`;
-
-        setLoading(false);
-        router.push('/dashboard');
+      if (!credentialResponse.credential) {
+        throw new Error('Credencial do Google não recebida');
       }
+
+      await loginWithGoogle(credentialResponse.credential);
+      setLoading(false);
+      router.push('/dashboard');
     } catch (err: any) {
-      const errorMessage = err.response?.data?.error || 'Erro ao fazer login com Google';
+      const errorMessage = err.message || err.response?.data?.error || 'Erro ao fazer login com Google';
       console.log('🔴 ERRO GOOGLE OAUTH:', errorMessage, '- Será exibido por 15 segundos');
       setError(errorMessage);
       setLoading(false);
@@ -292,16 +284,35 @@ export default function LoginPage() {
                 <label htmlFor="senha" className="block text-sm font-semibold text-[#2C2C2C] mb-2">
                   Senha
                 </label>
-                <input
-                  id="senha"
-                  name="senha"
-                  type="password"
-                  required
-                  value={senha}
-                  onChange={(e) => setSenha(e.target.value)}
-                  className="input-modern"
-                  placeholder="••••••••"
-                />
+                <div className="relative">
+                  <input
+                    id="senha"
+                    name="senha"
+                    type={showPassword ? "text" : "password"}
+                    required
+                    value={senha}
+                    onChange={(e) => setSenha(e.target.value)}
+                    className="input-modern pr-12"
+                    placeholder="••••••••"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-[#8B7F76] hover:text-[#2C2C2C] transition-colors p-1"
+                    aria-label={showPassword ? "Ocultar senha" : "Mostrar senha"}
+                  >
+                    {showPassword ? (
+                      <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.878 9.878L6.757 6.757M9.878 9.878L3 3m11.757 11.757l3.121 3.121m0 0l3.121-3.121m-3.121 3.121L21 21" />
+                      </svg>
+                    ) : (
+                      <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                      </svg>
+                    )}
+                  </button>
+                </div>
               </div>
 
               <div className="flex items-center justify-between text-sm">
