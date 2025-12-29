@@ -87,13 +87,21 @@ export default function ImageUpload({
       formData.append('file', file);
 
       const token = localStorage.getItem('token');
+      const tenantId = localStorage.getItem('tenant_id');
+
+      const headers: Record<string, string> = {
+        'Authorization': `Bearer ${token}`,
+      };
+
+      if (tenantId) {
+        headers['X-Tenant-ID'] = tenantId;
+      }
+
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_API_URL}/api/v1/imoveis/${imovelId}/upload-foto`,
         {
           method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${token}`,
-          },
+          headers,
           body: formData,
         }
       );
@@ -123,13 +131,21 @@ export default function ImageUpload({
 
     try {
       const token = localStorage.getItem('token');
+      const tenantId = localStorage.getItem('tenant_id');
+
+      const headers: Record<string, string> = {
+        'Authorization': `Bearer ${token}`,
+      };
+
+      if (tenantId) {
+        headers['X-Tenant-ID'] = tenantId;
+      }
+
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_API_URL}/api/v1/imoveis/${imovelId}/fotos/${index}`,
         {
           method: 'DELETE',
-          headers: {
-            'Authorization': `Bearer ${token}`,
-          },
+          headers,
         }
       );
 
@@ -183,14 +199,22 @@ export default function ImageUpload({
     // Salva no backend
     try {
       const token = localStorage.getItem('token');
+      const tenantId = localStorage.getItem('tenant_id');
+
+      const headers: Record<string, string> = {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      };
+
+      if (tenantId) {
+        headers['X-Tenant-ID'] = tenantId;
+      }
+
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_API_URL}/api/v1/imoveis/${imovelId}/reorder-fotos`,
         {
           method: 'PUT',
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json',
-          },
+          headers,
           body: JSON.stringify({ fotos: newOrder }),
         }
       );
