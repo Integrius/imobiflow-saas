@@ -21,8 +21,13 @@ export async function login(data: LoginData): Promise<AuthResponse> {
   const response = await api.post('/auth/login', data);
 
   if (response.data.token) {
+    // Armazenar em localStorage (compatibilidade com código existente)
     localStorage.setItem('token', response.data.token);
     localStorage.setItem('user', JSON.stringify(response.data.user));
+
+    // Também armazenar em cookie para usar no middleware
+    // NOTA: Para produção, considere usar httpOnly cookies via backend
+    document.cookie = `token=${response.data.token}; path=/; max-age=${7 * 24 * 60 * 60}; SameSite=Lax`;
   }
 
   return response.data;
@@ -34,8 +39,14 @@ export async function getMe(): Promise<User> {
 }
 
 export function logout() {
+  // Remover de localStorage
   localStorage.removeItem('token');
   localStorage.removeItem('user');
+
+  // Remover cookie
+  document.cookie = 'token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
+
+  // Redirecionar para login
   window.location.href = '/login';
 }
 

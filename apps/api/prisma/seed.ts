@@ -4,81 +4,181 @@ import { hash } from 'bcryptjs'
 const prisma = new PrismaClient()
 
 async function main() {
-  console.log('🌱 Iniciando seed do banco de dados...')
+  console.log('🌱 Iniciando seed do banco de dados multi-tenant...\n')
 
-  // Criar usuário admin
+  // ============================================
+  // 1. CRIAR TENANT VIVOLY
+  // ============================================
+  console.log('📦 Criando tenant Vivoly...')
+  const tenantVivoly = await prisma.tenant.upsert({
+    where: { slug: 'vivoly' },
+    update: {},
+    create: {
+      nome: 'Vivoly Imobiliária',
+      slug: 'vivoly',
+      subdominio: 'vivoly',
+      email: 'contato@vivoly.com.br',
+      telefone: '11999999999',
+      plano: 'PRO',
+      status: 'ATIVO',
+      limite_usuarios: 10,
+      limite_imoveis: 500,
+      total_usuarios: 0,
+      total_imoveis: 0
+    }
+  })
+  console.log(`✅ Tenant criado: ${tenantVivoly.nome} (${tenantVivoly.subdominio}.integrius.com.br)\n`)
+
+  // ============================================
+  // 2. CRIAR USUÁRIO ADMIN DO TENANT VIVOLY
+  // ============================================
+  console.log('👤 Criando usuário ADMIN...')
   const senhaHashAdmin = await hash('admin123', 10)
   const admin = await prisma.user.upsert({
-    where: { email: 'admin@imobiflow.com' },
+    where: {
+      tenant_id_email: {
+        tenant_id: tenantVivoly.id,
+        email: 'admin@vivoly.com'
+      }
+    },
     update: {},
     create: {
-      nome: 'Administrador',
-      email: 'admin@imobiflow.com',
+      tenant_id: tenantVivoly.id,
+      nome: 'Administrador Vivoly',
+      email: 'admin@vivoly.com',
       senha_hash: senhaHashAdmin,
       tipo: 'ADMIN',
+      ativo: true
     },
   })
-  console.log('✅ Admin criado:', admin.email)
+  console.log(`✅ ADMIN criado: ${admin.email}`)
+  console.log(`   Senha: admin123`)
+  console.log(`   Tipo: ${admin.tipo}\n`)
 
-  // Criar corretor 1
+  // ============================================
+  // 3. CRIAR USUÁRIO GESTOR
+  // ============================================
+  console.log('👤 Criando usuário GESTOR...')
+  const senhaHashGestor = await hash('gestor123', 10)
+  const gestor = await prisma.user.upsert({
+    where: {
+      tenant_id_email: {
+        tenant_id: tenantVivoly.id,
+        email: 'gestor@vivoly.com'
+      }
+    },
+    update: {},
+    create: {
+      tenant_id: tenantVivoly.id,
+      nome: 'Carlos Gestor',
+      email: 'gestor@vivoly.com',
+      senha_hash: senhaHashGestor,
+      tipo: 'GESTOR',
+      ativo: true
+    },
+  })
+  console.log(`✅ GESTOR criado: ${gestor.email}`)
+  console.log(`   Senha: gestor123`)
+  console.log(`   Tipo: ${gestor.tipo}\n`)
+
+  // ============================================
+  // 4. CRIAR CORRETORES
+  // ============================================
+  console.log('👥 Criando corretores...')
+
+  // Corretor 1
   const senhaHashCorretor1 = await hash('corretor123', 10)
   const userCorretor1 = await prisma.user.upsert({
-    where: { email: 'joao@imobiflow.com' },
+    where: {
+      tenant_id_email: {
+        tenant_id: tenantVivoly.id,
+        email: 'joao@vivoly.com'
+      }
+    },
     update: {},
     create: {
+      tenant_id: tenantVivoly.id,
       nome: 'João Silva',
-      email: 'joao@imobiflow.com',
+      email: 'joao@vivoly.com',
       senha_hash: senhaHashCorretor1,
       tipo: 'CORRETOR',
-      corretor: {
-        create: {
-          creci: 'CRECI-12345',
-          telefone: '11999999999',
-          especializacoes: ['APARTAMENTO', 'CASA'],
-          meta_mensal: 50000,
-          comissao_padrao: 3.5,
-        },
-      },
+      ativo: true
     },
   })
-  console.log('✅ Corretor 1 criado:', userCorretor1.email)
 
-  // Criar corretor 2
-  const senhaHashCorretor2 = await hash('corretor123', 10)
-  const userCorretor2 = await prisma.user.upsert({
-    where: { email: 'maria@imobiflow.com' },
+  await prisma.corretor.upsert({
+    where: { user_id: userCorretor1.id },
     update: {},
     create: {
+      tenant_id: tenantVivoly.id,
+      user_id: userCorretor1.id,
+      creci: 'CRECI-12345',
+      telefone: '11999999999',
+      especializacoes: ['APARTAMENTO', 'CASA'],
+      meta_mensal: 50000,
+      comissao_padrao: 3.5,
+    }
+  })
+  console.log(`✅ CORRETOR 1 criado: ${userCorretor1.email} (senha: corretor123)`)
+
+  // Corretor 2
+  const senhaHashCorretor2 = await hash('corretor123', 10)
+  const userCorretor2 = await prisma.user.upsert({
+    where: {
+      tenant_id_email: {
+        tenant_id: tenantVivoly.id,
+        email: 'maria@vivoly.com'
+      }
+    },
+    update: {},
+    create: {
+      tenant_id: tenantVivoly.id,
       nome: 'Maria Santos',
-      email: 'maria@imobiflow.com',
+      email: 'maria@vivoly.com',
       senha_hash: senhaHashCorretor2,
       tipo: 'CORRETOR',
-      corretor: {
-        create: {
-          creci: 'CRECI-67890',
-          telefone: '11988888888',
-          especializacoes: ['COMERCIAL', 'TERRENO'],
-          meta_mensal: 75000,
-          comissao_padrao: 4.0,
-        },
-      },
+      ativo: true
     },
   })
-  console.log('✅ Corretor 2 criado:', userCorretor2.email)
 
-  // Buscar os corretores criados
-  const corretor1 = await prisma.corretor.findFirst({
-    where: { user_id: userCorretor1.id }
+  await prisma.corretor.upsert({
+    where: { user_id: userCorretor2.id },
+    update: {},
+    create: {
+      tenant_id: tenantVivoly.id,
+      user_id: userCorretor2.id,
+      creci: 'CRECI-67890',
+      telefone: '11988888888',
+      especializacoes: ['COMERCIAL', 'TERRENO'],
+      meta_mensal: 75000,
+      comissao_padrao: 4.0,
+    }
   })
-  const corretor2 = await prisma.corretor.findFirst({
-    where: { user_id: userCorretor2.id }
+  console.log(`✅ CORRETOR 2 criado: ${userCorretor2.email} (senha: corretor123)\n`)
+
+  // ============================================
+  // 5. CRIAR PROPRIETÁRIOS
+  // ============================================
+  console.log('🏢 Criando proprietários...')
+
+  const proprietario1 = await prisma.proprietario.create({
+    data: {
+      tenant_id: tenantVivoly.id,
+      nome: 'Proprietário Silva',
+      cpf_cnpj: '12345678901',
+      tipo_pessoa: 'FISICA',
+      telefone: '11987654321',
+      email: 'proprietario@example.com',
+      forma_pagamento: 'PIX',
+      percentual_comissao: 5.0
+    }
   })
+  console.log(`✅ Proprietário criado: ${proprietario1.nome}\n`)
 
-  if (!corretor1 || !corretor2) {
-    throw new Error('Corretores não encontrados')
-  }
-
-  // Criar imóveis de exemplo
+  // ============================================
+  // 6. CRIAR IMÓVEIS DE EXEMPLO
+  // ============================================
+  console.log('🏠 Criando imóveis...')
   const imoveis = []
   const tipos = ['APARTAMENTO', 'CASA', 'COMERCIAL', 'TERRENO']
   const categorias = ['VENDA', 'LOCACAO']
@@ -92,6 +192,7 @@ async function main() {
 
     const imovel = await prisma.imovel.create({
       data: {
+        tenant_id: tenantVivoly.id,
         codigo: `IMV-${String(i).padStart(4, '0')}`,
         tipo,
         categoria,
@@ -117,14 +218,30 @@ async function main() {
         fotos: [],
         documentos: [],
         preco,
-        proprietario_id: admin.id,
+        proprietario_id: proprietario1.id,
       }
     })
     imoveis.push(imovel)
   }
-  console.log(`✅ ${imoveis.length} imóveis criados`)
+  console.log(`✅ ${imoveis.length} imóveis criados\n`)
 
-  // Criar leads de exemplo
+  // ============================================
+  // 7. CRIAR LEADS DE EXEMPLO
+  // ============================================
+  console.log('📞 Criando leads...')
+
+  // Buscar corretores criados
+  const corretor1 = await prisma.corretor.findFirst({
+    where: { user_id: userCorretor1.id }
+  })
+  const corretor2 = await prisma.corretor.findFirst({
+    where: { user_id: userCorretor2.id }
+  })
+
+  if (!corretor1 || !corretor2) {
+    throw new Error('Corretores não encontrados')
+  }
+
   const leads = []
   const origens = ['SITE', 'INDICACAO', 'PORTAL', 'WHATSAPP']
   const temperaturas = ['FRIO', 'MORNO', 'QUENTE']
@@ -135,6 +252,7 @@ async function main() {
 
     const lead = await prisma.lead.create({
       data: {
+        tenant_id: tenantVivoly.id,
         nome: `Lead ${i}`,
         email: `lead${i}@example.com`,
         telefone: `11${String(900000000 + i)}`,
@@ -153,9 +271,12 @@ async function main() {
     })
     leads.push(lead)
   }
-  console.log(`✅ ${leads.length} leads criados`)
+  console.log(`✅ ${leads.length} leads criados\n`)
 
-  // Criar negociações de exemplo
+  // ============================================
+  // 8. CRIAR NEGOCIAÇÕES DE EXEMPLO
+  // ============================================
+  console.log('💼 Criando negociações...')
   const negociacoes = []
   const statusNegociacoes = ['CONTATO', 'VISITA_AGENDADA', 'PROPOSTA', 'CONTRATO', 'FECHADO']
 
@@ -165,6 +286,7 @@ async function main() {
 
     const negociacao = await prisma.negociacao.create({
       data: {
+        tenant_id: tenantVivoly.id,
         codigo: `NEG-${String(i + 1).padStart(4, '0')}`,
         lead_id: leads[i].id,
         imovel_id: imoveis[i].id,
@@ -172,13 +294,57 @@ async function main() {
         status: statusNeg,
         valor_proposta: valorProposta,
         comissoes: [],
+        timeline: [],
+        documentos: []
       }
     })
     negociacoes.push(negociacao)
   }
-  console.log(`✅ ${negociacoes.length} negociações criadas`)
+  console.log(`✅ ${negociacoes.length} negociações criadas\n`)
 
-  console.log('🎉 Seed concluído com sucesso!')
+  // ============================================
+  // 9. ATUALIZAR CONTADORES DO TENANT
+  // ============================================
+  console.log('📊 Atualizando contadores do tenant...')
+  await prisma.tenant.update({
+    where: { id: tenantVivoly.id },
+    data: {
+      total_usuarios: 4, // 1 admin + 1 gestor + 2 corretores
+      total_imoveis: imoveis.length
+    }
+  })
+  console.log('✅ Contadores atualizados\n')
+
+  // ============================================
+  // RESUMO
+  // ============================================
+  console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━')
+  console.log('🎉 SEED CONCLUÍDO COM SUCESSO!')
+  console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n')
+
+  console.log('📦 TENANT CRIADO:')
+  console.log(`   Nome: ${tenantVivoly.nome}`)
+  console.log(`   Subdomínio: ${tenantVivoly.subdominio}.integrius.com.br`)
+  console.log(`   Status: ${tenantVivoly.status}`)
+  console.log(`   Plano: ${tenantVivoly.plano}\n`)
+
+  console.log('👥 USUÁRIOS CRIADOS:')
+  console.log(`   ✅ 1 ADMIN: admin@vivoly.com (senha: admin123)`)
+  console.log(`   ✅ 1 GESTOR: gestor@vivoly.com (senha: gestor123)`)
+  console.log(`   ✅ 2 CORRETORES: joao@vivoly.com, maria@vivoly.com (senha: corretor123)\n`)
+
+  console.log('📊 DADOS DE EXEMPLO:')
+  console.log(`   ✅ ${imoveis.length} imóveis`)
+  console.log(`   ✅ ${leads.length} leads`)
+  console.log(`   ✅ ${negociacoes.length} negociações\n`)
+
+  console.log('🔑 ACESSO:')
+  console.log('   URL: https://vivoly.integrius.com.br')
+  console.log('   Dev: http://localhost:3000?tenant_id=' + tenantVivoly.id)
+  console.log('   API: POST /api/v1/auth/login')
+  console.log('   Body: { "email": "admin@vivoly.com", "senha": "admin123" }\n')
+
+  console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━')
 }
 
 main()

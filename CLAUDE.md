@@ -1095,10 +1095,760 @@ DATABASE_URL="..." npx prisma generate
 
 ---
 
+## Sistema de Autenticação e Permissões
+
+O ImobiFlow possui um sistema completo de autenticação JWT com suporte multi-tenant e controle de acesso baseado em roles (RBAC).
+
+### Arquitetura de Autenticação
+
+#### 1. Multi-Tenant por Subdomínio
+- Cada tenant possui um subdomínio único (ex: `vivoly.integrius.com.br`)
+- O tenant é identificado automaticamente pelo subdomínio da requisição
+- Em desenvolvimento, pode-se usar header `X-Tenant-ID` ou query param `?tenant_id=uuid`
+
+#### 2. JWT (JSON Web Token)
+Payload do token JWT:
+```typescript
+{
+  userId: string,      // ID do usuário
+  tenantId: string,    // ID do tenant
+  tipo: 'ADMIN' | 'GESTOR' | 'CORRETOR'
+}
+```
+
+**Expiração**: 7 dias (configurável via `JWT_EXPIRES_IN`)
+
+**Secret**: Definido em `JWT_SECRET` (variável de ambiente)
+
+#### 3. Hierarquia de Roles
+
+**ADMIN (Nível 3)** - Administrador do Tenant
+- ✅ Gerenciar todos os usuários (criar, editar, deletar)
+- ✅ Criar outros ADMINS, GESTORES e CORRETORES
+- ✅ Alterar configurações do tenant
+- ✅ Acesso total a todos os recursos
+- ✅ Ver métricas e relatórios gerenciais
+- ✅ Gerenciar planos e assinaturas
+
+**GESTOR (Nível 2)** - Gerente Operacional
+- ✅ Criar e editar CORRETORES
+- ✅ Ver e gerenciar todos os leads
+- ✅ Ver e gerenciar todos os imóveis
+- ✅ Ver relatórios e dashboard geral
+- ❌ Não pode criar/editar ADMINS ou GESTORES
+- ❌ Não pode alterar configurações críticas do tenant
+
+**CORRETOR (Nível 1)** - Corretor/Vendedor
+- ✅ Ver e editar apenas seus próprios leads
+- ✅ Ver imóveis disponíveis
+- ✅ Gerenciar suas próprias negociações
+- ✅ Dashboard pessoal
+- ❌ Não pode criar ou editar outros usuários
+- ❌ Não pode ver dados de outros corretores
+
+### Endpoints de Autenticação
+
+#### 1. Registro de Usuário
+
+**Endpoint**: `POST /api/v1/auth/register`
+
+**Headers**:
+```
+Content-Type: application/json
+Host: vivoly.integrius.com.br  (ou X-Tenant-ID para dev)
+```
+
+**Body**:
+```json
+{
+  "nome": "João Silva",
+  "email": "joao@exemplo.com",
+  "senha": "senha123",
+  "tipo": "CORRETOR",  // ADMIN | GESTOR | CORRETOR
+  "telefone": "11999999999",  // obrigatório para CORRETOR
+  "creci": "123456"  // obrigatório para CORRETOR
+}
+```
+
+**Response 201**:
+```json
+{
+  "user": {
+    "id": "uuid",
+    "nome": "João Silva",
+    "email": "joao@exemplo.com",
+    "tipo": "CORRETOR",
+    "tenant_id": "uuid"
+  },
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+}
+```
+
+#### 2. Login
+
+**Endpoint**: `POST /api/v1/auth/login`
+
+**Headers**:
+```
+Content-Type: application/json
+Host: vivoly.integrius.com.br
+```
+
+**Body**:
+```json
+{
+  "email": "joao@exemplo.com",
+  "senha": "senha123"
+}
+```
+
+**Response 200**:
+```json
+{
+  "user": {
+    "id": "uuid",
+    "nome": "João Silva",
+    "email": "joao@exemplo.com",
+    "tipo": "CORRETOR",
+    "tenant_id": "uuid"
+  },
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+}
+```
+
+**Erros Comuns**:
+- `401`: Email ou senha inválidos
+- `403`: Usuário inativo
+- `404`: Tenant não encontrado
+
+#### 3. Login com Google
+
+**Endpoint**: `POST /api/v1/auth/google`
+
+**Body**:
+```json
+{
+  "credential": "google_id_token"
+}
+```
+
+**Comportamento**:
+- Se usuário não existe → cria novo usuário (tipo CORRETOR)
+- Se usuário existe com email → vincula conta Google
+- Se usuário existe com google_id → faz login
+
+#### 4. Dados do Usuário Autenticado
+
+**Endpoint**: `GET /api/v1/auth/me`
+
+**Headers**:
+```
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+```
+
+**Response 200**:
+```json
+{
+  "id": "uuid",
+  "nome": "João Silva",
+  "email": "joao@exemplo.com",
+  "tipo": "CORRETOR",
+  "ativo": true
+}
+```
+
+### Endpoints de Gerenciamento de Usuários
+
+**Importante**: Todos os endpoints abaixo requerem autenticação (header `Authorization: Bearer <token>`)
+
+#### 1. Listar Usuários
+
+**Endpoint**: `GET /api/v1/users`
+
+**Permissão**: ADMIN ou GESTOR
+
+**Response 200**:
+```json
+{
+  "success": true,
+  "total": 5,
+  "users": [
+    {
+      "id": "uuid",
+      "nome": "Admin User",
+      "email": "admin@vivoly.com",
+      "tipo": "ADMIN",
+      "ativo": true,
+      "created_at": "2025-01-01T00:00:00.000Z",
+      "ultimo_login": "2025-12-27T10:00:00.000Z"
+    }
+  ]
+}
+```
+
+#### 2. Buscar Usuário por ID
+
+**Endpoint**: `GET /api/v1/users/:id`
+
+**Permissão**: ADMIN ou GESTOR
+
+#### 3. Criar Usuário
+
+**Endpoint**: `POST /api/v1/users`
+
+**Permissão**:
+- ADMIN: pode criar ADMIN, GESTOR ou CORRETOR
+- GESTOR: pode criar apenas CORRETOR
+
+**Body**:
+```json
+{
+  "nome": "Novo Corretor",
+  "email": "corretor@vivoly.com",
+  "senha": "senha123",
+  "tipo": "CORRETOR",
+  "telefone": "11999999999",
+  "creci": "123456"
+}
+```
+
+#### 4. Atualizar Usuário
+
+**Endpoint**: `PATCH /api/v1/users/:id`
+
+**Permissão**:
+- ADMIN: pode editar qualquer usuário
+- GESTOR: pode editar apenas CORRETORES
+
+**Body**:
+```json
+{
+  "nome": "Nome Atualizado",
+  "email": "novoemail@vivoly.com",
+  "senha": "novasenha123",
+  "ativo": true
+}
+```
+
+**Nota**: Apenas ADMIN pode alterar o campo `tipo`
+
+#### 5. Deletar Usuário (Soft Delete)
+
+**Endpoint**: `DELETE /api/v1/users/:id`
+
+**Permissão**: Apenas ADMIN
+
+**Comportamento**: Desativa o usuário (`ativo: false`) ao invés de deletar do banco
+
+### Middlewares
+
+#### 1. tenantMiddleware
+
+**Arquivo**: `/apps/api/src/shared/middlewares/tenant.middleware.ts`
+
+**Função**: Extrai e valida o tenant da requisição
+
+**Ordem de Prioridade**:
+1. Header `X-Tenant-ID` (desenvolvimento)
+2. Query param `?tenant_id=uuid` (desenvolvimento)
+3. Subdomínio do host (produção)
+
+**Exemplo de Uso**:
+```typescript
+server.post('/login', {
+  preHandler: tenantMiddleware
+}, handler)
+```
+
+#### 2. authMiddleware
+
+**Arquivo**: `/apps/api/src/shared/middlewares/auth.middleware.ts`
+
+**Função**: Valida JWT e carrega dados do usuário no `request.user`
+
+**Validações**:
+- ✅ Token presente no header `Authorization: Bearer <token>`
+- ✅ Token válido e não expirado
+- ✅ Usuário existe e está ativo
+- ✅ Tenant do token corresponde ao tenant do usuário
+- ✅ Tenant do token corresponde ao tenant da requisição
+
+**Exemplo de Uso**:
+```typescript
+server.get('/protected', {
+  preHandler: authMiddleware
+}, handler)
+```
+
+#### 3. Middlewares de Permissões
+
+**Arquivo**: `/apps/api/src/shared/middlewares/permissions.middleware.ts`
+
+**Funções Disponíveis**:
+
+```typescript
+// Requer role(s) específica(s)
+requireRole(['ADMIN'])
+requireRole(['ADMIN', 'GESTOR'])
+
+// Requer nível mínimo
+requireMinRole('ADMIN')      // Apenas ADMIN
+requireMinRole('GESTOR')     // ADMIN ou GESTOR
+
+// Atalhos
+requireAdmin                 // Apenas ADMIN
+requireManager               // ADMIN ou GESTOR
+
+// Verificar ownership de recurso
+requireResourceOwnership('lead_id', 'corretor_id')
+```
+
+**Exemplo de Uso**:
+```typescript
+import { requireAdmin, requireManager } from '@/middlewares/permissions.middleware'
+
+// Apenas ADMIN pode deletar usuários
+server.delete('/users/:id', {
+  preHandler: [authMiddleware, requireAdmin]
+}, handler)
+
+// ADMIN ou GESTOR podem ver relatórios
+server.get('/reports', {
+  preHandler: [authMiddleware, requireManager]
+}, handler)
+```
+
+### Helpers de Permissões
+
+**Arquivo**: `/apps/api/src/shared/middlewares/permissions.middleware.ts`
+
+```typescript
+import { Permissions } from '@/middlewares/permissions.middleware'
+
+// Verificar se pode criar usuário
+Permissions.canCreateUser('GESTOR', 'CORRETOR')  // true
+Permissions.canCreateUser('GESTOR', 'ADMIN')     // false
+
+// Verificar se pode editar usuário
+Permissions.canEditUser('ADMIN', 'GESTOR')       // true
+Permissions.canEditUser('GESTOR', 'ADMIN')       // false
+
+// Verificar se pode deletar usuário
+Permissions.canDeleteUser('ADMIN', 'CORRETOR')   // true (apenas ADMIN)
+Permissions.canDeleteUser('GESTOR', 'CORRETOR')  // false
+
+// Verificar se pode acessar recurso de outro usuário
+Permissions.canAccessUserResource(
+  currentUserId: 'uuid-1',
+  resourceUserId: 'uuid-2',
+  userType: 'CORRETOR'
+)  // false (CORRETOR só acessa seus recursos)
+
+Permissions.canAccessUserResource(
+  currentUserId: 'uuid-1',
+  resourceUserId: 'uuid-2',
+  userType: 'GESTOR'
+)  // true (GESTOR acessa qualquer recurso)
+```
+
+### Fluxo Completo de Autenticação
+
+```mermaid
+sequenceDiagram
+    participant Client
+    participant API
+    participant TenantMiddleware
+    participant AuthService
+    participant Database
+
+    Client->>API: POST /auth/login<br/>Host: vivoly.integrius.com.br
+    API->>TenantMiddleware: Extrair tenant
+    TenantMiddleware->>Database: Buscar tenant por subdomínio
+    Database-->>TenantMiddleware: Tenant encontrado
+    TenantMiddleware->>API: request.tenantId = 'uuid'
+    API->>AuthService: login(email, senha, tenantId)
+    AuthService->>Database: Buscar usuário por email + tenant_id
+    Database-->>AuthService: Usuário encontrado
+    AuthService->>AuthService: Verificar senha (bcrypt)
+    AuthService->>AuthService: Gerar JWT (userId, tenantId, tipo)
+    AuthService-->>API: { user, token }
+    API-->>Client: 200 OK { user, token }
+```
+
+### Exemplo de Requisição Autenticada
+
+```bash
+# 1. Login
+curl -X POST https://vivoly.integrius.com.br/api/v1/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{
+    "email": "admin@vivoly.com",
+    "senha": "senha123"
+  }'
+
+# Response:
+# {
+#   "user": { "id": "uuid", "nome": "Admin", "tipo": "ADMIN" },
+#   "token": "eyJhbGci..."
+# }
+
+# 2. Acessar recurso protegido
+curl -X GET https://vivoly.integrius.com.br/api/v1/users \
+  -H "Authorization: Bearer eyJhbGci..."
+
+# 3. Criar novo usuário (apenas ADMIN)
+curl -X POST https://vivoly.integrius.com.br/api/v1/users \
+  -H "Authorization: Bearer eyJhbGci..." \
+  -H "Content-Type: application/json" \
+  -d '{
+    "nome": "Novo Corretor",
+    "email": "corretor@vivoly.com",
+    "senha": "senha123",
+    "tipo": "CORRETOR",
+    "telefone": "11999999999"
+  }'
+```
+
+### Segurança
+
+#### Boas Práticas Implementadas
+
+1. **Senhas Hasheadas**: Bcrypt com salt de 10 rounds
+2. **JWT Secret**: Armazenado em variável de ambiente
+3. **Expiração de Token**: 7 dias (configurável)
+4. **Tenant Isolation**: Todas as queries filtram por `tenant_id`
+5. **Validação de Ownership**: Middlewares verificam se token pertence ao tenant
+6. **Soft Delete**: Usuários são desativados, não deletados
+7. **Logs de Auditoria**: Todas as operações são logadas
+
+#### Checklist de Segurança
+
+- ✅ NUNCA expor `senha_hash` em responses
+- ✅ SEMPRE validar `tenant_id` em queries
+- ✅ SEMPRE verificar se usuário está `ativo`
+- ✅ SEMPRE validar permissões antes de operações críticas
+- ✅ SEMPRE usar HTTPS em produção
+- ✅ SEMPRE validar input do usuário
+- ✅ NUNCA confiar apenas no JWT - sempre buscar usuário no banco
+- ✅ NUNCA permitir que CORRETOR acesse dados de outros corretores
+
+### Integração com Frontend
+
+#### Arquivos de Autenticação Frontend
+
+**1. Utilitários de Tenant** (`/apps/web/lib/tenant.ts`)
+
+```typescript
+// Extrai informações do tenant do subdomínio ou query params
+export function getTenantInfo(): TenantInfo {
+  // 1. Tentar query param ?tenant_id=xxx (desenvolvimento)
+  const tenantIdFromQuery = urlParams.get('tenant_id');
+  if (tenantIdFromQuery) {
+    return { tenantId: tenantIdFromQuery, isDevelopment: true };
+  }
+
+  // 2. Extrair do subdomínio (produção)
+  const hostname = window.location.hostname;
+  const parts = hostname.split('.');
+  if (parts.length >= 3) {
+    const subdomain = parts[0]; // ex: vivoly
+    return { tenantId: null, subdomain, isDevelopment: false };
+  }
+}
+```
+
+**2. Cliente API com Interceptors** (`/apps/web/lib/api.ts`)
+
+```typescript
+import axios from 'axios';
+import { getTenantId } from './tenant';
+
+export const api = axios.create({
+  baseURL: `${API_URL}/api/v1`,
+  headers: { 'Content-Type': 'application/json' }
+});
+
+// Interceptor para adicionar token e tenant
+api.interceptors.request.use((config) => {
+  // Adicionar token de autenticação
+  const token = localStorage.getItem('token');
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+
+  // Adicionar tenant_id (desenvolvimento)
+  const tenantId = getTenantId();
+  if (tenantId) {
+    config.headers['X-Tenant-ID'] = tenantId;
+  }
+
+  return config;
+});
+
+// Interceptor para tratar erros 401
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response?.status === 401) {
+      localStorage.removeItem('token');
+      window.location.href = '/login';
+    }
+    return Promise.reject(error);
+  }
+);
+```
+
+**3. Funções de Autenticação** (`/apps/web/lib/auth.ts`)
+
+```typescript
+export async function login(data: LoginData): Promise<AuthResponse> {
+  const response = await api.post('/auth/login', data);
+
+  if (response.data.token) {
+    // Armazenar em localStorage
+    localStorage.setItem('token', response.data.token);
+    localStorage.setItem('user', JSON.stringify(response.data.user));
+
+    // Armazenar em cookie para middleware Next.js
+    document.cookie = `token=${response.data.token}; path=/; max-age=${7 * 24 * 60 * 60}; SameSite=Lax`;
+  }
+
+  return response.data;
+}
+
+export function logout() {
+  // Remover de localStorage
+  localStorage.removeItem('token');
+  localStorage.removeItem('user');
+
+  // Remover cookie
+  document.cookie = 'token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
+
+  // Redirecionar para login
+  window.location.href = '/login';
+}
+```
+
+**4. Middleware Next.js** (`/apps/web/middleware.ts`)
+
+```typescript
+import { NextRequest, NextResponse } from 'next/server';
+
+const PROTECTED_ROUTES = ['/dashboard', '/leads', '/imoveis', '/negociacoes'];
+const PUBLIC_ROUTES = ['/', '/login', '/register'];
+
+export async function middleware(request: NextRequest) {
+  const url = request.nextUrl;
+  const hostname = request.headers.get('host') || '';
+
+  // 1. VERIFICAR AUTENTICAÇÃO (rotas protegidas)
+  const isProtectedRoute = PROTECTED_ROUTES.some(route => url.pathname.startsWith(route));
+
+  if (isProtectedRoute) {
+    const token = request.cookies.get('token')?.value;
+
+    if (!token) {
+      // Redirecionar para login
+      const loginUrl = new URL('/login', request.url);
+      loginUrl.searchParams.set('redirect', url.pathname);
+      return NextResponse.redirect(loginUrl);
+    }
+  }
+
+  // 2. EXTRAIR TENANT DO SUBDOMÍNIO
+  let subdomain: string | null = null;
+
+  if (hostname.includes('localhost')) {
+    // Desenvolvimento: usar query param
+    const tenantId = url.searchParams.get('tenant_id');
+    if (tenantId) {
+      const response = NextResponse.next();
+      response.headers.set('x-tenant-id', tenantId);
+      return response;
+    }
+  } else {
+    // Produção: extrair subdomínio
+    const parts = hostname.split('.');
+    if (parts.length >= 3) {
+      subdomain = parts[0]; // ex: vivoly
+    }
+  }
+
+  const response = NextResponse.next();
+  if (subdomain) {
+    response.headers.set('x-tenant-slug', subdomain);
+  }
+
+  return response;
+}
+```
+
+**5. Página de Login** (`/apps/web/app/login/page.tsx`)
+
+Características da página de login:
+- ✅ Interface moderna com gradiente e animações
+- ✅ Login tradicional (email + senha)
+- ✅ Google OAuth integrado (`@react-oauth/google`)
+- ✅ Mensagens de erro com timeout de 15 segundos
+- ✅ Armazenamento duplo (localStorage + cookie)
+- ✅ Redirecionamento para dashboard após sucesso
+- ✅ Loading states durante autenticação
+
+**6. Google OAuth Provider** (`/apps/web/app/layout.tsx`)
+
+```typescript
+import { GoogleOAuthProvider } from '@react-oauth/google';
+
+export default function RootLayout({ children }: { children: React.ReactNode }) {
+  return (
+    <html lang="pt-BR">
+      <body>
+        <GoogleOAuthProvider clientId="101518980847-9n7uovmjc8g561vmqormir1931og01ue.apps.googleusercontent.com">
+          {children}
+        </GoogleOAuthProvider>
+      </body>
+    </html>
+  );
+}
+```
+
+#### Fluxo de Login Frontend
+
+```
+1. Usuário acessa https://vivoly.integrius.com.br/login
+   ↓
+2. Middleware Next.js:
+   - Extrai subdomain "vivoly" do hostname
+   - Injeta header x-tenant-slug: "vivoly"
+   ↓
+3. Usuário preenche email/senha OU clica em "Login com Google"
+   ↓
+4. Frontend envia POST /api/v1/auth/login ou /api/v1/auth/google
+   - API client adiciona header X-Tenant-ID (se dev)
+   - Host header contém vivoly.integrius.com.br (produção)
+   ↓
+5. Backend valida credenciais + tenant
+   ↓
+6. Backend retorna { user, token }
+   ↓
+7. Frontend armazena:
+   - localStorage.setItem('token', token)
+   - localStorage.setItem('user', JSON.stringify(user))
+   - document.cookie = 'token=...' (para middleware)
+   ↓
+8. Redireciona para /dashboard
+   ↓
+9. Middleware Next.js verifica cookie 'token'
+   ↓
+10. Permite acesso ao dashboard
+```
+
+#### Segurança no Frontend
+
+**Armazenamento de Token:**
+- ✅ **localStorage**: Para acesso via JavaScript (requisições API)
+- ✅ **Cookie**: Para middleware Next.js (proteção de rotas)
+- ⚠️ **Limitação**: Cookies não são httpOnly (podem ser acessados via JS)
+- 💡 **Melhoria Futura**: Implementar httpOnly cookies via backend
+
+**Proteção XSS:**
+- ✅ Next.js sanitiza automaticamente inputs
+- ✅ Content Security Policy via helmet no backend
+- ⚠️ localStorage exposto a XSS
+
+**Boas Práticas:**
+1. **Sempre** validar token no backend, não confiar apenas no frontend
+2. **Sempre** usar HTTPS em produção
+3. **Considerar** migração para httpOnly cookies no futuro
+4. **Implementar** refresh tokens para melhor segurança
+5. **Adicionar** rate limiting no backend
+
+---
+
 ## Histórico de Configurações
 
+### 2025-12-28
+
+#### Sistema de Autenticação Frontend ✅
+- ✅ **Google OAuth Corrigido**
+  - Segurança aprimorada: sempre valida tenant antes de criar/login
+  - Validação de `user.ativo` em todos os fluxos OAuth
+  - Previne hijacking de contas (verifica google_id existente)
+  - Auto-criação de registro Corretor para novos usuários Google
+  - Tenant isolation completo no OAuth
+
+- ✅ **Frontend Multi-Tenant**
+  - Utilitário de tenant (`/apps/web/lib/tenant.ts`)
+  - Extração automática de tenant do subdomínio (produção)
+  - Suporte a query param `?tenant_id=xxx` (desenvolvimento)
+  - API client com interceptors para token + tenant header
+
+- ✅ **Middleware Next.js**
+  - Proteção de rotas (PROTECTED_ROUTES vs PUBLIC_ROUTES)
+  - Redirecionamento automático para /login sem token
+  - Extração de tenant do hostname/query params
+  - Suporte a redirect após login (`?redirect=/dashboard`)
+
+- ✅ **Armazenamento Seguro de Token**
+  - Duplo armazenamento: localStorage + cookie
+  - localStorage: para requisições API via axios
+  - Cookie (SameSite=Lax): para middleware Next.js
+  - Remoção completa no logout (ambos os storages)
+
+- ✅ **Página de Login Melhorada**
+  - Login tradicional (email + senha) funcionando
+  - Google OAuth funcionando com tenant isolation
+  - Armazenamento automático em cookie + localStorage
+  - Mensagens de erro com timeout de 15 segundos
+  - Loading states e UX polida
+
+- ✅ **Documentação Atualizada**
+  - Seção completa "Integração com Frontend" em CLAUDE.md
+  - Fluxo de login frontend documentado
+  - Boas práticas de segurança documentadas
+  - Exemplos de código para todos os arquivos
+
 ### 2025-12-27
-- ✅ **Sistema de Agendamento de Visitas Implementado**
+
+#### Sistema de Autenticação Backend ✅
+- ✅ **JWT Multi-Tenant Completo**
+  - Payload JWT atualizado: userId, tenantId, tipo
+  - Token inclui informações completas do usuário
+  - Validação de tenant em todas as requisições
+
+- ✅ **Middlewares de Segurança**
+  - `tenantMiddleware`: Extração de tenant por subdomínio
+  - `authMiddleware`: Validação JWT com verificação de tenant
+  - `permissions.middleware`: RBAC completo (ADMIN, GESTOR, CORRETOR)
+  - Helpers de permissões para uso em tempo de execução
+
+- ✅ **Endpoints de Gerenciamento de Usuários** (`/api/v1/users`)
+  - GET / - Listar usuários (ADMIN/GESTOR)
+  - GET /:id - Buscar usuário (ADMIN/GESTOR)
+  - POST / - Criar usuário (ADMIN cria todos, GESTOR cria CORRETOR)
+  - PATCH /:id - Atualizar usuário (com validação de permissões)
+  - DELETE /:id - Deletar usuário (soft delete, apenas ADMIN)
+
+- ✅ **Hierarquia de Roles**
+  - ADMIN (nível 3): Controle total do tenant
+  - GESTOR (nível 2): Gestão operacional
+  - CORRETOR (nível 1): Acesso restrito aos próprios recursos
+
+- ✅ **Segurança Implementada**
+  - Senhas com bcrypt (10 rounds)
+  - Tenant isolation em todas as queries
+  - Soft delete de usuários
+  - Logs de auditoria
+  - Validação de ownership de recursos
+
+- ✅ **Documentação Completa**
+  - Guia completo de autenticação em CLAUDE.md
+  - Exemplos de uso dos middlewares
+  - Fluxo de autenticação documentado
+  - Checklist de segurança
+
+#### Sistema de Agendamento de Visitas ✅
+- ✅ **Sistema Completo de Agendamentos**
   - Database: Modelo `Agendamento` com todos relacionamentos
   - Backend: Rotas CRUD completas (/api/v1/agendamentos)
   - Integrações: Notificações via Email (SendGrid) e Telegram
@@ -1118,6 +1868,14 @@ DATABASE_URL="..." npx prisma generate
 
 ---
 
-**Última atualização**: 27 de dezembro de 2025
-**Versão**: 1.1.0
+**Última atualização**: 28 de dezembro de 2025
+**Versão**: 1.3.0
 **Status**: Em produção ✅
+
+**Novidades da versão 1.3.0**:
+- Sistema de autenticação frontend completo (login + Google OAuth)
+- Middleware Next.js com proteção de rotas e multi-tenant
+- Utilitários de tenant para extração automática de subdomínio
+- Armazenamento seguro de tokens (localStorage + cookies)
+- Google OAuth com tenant isolation e validações de segurança
+- Documentação completa de integração frontend

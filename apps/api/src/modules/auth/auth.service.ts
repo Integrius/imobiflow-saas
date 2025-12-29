@@ -44,15 +44,16 @@ export class AuthService {
       })
     }
 
-    // Gerar token
-    const token = this.generateToken(user.id)
+    // Gerar token com tenant_id e tipo
+    const token = this.generateToken(user.id, tenantId, user.tipo)
 
     return {
       user: {
         id: user.id,
         nome: user.nome,
         email: user.email,
-        tipo: user.tipo
+        tipo: user.tipo,
+        tenant_id: user.tenant_id
       },
       token
     }
@@ -63,6 +64,11 @@ export class AuthService {
     const user = await this.repository.findByEmail(data.email, tenantId)
     if (!user) {
       throw new AppError('Email ou senha inválidos', 401)
+    }
+
+    // Verificar se usuário está ativo
+    if (!user.ativo) {
+      throw new AppError('Usuário inativo. Entre em contato com o administrador.', 403)
     }
 
     // Verificar se usuário tem senha (não é OAuth)
@@ -79,15 +85,16 @@ export class AuthService {
     // Atualizar último login
     await this.repository.updateLastLogin(user.id)
 
-    // Gerar token
-    const token = this.generateToken(user.id)
+    // Gerar token com tenant_id e tipo
+    const token = this.generateToken(user.id, user.tenant_id, user.tipo)
 
     return {
       user: {
         id: user.id,
         nome: user.nome,
         email: user.email,
-        tipo: user.tipo
+        tipo: user.tipo,
+        tenant_id: user.tenant_id
       },
       token
     }
@@ -121,26 +128,32 @@ export class AuthService {
         throw new AppError('Email não fornecido pelo Google', 400)
       }
 
-      // Check if user exists by google_id (busca global primeiro)
-      let user = await this.prisma.user.findUnique({
-        where: { google_id: googleId }
-      })
+      // IMPORTANTE: Sempre buscar pelo email no tenant específico
+      // Isso garante isolamento multi-tenant
+      let user = await this.repository.findByEmail(email, tenantId)
 
-      // If not found by google_id, check by email no tenant
-      if (!user) {
-        user = await this.repository.findByEmail(email, tenantId)
+      if (user) {
+        // Usuário já existe no tenant
 
-        // If user exists with email but no google_id, link the accounts
-        if (user) {
+        // Verificar se está ativo
+        if (!user.ativo) {
+          throw new AppError('Usuário inativo. Entre em contato com o administrador.', 403)
+        }
+
+        // Se ainda não tem google_id vinculado, vincular agora
+        if (!user.google_id) {
           user = await this.prisma.user.update({
             where: { id: user.id },
             data: { google_id: googleId }
           })
+        } else if (user.google_id !== googleId) {
+          // Email existe mas com outro google_id - possível tentativa de invasão
+          throw new AppError('Este email já está vinculado a outra conta Google', 403)
         }
-      }
-
-      // If user still doesn't exist, create new user no tenant
-      if (!user) {
+      } else {
+        // Usuário não existe no tenant - criar novo
+        // NOTA: Por padrão, novos usuários via Google são criados como CORRETOR
+        // ADMIN deve ser criado manualmente via /setup ou /users
         user = await this.prisma.user.create({
           data: {
             tenant_id: tenantId,
@@ -151,20 +164,31 @@ export class AuthService {
             ativo: true
           }
         })
+
+        // Se criar CORRETOR, criar registro de corretor também
+        await this.repository.createCorretor({
+          tenant_id: tenantId,
+          user_id: user.id,
+          creci: '',
+          telefone: '',
+          especializacoes: [],
+          comissao_padrao: 3.0
+        })
       }
 
       // Update last login
       await this.repository.updateLastLogin(user.id)
 
-      // Generate token
-      const token = this.generateToken(user.id)
+      // Generate token com tenant_id e tipo
+      const token = this.generateToken(user.id, user.tenant_id, user.tipo)
 
       return {
         user: {
           id: user.id,
           nome: user.nome,
           email: user.email,
-          tipo: user.tipo
+          tipo: user.tipo,
+          tenant_id: user.tenant_id
         },
         token
       }
@@ -176,18 +200,26 @@ export class AuthService {
     }
   }
 
-  private generateToken(userId: string): string {
+  private generateToken(userId: string, tenantId: string, tipo: string): string {
     const secret = process.env.JWT_SECRET || 'imobiflow-secret-key'
     const expiresIn = process.env.JWT_EXPIRES_IN || '7d'
 
-    return jwt.sign({ userId }, secret, { expiresIn } as jwt.SignOptions)
+    return jwt.sign(
+      {
+        userId,
+        tenantId,
+        tipo
+      },
+      secret,
+      { expiresIn } as jwt.SignOptions
+    )
   }
 
-  verifyToken(token: string): { userId: string } {
+  verifyToken(token: string): { userId: string; tenantId: string; tipo: string } {
     const secret = process.env.JWT_SECRET || 'imobiflow-secret-key'
-    
+
     try {
-      const decoded = jwt.verify(token, secret) as { userId: string }
+      const decoded = jwt.verify(token, secret) as { userId: string; tenantId: string; tipo: string }
       return decoded
     } catch (error) {
       throw new AppError('Token inválido', 401)

@@ -68,8 +68,13 @@ export default function LoginPage() {
       });
 
       if (response.data.token) {
+        // Armazenar em localStorage
         localStorage.setItem('token', response.data.token);
         localStorage.setItem('user', JSON.stringify(response.data.user));
+
+        // Armazenar em cookie para middleware
+        document.cookie = `token=${response.data.token}; path=/; max-age=${7 * 24 * 60 * 60}; SameSite=Lax`;
+
         setLoading(false);
         router.push('/dashboard');
       }

@@ -14,29 +14,93 @@ const RESERVED_SUBDOMAINS = [
 ];
 
 // Domínio base da aplicação (alterar conforme ambiente)
-const BASE_DOMAIN = process.env.NEXT_PUBLIC_BASE_DOMAIN || 'imobiflow.com.br';
+const BASE_DOMAIN = process.env.NEXT_PUBLIC_BASE_DOMAIN || 'integrius.com.br';
+
+// Rotas públicas que não precisam de autenticação
+const PUBLIC_ROUTES = ['/', '/login', '/register', '/recuperar-senha'];
+
+// Rotas que requerem autenticação
+const PROTECTED_ROUTES = [
+  '/dashboard',
+  '/leads',
+  '/imoveis',
+  '/negociacoes',
+  '/corretores',
+  '/proprietarios',
+  '/relatorios',
+  '/configuracoes',
+  '/perfil',
+  '/agendamentos',
+];
 
 export async function middleware(request: NextRequest) {
   const hostname = request.headers.get('host') || '';
   const url = request.nextUrl;
 
-  // Rotas públicas que não precisam de tenant
-  const publicPaths = ['/', '/login', '/register', '/api/auth', '/_next', '/static', '/favicon.ico'];
-  const isPublicPath = publicPaths.some(path => url.pathname === path || url.pathname.startsWith(path));
+  // Rotas públicas que não precisam de validação
+  const publicPaths = ['/_next', '/static', '/favicon.ico', '/api/auth'];
+  const isPublicPath = publicPaths.some(path => url.pathname.startsWith(path));
 
-  // Se for rota pública, permite acesso direto
+  // Permitir acesso direto a recursos estáticos
   if (isPublicPath) {
     return NextResponse.next();
   }
 
+  // Verificar se é rota pública (não precisa de autenticação)
+  const isPublicRoute = PUBLIC_ROUTES.some(route => url.pathname === route || url.pathname.startsWith(route + '/'));
+
+  // Verificar se é rota protegida (precisa de autenticação)
+  const isProtectedRoute = PROTECTED_ROUTES.some(route => url.pathname.startsWith(route));
+
+  // ============================================
+  // 1. VERIFICAR AUTENTICAÇÃO (rotas protegidas)
+  // ============================================
+  if (isProtectedRoute) {
+    // Verificar se tem token
+    const token = request.cookies.get('token')?.value;
+
+    if (!token) {
+      // Sem token: redirecionar para login
+      const loginUrl = new URL('/login', request.url);
+
+      // Preservar tenant_id se existir
+      const tenantId = url.searchParams.get('tenant_id');
+      if (tenantId) {
+        loginUrl.searchParams.set('tenant_id', tenantId);
+      }
+
+      // Adicionar redirect para voltar após login
+      loginUrl.searchParams.set('redirect', url.pathname);
+
+      return NextResponse.redirect(loginUrl);
+    }
+
+    // Tem token: continuar com validação de tenant
+  }
+
+  // ============================================
+  // 2. EXTRAIR E VALIDAR TENANT (todas as rotas)
+  // ============================================
+
   // Extrai o subdomínio
-  // Exemplo: acme.imobiflow.com.br → acme
+  // Exemplo: vivoly.integrius.com.br → vivoly
   // Exemplo: localhost:3000 → null (desenvolvimento)
   let subdomain: string | null = null;
 
   if (hostname.includes('localhost') || hostname.includes('127.0.0.1')) {
-    // Em desenvolvimento, usa o tenant do localStorage via header ou query
-    subdomain = request.headers.get('x-tenant-slug') || url.searchParams.get('tenant') || null;
+    // Em desenvolvimento, aceita query param tenant_id
+    const tenantId = url.searchParams.get('tenant_id');
+    if (tenantId) {
+      // Em dev, não precisa validar tenant via API
+      // O backend vai validar usando X-Tenant-ID header
+      const response = NextResponse.next();
+      response.headers.set('x-tenant-id', tenantId);
+      return response;
+    }
+
+    // Se não tem tenant_id em dev e não é rota pública, pode permitir
+    // (para desenvolvimento local sem multi-tenant)
+    return NextResponse.next();
   } else {
     // Em produção, extrai o subdomínio do hostname
     const parts = hostname.split('.');
@@ -47,38 +111,25 @@ export async function middleware(request: NextRequest) {
     }
   }
 
-  // Se não tem subdomínio ou é um subdomínio reservado, redireciona para página inicial
+  // Se não tem subdomínio ou é um subdomínio reservado
   if (!subdomain || RESERVED_SUBDOMAINS.includes(subdomain)) {
+    // Para rotas públicas, permitir acesso à landing page
+    if (isPublicRoute) {
+      return NextResponse.next();
+    }
+
+    // Para rotas protegidas, redirecionar para landing page
     return NextResponse.redirect(new URL('/', request.url));
   }
 
-  // Busca o tenant pelo subdomínio
-  try {
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
-    const tenantResponse = await fetch(`${apiUrl}/api/tenants/by-subdomain/${subdomain}`, {
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
+  // NOTA: Não validamos tenant via API aqui para evitar latência extra
+  // O backend validará o tenant quando receber as requisições
+  // O subdomínio é enviado automaticamente via Host header
 
-    if (!tenantResponse.ok) {
-      // Tenant não encontrado
-      return NextResponse.redirect(new URL('/tenant-not-found', request.url));
-    }
+  const response = NextResponse.next();
+  response.headers.set('x-tenant-slug', subdomain);
 
-    const tenant = await tenantResponse.json();
-
-    // Injeta o tenant_id no header para as próximas requisições
-    const response = NextResponse.next();
-    response.headers.set('x-tenant-id', tenant.id);
-    response.headers.set('x-tenant-slug', tenant.slug);
-    response.headers.set('x-tenant-nome', tenant.nome);
-
-    return response;
-  } catch (error) {
-    console.error('Erro ao buscar tenant:', error);
-    return NextResponse.redirect(new URL('/tenant-not-found', request.url));
-  }
+  return response;
 }
 
 // Configuração do matcher - define em quais rotas o middleware será executado
