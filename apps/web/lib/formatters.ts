@@ -99,6 +99,7 @@ export function formatCEP(value: string): string {
 /**
  * Formata valor monetário para entrada do usuário
  * Permite digitar apenas números e formata automaticamente
+ * USO: Durante digitação (cada caractere digitado)
  */
 export function formatCurrencyInput(value: string): string {
   if (!value) return '';
@@ -111,6 +112,25 @@ export function formatCurrencyInput(value: string): string {
 
   // Formata para moeda brasileira
   return numericValue.toLocaleString('pt-BR', {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  });
+}
+
+/**
+ * Formata valor monetário existente para exibição em campo de input
+ * USO: Ao carregar valor existente do banco para edição
+ */
+export function formatCurrencyForEdit(value: number | string | null | undefined): string {
+  if (!value) return '';
+
+  // Se for string, converte para número
+  const numValue = typeof value === 'string' ? parseFloat(value) : value;
+
+  if (isNaN(numValue)) return '';
+
+  // Formata sem dividir por 100 (valor já está em reais)
+  return numValue.toLocaleString('pt-BR', {
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
   });

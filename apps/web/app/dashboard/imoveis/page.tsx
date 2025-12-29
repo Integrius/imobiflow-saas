@@ -5,7 +5,7 @@ import { api } from '@/lib/api';
 import { toast } from '@/lib/toast';
 import Modal from '@/components/Modal';
 import ImageUpload from '@/components/ImageUpload';
-import { formatCEP, formatCurrencyInput, parseCurrency, unformatNumbers } from '@/lib/formatters';
+import { formatCEP, formatCurrencyInput, formatCurrencyForEdit, parseCurrency, unformatNumbers } from '@/lib/formatters';
 
 interface Imovel {
   id: string;
@@ -217,7 +217,7 @@ export default function ImoveisPage() {
       cidade: imovel.endereco?.cidade || '',
       estado: imovel.endereco?.estado || '',
       cep: formatCEP(imovel.endereco?.cep || ''),
-      valor: formatCurrencyInput(((imovel.valor || imovel.preco) || 0).toString()),
+      valor: formatCurrencyForEdit(imovel.valor || imovel.preco),
       area: imovel.caracteristicas?.area_total?.toString() || '',
       quartos: imovel.caracteristicas?.quartos?.toString() || '',
       banheiros: imovel.caracteristicas?.banheiros?.toString() || '',
