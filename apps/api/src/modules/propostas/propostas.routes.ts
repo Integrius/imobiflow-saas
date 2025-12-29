@@ -22,7 +22,7 @@ export async function propostasRoutes(server: FastifyInstance) {
           observacoes?: string;
         };
 
-        const tenant_id = request.user!.tenantId;
+        const tenant_id = request.user!.tenant_id;
 
         // Validações
         if (!lead_id || !imovel_id) {
@@ -74,7 +74,7 @@ export async function propostasRoutes(server: FastifyInstance) {
     async (request, reply) => {
       try {
         const { imovel_id } = request.params as { imovel_id: string };
-        const tenant_id = request.user!.tenantId;
+        const tenant_id = request.user!.tenant_id;
 
         const bestOffer = await propostasService.getBestOfferForImovel(tenant_id, imovel_id);
 
@@ -105,7 +105,7 @@ export async function propostasRoutes(server: FastifyInstance) {
       try {
         const { imovel_id } = request.params as { imovel_id: string };
         const { lead_id } = request.query as { lead_id: string };
-        const tenant_id = request.user!.tenantId;
+        const tenant_id = request.user!.tenant_id;
 
         if (!lead_id) {
           return reply.status(400).send({
@@ -146,7 +146,7 @@ export async function propostasRoutes(server: FastifyInstance) {
     async (request, reply) => {
       try {
         const { imovel_id } = request.params as { imovel_id: string };
-        const tenant_id = request.user!.tenantId;
+        const tenant_id = request.user!.tenant_id;
 
         const propostas = await propostasService.listByImovel(tenant_id, imovel_id);
 
@@ -177,7 +177,7 @@ export async function propostasRoutes(server: FastifyInstance) {
     async (request, reply) => {
       try {
         const { lead_id } = request.params as { lead_id: string };
-        const tenant_id = request.user!.tenantId;
+        const tenant_id = request.user!.tenant_id;
 
         const propostas = await propostasService.listByLead(tenant_id, lead_id);
 
@@ -209,7 +209,7 @@ export async function propostasRoutes(server: FastifyInstance) {
       try {
         const { proposta_id } = request.params as { proposta_id: string };
         const { resposta } = request.body as { resposta?: string };
-        const respondido_por_id = request.user!.userId;
+        const respondido_por_id = request.user!.id;
 
         const proposta = await propostasService.accept(proposta_id, respondido_por_id, resposta);
 
@@ -241,7 +241,7 @@ export async function propostasRoutes(server: FastifyInstance) {
       try {
         const { proposta_id } = request.params as { proposta_id: string };
         const { resposta } = request.body as { resposta?: string };
-        const respondido_por_id = request.user!.userId;
+        const respondido_por_id = request.user!.id;
 
         const proposta = await propostasService.reject(proposta_id, respondido_por_id, resposta);
 
@@ -273,7 +273,7 @@ export async function propostasRoutes(server: FastifyInstance) {
       try {
         const { proposta_id } = request.params as { proposta_id: string };
         const { resposta } = request.body as { resposta: string };
-        const respondido_por_id = request.user!.userId;
+        const respondido_por_id = request.user!.id;
 
         if (!resposta) {
           return reply.status(400).send({
