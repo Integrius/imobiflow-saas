@@ -29,7 +29,7 @@ server.register(cors, {
     cb(null, true)
   },
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Tenant-ID'],
   credentials: true,
   exposedHeaders: ['Authorization']
 })
