@@ -20,7 +20,7 @@ export class ImoveisController {
 
       if (!parseResult.success) {
         // Formatar erros do Zod para mensagem amigável
-        const errors = parseResult.error.errors.map(err => ({
+        const errors = parseResult.error.issues.map((err: any) => ({
           campo: err.path.join('.'),
           mensagem: err.message
         }))
