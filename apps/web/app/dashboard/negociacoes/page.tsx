@@ -183,27 +183,37 @@ export default function NegociacoesPage() {
       if (leadId) {
         try {
           const myOfferResponse = await api.get(`/propostas/imovel/${imovelId}/my-offer?lead_id=${leadId}`);
-          setMyOffer(myOfferResponse.data.myOffer);
+          const userOffer = myOfferResponse.data.myOffer;
+          setMyOffer(userOffer);
 
-          // Se já tem proposta, preencher com o valor da proposta existente
-          if (myOfferResponse.data.myOffer) {
-            handleFormChange('valor_proposta', formatCurrencyForEdit(myOfferResponse.data.myOffer.valor));
+          // Se já tem proposta do sistema de lances, SEMPRE usar esse valor
+          if (userOffer && userOffer.valor) {
+            setFormData(prev => ({
+              ...prev,
+              valor_proposta: formatCurrencyForEdit(userOffer.valor)
+            }));
           }
         } catch (error) {
           console.log('Usuário ainda não fez proposta para este imóvel');
           setMyOffer(null);
 
-          // Auto-preencher com o valor do imóvel se não tem proposta
+          // Auto-preencher com o valor do imóvel se não tem proposta E campo está vazio
           const valorImovel = imovelData.valor || imovelData.preco || 0;
           if (valorImovel > 0 && !formData.valor_proposta) {
-            handleFormChange('valor_proposta', formatCurrencyForEdit(valorImovel));
+            setFormData(prev => ({
+              ...prev,
+              valor_proposta: formatCurrencyForEdit(valorImovel)
+            }));
           }
         }
       } else {
         // Auto-preencher com o valor do imóvel
         const valorImovel = imovelData.valor || imovelData.preco || 0;
         if (valorImovel > 0 && !formData.valor_proposta) {
-          handleFormChange('valor_proposta', formatCurrencyForEdit(valorImovel));
+          setFormData(prev => ({
+            ...prev,
+            valor_proposta: formatCurrencyForEdit(valorImovel)
+          }));
         }
       }
     } catch (error: any) {
@@ -255,11 +265,6 @@ export default function NegociacoesPage() {
   const openEditModal = async (negociacao: Negociacao) => {
     setEditingNegociacao(negociacao);
 
-    // Carregar detalhes do imóvel se tiver imovel_id
-    if (negociacao.imovel_id) {
-      await loadImovelDetails(negociacao.imovel_id, negociacao.lead_id);
-    }
-
     const formDataToSet = {
       lead_id: negociacao.lead_id,
       imovel_id: negociacao.imovel_id,
@@ -275,6 +280,12 @@ export default function NegociacoesPage() {
     setFormData(formDataToSet);
     setOriginalFormData({ ...formDataToSet });
     setHasUnsavedChanges(false);
+
+    // Carregar detalhes do imóvel com lead_id APÓS definir formData
+    if (negociacao.imovel_id && negociacao.lead_id) {
+      await loadImovelDetails(negociacao.imovel_id, negociacao.lead_id);
+    }
+
     setModalOpen(true);
   };
 
