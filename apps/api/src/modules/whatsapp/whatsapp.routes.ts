@@ -87,8 +87,7 @@ export async function whatsappRoutes(server: FastifyInstance) {
       }
 
       // Verifica se lead pertence ao tenant
-      const { PrismaClient } = await import('@prisma/client');
-      const prisma = new PrismaClient();
+      const { prisma } = await import('../../shared/database/prisma.service');
 
       const lead = await prisma.lead.findFirst({
         where: {

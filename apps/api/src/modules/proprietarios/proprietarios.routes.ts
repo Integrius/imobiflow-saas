@@ -1,12 +1,11 @@
 import { FastifyInstance } from 'fastify'
-import { PrismaClient } from '@prisma/client'
 import { ProprietariosRepository } from './proprietarios.repository'
 import { ProprietariosService } from './proprietarios.service'
 import { ProprietariosController } from './proprietarios.controller'
 import { authMiddleware } from '../../shared/middlewares/auth.middleware'
 import { tenantMiddleware } from '../../shared/middlewares/tenant.middleware'
+import { prisma } from '../../shared/database/prisma.service'
 
-const prisma = new PrismaClient()
 const repository = new ProprietariosRepository(prisma)
 const service = new ProprietariosService(repository)
 const controller = new ProprietariosController(service)

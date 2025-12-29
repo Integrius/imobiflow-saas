@@ -5,12 +5,11 @@
  */
 
 import { FastifyInstance } from 'fastify';
-import { PrismaClient, TipoNegocio, TipoImovel, Prisma } from '@prisma/client';
+import { TipoNegocio, TipoImovel, Prisma } from '@prisma/client';
 import { ibgeService } from '../../shared/services/ibge.service';
 import { sendGridService } from '../../shared/services/sendgrid.service';
 import { leadQualificationService } from '../../ai/services/lead-qualification.service';
-
-const prisma = new PrismaClient();
+import { prisma } from '../../shared/database/prisma.service';
 
 interface CapturaLeadBody {
   // Tenant (obrigatório via subdomínio ou domínio customizado)

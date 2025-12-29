@@ -1,11 +1,10 @@
 import { FastifyInstance } from 'fastify'
-import { PrismaClient } from '@prisma/client'
 import { TenantController } from './tenant.controller'
 import { authMiddleware } from '../../shared/middlewares/auth.middleware'
 import { tenantMiddleware } from '../../shared/middlewares/tenant.middleware'
+import { prisma } from '../../shared/database/prisma.service'
 
 export async function tenantRoutes(server: FastifyInstance) {
-  const prisma = new PrismaClient()
   const controller = new TenantController(prisma)
 
   // Rota pública para criar tenant (signup)

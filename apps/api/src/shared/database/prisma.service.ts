@@ -1,5 +1,24 @@
 import { PrismaClient } from '@prisma/client'
 
-export const prisma = new PrismaClient({
+// Singleton pattern para evitar múltiplas conexões (CRÍTICO para Render FREE - máx 5 conexões)
+const globalForPrisma = globalThis as unknown as {
+  prisma: PrismaClient | undefined
+}
+
+export const prisma = globalForPrisma.prisma ?? new PrismaClient({
   log: process.env.NODE_ENV === 'development' ? ['query', 'error', 'warn'] : ['error'],
+  datasources: {
+    db: {
+      url: process.env.DATABASE_URL
+    }
+  }
+})
+
+if (process.env.NODE_ENV !== 'production') {
+  globalForPrisma.prisma = prisma
+}
+
+// Graceful shutdown - fecha conexões ao encerrar
+process.on('beforeExit', async () => {
+  await prisma.$disconnect()
 })

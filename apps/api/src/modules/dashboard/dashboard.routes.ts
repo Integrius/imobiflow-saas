@@ -1,10 +1,9 @@
 import { FastifyInstance } from 'fastify'
-import { PrismaClient } from '@prisma/client'
 import { DashboardController } from './dashboard.controller'
 import { authMiddleware } from '../../shared/middlewares/auth.middleware'
+import { prisma } from '../../shared/database/prisma.service'
 
 export async function dashboardRoutes(server: FastifyInstance) {
-  const prisma = new PrismaClient()
   const controller = new DashboardController(prisma)
 
   // Aplicar middleware de autenticação

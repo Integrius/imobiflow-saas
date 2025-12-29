@@ -1,8 +1,6 @@
 import { whatsappService } from './whatsapp.service';
 import { aiRouter } from '../../ai/services/ai-router.service';
-import { PrismaClient } from '@prisma/client';
-
-const prisma = new PrismaClient();
+import { prisma } from '../../shared/database/prisma.service';
 
 /**
  * WhatsApp Message Handler

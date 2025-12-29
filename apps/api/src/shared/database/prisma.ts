@@ -1,5 +1,2 @@
-import { PrismaClient } from '@prisma/client'
-
-export const prisma = new PrismaClient({
-  log: ['query', 'error', 'warn'],
-})
+// Re-export do singleton para manter compatibilidade
+export { prisma } from './prisma.service'

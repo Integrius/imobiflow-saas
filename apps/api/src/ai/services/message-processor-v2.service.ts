@@ -1,9 +1,7 @@
-import { PrismaClient } from '@prisma/client';
 import { ClaudeService } from './claude.service';
 import { MessageAdapter } from '../adapters/lead.adapter';
 import { ANALYSIS_PROMPT, RESPONSE_PROMPT } from '../prompts/sofia-prompts';
-
-const prisma = new PrismaClient();
+import { prisma } from '../../shared/database/prisma.service';
 
 export interface MessageAnalysis {
   urgency: 'baixa' | 'média' | 'alta';

@@ -1,10 +1,8 @@
 import { FastifyInstance } from 'fastify';
 import { MessageProcessorV2Service } from '../../ai/services/message-processor-v2.service';
-import { PrismaClient } from '@prisma/client';
 import { authMiddleware } from '../../shared/middlewares/auth.middleware';
 import { tenantMiddleware } from '../../shared/middlewares/tenant.middleware';
-
-const prisma = new PrismaClient();
+import { prisma } from '../../shared/database/prisma.service';
 
 export async function aiRoutes(server: FastifyInstance) {
   // 🔒 SEGURANÇA CRÍTICA: Adiciona autenticação e validação de tenant em TODAS as rotas

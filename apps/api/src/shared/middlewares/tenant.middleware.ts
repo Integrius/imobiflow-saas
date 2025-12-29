@@ -1,6 +1,6 @@
 import { FastifyRequest, FastifyReply } from 'fastify'
-import { PrismaClient } from '@prisma/client'
 import { AppError } from '../errors/AppError'
+import { prisma } from '../database/prisma.service'
 
 // Estende o tipo FastifyRequest para incluir tenantId
 declare module 'fastify' {
@@ -21,8 +21,6 @@ export async function tenantMiddleware(
   request: FastifyRequest,
   reply: FastifyReply
 ) {
-  const prisma = new PrismaClient()
-
   try {
     let tenantId: string | null = null
 
@@ -70,9 +68,27 @@ export async function tenantMiddleware(
       }
     }
 
-    // Se não encontrou tenant_id, usar o default (para single-tenant)
+    // Se não encontrou tenant_id, tentar buscar o primeiro tenant ativo (desenvolvimento)
     if (!tenantId) {
-      tenantId = 'default-tenant-id'
+      const host = request.headers.host || ''
+
+      // Se for localhost/desenvolvimento, buscar qualquer tenant ativo
+      if (host.includes('localhost') || host.includes('127.0.0.1')) {
+        const firstTenant = await prisma.tenant.findFirst({
+          where: { status: 'ATIVO' },
+          select: { id: true }
+        })
+
+        if (firstTenant) {
+          tenantId = firstTenant.id
+          console.log(`🔧 [DEV] Usando tenant: ${tenantId}`)
+        }
+      }
+    }
+
+    // Se ainda não encontrou, lançar erro
+    if (!tenantId) {
+      throw new AppError('Tenant não encontrado. Use ?tenant=slug ou X-Tenant-ID header', 404)
     }
 
     // Validar se o tenant existe
@@ -100,11 +116,7 @@ export async function tenantMiddleware(
 
     // Adicionar tenant_id ao request
     request.tenantId = tenantId
-
-    await prisma.$disconnect()
   } catch (error) {
-    await prisma.$disconnect()
-
     if (error instanceof AppError) {
       throw error
     }
@@ -160,8 +172,6 @@ export async function checkTenantLimits(
     throw new AppError('Tenant não identificado', 401)
   }
 
-  const prisma = new PrismaClient()
-
   try {
     const tenant = await prisma.tenant.findUnique({
       where: { id: tenantId },
@@ -180,11 +190,7 @@ export async function checkTenantLimits(
 
     // Adicionar informações do tenant ao request para uso posterior
     (request as any).tenant = tenant
-
-    await prisma.$disconnect()
   } catch (error) {
-    await prisma.$disconnect()
-
     if (error instanceof AppError) {
       throw error
     }
