@@ -629,32 +629,11 @@ export default function NegociacoesPage() {
               </select>
             </div>
 
-            {/* Melhor Oferta - Apenas visualização */}
-            {bestOffer && (
-              <div className="bg-gradient-to-r from-[#8FD14F]/10 to-[#8FD14F]/5 border-2 border-[#8FD14F]/30 rounded-lg p-3">
-                <label className="block text-sm font-bold text-[#2C2C2C] mb-1 flex items-center gap-2">
-                  🏆 Melhor Oferta no Imóvel
-                </label>
-                <p className="text-xs text-[#8B7F76] mb-2">Maior valor oferecido por todos os interessados</p>
-                <div className="text-2xl font-bold text-[#7FB344]">
-                  R$ {formatCurrencyForEdit(bestOffer.valor)}
-                </div>
-                {bestOffer.lead && (
-                  <p className="text-xs text-[#8B7F76] mt-1">
-                    Oferta de: {bestOffer.lead.nome}
-                  </p>
-                )}
-              </div>
-            )}
-
-            {/* Minha Oferta - Editável */}
-            <div className={bestOffer ? "bg-gradient-to-r from-[#A97E6F]/10 to-[#A97E6F]/5 border-2 border-[#A97E6F]/30 rounded-lg p-3" : ""}>
+            {/* Valor Pedido */}
+            <div>
               <label className="block text-sm font-bold text-[#2C2C2C] mb-1">
-                💰 {bestOffer ? 'Sua Oferta para este Imóvel *' : 'Valor da Proposta Inicial *'}
+                Valor pedido *
               </label>
-              <p className="text-xs text-[#8B7F76] mb-2">
-                {bestOffer ? 'Valor que você está oferecendo' : 'Valor oferecido pelo cliente'}
-              </p>
               <input
                 type="text"
                 required
@@ -663,21 +642,39 @@ export default function NegociacoesPage() {
                   const formatted = formatCurrencyInput(e.target.value);
                   handleFormChange('valor_proposta', formatted);
                 }}
-                className="w-full px-3 py-2 border border-[#A97E6F]/30 rounded-lg focus:ring-2 focus:ring-[#A97E6F] focus:border-transparent font-bold text-lg"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent font-bold text-lg"
                 placeholder="0,00"
               />
-              {myOffer && (
-                <p className="text-xs text-[#7FB344] font-medium mt-1">
-                  ✓ Você já fez uma proposta. Altere o valor acima para atualizar.
+            </div>
+
+            {/* Melhor Proposta - Sempre mostra */}
+            <div className="bg-gradient-to-r from-[#8FD14F]/10 to-[#8FD14F]/5 border-2 border-[#8FD14F]/30 rounded-lg p-3">
+              <label className="block text-sm font-bold text-[#2C2C2C] mb-1 flex items-center gap-2">
+                🏆 Melhor proposta
+              </label>
+              {bestOffer ? (
+                <>
+                  <div className="text-2xl font-bold text-[#7FB344]">
+                    R$ {formatCurrencyForEdit(bestOffer.valor)}
+                  </div>
+                  {bestOffer.lead && (
+                    <p className="text-xs text-[#8B7F76] mt-1">
+                      Oferta de: {bestOffer.lead.nome}
+                    </p>
+                  )}
+                </>
+              ) : (
+                <p className="text-sm text-[#8B7F76] italic">
+                  Ainda sem interessados
                 </p>
               )}
             </div>
 
+            {/* Valor Proposto - Nova seção vazia */}
             <div>
               <label className="block text-sm font-bold text-[#2C2C2C] mb-1">
-                Valor Final Negociado
+                Valor proposto
               </label>
-              <p className="text-xs text-[#8B7F76] mb-2">Valor acordado após negociação</p>
               <input
                 type="text"
                 value={formData.valor_final}
