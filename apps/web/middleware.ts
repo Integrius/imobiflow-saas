@@ -108,12 +108,16 @@ export async function middleware(request: NextRequest) {
     // Se tem 3 ou mais partes (subdomain.domain.tld), pega o primeiro
     if (parts.length >= 3) {
       subdomain = parts[0];
+    } else if (parts.length === 2) {
+      // Se tem apenas 2 partes (domain.tld), é o domínio base
+      // Ex: integrius.com.br → sem subdomínio
+      subdomain = null;
     }
   }
 
   // Se não tem subdomínio ou é um subdomínio reservado (domínio base)
   if (!subdomain || RESERVED_SUBDOMAINS.includes(subdomain)) {
-    // Está acessando pelo domínio base (integrius.com.br)
+    // Está acessando pelo domínio base (integrius.com.br ou www.integrius.com.br)
     // Permitir acesso à landing page e rotas públicas (incluindo /register)
     if (isPublicRoute) {
       return NextResponse.next();
