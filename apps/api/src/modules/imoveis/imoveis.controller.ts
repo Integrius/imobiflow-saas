@@ -12,10 +12,36 @@ export class ImoveisController {
   constructor(private imoveisService: ImoveisService) {}
 
   async create(request: FastifyRequest, reply: FastifyReply) {
-    const tenantId = (request as any).tenantId || 'default-tenant-id'
-    const data = createImovelSchema.parse(request.body)
-    const imovel = await this.imoveisService.create(data, tenantId)
-    return reply.status(201).send(imovel)
+    try {
+      const tenantId = (request as any).tenantId || 'default-tenant-id'
+
+      // Validar payload com Zod
+      const parseResult = createImovelSchema.safeParse(request.body)
+
+      if (!parseResult.success) {
+        // Formatar erros do Zod para mensagem amigável
+        const errors = parseResult.error.errors.map(err => ({
+          campo: err.path.join('.'),
+          mensagem: err.message
+        }))
+
+        console.error('Erro de validação ao criar imóvel:', JSON.stringify(errors, null, 2))
+
+        return reply.status(400).send({
+          error: 'Dados inválidos',
+          detalhes: errors
+        })
+      }
+
+      const imovel = await this.imoveisService.create(parseResult.data, tenantId)
+      return reply.status(201).send(imovel)
+    } catch (error: any) {
+      console.error('Erro ao criar imóvel:', error)
+      return reply.status(500).send({
+        error: 'Erro ao criar imóvel',
+        mensagem: error.message
+      })
+    }
   }
 
   async list(request: FastifyRequest, reply: FastifyReply) {

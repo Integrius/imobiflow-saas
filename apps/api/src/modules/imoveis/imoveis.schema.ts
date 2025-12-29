@@ -43,16 +43,16 @@ export const caracteristicasSchema = z.object({
 
 // Schema de endereço
 export const enderecoSchema = z.object({
-  cep: z.string().regex(/^\d{8}$/, 'CEP deve ter 8 dígitos'),
-  logradouro: z.string().min(3).optional(),
-  numero: z.string(),
-  complemento: z.string().optional(),
-  bairro: z.string().min(2).optional(),
-  cidade: z.string().min(2).optional(),
-  estado: z.string().length(2, 'Estado deve ter 2 letras').optional(),
+  cep: z.string().regex(/^\d{8}$/, 'CEP deve ter 8 dígitos numéricos (sem hífen)'),
+  logradouro: z.string().min(3, 'Logradouro deve ter pelo menos 3 caracteres').optional(),
+  numero: z.string().min(1, 'Número do imóvel é obrigatório'),
+  complemento: z.string().optional().nullable(),
+  bairro: z.string().min(2, 'Bairro deve ter pelo menos 2 caracteres').optional().nullable(),
+  cidade: z.string().min(2, 'Cidade deve ter pelo menos 2 caracteres').optional().nullable(),
+  estado: z.string().length(2, 'Estado deve ter 2 letras').optional().nullable(),
   pais: z.string().default('BR').optional(),
-  latitude: z.number().optional(),
-  longitude: z.number().optional(),
+  latitude: z.number().optional().nullable(),
+  longitude: z.number().optional().nullable(),
 })
 
 // Schema para criar Imóvel
