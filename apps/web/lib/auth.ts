@@ -1,4 +1,5 @@
 import { api } from './api';
+import { getSubdomain } from './tenant';
 
 export interface User {
   id: string;
@@ -18,6 +19,43 @@ export interface LoginData {
 }
 
 export async function login(data: LoginData): Promise<AuthResponse> {
+  // Se estiver usando subdomínio, precisamos buscar o tenant_id pelo slug
+  const subdomain = getSubdomain();
+
+  if (subdomain) {
+    try {
+      // Buscar tenant pelo slug do subdomínio
+      const tenantResponse = await api.get(`/tenants/slug/${subdomain}`);
+      const tenantId = tenantResponse.data.id;
+
+      // Fazer login com o tenant_id correto no header
+      const response = await api.post('/auth/login', data, {
+        headers: {
+          'X-Tenant-ID': tenantId
+        }
+      });
+
+      if (response.data.token) {
+        // Armazenar tenant_id também
+        localStorage.setItem('tenant_id', tenantId);
+        localStorage.setItem('token', response.data.token);
+        localStorage.setItem('user', JSON.stringify(response.data.user));
+
+        // Também armazenar em cookie para usar no middleware
+        document.cookie = `token=${response.data.token}; path=/; max-age=${7 * 24 * 60 * 60}; SameSite=Lax`;
+      }
+
+      return response.data;
+    } catch (error: any) {
+      // Se não encontrar tenant pelo slug, mostrar erro amigável
+      if (error.response?.status === 404) {
+        throw new Error('Imobiliária não encontrada. Verifique a URL.');
+      }
+      throw error;
+    }
+  }
+
+  // Se não tiver subdomínio, fazer login normal (desenvolvimento com query param)
   const response = await api.post('/auth/login', data);
 
   if (response.data.token) {
