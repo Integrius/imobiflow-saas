@@ -266,23 +266,46 @@ it('testa tudo junto', async () => {
 
 ---
 
-### 7. Documentation Agent 📚
+### 7. Documentation Maintainer Agent 📚
 
-**Contexto**: `**/*.md`, comentários em código
+**Contexto**: `CLAUDE.md`, `**/*.md`, comentários em código
 
 **Responsabilidades:**
-- CLAUDE.md atualizado
+- **OBRIGATÓRIO**: Manter CLAUDE.md atualizado
+- **OBRIGATÓRIO**: Atualizar Histórico de Configurações com data
+- **OBRIGATÓRIO**: Incrementar versão e data no rodapé
 - READMEs por módulo
 - Comentários JSDoc
 - Diagramas de fluxo
 
-**Regras:**
-- ✅ SEMPRE atualizar CLAUDE.md com novas features
-- ✅ SEMPRE documentar decisões arquiteturais
-- ✅ SEMPRE exemplos de uso em comentários
-- ✅ SEMPRE manter changelog atualizado
-- ❌ NUNCA comentários óbvios
-- ❌ NUNCA documentação desatualizada
+**Regras CRÍTICAS:**
+- ⚠️ **SEMPRE** atualizar CLAUDE.md quando:
+  - Novo módulo/feature implementado
+  - Mudança de banco de dados ou infraestrutura
+  - Nova integração externa
+  - Mudança em fluxos principais
+  - Correção crítica de arquitetura
+  - Novos endpoints ou mudança de contratos
+- ⚠️ **SEMPRE** adicionar entry no "Histórico de Configurações" com data
+- ⚠️ **SEMPRE** atualizar versão (seguir semver: major.minor.patch)
+- ⚠️ **SEMPRE** commitar CLAUDE.md junto com o código
+- ❌ NUNCA fazer commit sem atualizar documentação
+- ❌ NUNCA deixar documentação desatualizada
+
+**Workflow Obrigatório:**
+1. Implementar feature/fix
+2. Atualizar seção relevante do CLAUDE.md
+3. Adicionar entry no "Histórico de Configurações"
+4. Atualizar "Última atualização" e "Versão" no rodapé
+5. Commit: `git add CLAUDE.md && git commit -m "docs: ..."`
+
+**📚 Guia Completo:**
+Ver `.claude/agents/documentation-maintainer.md` para:
+- Templates detalhados de documentação
+- Exemplos práticos completos
+- Checklist antes de commitar
+- Versionamento semântico (semver)
+- Dicas e boas práticas
 
 **Padrões de Código:**
 ```typescript
