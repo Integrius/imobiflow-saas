@@ -76,6 +76,8 @@ export default function NegociacoesPage() {
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const [originalFormData, setOriginalFormData] = useState<any>(null);
   const [selectedImovelDetails, setSelectedImovelDetails] = useState<Imovel | null>(null);
+  const [bestOffer, setBestOffer] = useState<any>(null);
+  const [myOffer, setMyOffer] = useState<any>(null);
 
   const [formData, setFormData] = useState<NegociacaoForm>({
     lead_id: '',
@@ -161,20 +163,54 @@ export default function NegociacoesPage() {
     }
   };
 
-  const loadImovelDetails = async (imovelId: string) => {
+  const loadImovelDetails = async (imovelId: string, leadId?: string) => {
     try {
+      // Carregar detalhes do imóvel
       const response = await api.get(`/imoveis/${imovelId}`);
       const imovelData = response.data;
       setSelectedImovelDetails(imovelData);
 
-      // Auto-preencher o valor da proposta com o valor do imóvel
-      const valorImovel = imovelData.valor || imovelData.preco || 0;
-      if (valorImovel > 0 && !formData.valor_proposta) {
-        handleFormChange('valor_proposta', formatCurrencyForEdit(valorImovel));
+      // Carregar melhor oferta para o imóvel
+      try {
+        const bestOfferResponse = await api.get(`/propostas/imovel/${imovelId}/best-offer`);
+        setBestOffer(bestOfferResponse.data.bestOffer);
+      } catch (error) {
+        console.log('Nenhuma oferta encontrada para este imóvel');
+        setBestOffer(null);
+      }
+
+      // Carregar oferta do usuário atual (se lead_id fornecido)
+      if (leadId) {
+        try {
+          const myOfferResponse = await api.get(`/propostas/imovel/${imovelId}/my-offer?lead_id=${leadId}`);
+          setMyOffer(myOfferResponse.data.myOffer);
+
+          // Se já tem proposta, preencher com o valor da proposta existente
+          if (myOfferResponse.data.myOffer) {
+            handleFormChange('valor_proposta', formatCurrencyForEdit(myOfferResponse.data.myOffer.valor));
+          }
+        } catch (error) {
+          console.log('Usuário ainda não fez proposta para este imóvel');
+          setMyOffer(null);
+
+          // Auto-preencher com o valor do imóvel se não tem proposta
+          const valorImovel = imovelData.valor || imovelData.preco || 0;
+          if (valorImovel > 0 && !formData.valor_proposta) {
+            handleFormChange('valor_proposta', formatCurrencyForEdit(valorImovel));
+          }
+        }
+      } else {
+        // Auto-preencher com o valor do imóvel
+        const valorImovel = imovelData.valor || imovelData.preco || 0;
+        if (valorImovel > 0 && !formData.valor_proposta) {
+          handleFormChange('valor_proposta', formatCurrencyForEdit(valorImovel));
+        }
       }
     } catch (error: any) {
       console.error('Erro ao carregar detalhes do imóvel:', error);
       setSelectedImovelDetails(null);
+      setBestOffer(null);
+      setMyOffer(null);
     }
   };
 
@@ -197,6 +233,8 @@ export default function NegociacoesPage() {
   const openCreateModal = () => {
     setEditingNegociacao(null);
     setSelectedImovelDetails(null);
+    setBestOffer(null);
+    setMyOffer(null);
     setFormData({
       lead_id: '',
       imovel_id: '',
@@ -219,7 +257,7 @@ export default function NegociacoesPage() {
 
     // Carregar detalhes do imóvel se tiver imovel_id
     if (negociacao.imovel_id) {
-      await loadImovelDetails(negociacao.imovel_id);
+      await loadImovelDetails(negociacao.imovel_id, negociacao.lead_id);
     }
 
     const formDataToSet = {
@@ -254,6 +292,22 @@ export default function NegociacoesPage() {
         corretor_id: formData.corretor_id || undefined,
       };
 
+      // Sempre criar/atualizar proposta no sistema de lances
+      if (formData.lead_id && formData.imovel_id && formData.valor_proposta) {
+        try {
+          await api.post('/propostas', {
+            lead_id: formData.lead_id,
+            imovel_id: formData.imovel_id,
+            corretor_id: formData.corretor_id || undefined,
+            valor: parseCurrency(formData.valor_proposta),
+            observacoes: formData.observacoes,
+          });
+        } catch (error: any) {
+          console.error('Erro ao salvar proposta:', error);
+          // Continua mesmo se falhar, pois a negociação ainda será salva
+        }
+      }
+
       if (editingNegociacao) {
         await api.put(`/negociacoes/${editingNegociacao.id}`, payload);
         toast.success('Negociação atualizada com sucesso!');
@@ -263,6 +317,9 @@ export default function NegociacoesPage() {
       }
       setHasUnsavedChanges(false);
       setModalOpen(false);
+      setBestOffer(null);
+      setMyOffer(null);
+      setSelectedImovelDetails(null);
       loadNegociacoes();
     } catch (error: any) {
       toast.error(error.response?.data?.error || 'Erro ao salvar negociação');
@@ -509,9 +566,11 @@ export default function NegociacoesPage() {
                   const imovelId = e.target.value;
                   handleFormChange('imovel_id', imovelId);
                   if (imovelId) {
-                    loadImovelDetails(imovelId);
+                    loadImovelDetails(imovelId, formData.lead_id);
                   } else {
                     setSelectedImovelDetails(null);
+                    setBestOffer(null);
+                    setMyOffer(null);
                   }
                 }}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
@@ -559,11 +618,32 @@ export default function NegociacoesPage() {
               </select>
             </div>
 
-            <div>
+            {/* Melhor Oferta - Apenas visualização */}
+            {bestOffer && (
+              <div className="bg-gradient-to-r from-[#8FD14F]/10 to-[#8FD14F]/5 border-2 border-[#8FD14F]/30 rounded-lg p-3">
+                <label className="block text-sm font-bold text-[#2C2C2C] mb-1 flex items-center gap-2">
+                  🏆 Melhor Oferta no Imóvel
+                </label>
+                <p className="text-xs text-[#8B7F76] mb-2">Maior valor oferecido por todos os interessados</p>
+                <div className="text-2xl font-bold text-[#7FB344]">
+                  R$ {formatCurrencyForEdit(bestOffer.valor)}
+                </div>
+                {bestOffer.lead && (
+                  <p className="text-xs text-[#8B7F76] mt-1">
+                    Oferta de: {bestOffer.lead.nome}
+                  </p>
+                )}
+              </div>
+            )}
+
+            {/* Minha Oferta - Editável */}
+            <div className={bestOffer ? "bg-gradient-to-r from-[#A97E6F]/10 to-[#A97E6F]/5 border-2 border-[#A97E6F]/30 rounded-lg p-3" : ""}>
               <label className="block text-sm font-bold text-[#2C2C2C] mb-1">
-                Valor da Proposta Inicial *
+                💰 {bestOffer ? 'Sua Oferta para este Imóvel *' : 'Valor da Proposta Inicial *'}
               </label>
-              <p className="text-xs text-[#8B7F76] mb-2">Valor oferecido pelo cliente</p>
+              <p className="text-xs text-[#8B7F76] mb-2">
+                {bestOffer ? 'Valor que você está oferecendo' : 'Valor oferecido pelo cliente'}
+              </p>
               <input
                 type="text"
                 required
@@ -572,9 +652,14 @@ export default function NegociacoesPage() {
                   const formatted = formatCurrencyInput(e.target.value);
                   handleFormChange('valor_proposta', formatted);
                 }}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-3 py-2 border border-[#A97E6F]/30 rounded-lg focus:ring-2 focus:ring-[#A97E6F] focus:border-transparent font-bold text-lg"
                 placeholder="0,00"
               />
+              {myOffer && (
+                <p className="text-xs text-[#7FB344] font-medium mt-1">
+                  ✓ Você já fez uma proposta. Altere o valor acima para atualizar.
+                </p>
+              )}
             </div>
 
             <div>

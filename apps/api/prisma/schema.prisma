@@ -58,6 +58,7 @@ model Tenant {
   proprietarios Proprietario[]
   imoveis       Imovel[]
   negociacoes   Negociacao[]
+  propostas     Proposta[]
   integracoes   Integracao[]
   automacoes    Automacao[]
   assinaturas   Assinatura[]
@@ -218,6 +219,7 @@ model Corretor {
   // Relacionamentos
   leads               Lead[]
   negociacoes         Negociacao[]
+  propostas           Proposta[]
   imoveis_responsavel Imovel[]
   agendamentos        Agendamento[]
 
@@ -315,6 +317,7 @@ model Lead {
 
   // Relacionamentos
   negociacoes  Negociacao[]
+  propostas    Proposta[]
   messages     Message[] // Mensagens da conversa
   agendamentos Agendamento[]
 
@@ -506,6 +509,7 @@ model Imovel {
 
   // Relacionamentos
   negociacoes  Negociacao[]
+  propostas    Proposta[]
   agendamentos Agendamento[]
 
   @@unique([tenant_id, codigo])
@@ -626,6 +630,61 @@ enum StatusNegociacao {
   FECHADO
   PERDIDO
   CANCELADO
+}
+
+// ============================================
+// PROPOSTAS PARA IMÓVEIS
+// ============================================
+
+model Proposta {
+  id String @id @default(uuid())
+
+  // Multi-tenant
+  tenant_id String
+  tenant    Tenant @relation(fields: [tenant_id], references: [id], onDelete: Cascade)
+
+  // Relacionamentos
+  lead_id String
+  lead    Lead   @relation(fields: [lead_id], references: [id], onDelete: Cascade)
+
+  imovel_id String
+  imovel    Imovel @relation(fields: [imovel_id], references: [id], onDelete: Restrict)
+
+  corretor_id String?
+  corretor    Corretor? @relation(fields: [corretor_id], references: [id], onDelete: SetNull)
+
+  // Valor da proposta
+  valor Decimal @db.Decimal(10, 2)
+
+  // Status
+  status StatusProposta @default(PENDENTE)
+
+  // Observações do lead
+  observacoes String? @db.Text
+
+  // Resposta do corretor/proprietário
+  resposta          String?   @db.Text
+  data_resposta     DateTime?
+  respondido_por_id String? // user_id
+
+  // Timestamps
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  @@unique([tenant_id, lead_id, imovel_id]) // Um lead só pode ter uma proposta ativa por imóvel
+  @@index([tenant_id])
+  @@index([lead_id])
+  @@index([imovel_id])
+  @@index([status])
+  @@map("propostas")
+}
+
+enum StatusProposta {
+  PENDENTE   // Aguardando resposta
+  ACEITA     // Proposta aceita
+  RECUSADA   // Proposta recusada
+  CONTRA     // Contraproposta feita
+  CANCELADA  // Cancelada pelo lead
 }
 
 // ============================================

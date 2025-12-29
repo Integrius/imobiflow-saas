@@ -18,6 +18,7 @@ import { telegramRoutes } from './modules/telegram/telegram.routes'
 import { agendamentosRoutes } from './modules/agendamentos/agendamentos.routes'
 import { usersRoutes } from './modules/users/users.routes'
 import { setupRoutes } from './modules/setup/setup.routes'
+import { propostasRoutes } from './modules/propostas/propostas.routes'
 
 const server = Fastify({
   logger: true
@@ -71,6 +72,7 @@ server.register(whatsappRoutes, { prefix: '/api/v1/whatsapp' })
 server.register(localidadesRoutes, { prefix: '/api/v1/localidades' }) // Rotas públicas IBGE
 server.register(telegramRoutes, { prefix: '/api/v1/telegram' }) // Rotas de notificações Telegram
 server.register(agendamentosRoutes, { prefix: '/api/v1/agendamentos' }) // Rotas de agendamentos de visitas
+server.register(propostasRoutes, { prefix: '/api/v1/propostas' }) // Rotas de propostas/ofertas
 server.register(usersRoutes, { prefix: '/api/v1/users' }) // Rotas de gerenciamento de usuários
 server.register(setupRoutes, { prefix: '/api/v1/setup' }) // ⚠️ SETUP INICIAL - Remover em produção!
 
