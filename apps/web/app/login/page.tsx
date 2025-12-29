@@ -14,7 +14,20 @@ export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [isSubdomain, setIsSubdomain] = useState(false);
   const errorTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Detectar se está acessando via subdomínio
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const hostname = window.location.hostname;
+      const parts = hostname.split('.');
+
+      // Se tem 3 ou mais partes e não é localhost, é um subdomínio
+      const hasSubdomain = parts.length >= 3 && !hostname.includes('localhost');
+      setIsSubdomain(hasSubdomain);
+    }
+  }, []);
 
   // Limpa timeout ao desmontar componente
   useEffect(() => {
@@ -375,14 +388,33 @@ export default function LoginPage() {
               />
             </div>
 
-            {/* Sign up link */}
+            {/* Sign up link - Diferente para subdomínio */}
             <div className="mt-8 text-center">
-              <p className="text-[#8B7F76] text-sm">
-                Ainda não tem uma conta?{' '}
-                <Link href="/register" className="text-[#7FB344] hover:text-[#8FD14F] font-semibold transition-colors">
-                  Criar conta grátis →
-                </Link>
-              </p>
+              {isSubdomain ? (
+                <div className="space-y-3">
+                  <div className="bg-gradient-to-r from-[#8FD14F]/10 to-[#A97E6F]/10 border-2 border-[#8FD14F]/30 rounded-xl p-4">
+                    <p className="text-[#2C2C2C] text-sm font-medium mb-2">
+                      💼 Deseja cadastrar um novo corretor ou uma nova imobiliária?
+                    </p>
+                    <a
+                      href="https://integrius.com.br/register"
+                      className="inline-flex items-center gap-2 text-[#7FB344] hover:text-[#8FD14F] font-bold transition-colors text-sm"
+                    >
+                      Cadastre-se no domínio principal
+                      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                      </svg>
+                    </a>
+                  </div>
+                </div>
+              ) : (
+                <p className="text-[#8B7F76] text-sm">
+                  Ainda não tem uma conta?{' '}
+                  <Link href="/register" className="text-[#7FB344] hover:text-[#8FD14F] font-semibold transition-colors">
+                    Criar conta grátis →
+                  </Link>
+                </p>
+              )}
             </div>
           </div>
 

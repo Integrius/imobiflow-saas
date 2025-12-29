@@ -111,15 +111,31 @@ export async function middleware(request: NextRequest) {
     }
   }
 
-  // Se não tem subdomínio ou é um subdomínio reservado
+  // Se não tem subdomínio ou é um subdomínio reservado (domínio base)
   if (!subdomain || RESERVED_SUBDOMAINS.includes(subdomain)) {
-    // Para rotas públicas, permitir acesso à landing page
+    // Está acessando pelo domínio base (integrius.com.br)
+    // Permitir acesso à landing page e rotas públicas (incluindo /register)
     if (isPublicRoute) {
       return NextResponse.next();
     }
 
-    // Para rotas protegidas, redirecionar para landing page
+    // Para rotas protegidas sem subdomínio, redirecionar para landing page
     return NextResponse.redirect(new URL('/', request.url));
+  }
+
+  // Se tem subdomínio válido (ex: vivoly.integrius.com.br)
+  // Usuário está tentando acessar um tenant específico
+
+  // Se está acessando a raiz (/) com subdomínio, redirecionar para /login
+  if (url.pathname === '/') {
+    return NextResponse.redirect(new URL('/login', request.url));
+  }
+
+  // Se está tentando acessar /register via subdomínio, redirecionar para domínio base
+  if (url.pathname.startsWith('/register')) {
+    const registerUrl = new URL('/register', request.url);
+    registerUrl.hostname = BASE_DOMAIN;
+    return NextResponse.redirect(registerUrl);
   }
 
   // NOTA: Não validamos tenant via API aqui para evitar latência extra
