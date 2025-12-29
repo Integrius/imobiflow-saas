@@ -119,6 +119,7 @@ export function logout() {
   // Remover de localStorage
   localStorage.removeItem('token');
   localStorage.removeItem('user');
+  localStorage.removeItem('tenant_id');
 
   // Remover cookie
   document.cookie = 'token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
