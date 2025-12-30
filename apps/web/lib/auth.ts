@@ -179,8 +179,11 @@ export function logout() {
   localStorage.removeItem('user');
   localStorage.removeItem('tenant_id');
 
-  // Remover cookies (mantém last_tenant e last_login_method para próximo acesso)
+  // Remover TODOS os cookies (incluindo last_tenant e last_login_method)
+  // Isso garante que usuários administrativos sempre caiam na landing page após logout
   document.cookie = 'token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
+  document.cookie = 'last_tenant=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
+  document.cookie = 'last_login_method=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
 
   // Redirecionar para landing page
   window.location.href = '/';
