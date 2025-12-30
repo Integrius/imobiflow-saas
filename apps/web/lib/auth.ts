@@ -19,6 +19,33 @@ export interface LoginData {
 }
 
 /**
+ * Lista de emails administrativos que sempre devem ver a landing page
+ * (não são redirecionados automaticamente)
+ */
+const ADMIN_EMAILS = [
+  'admin@vivoly.com.br',
+  'admin@integrius.com.br',
+  'ia.hcdoh@gmail.com'
+];
+
+/**
+ * Verifica se o usuário logado é administrativo
+ */
+export function isAdminUser(): boolean {
+  if (typeof window === 'undefined') return false;
+
+  const userStr = localStorage.getItem('user');
+  if (!userStr) return false;
+
+  try {
+    const user = JSON.parse(userStr);
+    return ADMIN_EMAILS.includes(user.email?.toLowerCase());
+  } catch {
+    return false;
+  }
+}
+
+/**
  * Helper para buscar tenant_id pelo slug do subdomínio
  */
 async function getTenantIdBySubdomain(subdomain: string): Promise<string | null> {

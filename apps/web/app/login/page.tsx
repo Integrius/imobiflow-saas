@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
 import { GoogleLogin, CredentialResponse, useGoogleOAuth } from '@react-oauth/google';
-import { login, loginWithGoogle, getLastTenant, getLastLoginMethod } from '@/lib/auth';
+import { login, loginWithGoogle, getLastTenant, getLastLoginMethod, isAdminUser } from '@/lib/auth';
 import { api } from '@/lib/api';
 
 // Componente wrapper para Google Login que verifica se esta disponivel
@@ -117,17 +117,25 @@ export default function LoginPage() {
       // Se NÃO está em subdomínio (está no domínio base integrius.com.br)
       // Verificar se tem cookie de último tenant usado
       if (!hasSubdomain) {
-        const lastTenant = getLastTenant();
-        const lastMethod = getLastLoginMethod();
+        // IMPORTANTE: Usuários administrativos não são redirecionados automaticamente
+        // Eles sempre veem a landing page para testar o fluxo completo
+        const isAdmin = isAdminUser();
 
-        if (lastTenant) {
-          // Redirecionar para o subdomínio do último tenant usado
-          console.log(`🔄 Redirecionando para último tenant usado: ${lastTenant} (método: ${lastMethod})`);
+        if (isAdmin) {
+          console.log('👤 Usuário administrativo detectado - não redireciona automaticamente');
+        } else {
+          const lastTenant = getLastTenant();
+          const lastMethod = getLastLoginMethod();
 
-          // Construir URL do tenant (garantir que não é localhost)
-          const baseDomain = hostname.includes('localhost') ? 'localhost:3000' : 'integrius.com.br';
-          const tenantUrl = `${window.location.protocol}//${lastTenant}.${baseDomain}`;
-          window.location.href = tenantUrl;
+          if (lastTenant) {
+            // Redirecionar para o subdomínio do último tenant usado
+            console.log(`🔄 Redirecionando para último tenant usado: ${lastTenant} (método: ${lastMethod})`);
+
+            // Construir URL do tenant (garantir que não é localhost)
+            const baseDomain = hostname.includes('localhost') ? 'localhost:3000' : 'integrius.com.br';
+            const tenantUrl = `${window.location.protocol}//${lastTenant}.${baseDomain}`;
+            window.location.href = tenantUrl;
+          }
         }
       } else if (subdomain) {
         // Se está em subdomínio VÁLIDO, validar se o tenant existe
