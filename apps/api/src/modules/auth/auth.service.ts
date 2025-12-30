@@ -59,9 +59,12 @@ export class AuthService {
     }
   }
 
-  async login(data: LoginDTO, tenantId: string) {
-    // Buscar usuário no tenant
-    const user = await this.repository.findByEmail(data.email, tenantId)
+  async login(data: LoginDTO, tenantId: string | null) {
+    // Buscar usuário no tenant (se fornecido) ou em qualquer tenant
+    const user = tenantId
+      ? await this.repository.findByEmail(data.email, tenantId)
+      : await this.repository.findByEmailAnyTenant(data.email)
+
     if (!user) {
       throw new AppError('Email ou senha inválidos', 401)
     }

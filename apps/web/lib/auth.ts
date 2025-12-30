@@ -37,14 +37,20 @@ export async function login(data: LoginData): Promise<AuthResponse> {
   let tenantId: string | null = null;
 
   if (subdomain) {
-    tenantId = await getTenantIdBySubdomain(subdomain);
+    try {
+      tenantId = await getTenantIdBySubdomain(subdomain);
 
-    if (!tenantId) {
+      if (!tenantId) {
+        throw new Error('Imobiliária não encontrada. Verifique a URL.');
+      }
+    } catch (error) {
+      console.error('Erro ao buscar tenant por slug:', error);
       throw new Error('Imobiliária não encontrada. Verifique a URL.');
     }
   }
 
   // Fazer login com ou sem tenant_id
+  // Se não há subdomínio, o backend deve retornar o tenant do usuário
   const config = tenantId ? {
     headers: {
       'X-Tenant-ID': tenantId

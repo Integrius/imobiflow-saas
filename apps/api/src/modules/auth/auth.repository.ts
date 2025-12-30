@@ -32,6 +32,12 @@ export class AuthRepository {
     })
   }
 
+  async findByEmailAnyTenant(email: string) {
+    return await this.prisma.user.findFirst({
+      where: { email }
+    })
+  }
+
   async findById(id: string) {
     return await this.prisma.user.findUnique({
       where: { id }

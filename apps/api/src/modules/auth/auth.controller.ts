@@ -31,8 +31,11 @@ export class AuthController {
 
   async login(request: FastifyRequest, reply: FastifyReply) {
     try {
-      const tenantId = request.tenantId || 'default-tenant-id'
       const data = loginSchema.parse(request.body)
+
+      // Extrair tenant_id do header X-Tenant-ID (opcional)
+      const tenantId = (request.headers['x-tenant-id'] as string) || null
+
       const result = await this.service.login(data, tenantId)
       return reply.status(200).send(result)
     } catch (error: any) {
@@ -62,7 +65,6 @@ export class AuthController {
 
   async googleLogin(request: FastifyRequest, reply: FastifyReply) {
     try {
-      const tenantId = request.tenantId || 'default-tenant-id'
       const { credential } = request.body as { credential: string }
 
       if (!credential) {
@@ -70,6 +72,9 @@ export class AuthController {
           error: 'Credencial do Google não fornecida'
         })
       }
+
+      // Extrair tenant_id do header X-Tenant-ID (opcional)
+      const tenantId = (request.headers['x-tenant-id'] as string) || null
 
       const result = await this.service.googleLogin(credential, tenantId)
       return reply.status(200).send(result)
