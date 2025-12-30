@@ -53,12 +53,24 @@ export function getTenantInfo(): TenantInfo {
   // Extrair subdomínio (ex: vivoly.integrius.com.br → vivoly)
   const parts = hostname.split('.');
 
+  // Lista de domínios base que NÃO são tenants
+  const baseDomains = ['integrius.com.br', 'integrius.com'];
+  const isBaseDomain = baseDomains.some(domain => hostname === domain || hostname === `www.${domain}`);
+
+  if (isBaseDomain) {
+    return {
+      tenantId: null,
+      subdomain: null,
+      isDevelopment: false
+    };
+  }
+
   // Se tem 3+ partes (subdominio.dominio.com.br)
   if (parts.length >= 3) {
     const subdomain = parts[0];
 
-    // Ignorar subdomínios comuns (www, api, etc)
-    if (!['www', 'api', 'admin'].includes(subdomain)) {
+    // Ignorar subdomínios reservados (não são tenants)
+    if (!['www', 'api', 'admin', 'integrius'].includes(subdomain)) {
       return {
         tenantId: null, // Será resolvido pelo backend via slug
         subdomain,
