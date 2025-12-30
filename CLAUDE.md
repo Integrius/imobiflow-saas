@@ -2064,7 +2064,305 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 
 ---
 
+## Sistema de Cookies de Lembrança (Tenant Cookies)
+
+O ImobiFlow implementa um sistema profissional de cookies de longa duração para melhorar a experiência do usuário, lembrando o último tenant acessado.
+
+### Conceito
+
+Quando um usuário faz login em um tenant específico (ex: `vivoly.integrius.com.br`), o sistema armazena cookies de longa duração (90 dias) para lembrar:
+1. **Qual foi o último tenant acessado** (`last_tenant`)
+2. **Qual método de login foi usado** (`last_login_method`: email ou google)
+
+Na próxima vez que o usuário acessar a landing page e clicar em "Entrar", ele será automaticamente redirecionado para o subdomínio do último tenant usado.
+
+### Cookies Armazenados
+
+```typescript
+// Cookie 1: Slug do último tenant acessado
+document.cookie = `last_tenant=vivoly; path=/; max-age=${90 * 24 * 60 * 60}; SameSite=Lax`;
+
+// Cookie 2: Método de login usado
+document.cookie = `last_login_method=email; path=/; max-age=${90 * 24 * 60 * 60}; SameSite=Lax`;
+// ou
+document.cookie = `last_login_method=google; path=/; max-age=${90 * 24 * 60 * 60}; SameSite=Lax`;
+```
+
+**Duração**: 90 dias (7.776.000 segundos)
+
+**SameSite**: Lax (permite em navegação cross-site, mas não em requests POST cross-site)
+
+### Fluxo de Funcionamento
+
+#### 1. Primeiro Acesso (Sem Cookie)
+
+```
+1. Usuário acessa: https://integrius.com.br
+   ↓
+2. Clica no botão "Entrar"
+   ↓
+3. Vai para: https://integrius.com.br/login
+   ↓
+4. Não tem cookie `last_tenant` → mostra formulário de login
+   ↓
+5. Usuário escolhe tenant ou faz login
+   (pode acessar diretamente vivoly.integrius.com.br/login)
+   ↓
+6. Faz login com email/senha ou Google OAuth
+   ↓
+7. Sistema armazena cookies:
+   - `last_tenant=vivoly`
+   - `last_login_method=email` (ou google)
+   ↓
+8. Redireciona para: vivoly.integrius.com.br/dashboard
+```
+
+#### 2. Acesso Posterior (Com Cookie)
+
+```
+1. Usuário acessa: https://integrius.com.br
+   ↓
+2. Clica no botão "Entrar"
+   ↓
+3. Vai para: https://integrius.com.br/login
+   ↓
+4. Sistema detecta cookie `last_tenant=vivoly`
+   ↓
+5. REDIRECIONA AUTOMATICAMENTE para: https://vivoly.integrius.com.br
+   ↓
+6. Usuário faz login no tenant vivoly
+   (cookie lembra que é o tenant dele)
+```
+
+### Implementação
+
+#### Arquivo: `/apps/web/lib/auth.ts`
+
+**Armazenamento no Login Email/Senha:**
+
+```typescript:apps/web/lib/auth.ts
+export async function login(data: LoginData): Promise<AuthResponse> {
+  const subdomain = getSubdomain();
+  // ... login logic ...
+
+  if (response.data.token) {
+    // Tokens de sessão (7 dias)
+    localStorage.setItem('token', response.data.token);
+    document.cookie = `token=${response.data.token}; path=/; max-age=${7 * 24 * 60 * 60}; SameSite=Lax`;
+
+    // Cookies de lembrança (90 dias)
+    if (subdomain) {
+      document.cookie = `last_tenant=${subdomain}; path=/; max-age=${90 * 24 * 60 * 60}; SameSite=Lax`;
+      document.cookie = `last_login_method=email; path=/; max-age=${90 * 24 * 60 * 60}; SameSite=Lax`;
+    }
+  }
+}
+```
+
+**Armazenamento no Login Google OAuth:**
+
+```typescript:apps/web/lib/auth.ts
+export async function loginWithGoogle(credential: string): Promise<AuthResponse> {
+  const subdomain = getSubdomain();
+  // ... Google OAuth logic ...
+
+  if (response.data.token) {
+    // Tokens de sessão (7 dias)
+    localStorage.setItem('token', response.data.token);
+    document.cookie = `token=${response.data.token}; path=/; max-age=${7 * 24 * 60 * 60}; SameSite=Lax`;
+
+    // Cookies de lembrança (90 dias)
+    if (subdomain) {
+      document.cookie = `last_tenant=${subdomain}; path=/; max-age=${90 * 24 * 60 * 60}; SameSite=Lax`;
+      document.cookie = `last_login_method=google; path=/; max-age=${90 * 24 * 60 * 60}; SameSite=Lax`;
+    }
+  }
+}
+```
+
+**Helpers para Ler Cookies:**
+
+```typescript:apps/web/lib/auth.ts
+function getCookie(name: string): string | null {
+  if (typeof window === 'undefined') return null;
+
+  const value = `; ${document.cookie}`;
+  const parts = value.split(`; ${name}=`);
+
+  if (parts.length === 2) {
+    return parts.pop()?.split(';').shift() || null;
+  }
+
+  return null;
+}
+
+export function getLastTenant(): string | null {
+  return getCookie('last_tenant');
+}
+
+export function getLastLoginMethod(): 'email' | 'google' | null {
+  const method = getCookie('last_login_method');
+  return method as 'email' | 'google' | null;
+}
+```
+
+#### Arquivo: `/apps/web/app/login/page.tsx`
+
+**Verificação e Redirecionamento Automático:**
+
+```typescript:apps/web/app/login/page.tsx
+useEffect(() => {
+  if (typeof window !== 'undefined') {
+    const hostname = window.location.hostname;
+    const parts = hostname.split('.');
+    const hasSubdomain = parts.length >= 3 && !hostname.includes('localhost');
+
+    // Se NÃO está em subdomínio (domínio base)
+    if (!hasSubdomain) {
+      const lastTenant = getLastTenant();
+      const lastMethod = getLastLoginMethod();
+
+      if (lastTenant) {
+        // Redirecionar automaticamente para o último tenant usado
+        console.log(`🔄 Redirecionando para: ${lastTenant} (método: ${lastMethod})`);
+
+        const tenantUrl = `${window.location.protocol}//${lastTenant}.${hostname}`;
+        window.location.href = tenantUrl;
+      }
+    }
+  }
+}, []);
+```
+
+### Comportamento no Logout
+
+**IMPORTANTE**: Os cookies de lembrança (`last_tenant` e `last_login_method`) **NÃO são removidos** no logout.
+
+```typescript:apps/web/lib/auth.ts
+export function logout() {
+  // Remove tokens de sessão
+  localStorage.removeItem('token');
+  localStorage.removeItem('user');
+  localStorage.removeItem('tenant_id');
+  document.cookie = 'token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
+
+  // MANTÉM cookies de lembrança (last_tenant, last_login_method)
+
+  // Redireciona para landing page (não para /login)
+  window.location.href = '/';
+}
+```
+
+**Motivo**: Permite que o usuário, ao fazer logout e voltar depois, seja redirecionado automaticamente para o tenant correto, sem precisar lembrar qual subdomínio usar.
+
+### Segurança
+
+**Cookies de Lembrança vs. Cookies de Autenticação:**
+
+| Cookie | Tipo | Duração | Sensibilidade | Propósito |
+|--------|------|---------|---------------|-----------|
+| `token` | Autenticação | 7 dias | 🔴 Alta | Acesso ao sistema |
+| `last_tenant` | Preferência | 90 dias | 🟡 Baixa | UX (lembrar tenant) |
+| `last_login_method` | Preferência | 90 dias | 🟡 Baixa | UX (lembrar método) |
+
+**Riscos Mitigados:**
+- ✅ Cookies de lembrança **não contém dados sensíveis** (apenas slug público)
+- ✅ Não permitem acesso sem autenticação (apenas redirecionam)
+- ✅ SameSite=Lax previne CSRF
+- ✅ Token de autenticação tem duração curta (7 dias)
+
+**Cenário de Ataque:**
+Se um atacante obtém acesso aos cookies de lembrança:
+- ❌ **NÃO consegue** fazer login (precisa do token)
+- ❌ **NÃO consegue** acessar dados sensíveis
+- ✅ **Apenas** será redirecionado para o mesmo tenant (slug público)
+
+### Casos de Uso
+
+#### 1. Corretor de Imobiliária
+
+```
+1. Corretor da Vivoly faz login: vivoly.integrius.com.br
+2. Sistema salva: last_tenant=vivoly
+3. Dias depois, acessa: integrius.com.br
+4. Clica "Entrar" → redireciona automaticamente para vivoly.integrius.com.br
+5. Faz login e entra direto no dashboard
+```
+
+#### 2. Usuário com Múltiplos Tenants
+
+```
+1. Usuário trabalha em 2 imobiliárias: Vivoly e ImobiABC
+2. Faz login na Vivoly → last_tenant=vivoly
+3. Dias depois, acessa integrius.com.br → redireciona para vivoly
+4. Se quiser acessar ImobiABC:
+   a) Acessa diretamente: imobiabc.integrius.com.br
+   b) Faz login → last_tenant=imobiabc (sobrescreve)
+   c) Próximo acesso → redireciona para imobiabc
+```
+
+#### 3. Landing Page e Logo
+
+```
+1. Logo no header SEMPRE aponta para: /
+2. Ao clicar, sempre vai para landing page
+3. Landing page tem botão "Entrar"
+4. Botão "Entrar" vai para /login
+5. /login verifica cookie e redireciona se existir
+```
+
+### Middleware Next.js
+
+O middleware foi ajustado para permitir acesso ao `/login` no domínio base:
+
+```typescript:apps/web/middleware.ts
+// Permitir acesso à landing page (/) e /register e /login
+if (!subdomain || RESERVED_SUBDOMAINS.includes(subdomain)) {
+  if (isPublicRoute) {
+    return NextResponse.next();
+  }
+}
+
+// Subdomínios: raiz redireciona para /login
+if (url.pathname === '/') {
+  return NextResponse.redirect(new URL('/login', request.url));
+}
+```
+
+### Benefícios
+
+1. **UX Melhorada**: Usuário não precisa lembrar/digitar subdomínio
+2. **Profissional**: Comportamento esperado em sistemas SaaS modernos
+3. **Sem Fricção**: Reduz etapas entre landing page e dashboard
+4. **Multi-Tenant Friendly**: Funciona perfeitamente com arquitetura de subdomínios
+5. **Seguro**: Cookies de lembrança não contêm dados sensíveis
+
+---
+
 ## Histórico de Configurações
+
+### 2025-12-30
+
+#### Sistema de Cookies de Lembrança (Tenant Cookies) ✅
+- ✅ **Cookies de Longa Duração Implementados**
+  - Cookie `last_tenant`: armazena slug do último tenant acessado (90 dias)
+  - Cookie `last_login_method`: armazena método de login - email ou google (90 dias)
+  - Página `/login` redireciona automaticamente para último tenant se cookie existir
+  - Logout mantém cookies de lembrança para próximo acesso
+  - Logo sempre aponta para landing page (`/`)
+
+- ✅ **Fluxo de Autenticação Melhorado**
+  - Landing page → "Entrar" → `/login` → verifica cookie → redireciona para tenant
+  - Sem cookie: mostra formulário de login/cadastro
+  - Com cookie: redireciona automaticamente para `tenant.integrius.com.br`
+  - UX profissional: usuário não precisa lembrar subdomínio
+
+- ✅ **Arquivos Modificados**
+  - `apps/web/lib/auth.ts`: Armazenamento de cookies no login (email e Google)
+  - `apps/web/lib/auth.ts`: Helpers `getLastTenant()` e `getLastLoginMethod()`
+  - `apps/web/app/login/page.tsx`: Verificação e redirecionamento automático
+  - `apps/web/middleware.ts`: Permite acesso ao `/login` no domínio base
+  - Documentação completa adicionada ao CLAUDE.md
 
 ### 2025-12-29
 
@@ -2195,14 +2493,19 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 
 ---
 
-**Última atualização**: 29 de dezembro de 2025
-**Versão**: 1.4.0
+**Última atualização**: 30 de dezembro de 2025
+**Versão**: 1.5.0
 **Status**: Em produção ✅
 
-**Novidades da versão 1.4.0**:
-- ✅ Sistema de Propostas/Lances Competitivos completo (backend + frontend)
-- ✅ Migração para Supabase PostgreSQL com connection pooler
-- ✅ Modal de negociações com "Melhor Oferta" e "Sua Oferta"
-- ✅ Upsert automático de propostas (um lead, uma proposta por imóvel)
-- ✅ API completa: criar, buscar, aceitar, recusar, contraproposta, cancelar
-- ✅ Documentação CLAUDE.md com instrução de manutenção obrigatória
+**Novidades da versão 1.5.0**:
+- ✅ Sistema de Cookies de Lembrança (Tenant Cookies) - 90 dias
+- ✅ Redirecionamento automático para último tenant acessado
+- ✅ Fluxo de autenticação profissional (Landing Page First)
+- ✅ Logo sempre aponta para landing page
+- ✅ UX melhorada: usuário não precisa lembrar subdomínio
+- ✅ Cookies de login method (email/google) para analytics
+
+**Versão 1.4.0** (29 de dezembro de 2025):
+- Sistema de Propostas/Lances Competitivos completo
+- Migração para Supabase PostgreSQL com connection pooler
+- Modal de negociações com "Melhor Oferta" e "Sua Oferta"
