@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
-import { GoogleOAuthProvider } from '@react-oauth/google';
 import "./globals.css";
+import { GoogleOAuthWrapper } from "@/components/GoogleOAuthWrapper";
 
 export const metadata: Metadata = {
   title: "Vivoly - Gestão Imobiliária Inteligente",
@@ -20,9 +20,9 @@ export default function RootLayout({
   return (
     <html lang="pt-BR">
       <body>
-        <GoogleOAuthProvider clientId="101518980847-9n7uovmjc8g561vmqormir1931og01ue.apps.googleusercontent.com">
+        <GoogleOAuthWrapper>
           {children}
-        </GoogleOAuthProvider>
+        </GoogleOAuthWrapper>
       </body>
     </html>
   );

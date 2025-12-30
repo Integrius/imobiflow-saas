@@ -4,9 +4,81 @@ import { useState, FormEvent, useRef, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
-import { GoogleLogin, CredentialResponse } from '@react-oauth/google';
+import { GoogleLogin, CredentialResponse, useGoogleOAuth } from '@react-oauth/google';
 import { login, loginWithGoogle, getLastTenant, getLastLoginMethod } from '@/lib/auth';
 import { api } from '@/lib/api';
+
+// Componente wrapper para Google Login que verifica se esta disponivel
+function GoogleLoginButton({
+  onSuccess,
+  onError
+}: {
+  onSuccess: (response: CredentialResponse) => void;
+  onError: () => void;
+}) {
+  const [isAvailable, setIsAvailable] = useState(false);
+  const [isChecking, setIsChecking] = useState(true);
+
+  useEffect(() => {
+    // Verificar se o Google OAuth Provider esta disponivel
+    try {
+      // Tentar acessar o contexto do Google OAuth
+      const checkAvailability = () => {
+        // Se window.google existe, o script foi carregado
+        if (typeof window !== 'undefined' && (window as any).google?.accounts) {
+          setIsAvailable(true);
+        } else {
+          // Se nao, verificar novamente em 500ms (o script pode ainda estar carregando)
+          setTimeout(() => {
+            if (typeof window !== 'undefined' && (window as any).google?.accounts) {
+              setIsAvailable(true);
+            }
+            setIsChecking(false);
+          }, 1000);
+          return;
+        }
+        setIsChecking(false);
+      };
+
+      checkAvailability();
+    } catch {
+      setIsAvailable(false);
+      setIsChecking(false);
+    }
+  }, []);
+
+  if (isChecking) {
+    return (
+      <div className="w-full h-10 bg-gray-100 rounded-lg animate-pulse flex items-center justify-center">
+        <span className="text-gray-400 text-sm">Carregando login Google...</span>
+      </div>
+    );
+  }
+
+  if (!isAvailable) {
+    return (
+      <div className="w-full text-center py-3 px-4 bg-gray-50 rounded-lg border border-gray-200">
+        <p className="text-gray-500 text-sm">
+          Login com Google temporariamente indisponivel.
+        </p>
+        <p className="text-gray-400 text-xs mt-1">
+          Use email e senha para entrar.
+        </p>
+      </div>
+    );
+  }
+
+  return (
+    <GoogleLogin
+      onSuccess={onSuccess}
+      onError={onError}
+      theme="outline"
+      size="large"
+      text="signin_with"
+      locale="pt-BR"
+    />
+  );
+}
 
 export default function LoginPage() {
   const router = useRouter();
@@ -427,14 +499,9 @@ export default function LoginPage() {
 
             {/* Google Login */}
             <div className="flex justify-center">
-              <GoogleLogin
+              <GoogleLoginButton
                 onSuccess={handleGoogleSuccess}
                 onError={handleGoogleError}
-                theme="outline"
-                size="large"
-                width="100%"
-                text="signin_with"
-                locale="pt-BR"
               />
             </div>
 
