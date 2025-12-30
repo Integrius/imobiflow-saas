@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
 import { GoogleLogin, CredentialResponse } from '@react-oauth/google';
-import { login, loginWithGoogle } from '@/lib/auth';
+import { login, loginWithGoogle, getLastTenant, getLastLoginMethod } from '@/lib/auth';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -17,7 +17,7 @@ export default function LoginPage() {
   const [isSubdomain, setIsSubdomain] = useState(false);
   const errorTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-  // Detectar se está acessando via subdomínio
+  // Detectar se está acessando via subdomínio e verificar cookie de último tenant
   useEffect(() => {
     if (typeof window !== 'undefined') {
       const hostname = window.location.hostname;
@@ -26,6 +26,22 @@ export default function LoginPage() {
       // Se tem 3 ou mais partes e não é localhost, é um subdomínio
       const hasSubdomain = parts.length >= 3 && !hostname.includes('localhost');
       setIsSubdomain(hasSubdomain);
+
+      // Se NÃO está em subdomínio (está no domínio base integrius.com.br)
+      // Verificar se tem cookie de último tenant usado
+      if (!hasSubdomain) {
+        const lastTenant = getLastTenant();
+        const lastMethod = getLastLoginMethod();
+
+        if (lastTenant) {
+          // Redirecionar para o subdomínio do último tenant usado
+          console.log(`🔄 Redirecionando para último tenant usado: ${lastTenant} (método: ${lastMethod})`);
+
+          // Construir URL do tenant
+          const tenantUrl = `${window.location.protocol}//${lastTenant}.${hostname}`;
+          window.location.href = tenantUrl;
+        }
+      }
     }
   }, []);
 

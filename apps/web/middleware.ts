@@ -119,13 +119,7 @@ export async function middleware(request: NextRequest) {
   if (!subdomain || RESERVED_SUBDOMAINS.includes(subdomain)) {
     // Está acessando pelo domínio base (integrius.com.br ou www.integrius.com.br)
 
-    // IMPORTANTE: Sempre forçar acesso pela landing page primeiro
-    // Nunca permitir acesso direto ao /login no domínio base
-    if (url.pathname === '/login' || url.pathname.startsWith('/login/')) {
-      return NextResponse.redirect(new URL('/', request.url));
-    }
-
-    // Permitir acesso à landing page (/) e /register
+    // Permitir acesso à landing page (/) e /register e /login
     if (isPublicRoute) {
       return NextResponse.next();
     }
@@ -137,7 +131,7 @@ export async function middleware(request: NextRequest) {
   // Se tem subdomínio válido (ex: vivoly.integrius.com.br)
   // Usuário está tentando acessar um tenant específico
 
-  // Se está acessando a raiz (/) com subdomínio, redirecionar para /login
+  // Se está acessando a raiz (/) com subdomínio, redirecionar para /login do tenant
   if (url.pathname === '/') {
     return NextResponse.redirect(new URL('/login', request.url));
   }

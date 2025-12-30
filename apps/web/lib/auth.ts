@@ -65,6 +65,12 @@ export async function login(data: LoginData): Promise<AuthResponse> {
 
     // Também armazenar em cookie para usar no middleware
     document.cookie = `token=${response.data.token}; path=/; max-age=${7 * 24 * 60 * 60}; SameSite=Lax`;
+
+    // Armazenar tenant_slug em cookie de longa duração (90 dias) para lembrança de último acesso
+    if (subdomain) {
+      document.cookie = `last_tenant=${subdomain}; path=/; max-age=${90 * 24 * 60 * 60}; SameSite=Lax`;
+      document.cookie = `last_login_method=email; path=/; max-age=${90 * 24 * 60 * 60}; SameSite=Lax`;
+    }
   }
 
   return response.data;
@@ -107,6 +113,12 @@ export async function loginWithGoogle(credential: string): Promise<AuthResponse>
 
     // Também armazenar em cookie para usar no middleware
     document.cookie = `token=${response.data.token}; path=/; max-age=${7 * 24 * 60 * 60}; SameSite=Lax`;
+
+    // Armazenar tenant_slug em cookie de longa duração (90 dias) para lembrança de último acesso
+    if (subdomain) {
+      document.cookie = `last_tenant=${subdomain}; path=/; max-age=${90 * 24 * 60 * 60}; SameSite=Lax`;
+      document.cookie = `last_login_method=google; path=/; max-age=${90 * 24 * 60 * 60}; SameSite=Lax`;
+    }
   }
 
   return response.data;
@@ -123,14 +135,45 @@ export function logout() {
   localStorage.removeItem('user');
   localStorage.removeItem('tenant_id');
 
-  // Remover cookie
+  // Remover cookies (mantém last_tenant e last_login_method para próximo acesso)
   document.cookie = 'token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
 
-  // Redirecionar para login
-  window.location.href = '/login';
+  // Redirecionar para landing page
+  window.location.href = '/';
 }
 
 export function getToken(): string | null {
   if (typeof window === 'undefined') return null;
   return localStorage.getItem('token');
+}
+
+/**
+ * Helper para ler cookie
+ */
+function getCookie(name: string): string | null {
+  if (typeof window === 'undefined') return null;
+
+  const value = `; ${document.cookie}`;
+  const parts = value.split(`; ${name}=`);
+
+  if (parts.length === 2) {
+    return parts.pop()?.split(';').shift() || null;
+  }
+
+  return null;
+}
+
+/**
+ * Buscar último tenant usado
+ */
+export function getLastTenant(): string | null {
+  return getCookie('last_tenant');
+}
+
+/**
+ * Buscar método de último login (email ou google)
+ */
+export function getLastLoginMethod(): 'email' | 'google' | null {
+  const method = getCookie('last_login_method');
+  return method as 'email' | 'google' | null;
 }
