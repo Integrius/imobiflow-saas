@@ -6,6 +6,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { GoogleLogin, CredentialResponse } from '@react-oauth/google';
 import { login, loginWithGoogle, getLastTenant, getLastLoginMethod } from '@/lib/auth';
+import { api } from '@/lib/api';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -41,6 +42,29 @@ export default function LoginPage() {
           const tenantUrl = `${window.location.protocol}//${lastTenant}.${hostname}`;
           window.location.href = tenantUrl;
         }
+      } else {
+        // Se está em subdomínio, validar se o tenant existe
+        const subdomain = parts[0];
+
+        // Validar se tenant existe antes de permitir login
+        (async () => {
+          try {
+            await api.get(`/tenants/by-subdomain/${subdomain}`);
+            // Tenant válido, pode continuar
+            console.log(`✅ Tenant "${subdomain}" encontrado e válido`);
+          } catch (error: any) {
+            if (error.response?.status === 404) {
+              setError(`A imobiliária "${subdomain}" não foi encontrada.`);
+              console.error(`❌ Tenant "${subdomain}" não encontrado`);
+
+              // Redirecionar para domínio base após 3 segundos
+              setTimeout(() => {
+                console.log('🔄 Redirecionando para domínio base...');
+                window.location.href = 'https://integrius.com.br';
+              }, 3000);
+            }
+          }
+        })();
       }
     }
   }, []);

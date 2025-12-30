@@ -23,10 +23,10 @@ export interface LoginData {
  */
 async function getTenantIdBySubdomain(subdomain: string): Promise<string | null> {
   try {
-    const tenantResponse = await api.get(`/tenants/slug/${subdomain}`);
+    const tenantResponse = await api.get(`/tenants/by-subdomain/${subdomain}`);
     return tenantResponse.data.id;
   } catch (error) {
-    console.error('Erro ao buscar tenant por slug:', error);
+    console.error('Erro ao buscar tenant por subdomínio:', subdomain, error);
     return null;
   }
 }
@@ -41,11 +41,14 @@ export async function login(data: LoginData): Promise<AuthResponse> {
       tenantId = await getTenantIdBySubdomain(subdomain);
 
       if (!tenantId) {
-        throw new Error('Imobiliária não encontrada. Verifique a URL.');
+        throw new Error(`A imobiliária "${subdomain}" não foi encontrada. Verifique se digitou o endereço corretamente.`);
       }
-    } catch (error) {
-      console.error('Erro ao buscar tenant por slug:', error);
-      throw new Error('Imobiliária não encontrada. Verifique a URL.');
+    } catch (error: any) {
+      console.error('Erro ao buscar tenant por subdomínio:', subdomain, error);
+      if (error.response?.status === 404) {
+        throw new Error(`A imobiliária "${subdomain}" não foi encontrada. Verifique se digitou o endereço corretamente.`);
+      }
+      throw new Error('Erro ao conectar com o servidor. Tente novamente.');
     }
   }
 
@@ -91,10 +94,18 @@ export async function loginWithGoogle(credential: string): Promise<AuthResponse>
   let tenantId: string | null = null;
 
   if (subdomain) {
-    tenantId = await getTenantIdBySubdomain(subdomain);
+    try {
+      tenantId = await getTenantIdBySubdomain(subdomain);
 
-    if (!tenantId) {
-      throw new Error('Imobiliária não encontrada. Verifique a URL.');
+      if (!tenantId) {
+        throw new Error(`A imobiliária "${subdomain}" não foi encontrada. Verifique se digitou o endereço corretamente.`);
+      }
+    } catch (error: any) {
+      console.error('Erro ao buscar tenant por subdomínio:', subdomain, error);
+      if (error.response?.status === 404) {
+        throw new Error(`A imobiliária "${subdomain}" não foi encontrada. Verifique se digitou o endereço corretamente.`);
+      }
+      throw new Error('Erro ao conectar com o servidor. Tente novamente.');
     }
   }
 
