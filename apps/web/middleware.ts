@@ -118,7 +118,14 @@ export async function middleware(request: NextRequest) {
   // Se não tem subdomínio ou é um subdomínio reservado (domínio base)
   if (!subdomain || RESERVED_SUBDOMAINS.includes(subdomain)) {
     // Está acessando pelo domínio base (integrius.com.br ou www.integrius.com.br)
-    // Permitir acesso à landing page e rotas públicas (incluindo /register)
+
+    // IMPORTANTE: Sempre forçar acesso pela landing page primeiro
+    // Nunca permitir acesso direto ao /login no domínio base
+    if (url.pathname === '/login' || url.pathname.startsWith('/login/')) {
+      return NextResponse.redirect(new URL('/', request.url));
+    }
+
+    // Permitir acesso à landing page (/) e /register
     if (isPublicRoute) {
       return NextResponse.next();
     }
