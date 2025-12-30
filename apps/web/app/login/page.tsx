@@ -98,7 +98,18 @@ export default function LoginPage() {
 
       // Lista de domínios base (não são subdomínios)
       const baseDomains = ['integrius.com.br', 'integrius.com', 'localhost', '127.0.0.1'];
+      const marketplaceDomains = ['vivoly.com.br', 'vivoly.com'];
+
       const isBaseDomain = baseDomains.some(domain => hostname === domain || hostname === `www.${domain}`);
+      const isMarketplace = marketplaceDomains.some(domain => hostname === domain || hostname === `www.${domain}`);
+
+      // Se está no marketplace (vivoly.com.br), NUNCA redirecionar
+      // Marketplace sempre mostra landing page, nunca página de login
+      if (isMarketplace) {
+        console.log('🏪 Marketplace detectado - redirecionando para landing page');
+        window.location.href = '/';
+        return;
+      }
 
       // Detectar se tem subdomínio válido
       let hasSubdomain = false;

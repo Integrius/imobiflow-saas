@@ -16,6 +16,9 @@ const RESERVED_SUBDOMAINS = [
 // Domínio base da aplicação (alterar conforme ambiente)
 const BASE_DOMAIN = process.env.NEXT_PUBLIC_BASE_DOMAIN || 'integrius.com.br';
 
+// Domínio do marketplace (landing page de produtos)
+const MARKETPLACE_DOMAIN = 'vivoly.com.br';
+
 // Rotas públicas que não precisam de autenticação
 const PUBLIC_ROUTES = ['/', '/login', '/register', '/recuperar-senha'];
 
@@ -79,7 +82,20 @@ export async function middleware(request: NextRequest) {
   }
 
   // ============================================
-  // 2. EXTRAIR E VALIDAR TENANT (todas as rotas)
+  // 2. VERIFICAR MARKETPLACE (vivoly.com.br)
+  // ============================================
+
+  // Se está acessando o marketplace (vivoly.com.br), SEMPRE mostrar landing page
+  // NUNCA redirecionar para login, mesmo que tenha cookie
+  const isMarketplace = hostname === MARKETPLACE_DOMAIN || hostname === `www.${MARKETPLACE_DOMAIN}`;
+
+  if (isMarketplace) {
+    // Marketplace: sempre permitir acesso, nunca redirecionar
+    return NextResponse.next();
+  }
+
+  // ============================================
+  // 3. EXTRAIR E VALIDAR TENANT (todas as rotas)
   // ============================================
 
   // Extrai o subdomínio
@@ -115,17 +131,34 @@ export async function middleware(request: NextRequest) {
     }
   }
 
+  // ============================================
+  // 4. DOMÍNIO BASE (integrius.com.br)
+  // ============================================
+
   // Se não tem subdomínio ou é um subdomínio reservado (domínio base)
   if (!subdomain || RESERVED_SUBDOMAINS.includes(subdomain)) {
     // Está acessando pelo domínio base (integrius.com.br ou www.integrius.com.br)
 
-    // Permitir acesso à landing page (/) e /register e /login
-    if (isPublicRoute) {
-      return NextResponse.next();
+    // Verificar se tem cookie de último tenant
+    const lastTenant = request.cookies.get('last_tenant')?.value;
+
+    if (lastTenant && !isPublicRoute) {
+      // Tem cookie e está tentando acessar rota protegida
+      // Redirecionar para o subdomínio do tenant
+      const tenantUrl = new URL(request.url);
+      tenantUrl.hostname = `${lastTenant}.${BASE_DOMAIN}`;
+      return NextResponse.redirect(tenantUrl);
     }
 
-    // Para rotas protegidas sem subdomínio, redirecionar para landing page
-    return NextResponse.redirect(new URL('/', request.url));
+    if (!lastTenant && !isPublicRoute) {
+      // Sem cookie e tentando acessar rota protegida
+      // Redirecionar para marketplace
+      return NextResponse.redirect(`https://${MARKETPLACE_DOMAIN}`);
+    }
+
+    // Rota pública sem cookie ou com cookie
+    // Permitir acesso
+    return NextResponse.next();
   }
 
   // Se tem subdomínio válido (ex: vivoly.integrius.com.br)

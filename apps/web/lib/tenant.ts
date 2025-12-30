@@ -8,6 +8,7 @@ export interface TenantInfo {
   tenantId: string | null;
   subdomain: string | null;
   isDevelopment: boolean;
+  isMarketplace?: boolean;
 }
 
 /**
@@ -55,13 +56,28 @@ export function getTenantInfo(): TenantInfo {
 
   // Lista de domínios base que NÃO são tenants
   const baseDomains = ['integrius.com.br', 'integrius.com'];
-  const isBaseDomain = baseDomains.some(domain => hostname === domain || hostname === `www.${domain}`);
+  const marketplaceDomains = ['vivoly.com.br', 'vivoly.com'];
 
+  const isBaseDomain = baseDomains.some(domain => hostname === domain || hostname === `www.${domain}`);
+  const isMarketplace = marketplaceDomains.some(domain => hostname === domain || hostname === `www.${domain}`);
+
+  // vivoly.com.br = Marketplace (landing page de produtos)
+  if (isMarketplace) {
+    return {
+      tenantId: null,
+      subdomain: null,
+      isDevelopment: false,
+      isMarketplace: true
+    };
+  }
+
+  // integrius.com.br = Domínio base do SaaS (sem landing page própria)
   if (isBaseDomain) {
     return {
       tenantId: null,
       subdomain: null,
-      isDevelopment: false
+      isDevelopment: false,
+      isMarketplace: false
     };
   }
 

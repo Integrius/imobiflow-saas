@@ -11,7 +11,11 @@
     "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md}\""
   },
   "devDependencies": {
-    "turbo": "^1.10.0",
-    "prettier": "^3.0.0"
+    "prettier": "^3.0.0",
+    "turbo": "^1.10.0"
+  },
+  "dependencies": {
+    "@types/bcrypt": "^6.0.0",
+    "bcrypt": "^6.0.0"
   }
 }
