@@ -24,8 +24,22 @@ export default function LoginPage() {
       const hostname = window.location.hostname;
       const parts = hostname.split('.');
 
-      // Se tem 3 ou mais partes e não é localhost, é um subdomínio
-      const hasSubdomain = parts.length >= 3 && !hostname.includes('localhost');
+      // Lista de domínios base (não são subdomínios)
+      const baseDomains = ['integrius.com.br', 'integrius.com', 'localhost', '127.0.0.1'];
+      const isBaseDomain = baseDomains.some(domain => hostname === domain || hostname === `www.${domain}`);
+
+      // Detectar se tem subdomínio válido
+      let hasSubdomain = false;
+      let subdomain = null;
+
+      if (!isBaseDomain && parts.length >= 3 && !hostname.includes('localhost')) {
+        subdomain = parts[0];
+        // Ignorar subdomínios reservados
+        if (!['www', 'api', 'admin', 'integrius'].includes(subdomain)) {
+          hasSubdomain = true;
+        }
+      }
+
       setIsSubdomain(hasSubdomain);
 
       // Se NÃO está em subdomínio (está no domínio base integrius.com.br)
@@ -38,13 +52,14 @@ export default function LoginPage() {
           // Redirecionar para o subdomínio do último tenant usado
           console.log(`🔄 Redirecionando para último tenant usado: ${lastTenant} (método: ${lastMethod})`);
 
-          // Construir URL do tenant
-          const tenantUrl = `${window.location.protocol}//${lastTenant}.${hostname}`;
+          // Construir URL do tenant (garantir que não é localhost)
+          const baseDomain = hostname.includes('localhost') ? 'localhost:3000' : 'integrius.com.br';
+          const tenantUrl = `${window.location.protocol}//${lastTenant}.${baseDomain}`;
           window.location.href = tenantUrl;
         }
-      } else {
-        // Se está em subdomínio, validar se o tenant existe
-        const subdomain = parts[0];
+      } else if (subdomain) {
+        // Se está em subdomínio VÁLIDO, validar se o tenant existe
+        console.log(`🔍 Validando tenant: ${subdomain}`);
 
         // Validar se tenant existe antes de permitir login
         (async () => {
