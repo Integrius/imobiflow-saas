@@ -438,7 +438,7 @@ export default function NegociacoesPage() {
               filteredNegociacoes.map((negociacao, index) => (
                 <tr key={negociacao.id} className={`hover:bg-[#F4E2CE] transition-colors ${index % 2 === 0 ? 'bg-white' : 'bg-white/70'}`}>
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-bold text-[#2C2C2C]">
-                    <span className="px-2 py-1 bg-blue-900/60 text-blue-200 rounded-md font-mono text-xs border border-blue-500/50">{negociacao.codigo}</span>
+                    <span className="px-2 py-1 bg-[#006D77]/20 text-[#006D77] rounded-md font-mono text-xs border border-[#006D77]/50">{negociacao.codigo}</span>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-[#8B7F76] font-medium">
                     👤 {negociacao.lead?.nome || 'N/A'}
@@ -454,10 +454,10 @@ export default function NegociacoesPage() {
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <span className={`px-3 py-1.5 text-xs font-bold rounded-full border-2 ${
-                      negociacao.status === 'FECHADA' ? 'bg-green-900/60 text-green-200 border-green-500/50' :
-                      negociacao.status === 'CANCELADA' ? 'bg-red-900/60 text-red-200 border-red-500/50' :
-                      negociacao.status === 'EM_ANDAMENTO' ? 'bg-yellow-900/60 text-yellow-200 border-yellow-500/50' :
-                      'bg-blue-900/60 text-blue-200 border-blue-500/50'
+                      negociacao.status === 'FECHADA' ? 'bg-[#8FD14F]/20 text-[#7FB344] border-[#8FD14F]/50' :
+                      negociacao.status === 'CANCELADA' ? 'bg-[#FF6B6B]/20 text-[#FF006E] border-[#FF006E]/50' :
+                      negociacao.status === 'EM_ANDAMENTO' ? 'bg-[#FFB627]/20 text-[#FFB627] border-[#FFB627]/50' :
+                      'bg-[#006D77]/20 text-[#006D77] border-[#006D77]/50'
                     }`}>
                       {getStatusLabel(negociacao.status)}
                     </span>
@@ -548,7 +548,7 @@ export default function NegociacoesPage() {
           {/* Formulário */}
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-[#2C2C2C] mb-1">
                 Cliente (Lead) *
               </label>
               <select
@@ -567,7 +567,7 @@ export default function NegociacoesPage() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-[#2C2C2C] mb-1">
                 Imóvel *
               </label>
               <select
@@ -596,7 +596,7 @@ export default function NegociacoesPage() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-[#2C2C2C] mb-1">
                 Corretor
               </label>
               <select
@@ -614,7 +614,7 @@ export default function NegociacoesPage() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-[#2C2C2C] mb-1">
                 Status *
               </label>
               <select
@@ -705,7 +705,7 @@ export default function NegociacoesPage() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-[#2C2C2C] mb-1">
                 Data de Início *
               </label>
               <input
@@ -718,7 +718,7 @@ export default function NegociacoesPage() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-[#2C2C2C] mb-1">
                 Data de Conclusão
               </label>
               <input
@@ -730,7 +730,7 @@ export default function NegociacoesPage() {
             </div>
 
             <div className="col-span-2">
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-[#2C2C2C] mb-1">
                 Observações
               </label>
               <textarea
@@ -746,14 +746,14 @@ export default function NegociacoesPage() {
             <button
               type="button"
               onClick={handleCloseModal}
-              className="px-4 py-2 text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50"
+              className="px-4 py-2 text-[#2C2C2C] border border-[rgba(169,126,111,0.3)] rounded-lg hover:bg-[#F4E2CE] transition-all"
             >
               Cancelar
             </button>
             <button
               type="submit"
               disabled={submitting}
-              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
+              className="px-4 py-2 bg-gradient-to-r from-[#8FD14F] to-[#006D77] text-white rounded-lg hover:shadow-lg hover:scale-105 transition-all disabled:opacity-50"
             >
               {submitting ? 'Salvando...' : 'Salvar'}
             </button>
@@ -772,12 +772,12 @@ export default function NegociacoesPage() {
           <p className="text-gray-700">
             Tem certeza que deseja excluir a negociação <strong>{deletingNegociacao?.codigo}</strong>?
           </p>
-          <p className="text-sm text-gray-500">Esta ação não pode ser desfeita.</p>
+          <p className="text-sm text-[#8B7F76]">Esta ação não pode ser desfeita.</p>
 
           <div className="flex justify-end gap-3 pt-4 border-t">
             <button
               onClick={() => setDeleteModalOpen(false)}
-              className="px-4 py-2 text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50"
+              className="px-4 py-2 text-[#2C2C2C] border border-[rgba(169,126,111,0.3)] rounded-lg hover:bg-[#F4E2CE] transition-all"
             >
               Cancelar
             </button>

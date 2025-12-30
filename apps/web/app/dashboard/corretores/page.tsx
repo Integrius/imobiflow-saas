@@ -287,12 +287,12 @@ export default function CorretoresPage() {
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-[#8B7F76]">{corretor.email}</td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-[#8B7F76]">
-                    <span className="px-2 py-1 bg-blue-900/60 text-blue-200 rounded-md font-mono text-xs font-bold border border-blue-500/50">{corretor.creci}</span>
+                    <span className="px-2 py-1 bg-[#006D77]/20 text-[#006D77] rounded-md font-mono text-xs font-bold border border-[#006D77]/50">{corretor.creci}</span>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-[#8B7F76] font-medium">{formatPhone(corretor.telefone)}</td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-[#8B7F76]">
                     {corretor.comissao ? (
-                      <span className="px-3 py-1 bg-green-900/60 text-green-200 rounded-full font-bold text-xs border-2 border-green-500/50">
+                      <span className="px-3 py-1 bg-[#8FD14F]/20 text-[#7FB344] rounded-full font-bold text-xs border-2 border-[#8FD14F]/50">
                         {corretor.comissao}%
                       </span>
                     ) : (
@@ -489,7 +489,7 @@ export default function CorretoresPage() {
                         className="w-24 h-24 object-cover rounded-lg"
                       />
                     ) : (
-                      <div className="w-24 h-24 bg-gray-200 rounded-lg flex items-center justify-center">
+                      <div className="w-24 h-24 bg-[#F4E2CE] rounded-lg flex items-center justify-center border-2 border-[#A97E6F]/20">
                         <span className="text-4xl">🏘️</span>
                       </div>
                     )}

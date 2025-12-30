@@ -342,8 +342,8 @@ export default function ProprietariosPage() {
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-[#8B7F76]">
                     <span className={`px-3 py-1.5 text-xs font-bold rounded-full border-2 ${
                       proprietario.tipo_pessoa === 'FISICA'
-                        ? 'bg-blue-900/60 text-blue-200 border-blue-500/50'
-                        : 'bg-purple-900/60 text-purple-200 border-purple-500/50'
+                        ? 'bg-[#006D77]/20 text-[#006D77] border-[#006D77]/50'
+                        : 'bg-[#A97E6F]/20 text-[#A97E6F] border-[#A97E6F]/50'
                     }`}>
                       {proprietario.tipo_pessoa === 'FISICA' ? '👤 Pessoa Física' : '🏢 Pessoa Jurídica'}
                     </span>
@@ -538,7 +538,7 @@ export default function ProprietariosPage() {
                         className="w-24 h-24 object-cover rounded-lg"
                       />
                     ) : (
-                      <div className="w-24 h-24 bg-gray-200 rounded-lg flex items-center justify-center">
+                      <div className="w-24 h-24 bg-[#F4E2CE] rounded-lg flex items-center justify-center border-2 border-[#A97E6F]/20">
                         <span className="text-4xl">🏘️</span>
                       </div>
                     )}

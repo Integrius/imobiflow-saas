@@ -388,20 +388,20 @@ export default function ImoveisPage() {
                     onError={(e) => {
                       e.currentTarget.src = '';
                       e.currentTarget.style.display = 'none';
-                      e.currentTarget.parentElement!.innerHTML = '<div class="flex flex-col items-center justify-center h-full"><span class="text-6xl mb-2">🏠</span><span class="text-gray-500 font-semibold">Imagem indisponível</span></div>';
+                      e.currentTarget.parentElement!.innerHTML = '<div class="flex flex-col items-center justify-center h-full"><span class="text-6xl mb-2">🏠</span><span class="text-[#8B7F76] font-semibold">Imagem indisponível</span></div>';
                     }}
                   />
                 ) : (
                   <div className="flex flex-col items-center justify-center">
                     <span className="text-7xl mb-3">🏠</span>
-                    <span className="text-gray-500 font-semibold">Sem imagem</span>
+                    <span className="text-[#8B7F76] font-semibold">Sem imagem</span>
                   </div>
                 )}
                 <div className="absolute top-3 right-3">
                   <span className={`px-3 py-1.5 text-xs font-bold rounded-full border-2 backdrop-blur-sm ${
-                    imovel.status === 'DISPONIVEL' ? 'bg-green-100/90 text-green-800 border-green-300' :
-                    imovel.status === 'VENDIDO' ? 'bg-gray-100/90 text-gray-800 border-gray-300' :
-                    'bg-yellow-100/90 text-yellow-800 border-yellow-300'
+                    imovel.status === 'DISPONIVEL' ? 'bg-[#8FD14F]/90 text-white border-[#7FB344]' :
+                    imovel.status === 'VENDIDO' ? 'bg-[#8B7F76]/90 text-white border-[#8B7F76]' :
+                    'bg-[#FFB627]/90 text-white border-[#FFB627]'
                   }`}>
                     {imovel.status}
                   </span>
@@ -743,10 +743,10 @@ export default function ImoveisPage() {
                     rows={4}
                     value={formData.fotos}
                     onChange={(e) => handleFormChange('fotos', e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full px-3 py-2 border border-[rgba(169,126,111,0.3)] rounded-lg focus:ring-2 focus:ring-[#8FD14F] focus:border-[#8FD14F] bg-[#FAF8F5] text-[#2C2C2C]"
                     placeholder="https://exemplo.com/foto1.jpg&#10;https://exemplo.com/foto2.jpg"
                   />
-                  <p className="text-xs text-gray-500 mt-1">
+                  <p className="text-xs text-[#8B7F76] mt-1">
                     Adicione o imóvel primeiro para fazer upload de fotos. Ou cole URLs de imagens externas.
                   </p>
                 </div>
