@@ -118,7 +118,7 @@ export class AuthService {
     }
   }
 
-  async googleLogin(credential: string, tenantId: string) {
+  async googleLogin(credential: string, tenantId: string | null) {
     try {
       // Verify Google token and get user info
       const response = await axios.get(
@@ -131,9 +131,10 @@ export class AuthService {
         throw new AppError('Email não fornecido pelo Google', 400)
       }
 
-      // IMPORTANTE: Sempre buscar pelo email no tenant específico
-      // Isso garante isolamento multi-tenant
-      let user = await this.repository.findByEmail(email, tenantId)
+      // Buscar usuário no tenant (se fornecido) ou em qualquer tenant
+      let user = tenantId
+        ? await this.repository.findByEmail(email, tenantId)
+        : await this.repository.findByEmailAnyTenant(email)
 
       if (user) {
         // Usuário já existe no tenant
@@ -154,7 +155,15 @@ export class AuthService {
           throw new AppError('Este email já está vinculado a outra conta Google', 403)
         }
       } else {
-        // Usuário não existe no tenant - criar novo
+        // Usuário não existe
+
+        // Se não há tenant, não pode criar novo usuário via Google
+        // (criação de usuário requer tenant)
+        if (!tenantId) {
+          throw new AppError('Usuário não encontrado. Faça login em um tenant específico para criar uma conta.', 404)
+        }
+
+        // Criar novo usuário no tenant
         // NOTA: Por padrão, novos usuários via Google são criados como CORRETOR
         // ADMIN deve ser criado manualmente via /setup ou /users
         user = await this.prisma.user.create({
