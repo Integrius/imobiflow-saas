@@ -78,6 +78,8 @@ export default function NegociacoesPage() {
   const [selectedImovelDetails, setSelectedImovelDetails] = useState<Imovel | null>(null);
   const [bestOffer, setBestOffer] = useState<any>(null);
   const [myOffer, setMyOffer] = useState<any>(null);
+  const [totalPropostas, setTotalPropostas] = useState(0);
+  const [loadingPropostas, setLoadingPropostas] = useState(false);
 
   const [formData, setFormData] = useState<NegociacaoForm>({
     lead_id: '',
@@ -169,6 +171,19 @@ export default function NegociacoesPage() {
       const response = await api.get(`/imoveis/${imovelId}`);
       const imovelData = response.data;
       setSelectedImovelDetails(imovelData);
+
+      // Carregar total de propostas do imóvel
+      setLoadingPropostas(true);
+      try {
+        const propostasResponse = await api.get(`/propostas/imovel/${imovelId}`);
+        const propostas = Array.isArray(propostasResponse.data) ? propostasResponse.data : [];
+        setTotalPropostas(propostas.length);
+      } catch (error) {
+        console.log('Erro ao carregar propostas do imóvel');
+        setTotalPropostas(0);
+      } finally {
+        setLoadingPropostas(false);
+      }
 
       // Carregar melhor oferta para o imóvel
       try {
@@ -493,6 +508,52 @@ export default function NegociacoesPage() {
         title={editingNegociacao ? 'Consultar Negociação' : 'Nova Negociação'}
         size="xl"
       >
+        {/* Vinculações - Apenas quando editando e tem imóvel selecionado */}
+        {editingNegociacao && selectedImovelDetails && (
+          <div className="bg-gradient-to-r from-[#F0FDF4] to-[#EFF6FF] p-4 rounded-lg border-2 border-[#00C48C]/30 mb-6">
+            <h4 className="text-md font-bold text-[#0A2540] border-b border-[#00C48C]/30 pb-2 mb-3 flex items-center gap-2">
+              🔗 Vinculações
+            </h4>
+
+            {loadingPropostas ? (
+              <div className="flex justify-center py-4">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#00C48C]"></div>
+              </div>
+            ) : (
+              <div className="grid grid-cols-3 gap-4">
+                {/* Proprietário */}
+                <div className="bg-white p-3 rounded-lg border-2 border-[#FFB627]/30">
+                  <div className="text-xs font-bold text-[#4B5563] mb-1">🏠 PROPRIETÁRIO</div>
+                  {selectedImovelDetails.proprietario ? (
+                    <div className="text-sm font-bold text-[#0A2540]">{selectedImovelDetails.proprietario.nome}</div>
+                  ) : (
+                    <div className="text-sm text-[#9CA3AF]">Não informado</div>
+                  )}
+                </div>
+
+                {/* Corretor */}
+                <div className="bg-white p-3 rounded-lg border-2 border-[#A97E6F]/30">
+                  <div className="text-xs font-bold text-[#4B5563] mb-1">👤 CORRETOR</div>
+                  {selectedImovelDetails.corretor_responsavel ? (
+                    <div className="text-sm font-bold text-[#0A2540]">{selectedImovelDetails.corretor_responsavel.user.nome}</div>
+                  ) : (
+                    <div className="text-sm text-[#9CA3AF]">Não atribuído</div>
+                  )}
+                </div>
+
+                {/* Total de Propostas */}
+                <div className="bg-white p-3 rounded-lg border-2 border-[#00C48C]/30">
+                  <div className="text-xs font-bold text-[#4B5563] mb-1">📋 PROPOSTAS</div>
+                  <div className="text-2xl font-bold text-[#00C48C]">
+                    {totalPropostas}
+                  </div>
+                  <div className="text-xs text-[#4B5563]">no imóvel</div>
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* Fotos do Imóvel - Exibir apenas se houver imóvel selecionado */}
           {selectedImovelDetails && selectedImovelDetails.fotos && selectedImovelDetails.fotos.length > 0 && (
