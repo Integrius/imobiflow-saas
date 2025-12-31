@@ -15,6 +15,25 @@ interface Lead {
   origem?: string;
   interesse?: any;
   observacoes?: string;
+  corretor?: {
+    id: string;
+    user: {
+      nome: string;
+      email: string;
+    };
+  } | null;
+  negociacoes?: Array<{
+    id: string;
+    imovel: {
+      id: string;
+      codigo: string;
+      tipo: string;
+    };
+  }>;
+}
+
+interface LeadDetails {
+  totalPropostas: number;
 }
 
 interface LeadForm {
@@ -43,6 +62,8 @@ export default function LeadsPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const [originalFormData, setOriginalFormData] = useState<any>(null);
+  const [leadDetails, setLeadDetails] = useState<LeadDetails>({ totalPropostas: 0 });
+  const [loadingDetails, setLoadingDetails] = useState(false);
   const [formData, setFormData] = useState<LeadForm>({
     nome: '',
     email: '',
@@ -115,6 +136,30 @@ export default function LeadsPage() {
     }
   };
 
+  const loadLeadDetails = async (leadId: string) => {
+    setLoadingDetails(true);
+    try {
+      // Buscar lead completo com relacionamentos
+      const leadResponse = await api.get(`/leads/${leadId}`);
+      const fullLead = leadResponse.data;
+
+      // Atualizar editingLead com dados completos
+      setEditingLead(fullLead);
+
+      // Buscar total de propostas do lead
+      const propostasResponse = await api.get(`/propostas/lead/${leadId}`);
+      const propostas = Array.isArray(propostasResponse.data) ? propostasResponse.data : [];
+
+      setLeadDetails({ totalPropostas: propostas.length });
+    } catch (error: any) {
+      console.error('Erro ao carregar detalhes do lead:', error);
+      toast.error('Erro ao carregar detalhes');
+      setLeadDetails({ totalPropostas: 0 });
+    } finally {
+      setLoadingDetails(false);
+    }
+  };
+
   const openCreateModal = () => {
     setEditingLead(null);
     setFormData({
@@ -157,6 +202,9 @@ export default function LeadsPage() {
     setOriginalFormData({ ...formDataToSet });
     setHasUnsavedChanges(false);
     setModalOpen(true);
+
+    // Carregar detalhes completos do lead
+    loadLeadDetails(lead.id);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -499,6 +547,54 @@ export default function LeadsPage() {
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent placeholder:text-gray-400"
             />
           </div>
+
+          {/* Vinculações - Apenas quando editando */}
+          {editingLead && (
+            <div className="space-y-4 bg-gradient-to-r from-[#F0FDF4] to-[#EFF6FF] p-4 rounded-lg border-2 border-[#00C48C]/30">
+              <h4 className="text-md font-bold text-[#0A2540] border-b border-[#00C48C]/30 pb-2 flex items-center gap-2">
+                🔗 Vinculações
+              </h4>
+
+              {loadingDetails ? (
+                <div className="flex justify-center py-4">
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#00C48C]"></div>
+                </div>
+              ) : (
+                <div className="grid grid-cols-3 gap-4">
+                  {/* Corretor Responsável */}
+                  <div className="bg-white p-3 rounded-lg border-2 border-[#A97E6F]/30">
+                    <div className="text-xs font-bold text-[#4B5563] mb-1">👤 CORRETOR</div>
+                    {editingLead.corretor ? (
+                      <div>
+                        <div className="text-sm font-bold text-[#0A2540]">{editingLead.corretor.user.nome}</div>
+                        <div className="text-xs text-[#4B5563]">{editingLead.corretor.user.email}</div>
+                      </div>
+                    ) : (
+                      <div className="text-sm text-[#9CA3AF]">Não atribuído</div>
+                    )}
+                  </div>
+
+                  {/* Imóveis de Interesse */}
+                  <div className="bg-white p-3 rounded-lg border-2 border-[#3B82F6]/30">
+                    <div className="text-xs font-bold text-[#4B5563] mb-1">🏘️ IMÓVEIS</div>
+                    <div className="text-2xl font-bold text-[#3B82F6]">
+                      {editingLead.negociacoes?.length || 0}
+                    </div>
+                    <div className="text-xs text-[#4B5563]">negociações ativas</div>
+                  </div>
+
+                  {/* Total de Propostas */}
+                  <div className="bg-white p-3 rounded-lg border-2 border-[#00C48C]/30">
+                    <div className="text-xs font-bold text-[#4B5563] mb-1">📋 PROPOSTAS</div>
+                    <div className="text-2xl font-bold text-[#00C48C]">
+                      {leadDetails.totalPropostas}
+                    </div>
+                    <div className="text-xs text-[#4B5563]">propostas feitas</div>
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
 
           <div className="flex justify-end gap-3 pt-6 border-t border-gray-200 mt-6">
             <button
