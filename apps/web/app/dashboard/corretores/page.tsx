@@ -251,7 +251,7 @@ export default function CorretoresPage() {
       </div>
 
       {/* Tabela */}
-      <div className="card-warm shadow-xl overflow-hidden">
+      <div className="card-clean shadow-xl overflow-hidden">
         <table className="min-w-full divide-y divide-slate-600">
           <thead className="bg-gradient-to-r from-[#3B82F6] to-[#3B82F6]">
             <tr>

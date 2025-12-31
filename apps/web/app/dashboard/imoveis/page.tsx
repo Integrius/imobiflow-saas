@@ -372,13 +372,13 @@ export default function ImoveisPage() {
       {/* Grid de Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {filteredImoveis.length === 0 ? (
-          <div className="col-span-full card-warm p-12 text-center text-[#4B5563]">
+          <div className="col-span-full card-clean p-12 text-center text-[#4B5563]">
             <div className="text-lg font-medium">{searchTerm ? 'Nenhum imóvel encontrado' : 'Nenhum imóvel cadastrado'}</div>
             <p className="text-sm text-[#4B5563] mt-2">Clique em &ldquo;+ Novo Imóvel&rdquo; para adicionar</p>
           </div>
         ) : (
           filteredImoveis.map((imovel) => (
-            <div key={imovel.id} className="card-warm overflow-hidden hover:shadow-2xl transition-all duration-300 hover:scale-105">
+            <div key={imovel.id} className="card-clean overflow-hidden hover:shadow-2xl transition-all duration-300 hover:scale-105">
               <div className="h-56 bg-gradient-to-br from-slate-600 to-slate-500 flex items-center justify-center overflow-hidden relative">
                 {imovel.fotos && imovel.fotos.length > 0 ? (
                   <img

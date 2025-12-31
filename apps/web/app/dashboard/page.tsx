@@ -76,7 +76,7 @@ export default function DashboardPage() {
       {data && (
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {/* Card de Leads */}
-          <div className="card-warm overflow-hidden border-2 border-[#00C48C]/20 hover:shadow-2xl transition-all duration-300 hover:scale-105 group">
+          <div className="card-clean overflow-hidden border-2 border-[#00C48C]/20 hover:shadow-2xl transition-all duration-300 hover:scale-105 group">
             <div className="p-6">
               <div className="flex items-center justify-between mb-4">
                 <div className="p-3 bg-gradient-to-br from-[#00C48C] to-[#3B82F6] rounded-xl shadow-lg">
@@ -103,7 +103,7 @@ export default function DashboardPage() {
           </div>
 
           {/* Card de Imóveis */}
-          <div className="card-warm overflow-hidden border-2 border-[#00C48C]/20 hover:shadow-2xl transition-all duration-300 hover:scale-105 group">
+          <div className="card-clean overflow-hidden border-2 border-[#00C48C]/20 hover:shadow-2xl transition-all duration-300 hover:scale-105 group">
             <div className="p-6">
               <div className="flex items-center justify-between mb-4">
                 <div className="p-3 bg-gradient-to-br from-[#3B82F6] to-[#3B82F6] rounded-xl shadow-lg">
@@ -130,7 +130,7 @@ export default function DashboardPage() {
           </div>
 
           {/* Card de Negociações */}
-          <div className="card-warm overflow-hidden border-2 border-[#FFB627]/20 hover:shadow-2xl transition-all duration-300 hover:scale-105 group">
+          <div className="card-clean overflow-hidden border-2 border-[#FFB627]/20 hover:shadow-2xl transition-all duration-300 hover:scale-105 group">
             <div className="p-6">
               <div className="flex items-center justify-between mb-4">
                 <div className="p-3 bg-gradient-to-br from-[#FFB627] to-[#FF006E] rounded-xl shadow-lg">
@@ -168,7 +168,7 @@ export default function DashboardPage() {
 
           <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
             {/* Gráfico 3 Meses */}
-            <div className="card-warm p-6">
+            <div className="card-clean p-6">
               <h4 className="text-lg font-semibold text-[#0A2540] mb-4 text-center">Últimos 3 Meses</h4>
               <ResponsiveContainer width="100%" height={300}>
                 <BarChart data={chartData.last3Months}>
@@ -200,7 +200,7 @@ export default function DashboardPage() {
             </div>
 
             {/* Gráfico 6 Meses */}
-            <div className="card-warm p-6">
+            <div className="card-clean p-6">
               <h4 className="text-lg font-semibold text-[#0A2540] mb-4 text-center">Últimos 6 Meses</h4>
               <ResponsiveContainer width="100%" height={300}>
                 <BarChart data={chartData.last6Months}>
@@ -232,7 +232,7 @@ export default function DashboardPage() {
             </div>
 
             {/* Gráfico 12 Meses */}
-            <div className="card-warm p-6">
+            <div className="card-clean p-6">
               <h4 className="text-lg font-semibold text-[#0A2540] mb-4 text-center">Últimos 12 Meses</h4>
               <ResponsiveContainer width="100%" height={300}>
                 <BarChart data={chartData.last12Months}>

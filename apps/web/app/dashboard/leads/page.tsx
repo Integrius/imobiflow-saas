@@ -248,7 +248,7 @@ export default function LeadsPage() {
       </div>
 
       {/* Tabela */}
-      <div className="card-warm shadow-xl overflow-hidden">
+      <div className="card-clean shadow-xl overflow-hidden">
         <table className="min-w-full divide-y divide-[rgba(169,126,111,0.2)]">
           <thead className="bg-gradient-to-r from-[#3B82F6] to-[#3B82F6]">
             <tr>

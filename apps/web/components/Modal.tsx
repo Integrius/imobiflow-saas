@@ -26,9 +26,9 @@ export default function Modal({ isOpen, onClose, title, children, size = 'md' }:
       />
 
       {/* Modal */}
-      <div className={`relative bg-white rounded-xl shadow-2xl transform transition-all ${sizeClasses[size]} w-full max-h-[90vh] flex flex-col`}>
+      <div className={`relative bg-white rounded-xl shadow-2xl transform transition-all ${sizeClasses[size]} w-full max-h-[90vh] flex flex-col border border-gray-200`}>
         {/* Header - Fixed */}
-        <div className="bg-gradient-to-r from-[#A97E6F] to-[#8B6F61] px-6 pt-6 pb-5 border-b border-[rgba(169,126,111,0.2)] flex-shrink-0 rounded-t-xl">
+        <div className="bg-gradient-to-r from-[#0A2540] to-[#1E3A5F] px-6 pt-6 pb-5 border-b border-white/10 flex-shrink-0 rounded-t-xl">
           <div className="flex items-center justify-between">
             <h3 className="text-xl font-bold text-white">{title}</h3>
             <button
