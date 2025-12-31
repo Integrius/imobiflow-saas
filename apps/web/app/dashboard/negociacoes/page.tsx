@@ -54,6 +54,14 @@ interface Imovel {
   valor?: number;
   preco?: number;
   fotos?: string[];
+  proprietario?: {
+    nome: string;
+  };
+  corretor_responsavel?: {
+    user: {
+      nome: string;
+    };
+  };
 }
 
 interface Corretor {
