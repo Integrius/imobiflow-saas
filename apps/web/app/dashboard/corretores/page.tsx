@@ -358,6 +358,23 @@ export default function CorretoresPage() {
         title={editingCorretor ? 'Consultar Corretor' : 'Novo Corretor'}
         size="lg"
       >
+        {/* Resumo de Vinculações - apenas quando editando */}
+        {editingCorretor && (
+          <div className="bg-gradient-to-r from-[#F0FDF4] to-[#EFF6FF] p-4 rounded-lg border-2 border-[#00C48C]/30 mb-6">
+            <div className="flex items-center gap-4 justify-center">
+              <div className="text-center">
+                <div className="text-2xl font-bold text-[#00C48C]">{corretorLeads.length}</div>
+                <div className="text-xs text-[#4B5563] font-medium">Clientes</div>
+              </div>
+              <div className="h-10 w-px bg-[#00C48C]/30"></div>
+              <div className="text-center">
+                <div className="text-2xl font-bold text-[#3B82F6]">{corretorImoveis.length}</div>
+                <div className="text-xs text-[#4B5563] font-medium">Imóveis</div>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Abas - apenas quando editando */}
         {editingCorretor && (
           <div className="flex border-b border-gray-300 mb-6">
