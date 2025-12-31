@@ -6,6 +6,7 @@ export interface User {
   nome: string;
   email: string;
   tipo: string;
+  primeiro_acesso?: boolean;
 }
 
 export interface AuthResponse {
@@ -223,4 +224,21 @@ export function getLastTenant(): string | null {
 export function getLastLoginMethod(): 'email' | 'google' | null {
   const method = getCookie('last_login_method');
   return method as 'email' | 'google' | null;
+}
+
+/**
+ * Verificar se usuário precisa definir senha no primeiro acesso
+ */
+export function needsPasswordSetup(): boolean {
+  if (typeof window === 'undefined') return false;
+
+  const userStr = localStorage.getItem('user');
+  if (!userStr) return false;
+
+  try {
+    const user = JSON.parse(userStr);
+    return user.primeiro_acesso === true;
+  } catch {
+    return false;
+  }
 }

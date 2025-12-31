@@ -42,20 +42,46 @@ export class LeadsService {
     return updatedLead
   }
 
-  async findAll(query: ListLeadsQuery, tenantId: string) {
+  async findAll(query: ListLeadsQuery, tenantId: string, userType?: string, userId?: string) {
+    // Se o usuário é CORRETOR, filtrar automaticamente por corretor_id
+    if (userType === 'CORRETOR' && userId) {
+      // Buscar corretor_id do usuário
+      const corretor = await prisma.corretor.findUnique({
+        where: { user_id: userId }
+      })
+
+      if (corretor) {
+        // Forçar filtro por corretor_id
+        query.corretor_id = corretor.id
+      }
+    }
+
     return await this.leadsRepository.findAll(query, tenantId)
   }
 
-  async findById(id: string, tenantId: string) {
+  async findById(id: string, tenantId: string, userType?: string, userId?: string) {
     const lead = await this.leadsRepository.findById(id, tenantId)
     if (!lead) {
       throw new AppError('Lead não encontrado', 404, 'LEAD_NOT_FOUND')
     }
+
+    // Se o usuário é CORRETOR, verificar se o lead pertence a ele
+    if (userType === 'CORRETOR' && userId) {
+      const corretor = await prisma.corretor.findUnique({
+        where: { user_id: userId }
+      })
+
+      if (corretor && lead.corretor_id !== corretor.id) {
+        throw new AppError('Você não tem permissão para acessar este lead', 403, 'FORBIDDEN')
+      }
+    }
+
     return lead
   }
 
-  async update(id: string, data: UpdateLeadDTO, tenantId: string) {
-    const lead = await this.findById(id, tenantId)
+  async update(id: string, data: UpdateLeadDTO, tenantId: string, userType?: string, userId?: string) {
+    // Verificar permissão de acesso ao lead
+    const lead = await this.findById(id, tenantId, userType, userId)
 
     const updatedLead = await this.leadsRepository.update(id, data, tenantId)
 
@@ -167,8 +193,21 @@ export class LeadsService {
     return await this.leadsRepository.addTimelineEvent(leadId, event, tenantId)
   }
 
-  async getStats(tenantId: string) {
-    return await this.leadsRepository.getStats(tenantId)
+  async getStats(tenantId: string, userType?: string, userId?: string) {
+    // Se o usuário é CORRETOR, filtrar stats apenas para seus leads
+    let corretorId: string | undefined
+
+    if (userType === 'CORRETOR' && userId) {
+      const corretor = await prisma.corretor.findUnique({
+        where: { user_id: userId }
+      })
+
+      if (corretor) {
+        corretorId = corretor.id
+      }
+    }
+
+    return await this.leadsRepository.getStats(tenantId, corretorId)
   }
 
   private calculateScore(lead: any): number {

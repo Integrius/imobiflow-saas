@@ -19,23 +19,26 @@ export class LeadsController {
 
   async list(request: FastifyRequest, reply: FastifyReply) {
     const tenantId = (request as any).tenantId || 'default-tenant-id'
+    const user = (request as any).user
     const query = listLeadsSchema.parse(request.query)
-    const result = await this.leadsService.findAll(query, tenantId)
+    const result = await this.leadsService.findAll(query, tenantId, user?.tipo, user?.id)
     return reply.send(result)
   }
 
   async getById(request: FastifyRequest, reply: FastifyReply) {
     const tenantId = (request as any).tenantId || 'default-tenant-id'
+    const user = (request as any).user
     const { id } = request.params as { id: string }
-    const lead = await this.leadsService.findById(id, tenantId)
+    const lead = await this.leadsService.findById(id, tenantId, user?.tipo, user?.id)
     return reply.send(lead)
   }
 
   async update(request: FastifyRequest, reply: FastifyReply) {
     const tenantId = (request as any).tenantId || 'default-tenant-id'
+    const user = (request as any).user
     const { id } = request.params as { id: string }
     const data = updateLeadSchema.parse(request.body)
-    const lead = await this.leadsService.update(id, data, tenantId)
+    const lead = await this.leadsService.update(id, data, tenantId, user?.tipo, user?.id)
     return reply.send(lead)
   }
 
@@ -69,7 +72,8 @@ export class LeadsController {
 
   async getStats(request: FastifyRequest, reply: FastifyReply) {
     const tenantId = (request as any).tenantId || 'default-tenant-id'
-    const stats = await this.leadsService.getStats(tenantId)
+    const user = (request as any).user
+    const stats = await this.leadsService.getStats(tenantId, user?.tipo, user?.id)
     return reply.send(stats)
   }
 }

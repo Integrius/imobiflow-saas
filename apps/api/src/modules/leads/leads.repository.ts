@@ -192,8 +192,11 @@ export class LeadsRepository {
     })
   }
 
-  async getStats(tenantId: string) {
-    const where: Prisma.LeadWhereInput = { tenant_id: tenantId }
+  async getStats(tenantId: string, corretorId?: string) {
+    const where: Prisma.LeadWhereInput = {
+      tenant_id: tenantId,
+      ...(corretorId && { corretor_id: corretorId }) // Filtrar por corretor se fornecido
+    }
 
     const [total, quentes, mornos, frios, semCorretor] = await Promise.all([
       this.prisma.lead.count({ where }),

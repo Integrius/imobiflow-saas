@@ -5,6 +5,7 @@ import { LeadsRepository } from './leads.repository'
 import { prisma } from '../../shared/database/prisma'
 import { authMiddleware } from '../../shared/middlewares/auth.middleware'
 import { tenantMiddleware } from '../../shared/middlewares/tenant.middleware'
+import { requireMinRole } from '../../shared/middlewares/permissions.middleware'
 
 export async function leadsRoutes(server: FastifyInstance) {
   const leadsRepository = new LeadsRepository(prisma)
@@ -34,11 +35,17 @@ export async function leadsRoutes(server: FastifyInstance) {
     return await leadsController.update(request, reply)
   })
 
-  server.delete('/:id', async (request, reply) => {
+  // Deletar lead: apenas ADMIN e GESTOR
+  server.delete('/:id', {
+    preHandler: [authMiddleware, tenantMiddleware, requireMinRole('GESTOR')]
+  }, async (request, reply) => {
     return await leadsController.delete(request, reply)
   })
 
-  server.post('/:id/assign', async (request, reply) => {
+  // Atribuir corretor: apenas ADMIN e GESTOR
+  server.post('/:id/assign', {
+    preHandler: [authMiddleware, tenantMiddleware, requireMinRole('GESTOR')]
+  }, async (request, reply) => {
     return await leadsController.assignCorretor(request, reply)
   })
 

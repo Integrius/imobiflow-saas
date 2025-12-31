@@ -1,6 +1,7 @@
 import { ImoveisRepository } from './imoveis.repository'
 import { CreateImovelDTO, UpdateImovelDTO, FilterImoveisDTO, ProximidadeDTO } from './imoveis.schema'
 import { AppError } from '../../shared/errors/AppError'
+import { prisma } from '../../shared/database/prisma.service'
 import axios from 'axios'
 
 export class ImoveisService {
@@ -22,15 +23,38 @@ export class ImoveisService {
     }, tenantId)
   }
 
-  async findAll(filters: FilterImoveisDTO, tenantId: string) {
+  async findAll(filters: FilterImoveisDTO, tenantId: string, userType?: string, userId?: string) {
+    // Se o usuário é CORRETOR, filtrar automaticamente por corretor_id
+    if (userType === 'CORRETOR' && userId) {
+      const corretor = await prisma.corretor.findUnique({
+        where: { user_id: userId }
+      })
+
+      if (corretor) {
+        // Forçar filtro por corretor_id
+        filters.corretor_id = corretor.id
+      }
+    }
+
     return await this.imoveisRepository.findAll(filters, tenantId)
   }
 
-  async findById(id: string, tenantId: string) {
+  async findById(id: string, tenantId: string, userType?: string, userId?: string) {
     const imovel = await this.imoveisRepository.findById(id, tenantId)
 
     if (!imovel) {
       throw new AppError('Imóvel não encontrado', 404, 'IMOVEL_NAO_ENCONTRADO')
+    }
+
+    // Se o usuário é CORRETOR, verificar se o imóvel pertence a ele
+    if (userType === 'CORRETOR' && userId) {
+      const corretor = await prisma.corretor.findUnique({
+        where: { user_id: userId }
+      })
+
+      if (corretor && imovel.corretor_id !== corretor.id) {
+        throw new AppError('Você não tem permissão para acessar este imóvel', 403, 'FORBIDDEN')
+      }
     }
 
     return imovel
@@ -40,8 +64,9 @@ export class ImoveisService {
     return await this.imoveisRepository.findByProximidade(data, tenantId)
   }
 
-  async update(id: string, data: UpdateImovelDTO, tenantId: string) {
-    await this.findById(id, tenantId)
+  async update(id: string, data: UpdateImovelDTO, tenantId: string, userType?: string, userId?: string) {
+    // Verificar permissão de acesso ao imóvel
+    await this.findById(id, tenantId, userType, userId)
 
     if (data.codigo) {
       const imovelWithCodigo = await this.imoveisRepository.findByCodigo(data.codigo, tenantId)

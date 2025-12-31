@@ -4,6 +4,7 @@ import { ImoveisService } from './imoveis.service'
 import { ImoveisController } from './imoveis.controller'
 import { authMiddleware } from '../../shared/middlewares/auth.middleware'
 import { tenantMiddleware } from '../../shared/middlewares/tenant.middleware'
+import { requireMinRole } from '../../shared/middlewares/permissions.middleware'
 import { prisma } from '../../shared/database/prisma.service'
 
 const repository = new ImoveisRepository(prisma)
@@ -14,7 +15,10 @@ export async function imoveisRoutes(server: FastifyInstance) {
   server.addHook('preHandler', authMiddleware)
   server.addHook('preHandler', tenantMiddleware)
 
-  server.post('/', async (request, reply) => {
+  // Criar imóvel: apenas ADMIN e GESTOR
+  server.post('/', {
+    preHandler: [authMiddleware, tenantMiddleware, requireMinRole('GESTOR')]
+  }, async (request, reply) => {
     return controller.create(request, reply)
   })
 
@@ -34,7 +38,10 @@ export async function imoveisRoutes(server: FastifyInstance) {
     return controller.update(request, reply)
   })
 
-  server.delete('/:id', async (request, reply) => {
+  // Deletar imóvel: apenas ADMIN e GESTOR
+  server.delete('/:id', {
+    preHandler: [authMiddleware, tenantMiddleware, requireMinRole('GESTOR')]
+  }, async (request, reply) => {
     return controller.delete(request, reply)
   })
 
@@ -53,8 +60,10 @@ export async function imoveisRoutes(server: FastifyInstance) {
     return controller.reorderFotos(request, reply)
   })
 
-  // Trocar corretor responsável
-  server.put('/:id/corretor', async (request, reply) => {
+  // Trocar corretor responsável: apenas ADMIN e GESTOR
+  server.put('/:id/corretor', {
+    preHandler: [authMiddleware, tenantMiddleware, requireMinRole('GESTOR')]
+  }, async (request, reply) => {
     return controller.changeCorretor(request, reply)
   })
 }

@@ -237,4 +237,47 @@ export class AuthService {
       throw new AppError('Token inválido', 401)
     }
   }
+
+  async definirSenhaPrimeiroAcesso(userId: string, senha: string) {
+    // Buscar usuário
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId }
+    })
+
+    if (!user) {
+      throw new AppError('Usuário não encontrado', 404)
+    }
+
+    if (!user.primeiro_acesso) {
+      throw new AppError('Senha já foi definida anteriormente', 400)
+    }
+
+    // Hash da nova senha
+    const senha_hash = await bcrypt.hash(senha, 10)
+
+    // Atualizar usuário
+    await this.prisma.user.update({
+      where: { id: userId },
+      data: {
+        senha_hash,
+        primeiro_acesso: false,
+        updated_at: new Date()
+      }
+    })
+
+    // Gerar novo token
+    const token = this.generateToken(user.id, user.tenant_id, user.tipo)
+
+    return {
+      message: 'Senha definida com sucesso',
+      user: {
+        id: user.id,
+        nome: user.nome,
+        email: user.email,
+        tipo: user.tipo,
+        primeiro_acesso: false
+      },
+      token
+    }
+  }
 }

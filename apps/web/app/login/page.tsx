@@ -195,9 +195,15 @@ export default function LoginPage() {
     setLoading(true);
 
     try {
-      await login({ email, senha });
+      const response = await login({ email, senha });
       setLoading(false);
-      router.push('/dashboard');
+
+      // Verificar se é primeiro acesso
+      if (response.user.primeiro_acesso === true) {
+        router.push('/primeiro-acesso');
+      } else {
+        router.push('/dashboard');
+      }
     } catch (err: any) {
       const errorMessage = err.response?.data?.error || 'Erro ao fazer login';
       console.log('🔴 ERRO DE LOGIN:', errorMessage, '- Será exibido por 15 segundos');
@@ -226,9 +232,15 @@ export default function LoginPage() {
         throw new Error('Credencial do Google não recebida');
       }
 
-      await loginWithGoogle(credentialResponse.credential);
+      const response = await loginWithGoogle(credentialResponse.credential);
       setLoading(false);
-      router.push('/dashboard');
+
+      // Verificar se é primeiro acesso
+      if (response.user.primeiro_acesso === true) {
+        router.push('/primeiro-acesso');
+      } else {
+        router.push('/dashboard');
+      }
     } catch (err: any) {
       const errorMessage = err.message || err.response?.data?.error || 'Erro ao fazer login com Google';
       console.log('🔴 ERRO GOOGLE OAUTH:', errorMessage, '- Será exibido por 15 segundos');

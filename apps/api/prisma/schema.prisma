@@ -154,12 +154,13 @@ model User {
   tenant_id String
   tenant    Tenant @relation(fields: [tenant_id], references: [id], onDelete: Cascade)
 
-  nome       String
-  email      String
-  senha_hash String?
-  google_id  String?  @unique
-  tipo       UserType @default(CORRETOR)
-  ativo      Boolean  @default(true)
+  nome            String
+  email           String
+  senha_hash      String?
+  google_id       String?  @unique
+  tipo            UserType @default(CORRETOR)
+  ativo           Boolean  @default(true)
+  primeiro_acesso Boolean  @default(true) // True = usuário precisa definir senha
 
   // Timestamps
   created_at   DateTime  @default(now())

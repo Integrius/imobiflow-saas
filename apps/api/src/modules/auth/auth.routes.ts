@@ -23,4 +23,9 @@ export async function authRoutes(server: FastifyInstance) {
   server.get('/me', {
     preHandler: authMiddleware
   }, controller.me.bind(controller))
+
+  // Rota para definir senha no primeiro acesso
+  server.post('/primeiro-acesso', {
+    preHandler: authMiddleware
+  }, controller.definirSenhaPrimeiroAcesso.bind(controller))
 }

@@ -84,4 +84,24 @@ export class AuthController {
       })
     }
   }
+
+  async definirSenhaPrimeiroAcesso(request: FastifyRequest, reply: FastifyReply) {
+    try {
+      const user = (request as any).user
+      const { senha } = request.body as { senha: string }
+
+      if (!senha || senha.length < 6) {
+        return reply.status(400).send({
+          error: 'Senha deve ter no mínimo 6 caracteres'
+        })
+      }
+
+      const result = await this.service.definirSenhaPrimeiroAcesso(user.id, senha)
+      return reply.status(200).send(result)
+    } catch (error: any) {
+      return reply.status(error.statusCode || 400).send({
+        error: error.message || 'Erro ao definir senha'
+      })
+    }
+  }
 }

@@ -34,6 +34,7 @@ const PROTECTED_ROUTES = [
   '/configuracoes',
   '/perfil',
   '/agendamentos',
+  '/primeiro-acesso', // Requer autenticação para definir senha
 ];
 
 export async function middleware(request: NextRequest) {

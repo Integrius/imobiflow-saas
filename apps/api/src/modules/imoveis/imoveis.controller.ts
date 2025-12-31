@@ -46,15 +46,17 @@ export class ImoveisController {
 
   async list(request: FastifyRequest, reply: FastifyReply) {
     const tenantId = (request as any).tenantId || 'default-tenant-id'
+    const user = (request as any).user
     const filters = filterImoveisSchema.parse(request.query)
-    const result = await this.imoveisService.findAll(filters, tenantId)
+    const result = await this.imoveisService.findAll(filters, tenantId, user?.tipo, user?.id)
     return reply.send(result)
   }
 
   async getById(request: FastifyRequest, reply: FastifyReply) {
     const tenantId = (request as any).tenantId || 'default-tenant-id'
+    const user = (request as any).user
     const { id } = request.params as { id: string }
-    const imovel = await this.imoveisService.findById(id, tenantId)
+    const imovel = await this.imoveisService.findById(id, tenantId, user?.tipo, user?.id)
     return reply.send(imovel)
   }
 
@@ -67,10 +69,11 @@ export class ImoveisController {
 
   async update(request: FastifyRequest, reply: FastifyReply) {
     const tenantId = (request as any).tenantId || 'default-tenant-id'
+    const user = (request as any).user
     const { id } = request.params as { id: string }
     const data = updateImovelSchema.parse(request.body)
     console.log('=== UPDATE PAYLOAD ===', JSON.stringify(data, null, 2))
-    const imovel = await this.imoveisService.update(id, data, tenantId)
+    const imovel = await this.imoveisService.update(id, data, tenantId, user?.tipo, user?.id)
     console.log('=== IMOVEL AFTER UPDATE ===', JSON.stringify({ id: imovel.id, fotos: imovel.fotos }, null, 2))
     return reply.send(imovel)
   }
