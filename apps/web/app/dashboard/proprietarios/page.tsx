@@ -272,7 +272,7 @@ export default function ProprietariosPage() {
   if (loading) {
     return (
       <div className="flex justify-center items-center min-h-[400px]">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#8FD14F]"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#00C48C]"></div>
       </div>
     );
   }
@@ -281,9 +281,9 @@ export default function ProprietariosPage() {
     <div>
       <div className="flex justify-between items-center mb-8">
         <div>
-          <h2 className="text-4xl font-bold text-[#2C2C2C] tracking-tight">Proprietários</h2>
-          <p className="text-sm text-[#8B7F76] mt-2 font-medium">
-            <span className="text-[#7FB344] text-lg font-bold">{proprietarios.length}</span> proprietários cadastrados
+          <h2 className="text-4xl font-bold text-[#0A2540] tracking-tight">Proprietários</h2>
+          <p className="text-sm text-[#4B5563] mt-2 font-medium">
+            <span className="text-[#00C48C] text-lg font-bold">{proprietarios.length}</span> proprietários cadastrados
           </p>
         </div>
         <button
@@ -311,7 +311,7 @@ export default function ProprietariosPage() {
       {/* Tabela */}
       <div className="card-warm shadow-xl overflow-hidden">
         <table className="min-w-full divide-y divide-slate-600">
-          <thead className="bg-gradient-to-r from-[#A97E6F] to-[#8B6F5C]">
+          <thead className="bg-gradient-to-r from-[#3B82F6] to-[#3B82F6]">
             <tr>
               <th className="px-6 py-4 text-left text-xs font-bold text-white uppercase tracking-wider">Nome</th>
               <th className="px-6 py-4 text-left text-xs font-bold text-white uppercase tracking-wider">Email</th>
@@ -324,35 +324,35 @@ export default function ProprietariosPage() {
           <tbody className="bg-white divide-y divide-[rgba(169,126,111,0.1)]">
             {filteredProprietarios.length === 0 ? (
               <tr>
-                <td colSpan={6} className="px-6 py-12 text-center text-[#8B7F76]">
+                <td colSpan={6} className="px-6 py-12 text-center text-[#4B5563]">
                   <div className="text-lg font-medium">{searchTerm ? 'Nenhum proprietário encontrado' : 'Nenhum proprietário cadastrado'}</div>
-                  <p className="text-sm text-[#8B7F76] mt-2">Clique em &ldquo;+ Novo Proprietário&rdquo; para adicionar</p>
+                  <p className="text-sm text-[#4B5563] mt-2">Clique em &ldquo;+ Novo Proprietário&rdquo; para adicionar</p>
                 </td>
               </tr>
             ) : (
               filteredProprietarios.map((proprietario, index) => (
-                <tr key={proprietario.id} className={`hover:bg-[#F4E2CE] transition-colors ${index % 2 === 0 ? 'bg-white' : 'bg-white/70'}`}>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-bold text-[#2C2C2C]">
+                <tr key={proprietario.id} className={`hover:bg-[#F9FAFB] transition-colors ${index % 2 === 0 ? 'bg-white' : 'bg-white/70'}`}>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm font-bold text-[#0A2540]">
                     {proprietario.nome}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-[#8B7F76]">{proprietario.contato?.email || '-'}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-[#8B7F76]">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-[#4B5563]">{proprietario.contato?.email || '-'}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-[#4B5563]">
                     <span className="px-2 py-1 bg-slate-600 text-slate-200 rounded-md font-mono text-xs font-bold border border-slate-500">{proprietario.cpf_cnpj}</span>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-[#8B7F76]">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-[#4B5563]">
                     <span className={`px-3 py-1.5 text-xs font-bold rounded-full border-2 ${
                       proprietario.tipo_pessoa === 'FISICA'
-                        ? 'bg-[#006D77]/20 text-[#006D77] border-[#006D77]/50'
-                        : 'bg-[#A97E6F]/20 text-[#A97E6F] border-[#A97E6F]/50'
+                        ? 'bg-[#3B82F6]/20 text-[#3B82F6] border-[#3B82F6]/50'
+                        : 'bg-[#3B82F6]/20 text-[#3B82F6] border-[#3B82F6]/50'
                     }`}>
                       {proprietario.tipo_pessoa === 'FISICA' ? '👤 Pessoa Física' : '🏢 Pessoa Jurídica'}
                     </span>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-[#8B7F76] font-medium">{formatPhone(proprietario.contato?.telefone_principal || '')}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-[#4B5563] font-medium">{formatPhone(proprietario.contato?.telefone_principal || '')}</td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm">
                     <button
                       onClick={() => openEditModal(proprietario)}
-                      className="text-[#7FB344] hover:text-[#006D77] mr-4 font-bold hover:underline transition-all"
+                      className="text-[#00C48C] hover:text-[#3B82F6] mr-4 font-bold hover:underline transition-all"
                     >
                       👁️ Consultar
                     </button>
@@ -382,14 +382,14 @@ export default function ProprietariosPage() {
       >
         {/* Abas - apenas quando editando */}
         {editingProprietario && (
-          <div className="flex border-b border-[rgba(169,126,111,0.3)] mb-6">
+          <div className="flex border-b border-gray-300 mb-6">
             <button
               type="button"
               onClick={() => setActiveTab('dados')}
               className={`px-6 py-3 font-bold transition-all ${
                 activeTab === 'dados'
-                  ? 'border-b-4 border-[#8FD14F] text-[#8FD14F]'
-                  : 'text-[#8B7F76] hover:text-[#7FB344]'
+                  ? 'border-b-4 border-[#00C48C] text-[#00C48C]'
+                  : 'text-[#4B5563] hover:text-[#00C48C]'
               }`}
             >
               📋 Dados
@@ -399,8 +399,8 @@ export default function ProprietariosPage() {
               onClick={() => setActiveTab('imoveis')}
               className={`px-6 py-3 font-bold transition-all ${
                 activeTab === 'imoveis'
-                  ? 'border-b-4 border-[#8FD14F] text-[#8FD14F]'
-                  : 'text-[#8B7F76] hover:text-[#7FB344]'
+                  ? 'border-b-4 border-[#00C48C] text-[#00C48C]'
+                  : 'text-[#4B5563] hover:text-[#00C48C]'
               }`}
             >
               🏘️ Imóveis ({proprietarioImoveis.length})
@@ -413,7 +413,7 @@ export default function ProprietariosPage() {
           <form onSubmit={handleSubmit} className="space-y-4">
           <div className="grid grid-cols-2 gap-4">
             <div className="col-span-2">
-              <label className="block text-sm font-bold text-[#2C2C2C] mb-2">
+              <label className="block text-sm font-bold text-[#0A2540] mb-2">
                 Nome *
               </label>
               <input
@@ -426,7 +426,7 @@ export default function ProprietariosPage() {
             </div>
 
             <div>
-              <label className="block text-sm font-bold text-[#2C2C2C] mb-2">
+              <label className="block text-sm font-bold text-[#0A2540] mb-2">
                 Tipo *
               </label>
               <select
@@ -440,7 +440,7 @@ export default function ProprietariosPage() {
             </div>
 
             <div>
-              <label className="block text-sm font-bold text-[#2C2C2C] mb-2">
+              <label className="block text-sm font-bold text-[#0A2540] mb-2">
                 {formData.tipo_pessoa === 'FISICA' ? 'CPF *' : 'CNPJ *'}
               </label>
               <input
@@ -454,7 +454,7 @@ export default function ProprietariosPage() {
             </div>
 
             <div>
-              <label className="block text-sm font-bold text-[#2C2C2C] mb-2">
+              <label className="block text-sm font-bold text-[#0A2540] mb-2">
                 Email *
               </label>
               <input
@@ -467,7 +467,7 @@ export default function ProprietariosPage() {
             </div>
 
             <div>
-              <label className="block text-sm font-bold text-[#2C2C2C] mb-2">
+              <label className="block text-sm font-bold text-[#0A2540] mb-2">
                 Telefone *
               </label>
               <input
@@ -481,7 +481,7 @@ export default function ProprietariosPage() {
             </div>
 
             <div className="col-span-2">
-              <label className="block text-sm font-bold text-[#2C2C2C] mb-2">
+              <label className="block text-sm font-bold text-[#0A2540] mb-2">
                 Endereço
               </label>
               <input
@@ -493,18 +493,18 @@ export default function ProprietariosPage() {
             </div>
           </div>
 
-          <div className="flex justify-end gap-3 pt-6 border-t border-[rgba(169,126,111,0.2)] mt-6">
+          <div className="flex justify-end gap-3 pt-6 border-t border-gray-200 mt-6">
             <button
               type="button"
               onClick={handleCloseModal}
-              className="px-6 py-2.5 text-[#A97E6F] border-2 border-[#A97E6F] rounded-lg hover:bg-[#A97E6F] hover:text-white font-bold transition-all"
+              className="px-6 py-2.5 text-[#3B82F6] border-2 border-[#3B82F6] rounded-lg hover:bg-[#3B82F6] hover:text-white font-bold transition-all"
             >
               Cancelar
             </button>
             <button
               type="submit"
               disabled={submitting}
-              className="px-6 py-2.5 bg-gradient-to-r from-[#8FD14F] to-[#006D77] text-white rounded-lg hover:shadow-lg font-bold transition-all disabled:opacity-50"
+              className="px-6 py-2.5 bg-gradient-to-r from-[#00C48C] to-[#3B82F6] text-white rounded-lg hover:shadow-lg font-bold transition-all disabled:opacity-50"
             >
               {submitting ? 'Salvando...' : 'Salvar'}
             </button>
@@ -517,18 +517,18 @@ export default function ProprietariosPage() {
           <div className="space-y-4">
             {loadingImoveis ? (
               <div className="flex justify-center items-center py-12">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#8FD14F]"></div>
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#00C48C]"></div>
               </div>
             ) : proprietarioImoveis.length === 0 ? (
               <div className="text-center py-12">
-                <p className="text-[#8B7F76] text-lg">Nenhum imóvel registrado para este proprietário</p>
+                <p className="text-[#4B5563] text-lg">Nenhum imóvel registrado para este proprietário</p>
               </div>
             ) : (
               <div className="max-h-[500px] overflow-y-auto space-y-3">
                 {proprietarioImoveis.map((imovel) => (
                   <div
                     key={imovel.id}
-                    className="flex gap-4 p-4 border-2 border-[rgba(169,126,111,0.2)] rounded-lg hover:border-[#8FD14F] hover:shadow-lg transition-all bg-white"
+                    className="flex gap-4 p-4 border-2 border-gray-200 rounded-lg hover:border-[#00C48C] hover:shadow-lg transition-all bg-white"
                   >
                     {/* Foto */}
                     {imovel.fotoPrincipal ? (
@@ -538,21 +538,21 @@ export default function ProprietariosPage() {
                         className="w-24 h-24 object-cover rounded-lg"
                       />
                     ) : (
-                      <div className="w-24 h-24 bg-[#F4E2CE] rounded-lg flex items-center justify-center border-2 border-[#A97E6F]/20">
+                      <div className="w-24 h-24 bg-[#F9FAFB] rounded-lg flex items-center justify-center border-2 border-[#3B82F6]/20">
                         <span className="text-4xl">🏘️</span>
                       </div>
                     )}
 
                     {/* Informações */}
                     <div className="flex-1">
-                      <h4 className="font-bold text-[#2C2C2C] text-lg">{imovel.titulo}</h4>
+                      <h4 className="font-bold text-[#0A2540] text-lg">{imovel.titulo}</h4>
                       <div className="flex gap-4 mt-2 text-sm">
-                        <span className="px-2 py-1 bg-[#A97E6F]/20 text-[#A97E6F] rounded-md font-bold">
+                        <span className="px-2 py-1 bg-[#3B82F6]/20 text-[#3B82F6] rounded-md font-bold">
                           {imovel.tipo}
                         </span>
                         <span className={`px-2 py-1 rounded-md font-bold ${
                           imovel.status === 'DISPONIVEL'
-                            ? 'bg-[#8FD14F]/20 text-[#4A6B29]'
+                            ? 'bg-[#00C48C]/20 text-[#4A6B29]'
                             : imovel.status === 'RESERVADO'
                             ? 'bg-[#FFB627]/20 text-[#FFB627]'
                             : 'bg-[#FF6B6B]/20 text-[#FF006E]'
@@ -560,11 +560,11 @@ export default function ProprietariosPage() {
                           {imovel.status}
                         </span>
                       </div>
-                      <p className="text-[#8FD14F] font-bold text-xl mt-2">
+                      <p className="text-[#00C48C] font-bold text-xl mt-2">
                         R$ {imovel.preco.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
                       </p>
                       {imovel.endereco && (
-                        <p className="text-[#8B7F76] text-sm mt-1">
+                        <p className="text-[#4B5563] text-sm mt-1">
                           📍 {imovel.endereco.cidade}, {imovel.endereco.estado}
                         </p>
                       )}
@@ -585,15 +585,15 @@ export default function ProprietariosPage() {
         size="sm"
       >
         <div className="space-y-4">
-          <p className="text-[#2C2C2C] text-base">
-            Tem certeza que deseja excluir o proprietário <strong className="text-[#A97E6F]">{deletingProprietario?.nome}</strong>?
+          <p className="text-[#0A2540] text-base">
+            Tem certeza que deseja excluir o proprietário <strong className="text-[#3B82F6]">{deletingProprietario?.nome}</strong>?
           </p>
-          <p className="text-sm text-[#8B7F76]">Esta ação não pode ser desfeita.</p>
+          <p className="text-sm text-[#4B5563]">Esta ação não pode ser desfeita.</p>
 
-          <div className="flex justify-end gap-3 pt-6 border-t border-[rgba(169,126,111,0.2)] mt-6">
+          <div className="flex justify-end gap-3 pt-6 border-t border-gray-200 mt-6">
             <button
               onClick={() => setDeleteModalOpen(false)}
-              className="px-6 py-2.5 text-[#A97E6F] border-2 border-[#A97E6F] rounded-lg hover:bg-[#A97E6F] hover:text-white font-bold transition-all"
+              className="px-6 py-2.5 text-[#3B82F6] border-2 border-[#3B82F6] rounded-lg hover:bg-[#3B82F6] hover:text-white font-bold transition-all"
             >
               Cancelar
             </button>
