@@ -467,7 +467,7 @@ export default function ImoveisPage() {
                 {/* Botão Nova Proposta */}
                 <button
                   onClick={() => window.location.href = `/dashboard/negociacoes?imovel=${imovel.id}&proprietario=${imovel.proprietario_id}&corretor=${imovel.corretor_responsavel?.id || ''}`}
-                  className="w-full mb-3 px-4 py-2.5 text-sm bg-gradient-to-r from-[#FFB627] to-[#FF006E] text-white rounded-lg hover:shadow-lg font-bold transition-all"
+                  className="w-full mb-3 px-4 py-2.5 text-sm bg-gradient-to-r from-[#FFB627] to-[#F59E0B] text-white rounded-lg hover:shadow-lg font-bold transition-all"
                 >
                   💼 Nova Proposta
                 </button>
@@ -484,7 +484,7 @@ export default function ImoveisPage() {
                       setDeletingImovel(imovel);
                       setDeleteModalOpen(true);
                     }}
-                    className="flex-1 px-4 py-2.5 text-sm bg-[#FF6B6B] text-white rounded-lg hover:bg-[#FF006E] font-bold transition-all"
+                    className="flex-1 px-4 py-2.5 text-sm bg-[#EF4444] text-white rounded-lg hover:bg-[#DC2626] font-bold transition-all"
                   >
                     🗑️ Excluir
                   </button>
@@ -796,7 +796,7 @@ export default function ImoveisPage() {
             <button
               onClick={handleDelete}
               disabled={submitting}
-              className="px-6 py-2.5 bg-[#FF6B6B] text-white rounded-lg hover:bg-[#FF006E] font-bold transition-all disabled:opacity-50"
+              className="px-6 py-2.5 bg-[#EF4444] text-white rounded-lg hover:bg-[#DC2626] font-bold transition-all disabled:opacity-50"
             >
               {submitting ? 'Excluindo...' : 'Excluir'}
             </button>
