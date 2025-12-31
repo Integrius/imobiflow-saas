@@ -42,6 +42,7 @@ export class ImoveisRepository {
       cidade,
       bairro,
       proprietario_id,
+      corretor_id,
       orderBy = 'data_desc'
     } = filters
 
@@ -53,6 +54,7 @@ export class ImoveisRepository {
     if (categoria) where.categoria = categoria
     if (status) where.status = status
     if (proprietario_id) where.proprietario_id = proprietario_id
+    if (corretor_id) where.corretor_responsavel_id = corretor_id
 
     if (preco_min || preco_max) {
       where.preco = {}

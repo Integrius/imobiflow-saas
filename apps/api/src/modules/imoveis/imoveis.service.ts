@@ -24,14 +24,14 @@ export class ImoveisService {
   }
 
   async findAll(filters: FilterImoveisDTO, tenantId: string, userType?: string, userId?: string) {
-    // Se o usuário é CORRETOR, filtrar automaticamente por corretor_id
+    // Se o usuário é CORRETOR, filtrar automaticamente por corretor_responsavel_id
     if (userType === 'CORRETOR' && userId) {
       const corretor = await prisma.corretor.findUnique({
         where: { user_id: userId }
       })
 
       if (corretor) {
-        // Forçar filtro por corretor_id
+        // Forçar filtro por corretor_responsavel_id
         filters.corretor_id = corretor.id
       }
     }
@@ -52,7 +52,7 @@ export class ImoveisService {
         where: { user_id: userId }
       })
 
-      if (corretor && imovel.corretor_id !== corretor.id) {
+      if (corretor && imovel.corretor_responsavel_id !== corretor.id) {
         throw new AppError('Você não tem permissão para acessar este imóvel', 403, 'FORBIDDEN')
       }
     }
