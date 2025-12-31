@@ -16,6 +16,12 @@ interface Proprietario {
     email?: string;
   };
   endereco?: string;
+  corretor?: {
+    id: string;
+    user: {
+      nome: string;
+    };
+  } | null;
 }
 
 interface ProprietarioForm {
@@ -50,6 +56,8 @@ export default function ProprietariosPage() {
   const [activeTab, setActiveTab] = useState<'dados' | 'imoveis'>('dados');
   const [proprietarioImoveis, setProprietarioImoveis] = useState<Imovel[]>([]);
   const [loadingImoveis, setLoadingImoveis] = useState(false);
+  const [totalPropostas, setTotalPropostas] = useState(0);
+  const [loadingPropostas, setLoadingPropostas] = useState(false);
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const [originalFormData, setOriginalFormData] = useState<any>(null);
 
@@ -160,6 +168,29 @@ export default function ProprietariosPage() {
     }
   };
 
+  const loadProprietarioPropostas = async (proprietarioId: string) => {
+    setLoadingPropostas(true);
+    try {
+      const response = await api.get(`/proprietarios/${proprietarioId}/imoveis`);
+      const imoveis = Array.isArray(response.data) ? response.data : [];
+
+      // Buscar propostas de todos os imóveis
+      let totalPropostasCount = 0;
+      for (const imovel of imoveis) {
+        const propostasResponse = await api.get(`/propostas/imovel/${imovel.id}`);
+        const propostas = Array.isArray(propostasResponse.data) ? propostasResponse.data : [];
+        totalPropostasCount += propostas.length;
+      }
+
+      setTotalPropostas(totalPropostasCount);
+    } catch (error: any) {
+      console.error('Erro ao carregar propostas do proprietário:', error);
+      setTotalPropostas(0);
+    } finally {
+      setLoadingPropostas(false);
+    }
+  };
+
   const openEditModal = (proprietario: Proprietario) => {
     setEditingProprietario(proprietario);
     const formDataToSet = {
@@ -177,8 +208,10 @@ export default function ProprietariosPage() {
     setHasUnsavedChanges(false);
     setActiveTab('dados');
     setProprietarioImoveis([]);
+    setTotalPropostas(0);
     setModalOpen(true);
     loadProprietarioImoveis(proprietario.id);
+    loadProprietarioPropostas(proprietario.id);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -380,6 +413,38 @@ export default function ProprietariosPage() {
         title={editingProprietario ? 'Consultar Proprietário' : 'Novo Proprietário'}
         size="lg"
       >
+        {/* Resumo de Vinculações - apenas quando editando */}
+        {editingProprietario && (
+          <div className="bg-gradient-to-r from-[#F0FDF4] to-[#EFF6FF] p-4 rounded-lg border-2 border-[#00C48C]/30 mb-6">
+            {loadingImoveis || loadingPropostas ? (
+              <div className="flex justify-center py-2">
+                <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-[#00C48C]"></div>
+              </div>
+            ) : (
+              <div className="flex items-center gap-4 justify-center">
+                <div className="text-center">
+                  <div className="text-xs text-[#4B5563] font-medium mb-1">👤 CORRETOR</div>
+                  {editingProprietario.corretor ? (
+                    <div className="text-sm font-bold text-[#A97E6F]">{editingProprietario.corretor.user.nome}</div>
+                  ) : (
+                    <div className="text-sm text-[#9CA3AF]">Não atribuído</div>
+                  )}
+                </div>
+                <div className="h-10 w-px bg-[#00C48C]/30"></div>
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-[#3B82F6]">{proprietarioImoveis.length}</div>
+                  <div className="text-xs text-[#4B5563] font-medium">Imóveis</div>
+                </div>
+                <div className="h-10 w-px bg-[#00C48C]/30"></div>
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-[#00C48C]">{totalPropostas}</div>
+                  <div className="text-xs text-[#4B5563] font-medium">Propostas</div>
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+
         {/* Abas - apenas quando editando */}
         {editingProprietario && (
           <div className="flex border-b border-gray-300 mb-6">
