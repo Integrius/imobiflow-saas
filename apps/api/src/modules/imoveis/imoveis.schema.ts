@@ -93,6 +93,7 @@ export const filterImoveisSchema = z.object({
   bairro: z.string().optional(),
   destaque: z.coerce.boolean().optional(),
   proprietario_id: z.string().uuid().optional(),
+  corretor_id: z.string().uuid().optional(), // Filtro por corretor responsável
   page: z.coerce.number().int().positive().optional().default(1),
   limit: z.coerce.number().int().positive().max(100).optional().default(20),
   orderBy: z.enum(['preco_asc', 'preco_desc', 'data_asc', 'data_desc']).optional().default('data_desc'),
