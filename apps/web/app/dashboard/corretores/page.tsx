@@ -37,6 +37,16 @@ interface Imovel {
   endereco: any;
 }
 
+interface Lead {
+  id: string;
+  nome: string;
+  email: string;
+  telefone: string;
+  temperatura: 'QUENTE' | 'MORNO' | 'FRIO';
+  origem?: string;
+  created_at: string;
+}
+
 export default function CorretoresPage() {
   const [corretores, setCorretores] = useState<Corretor[]>([]);
   const [loading, setLoading] = useState(true);
@@ -46,9 +56,11 @@ export default function CorretoresPage() {
   const [deletingCorretor, setDeletingCorretor] = useState<Corretor | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
-  const [activeTab, setActiveTab] = useState<'dados' | 'imoveis'>('dados');
+  const [activeTab, setActiveTab] = useState<'dados' | 'imoveis' | 'clientes'>('dados');
   const [corretorImoveis, setCorretorImoveis] = useState<Imovel[]>([]);
   const [loadingImoveis, setLoadingImoveis] = useState(false);
+  const [corretorLeads, setCorretorLeads] = useState<Lead[]>([]);
+  const [loadingLeads, setLoadingLeads] = useState(false);
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const [originalFormData, setOriginalFormData] = useState<any>(null);
 
@@ -139,6 +151,20 @@ export default function CorretoresPage() {
     }
   };
 
+  const loadCorretorLeads = async (corretorId: string) => {
+    setLoadingLeads(true);
+    try {
+      const response = await api.get(`/leads?corretor_id=${corretorId}`);
+      setCorretorLeads(Array.isArray(response.data.data) ? response.data.data : []);
+    } catch (error: any) {
+      console.error('Erro ao carregar leads do corretor:', error);
+      toast.error('Erro ao carregar leads');
+      setCorretorLeads([]);
+    } finally {
+      setLoadingLeads(false);
+    }
+  };
+
   const openEditModal = (corretor: Corretor) => {
     setEditingCorretor(corretor);
     const formDataToSet = {
@@ -154,8 +180,10 @@ export default function CorretoresPage() {
     setHasUnsavedChanges(false);
     setActiveTab('dados');
     setCorretorImoveis([]);
+    setCorretorLeads([]);
     setModalOpen(true);
     loadCorretorImoveis(corretor.id);
+    loadCorretorLeads(corretor.id);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -355,6 +383,17 @@ export default function CorretoresPage() {
             >
               🏘️ Imóveis ({corretorImoveis.length})
             </button>
+            <button
+              type="button"
+              onClick={() => setActiveTab('clientes')}
+              className={`px-6 py-3 font-bold transition-all ${
+                activeTab === 'clientes'
+                  ? 'border-b-4 border-[#00C48C] text-[#00C48C]'
+                  : 'text-[#4B5563] hover:text-[#00C48C]'
+              }`}
+            >
+              👥 Clientes ({corretorLeads.length})
+            </button>
           </div>
         )}
 
@@ -519,6 +558,76 @@ export default function CorretoresPage() {
                           📍 {imovel.endereco.cidade}, {imovel.endereco.estado}
                         </p>
                       )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Conteúdo da aba Clientes */}
+        {activeTab === 'clientes' && editingCorretor && (
+          <div className="space-y-4">
+            {loadingLeads ? (
+              <div className="flex justify-center items-center py-12">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#00C48C]"></div>
+              </div>
+            ) : corretorLeads.length === 0 ? (
+              <div className="text-center py-12">
+                <p className="text-[#4B5563] text-lg">Nenhum cliente vinculado a este corretor</p>
+              </div>
+            ) : (
+              <div className="max-h-[500px] overflow-y-auto space-y-3">
+                {corretorLeads.map((lead) => (
+                  <div
+                    key={lead.id}
+                    className="flex gap-4 p-4 border-2 border-gray-200 rounded-lg hover:border-[#00C48C] hover:shadow-lg transition-all bg-white"
+                  >
+                    {/* Avatar */}
+                    <div className="flex-shrink-0">
+                      <div className="w-16 h-16 bg-gradient-to-br from-[#00C48C] to-[#4A6B29] rounded-full flex items-center justify-center">
+                        <span className="text-white text-2xl font-bold">
+                          {lead.nome.charAt(0).toUpperCase()}
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Informações */}
+                    <div className="flex-1">
+                      <div className="flex items-center gap-3">
+                        <h4 className="font-bold text-[#0A2540] text-lg">{lead.nome}</h4>
+                        <span className={`px-2 py-1 rounded-md text-xs font-bold ${
+                          lead.temperatura === 'QUENTE'
+                            ? 'bg-[#FF6B6B]/20 text-[#FF006E]'
+                            : lead.temperatura === 'MORNO'
+                            ? 'bg-[#FFB627]/20 text-[#FFB627]'
+                            : 'bg-[#3B82F6]/20 text-[#3B82F6]'
+                        }`}>
+                          {lead.temperatura === 'QUENTE' ? '🔥 QUENTE' : lead.temperatura === 'MORNO' ? '🌡️ MORNO' : '❄️ FRIO'}
+                        </span>
+                      </div>
+
+                      <div className="flex gap-4 mt-2">
+                        <div className="flex items-center gap-2">
+                          <span className="text-[#4B5563]">📧</span>
+                          <span className="text-[#4B5563] text-sm">{lead.email}</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <span className="text-[#4B5563]">📱</span>
+                          <span className="text-[#4B5563] text-sm">{lead.telefone}</span>
+                        </div>
+                      </div>
+
+                      {lead.origem && (
+                        <p className="text-[#4B5563] text-xs mt-2">
+                          📍 Origem: {lead.origem}
+                        </p>
+                      )}
+
+                      <p className="text-[#9CA3AF] text-xs mt-1">
+                        ⏰ Cadastrado em: {new Date(lead.created_at).toLocaleDateString('pt-BR')}
+                      </p>
                     </div>
                   </div>
                 ))}
