@@ -18,6 +18,7 @@ export default function DashboardLayout({
   const pathname = usePathname();
   const [user, setUser] = useState<any>(null);
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [isVivolyAdmin, setIsVivolyAdmin] = useState(false);
 
   useEffect(() => {
     const token = getToken();
@@ -28,11 +29,23 @@ export default function DashboardLayout({
 
     const userData = localStorage.getItem('user');
     if (userData) {
-      setUser(JSON.parse(userData));
+      const parsedUser = JSON.parse(userData);
+      setUser(parsedUser);
+
+      // Verificar se é admin do tenant Vivoly
+      const tenantData = localStorage.getItem('tenant_id');
+      const hostname = window.location.hostname;
+      const subdomain = hostname.split('.')[0];
+
+      setIsVivolyAdmin(
+        parsedUser.tipo === 'ADMIN' &&
+        (subdomain === 'vivoly' || hostname.includes('vivoly'))
+      );
     }
   }, [router]);
 
-  const navigation = [
+  // Navegação base (todos os tenants)
+  const baseNavigation = [
     { name: 'Dashboard', href: '/dashboard', icon: '📊', iconImage: '/ico-dashboard.png' },
     { name: 'Leads', href: '/dashboard/leads', icon: '👥', iconImage: '/ico-Leads.png' },
     { name: 'Corretores', href: '/dashboard/corretores', icon: '🏢', iconImage: '/ico-corretores.png' },
@@ -40,6 +53,14 @@ export default function DashboardLayout({
     { name: 'Imóveis', href: '/dashboard/imoveis', icon: '🏘️', iconImage: '/ico-imoveis.png' },
     { name: 'Negociações', href: '/dashboard/negociacoes', icon: '💼', iconImage: '/ico-negociacoes.png' },
   ];
+
+  // Adicionar item de admin se for Vivoly
+  const navigation = isVivolyAdmin
+    ? [
+        ...baseNavigation,
+        { name: 'Admin Geral', href: '/dashboard/admin/tenants', icon: '🔐', iconImage: null }
+      ]
+    : baseNavigation;
 
   return (
     <div className="min-h-screen bg-[#F4F6F8]">

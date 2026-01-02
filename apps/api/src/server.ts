@@ -20,6 +20,7 @@ import { agendamentosRoutes } from './modules/agendamentos/agendamentos.routes'
 import { usersRoutes } from './modules/users/users.routes'
 import { setupRoutes } from './modules/setup/setup.routes'
 import { propostasRoutes } from './modules/propostas/propostas.routes'
+import { adminRoutes } from './modules/admin/admin.routes'
 
 const server = Fastify({
   logger: true
@@ -76,6 +77,7 @@ server.register(telegramRoutes, { prefix: '/api/v1/telegram' }) // Rotas de noti
 server.register(agendamentosRoutes, { prefix: '/api/v1/agendamentos' }) // Rotas de agendamentos de visitas
 server.register(propostasRoutes, { prefix: '/api/v1/propostas' }) // Rotas de propostas/ofertas
 server.register(usersRoutes, { prefix: '/api/v1/users' }) // Rotas de gerenciamento de usuários
+server.register(adminRoutes, { prefix: '/api/v1/admin' }) // Rotas de administração geral (Vivoly)
 server.register(setupRoutes, { prefix: '/api/v1/setup' }) // ⚠️ SETUP INICIAL - Remover em produção!
 
 const start = async () => {
