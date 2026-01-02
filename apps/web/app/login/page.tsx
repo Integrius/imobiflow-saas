@@ -152,6 +152,9 @@ export default function LoginPage() {
         // Se está em subdomínio VÁLIDO, validar se o tenant existe
         console.log(`🔍 Validando tenant: ${subdomain}`);
 
+        // TEMPORÁRIO: Validação desabilitada até deploy do endpoint
+        // TODO: Reabilitar após deploy do endpoint /tenants/by-subdomain/:subdomain
+        /*
         // Validar se tenant existe antes de permitir login
         (async () => {
           try {
@@ -171,6 +174,7 @@ export default function LoginPage() {
             }
           }
         })();
+        */
       }
     }
   }, []);
