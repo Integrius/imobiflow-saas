@@ -101,12 +101,28 @@ export async function tenantMiddleware(
         limite_usuarios: true,
         limite_imoveis: true,
         total_usuarios: true,
-        total_imoveis: true
+        total_imoveis: true,
+        data_expiracao: true
       }
     })
 
     if (!tenant) {
       throw new AppError('Tenant não encontrado', 404)
+    }
+
+    // Verificar se trial expirou
+    if (tenant.status === 'TRIAL' && tenant.data_expiracao) {
+      const now = new Date()
+      const expirationDate = new Date(tenant.data_expiracao)
+
+      if (now > expirationDate) {
+        // Trial expirado - atualizar status para SUSPENSO
+        await prisma.tenant.update({
+          where: { id: tenantId },
+          data: { status: 'SUSPENSO' }
+        })
+        throw new AppError('Período de teste expirado. Entre em contato para ativar sua assinatura.', 403)
+      }
     }
 
     // Verificar status do tenant

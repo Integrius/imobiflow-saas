@@ -636,6 +636,406 @@ class SendGridService {
       replyTo: 'noreply@integrius.com.br'
     });
   }
+
+  /**
+   * Email de aviso 5 dias antes do término do trial
+   */
+  async sendTrialWarningEmail(
+    email: string,
+    nomeUsuario: string,
+    nomeTenant: string,
+    diasRestantes: number
+  ): Promise<boolean> {
+    const primeiroNome = nomeUsuario.split(' ')[0];
+
+    const html = `
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      line-height: 1.6;
+      color: #2C2C2C;
+      background-color: #FAF8F5;
+      margin: 0;
+      padding: 0;
+    }
+    .container {
+      max-width: 600px;
+      margin: 40px auto;
+      background: white;
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    }
+    .header {
+      background: linear-gradient(135deg, #FFB627 0%, #FF9500 100%);
+      padding: 40px 30px;
+      text-align: center;
+      color: white;
+    }
+    .header h1 {
+      margin: 0;
+      font-size: 28px;
+      font-weight: 800;
+    }
+    .content {
+      padding: 40px 30px;
+    }
+    .warning-box {
+      background: linear-gradient(135deg, #FFF8DC 0%, #FFE4B5 100%);
+      border-left: 4px solid #FFB627;
+      padding: 25px;
+      margin: 25px 0;
+      border-radius: 8px;
+    }
+    .warning-box h2 {
+      margin: 0 0 15px 0;
+      color: #FF9500;
+      font-size: 20px;
+    }
+    .highlight {
+      background: #FFB627;
+      color: white;
+      padding: 3px 8px;
+      border-radius: 4px;
+      font-weight: 700;
+    }
+    .info-box {
+      background: #F0F8FF;
+      border-left: 4px solid #4A90E2;
+      padding: 20px;
+      margin: 25px 0;
+      border-radius: 8px;
+    }
+    .info-box h3 {
+      margin: 0 0 10px 0;
+      color: #2C2C2C;
+      font-size: 18px;
+    }
+    .cta-button {
+      display: inline-block;
+      background: linear-gradient(135deg, #8FD14F 0%, #6E9B3B 100%);
+      color: white;
+      text-decoration: none;
+      padding: 16px 32px;
+      border-radius: 8px;
+      font-weight: 700;
+      margin: 20px 0;
+      text-align: center;
+      font-size: 16px;
+    }
+    .footer {
+      background: #F8F9FA;
+      padding: 30px;
+      text-align: center;
+      font-size: 14px;
+      color: #6C757D;
+      border-top: 1px solid #E9ECEF;
+    }
+    ul {
+      padding-left: 20px;
+    }
+    li {
+      margin: 10px 0;
+      color: #555;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>⏰ Seu período de teste está acabando</h1>
+    </div>
+
+    <div class="content">
+      <p style="font-size: 18px; font-weight: 600;">
+        Olá, ${primeiroNome}! 👋
+      </p>
+
+      <p style="font-size: 16px;">
+        Esperamos que você esteja aproveitando o <strong>ImobiFlow</strong> e todas as ferramentas que oferecemos para <strong>${nomeTenant}</strong>.
+      </p>
+
+      <div class="warning-box">
+        <h2>⚠️ Atenção!</h2>
+        <p style="margin: 0; font-size: 16px;">
+          Seu período de teste gratuito termina em <span class="highlight">${diasRestantes} ${diasRestantes === 1 ? 'dia' : 'dias'}</span>.
+        </p>
+      </div>
+
+      <div class="info-box">
+        <h3>🔒 Proteção dos Seus Dados</h3>
+        <p style="margin: 5px 0;">
+          Não se preocupe! Mesmo após o término do período trial, seus dados ficarão <strong>protegidos e disponíveis por mais 30 dias</strong> para recuperação.
+        </p>
+        <p style="margin: 15px 0 5px 0; font-weight: 600;">
+          📦 Você pode recuperar seus dados de duas formas:
+        </p>
+        <ul>
+          <li><strong>Antes do término:</strong> Clique no botão "Recuperar Dados" no cabeçalho do dashboard (disponível nos últimos 5 dias)</li>
+          <li><strong>Após ativar assinatura:</strong> Todos os dados serão restaurados automaticamente</li>
+        </ul>
+      </div>
+
+      <div class="info-box">
+        <h3>💼 O que será exportado?</h3>
+        <ul style="margin: 10px 0;">
+          <li>📋 Todos os seus <strong>leads</strong> cadastrados</li>
+          <li>🏠 Todos os seus <strong>imóveis</strong></li>
+          <li>👥 Todos os <strong>proprietários</strong></li>
+          <li>💰 Todas as <strong>negociações</strong> em andamento</li>
+          <li>📅 Todos os <strong>agendamentos</strong> de visitas</li>
+        </ul>
+        <p style="margin: 10px 0 0 0; font-size: 14px; color: #666;">
+          Os arquivos serão enviados por email em formato CSV (compatível com Excel e planilhas).
+        </p>
+      </div>
+
+      <div style="text-align: center; margin: 30px 0;">
+        <a href="mailto:contato@integrius.com.br?subject=Ativar%20Assinatura%20ImobiFlow" class="cta-button">
+          💚 Ativar Minha Assinatura Agora
+        </a>
+      </div>
+
+      <p style="font-size: 14px; color: #666; text-align: center;">
+        Dúvidas? Entre em contato: <strong>contato@integrius.com.br</strong>
+      </p>
+    </div>
+
+    <div class="footer">
+      <p style="margin: 0 0 10px 0;">
+        <strong>ImobiFlow</strong> - Gestão Imobiliária Inteligente
+      </p>
+      <p style="margin: 0; font-size: 12px;">
+        Este é um email automático de sistema.
+      </p>
+    </div>
+  </div>
+</body>
+</html>
+    `.trim();
+
+    return this.sendEmail({
+      to: email,
+      subject: `⏰ Seu período trial termina em ${diasRestantes} ${diasRestantes === 1 ? 'dia' : 'dias'} - ${nomeTenant}`,
+      html
+    });
+  }
+
+  /**
+   * Email com dados exportados em CSV
+   */
+  async sendDataExportEmail(
+    email: string,
+    nomeUsuario: string,
+    nomeTenant: string,
+    stats: {
+      leads: number;
+      imoveis: number;
+      proprietarios: number;
+      negociacoes: number;
+      agendamentos: number;
+    },
+    diasRestantes: number,
+    attachments: any[]
+  ): Promise<boolean> {
+    const primeiroNome = nomeUsuario.split(' ')[0];
+    const totalRegistros = stats.leads + stats.imoveis + stats.proprietarios + stats.negociacoes + stats.agendamentos;
+
+    const html = `
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      line-height: 1.6;
+      color: #2C2C2C;
+      background-color: #FAF8F5;
+      margin: 0;
+      padding: 0;
+    }
+    .container {
+      max-width: 600px;
+      margin: 40px auto;
+      background: white;
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    }
+    .header {
+      background: linear-gradient(135deg, #8FD14F 0%, #6E9B3B 100%);
+      padding: 40px 30px;
+      text-align: center;
+      color: white;
+    }
+    .header h1 {
+      margin: 0;
+      font-size: 28px;
+      font-weight: 800;
+    }
+    .content {
+      padding: 40px 30px;
+    }
+    .success-box {
+      background: linear-gradient(135deg, #D4EDDA 0%, #C3E6CB 100%);
+      border-left: 4px solid #28A745;
+      padding: 25px;
+      margin: 25px 0;
+      border-radius: 8px;
+      text-align: center;
+    }
+    .success-box h2 {
+      margin: 0 0 10px 0;
+      color: #155724;
+      font-size: 24px;
+    }
+    .stats-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 15px;
+      margin: 25px 0;
+    }
+    .stat-card {
+      background: #F8F9FA;
+      padding: 20px;
+      border-radius: 8px;
+      text-align: center;
+      border: 2px solid #E9ECEF;
+    }
+    .stat-number {
+      font-size: 32px;
+      font-weight: 800;
+      color: #8FD14F;
+      margin: 0;
+    }
+    .stat-label {
+      font-size: 14px;
+      color: #6C757D;
+      margin: 5px 0 0 0;
+    }
+    .info-box {
+      background: #FFF3CD;
+      border-left: 4px solid #FFC107;
+      padding: 20px;
+      margin: 25px 0;
+      border-radius: 8px;
+    }
+    .footer {
+      background: #F8F9FA;
+      padding: 30px;
+      text-align: center;
+      font-size: 14px;
+      color: #6C757D;
+      border-top: 1px solid #E9ECEF;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>✅ Dados Exportados com Sucesso!</h1>
+    </div>
+
+    <div class="content">
+      <p style="font-size: 18px; font-weight: 600;">
+        Olá, ${primeiroNome}! 👋
+      </p>
+
+      <div class="success-box">
+        <h2>📦 ${totalRegistros} registros exportados</h2>
+        <p style="margin: 5px 0 0 0; color: #155724;">
+          Seus dados de <strong>${nomeTenant}</strong> estão seguros!
+        </p>
+      </div>
+
+      <p>
+        Conforme solicitado, exportamos todos os dados do seu CRM Integrius e estamos enviando em anexo neste email.
+      </p>
+
+      <div class="stats-grid">
+        <div class="stat-card">
+          <p class="stat-number">${stats.leads}</p>
+          <p class="stat-label">📋 Leads</p>
+        </div>
+        <div class="stat-card">
+          <p class="stat-number">${stats.imoveis}</p>
+          <p class="stat-label">🏠 Imóveis</p>
+        </div>
+        <div class="stat-card">
+          <p class="stat-number">${stats.proprietarios}</p>
+          <p class="stat-label">👥 Proprietários</p>
+        </div>
+        <div class="stat-card">
+          <p class="stat-number">${stats.negociacoes}</p>
+          <p class="stat-label">💰 Negociações</p>
+        </div>
+        <div class="stat-card">
+          <p class="stat-number">${stats.agendamentos}</p>
+          <p class="stat-label">📅 Agendamentos</p>
+        </div>
+        <div class="stat-card">
+          <p class="stat-number">${totalRegistros}</p>
+          <p class="stat-label">✨ Total</p>
+        </div>
+      </div>
+
+      <div class="info-box">
+        <h3 style="margin: 0 0 10px 0; color: #856404;">📌 Importante:</h3>
+        <ul style="margin: 10px 0; padding-left: 20px; color: #856404;">
+          <li>Os arquivos estão em formato <strong>CSV</strong> (compatível com Excel, Google Sheets, etc.)</li>
+          <li>Seus dados permanecem disponíveis no sistema por <strong>mais ${diasRestantes} ${diasRestantes === 1 ? 'dia' : 'dias'}</strong></li>
+          <li>Após ativar a assinatura, todos os dados serão restaurados automaticamente</li>
+          <li>Guarde este email em local seguro como backup</li>
+        </ul>
+      </div>
+
+      <p style="font-size: 16px; margin-top: 30px;">
+        <strong>💚 Quer continuar usando o ImobiFlow?</strong><br>
+        Entre em contato conosco para ativar sua assinatura: <a href="mailto:contato@integrius.com.br">contato@integrius.com.br</a>
+      </p>
+    </div>
+
+    <div class="footer">
+      <p style="margin: 0 0 10px 0;">
+        <strong>ImobiFlow</strong> - Gestão Imobiliária Inteligente
+      </p>
+      <p style="margin: 0; font-size: 12px;">
+        © 2025 CRM Integrius. Todos os direitos reservados.
+      </p>
+    </div>
+  </div>
+</body>
+</html>
+    `.trim();
+
+    if (!this.isConfigured) {
+      console.warn('SendGrid não configurado - email não enviado');
+      return false;
+    }
+
+    try {
+      const from = `${this.getDefaultFromName()} <${this.getDefaultFrom()}>`;
+
+      await sgMail.send({
+        to: email,
+        from,
+        subject: `📦 Seus dados do ${nomeTenant} - ${totalRegistros} registros exportados`,
+        html,
+        attachments
+      });
+
+      console.log(`✅ Email de exportação enviado para ${email} com ${attachments.length} anexos`);
+      return true;
+    } catch (error: any) {
+      console.error('Erro ao enviar email de exportação:', error.response?.body || error.message);
+      throw new Error('Erro ao enviar email de exportação');
+    }
+  }
 }
 
 // Singleton

@@ -4,6 +4,7 @@ import helmet from '@fastify/helmet'
 import multipart from '@fastify/multipart'
 import { authRoutes } from './modules/auth/auth.routes'
 import { tenantRoutes } from './modules/tenants/tenant.routes'
+import { dataExportRoutes } from './modules/tenants/data-export.routes'
 import { leadsRoutes } from './modules/leads/leads.routes'
 import { corretoresRoutes } from './modules/corretores/corretores.routes'
 import { proprietariosRoutes } from './modules/proprietarios/proprietarios.routes'
@@ -60,6 +61,7 @@ server.get('/health', async () => {
 // Rotas da API
 server.register(authRoutes, { prefix: '/api/v1/auth' })
 server.register(tenantRoutes, { prefix: '/api/v1' })
+server.register(dataExportRoutes, { prefix: '/api/v1' }) // Rotas de exportação de dados
 server.register(leadsRoutes, { prefix: '/api/v1/leads' })
 server.register(leadsCapturaRoutes, { prefix: '/api/v1/leads' }) // Rotas públicas de captura
 server.register(corretoresRoutes, { prefix: '/api/v1/corretores' })

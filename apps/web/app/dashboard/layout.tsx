@@ -6,6 +6,8 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { logout, getToken } from '@/lib/auth';
 import ToastContainer from '@/components/ToastContainer';
+import TrialWarning from '@/components/TrialWarning';
+import DataExportButton from '@/components/DataExportButton';
 
 export default function DashboardLayout({
   children,
@@ -67,6 +69,9 @@ export default function DashboardLayout({
               </Link>
             </div>
             <div className="flex items-center gap-4">
+              {/* Botão de Recuperar Dados (últimos 5 dias do trial) */}
+              <DataExportButton />
+
               <span className="text-sm text-white/90">
                 Olá, {user?.nome || 'Usuário'}
               </span>
@@ -186,6 +191,9 @@ export default function DashboardLayout({
         <main className="flex-1 overflow-y-auto">
           <div className="py-6">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-8">
+              {/* Aviso de Trial */}
+              <TrialWarning />
+
               {children}
             </div>
           </div>

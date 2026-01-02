@@ -1,35 +1,63 @@
 import { FastifyInstance } from 'fastify'
-import { TenantController } from './tenant.controller'
-import { authMiddleware } from '../../shared/middlewares/auth.middleware'
 import { tenantMiddleware } from '../../shared/middlewares/tenant.middleware'
+import { authMiddleware } from '../../shared/middlewares/auth.middleware'
 import { prisma } from '../../shared/database/prisma.service'
 
 export async function tenantRoutes(server: FastifyInstance) {
-  const controller = new TenantController(prisma)
+  // Endpoint para obter informações do trial
+  server.get(
+    '/trial-info',
+    {
+      preHandler: [tenantMiddleware, authMiddleware]
+    },
+    async (request, reply) => {
+      try {
+        const tenantId = (request as any).tenantId
 
-  // Rota pública para criar tenant (signup)
-  server.post('/tenants', controller.create.bind(controller))
+        const tenant = await prisma.tenant.findUnique({
+          where: { id: tenantId },
+          select: {
+            status: true,
+            data_expiracao: true,
+            plano: true
+          }
+        })
 
-  // Rota pública para buscar tenant por slug
-  server.get('/tenants/slug/:slug', controller.findBySlug.bind(controller))
+        if (!tenant) {
+          return reply.status(404).send({ error: 'Tenant não encontrado' })
+        }
 
-  // Rota pública para buscar tenant por subdomínio (usada pelo middleware Next.js)
-  server.get('/tenants/by-subdomain/:subdomain', controller.findBySubdominio.bind(controller))
+        // Se não está em trial, retornar sem informações
+        if (tenant.status !== 'TRIAL') {
+          return reply.send({
+            isTrial: false,
+            status: tenant.status,
+            plano: tenant.plano
+          })
+        }
 
-  // Rotas protegidas (requerem autenticação)
-  server.get('/tenants/current', {
-    preHandler: [authMiddleware, tenantMiddleware]
-  }, controller.current.bind(controller))
+        // Calcular dias restantes
+        const now = new Date()
+        const expirationDate = tenant.data_expiracao ? new Date(tenant.data_expiracao) : null
+        
+        let diasRestantes = 0
+        if (expirationDate) {
+          const diffTime = expirationDate.getTime() - now.getTime()
+          diasRestantes = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
+        }
 
-  server.get('/tenants/:id', {
-    preHandler: [authMiddleware]
-  }, controller.findById.bind(controller))
-
-  server.put('/tenants/:id', {
-    preHandler: [authMiddleware]
-  }, controller.update.bind(controller))
-
-  server.get('/tenants', {
-    preHandler: [authMiddleware]
-  }, controller.list.bind(controller))
+        return reply.send({
+          isTrial: true,
+          status: tenant.status,
+          plano: tenant.plano,
+          data_expiracao: expirationDate,
+          dias_restantes: diasRestantes > 0 ? diasRestantes : 0,
+          expirado: diasRestantes <= 0
+        })
+      } catch (error) {
+        server.log.error('Erro ao buscar informações do trial:', error)
+        return reply.status(500).send({ error: 'Erro ao buscar informações do trial' })
+      }
+    }
+  )
 }

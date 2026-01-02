@@ -2339,7 +2339,625 @@ if (url.pathname === '/') {
 
 ---
 
+## Sistema de Trial e Expiração de Assinatura
+
+### ⏰ Período de Teste
+
+Todos os novos tenants criados no ImobiFlow recebem automaticamente um período de teste gratuito de **30 dias**.
+
+### Configuração do Trial
+
+**Criação de Tenant:**
+```typescript
+// Arquivo: /apps/api/src/modules/tenants/tenant.repository.ts (linha 53-54)
+status: 'TRIAL',
+data_expiracao: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000) // 30 dias
+```
+
+- **Status inicial**: `TRIAL`
+- **Duração**: 30 dias a partir da criação
+- **Campo**: `data_expiracao` (DateTime) armazena a data de término
+
+### Validação Automática de Expiração
+
+**Middleware de Tenant:**
+```typescript
+// Arquivo: /apps/api/src/shared/middlewares/tenant.middleware.ts (linhas 113-126)
+
+// Verificar se trial expirou
+if (tenant.status === 'TRIAL' && tenant.data_expiracao) {
+  const now = new Date()
+  const expirationDate = new Date(tenant.data_expiracao)
+
+  if (now > expirationDate) {
+    // Trial expirado - atualizar status para SUSPENSO
+    await prisma.tenant.update({
+      where: { id: tenantId },
+      data: { status: 'SUSPENSO' }
+    })
+    throw new AppError('Período de teste expirado. Entre em contato para ativar sua assinatura.', 403)
+  }
+}
+```
+
+**Quando a validação acontece:**
+- ✅ Em **toda requisição** ao backend
+- ✅ Antes de processar qualquer operação
+- ✅ Bloqueia acesso imediatamente após expiração
+
+**O que acontece quando expira:**
+1. Status muda automaticamente de `TRIAL` → `SUSPENSO`
+2. Usuário recebe erro `403` com mensagem clara
+3. Acesso ao sistema é bloqueado
+4. Dados permanecem íntegros (não são deletados)
+
+### Endpoint de Informações do Trial
+
+**GET** `/api/v1/trial-info`
+
+**Headers necessários:**
+- `Authorization: Bearer <token>`
+
+**Response (tenant em trial):**
+```json
+{
+  "isTrial": true,
+  "status": "TRIAL",
+  "plano": "BASICO",
+  "data_expiracao": "2025-01-31T23:59:59.000Z",
+  "dias_restantes": 15,
+  "expirado": false
+}
+```
+
+**Response (tenant ativo):**
+```json
+{
+  "isTrial": false,
+  "status": "ATIVO",
+  "plano": "PREMIUM"
+}
+```
+
+### Aviso Visual no Frontend
+
+**Componente:** `/apps/web/components/TrialWarning.tsx`
+
+**Comportamento:**
+- Exibido automaticamente no topo de todas as páginas do dashboard
+- Aparece apenas quando **restam 7 dias ou menos** no trial
+- Cores dinâmicas baseadas na urgência:
+  - **Amarelo** (⏰): 4-7 dias restantes
+  - **Vermelho** (⚠️): 1-3 dias restantes
+
+**Visual:**
+```
+┌─────────────────────────────────────────────────────────────┐
+│ ⏰  5 dias restantes no período de teste                    │
+│     Entre em contato para ativar sua assinatura e continuar │
+│     usando o ImobiFlow                                       │
+└─────────────────────────────────────────────────────────────┘
+```
+
+**Localização:**
+- Arquivo: `/apps/web/app/dashboard/layout.tsx`
+- Inserido no início do `<main>`, antes do `{children}`
+- Visível em todas as rotas do dashboard
+
+### Status de Tenant
+
+| Status | Descrição | Pode Acessar? |
+|--------|-----------|---------------|
+| `TRIAL` | Período de teste (30 dias) | ✅ Sim (se não expirado) |
+| `ATIVO` | Assinatura paga ativa | ✅ Sim |
+| `SUSPENSO` | Trial expirado ou pagamento pendente | ❌ Não |
+| `INATIVO` | Conta desativada | ❌ Não |
+| `CANCELADO` | Assinatura cancelada | ❌ Não |
+
+### Ativação de Assinatura
+
+Para ativar um tenant após o trial expirar:
+
+```sql
+-- Atualizar status e remover data de expiração
+UPDATE "Tenant"
+SET
+  status = 'ATIVO',
+  plano = 'PREMIUM', -- ou BASICO/EMPRESARIAL
+  data_expiracao = NULL
+WHERE id = 'tenant-uuid';
+```
+
+**Via API (futuro):**
+- Endpoint de checkout/pagamento
+- Integração com gateway de pagamento (Stripe/PagSeguro)
+- Webhook para ativação automática
+
+### Renovação Automática (Futuro)
+
+**TODO**: Implementar job/cron para avisar antes da expiração:
+- 7 dias antes: Email de aviso
+- 3 dias antes: Email + notificação no sistema
+- 1 dia antes: Email urgente
+- No dia: Suspensão automática
+
+**Tecnologias sugeridas:**
+- **BullMQ** ou **Agenda** (job queue)
+- **Node-cron** (agendador)
+- SendGrid para envio de emails
+
+### Arquivos Relacionados
+
+**Backend:**
+- `/apps/api/src/shared/middlewares/tenant.middleware.ts` - Validação de expiração
+- `/apps/api/src/modules/tenants/tenant.routes.ts` - Endpoint de info do trial
+- `/apps/api/src/modules/tenants/tenant.repository.ts` - Criação com trial
+- `/apps/api/prisma/schema.prisma` - Modelo Tenant (status, data_expiracao)
+
+**Frontend:**
+- `/apps/web/components/TrialWarning.tsx` - Componente de aviso
+- `/apps/web/app/dashboard/layout.tsx` - Layout com aviso integrado
+
+---
+
+## Sistema de Recuperação de Dados (Trial)
+
+O ImobiFlow implementa um sistema profissional de recuperação de dados para tenants em período trial, garantindo que clientes possam exportar seus dados antes do término e recebam avisos com antecedência.
+
+### 🎯 Objetivo
+
+Oferecer aos clientes trial:
+1. **Aviso com antecedência** (5 dias antes) por email
+2. **Botão de exportação** nos últimos 5 dias do trial
+3. **Backup completo** em formato CSV via email
+4. **Proteção de dados** por 30 dias após expiração
+
+### 📧 Email Automático 5 Dias Antes
+
+**Quando é enviado:**
+- Automaticamente 5 dias antes da data de expiração
+- Apenas uma vez por tenant (flag `email_5dias_enviado`)
+
+**Conteúdo do Email:**
+- ⏰ Aviso de quantos dias restam
+- 🔒 Informação sobre proteção dos dados (30 dias após expiração)
+- 📦 Como recuperar dados (botão "Recuperar Dados" no dashboard)
+- 💼 Lista do que será exportado (leads, imóveis, proprietários, negociações, agendamentos)
+- 💚 CTA para ativar assinatura
+
+**Template:**
+- Arquivo: `/apps/api/src/shared/services/sendgrid.service.ts` (método `sendTrialWarningEmail`)
+- Design: Gradiente laranja/amarelo (#FFB627)
+- Responsivo e compatível com todos os clientes de email
+
+**Job Automático:**
+- Arquivo: `/apps/api/src/shared/jobs/trial-warning-job.ts`
+- Executar diariamente (sugestão: 9h da manhã)
+- Busca tenants em trial com expiração em ~5 dias
+- Filtra apenas os que não receberam email (`email_5dias_enviado: false`)
+- Marca como enviado após sucesso
+
+**Executar Job Manualmente:**
+```bash
+cd apps/api
+npx tsx src/shared/jobs/trial-warning-job.ts
+```
+
+**Configurar Cron (Produção):**
+
+Opção 1 - Cron do Linux (Render.com):
+```bash
+# Editar crontab
+crontab -e
+
+# Adicionar linha (todo dia às 9h)
+0 9 * * * cd /opt/render/project/src/apps/api && npx tsx src/shared/jobs/trial-warning-job.ts >> /var/log/trial-warning.log 2>&1
+```
+
+Opção 2 - Serviço Externo (EasyCron, cron-job.org):
+- Criar endpoint público: `POST /api/v1/jobs/trial-warning` (protegido por secret key)
+- Configurar chamada diária no serviço
+
+### 📦 Botão "Recuperar Dados"
+
+**Quando aparece:**
+- Últimos 5 dias do período trial
+- Apenas se ainda não exportou (`data_exportacao_dados: null`)
+
+**Localização:**
+- Header do dashboard (barra superior)
+- À esquerda do nome do usuário
+- Componente: `/apps/web/components/DataExportButton.tsx`
+
+**Visual:**
+```
+┌────────────────────────────────────────────────┐
+│ Logo  [📦 Recuperar Dados]  Olá, João  | Sair │
+└────────────────────────────────────────────────┘
+```
+
+**Comportamento:**
+1. Usuário clica no botão
+2. Confirma ação em alert
+3. Exportação inicia (spinner "Exportando...")
+4. Todos os dados são exportados para CSV
+5. Arquivos enviados por email com anexos
+6. Botão desaparece e mostra aviso:
+   ```
+   ✅ Dados exportados e enviados por email
+   ```
+
+**Endpoints:**
+
+GET `/api/v1/export/can-export`
+- Verifica se pode mostrar botão ou aviso
+- Response:
+```json
+{
+  "canExport": true,
+  "hasExported": false,
+  "showButton": true,    // Mostrar botão
+  "showMessage": false   // Mostrar aviso
+}
+```
+
+POST `/api/v1/export/data`
+- Exporta todos os dados e envia por email
+- Valida se está nos últimos 5 dias
+- Valida se já não exportou
+- Response:
+```json
+{
+  "success": true,
+  "message": "Dados exportados e enviados por email com sucesso",
+  "stats": {
+    "leads": 15,
+    "imoveis": 8,
+    "proprietarios": 3,
+    "negociacoes": 5,
+    "agendamentos": 2
+  }
+}
+```
+
+### 📄 Dados Exportados
+
+O sistema exporta 5 arquivos CSV:
+
+1. **leads_[tenant_id].csv**
+   - ID, Nome, Email, Telefone, Tipo Negócio, Tipo Imóvel
+   - Valores Min/Max, Localização (Estado, Município, Bairro)
+   - Origem, Temperatura, Score, Corretor Responsável
+   - Data Criação
+
+2. **imoveis_[tenant_id].csv**
+   - ID, Título, Descrição, Tipo Negócio, Tipo Imóvel
+   - Valores (venda, aluguel, condomínio, IPTU)
+   - Endereço completo (CEP, Estado, Município, Bairro, Logradouro, Número)
+   - Características (Quartos, Suítes, Banheiros, Vagas, Áreas)
+   - Status, Aceita Pets, Mobiliado
+   - Proprietário, Corretor Responsável
+   - Data Criação
+
+3. **proprietarios_[tenant_id].csv**
+   - ID, Nome, Email, Telefone, CPF, RG
+   - Endereço completo
+   - Data Criação
+
+4. **negociacoes_[tenant_id].csv**
+   - ID, Lead (nome, email, telefone), Imóvel
+   - Tipo Negócio, Valor Proposta, Status
+   - Corretor, Observações
+   - Data Criação, Última Atualização
+
+5. **agendamentos_[tenant_id].csv**
+   - ID, Lead, Imóvel, Data Visita, Duração
+   - Tipo Visita, Status, Corretor
+   - Confirmações (lead/corretor)
+   - Realizado, Feedback, Nota
+   - Data Criação
+
+**Formato:**
+- CSV com separador `;` (ponto e vírgula)
+- Encoding UTF-8 com BOM (compatível com Excel)
+- Compatível com Excel, Google Sheets, LibreOffice
+
+**Serviço de Exportação:**
+- Arquivo: `/apps/api/src/shared/services/data-export.service.ts`
+- Classe: `DataExportService`
+- Biblioteca: `json2csv` (instalada via `pnpm add json2csv`)
+
+### 📧 Email de Confirmação (Com Anexos)
+
+**Quando é enviado:**
+- Imediatamente após exportação bem-sucedida
+- Apenas uma vez (registra `data_exportacao_dados`)
+
+**Conteúdo:**
+- ✅ Confirmação de exportação
+- 📦 Quantidade de registros exportados por tipo
+- 📌 Informações importantes:
+  - Formato CSV compatível com Excel
+  - Dados permanecem disponíveis por X dias
+  - Ativação de assinatura restaura tudo automaticamente
+  - Guardar email como backup
+- 💚 CTA para ativar assinatura
+
+**Anexos:**
+- Todos os arquivos CSV (apenas os que têm dados)
+- Formato: Base64 attachment
+- Content-Type: text/csv
+
+**Template:**
+- Arquivo: `/apps/api/src/shared/services/sendgrid.service.ts` (método `sendDataExportEmail`)
+- Design: Gradiente verde (#8FD14F) - sucesso
+- Stats em grid 2x3 com números destacados
+
+### 🔒 Proteção e Retenção de Dados
+
+**Após término do trial:**
+1. Status muda para `SUSPENSO`
+2. Acesso bloqueado
+3. **Dados permanecem intactos por 30 dias**
+4. Cliente pode ativar assinatura a qualquer momento
+5. Após ativação, todos os dados são restaurados automaticamente
+
+**Após 30 dias (Futuro - TODO):**
+- Implementar job de limpeza (soft delete ou arquivamento)
+- Mover dados para tabela de arquivo
+- Notificar cliente antes da limpeza
+
+### 🔧 Campos do Modelo Tenant
+
+Novos campos adicionados ao modelo `Tenant`:
+
+```prisma
+model Tenant {
+  // ... campos existentes ...
+
+  data_exportacao_dados DateTime? // Data da última exportação
+  email_5dias_enviado   Boolean @default(false) // Email de aviso enviado
+}
+```
+
+**Migration:**
+```bash
+DATABASE_URL="..." npx prisma db push
+```
+
+### 📊 Fluxo Completo
+
+```
+DIA -5:
+  ↓
+Job roda às 9h
+  ↓
+Email de aviso enviado
+  ↓
+email_5dias_enviado = true
+
+DIA -5 até DIA 0:
+  ↓
+Usuário acessa dashboard
+  ↓
+Vê botão "📦 Recuperar Dados"
+  ↓
+Clica no botão
+  ↓
+Confirma exportação
+  ↓
+Sistema exporta todos os dados para CSV
+  ↓
+Email com anexos é enviado
+  ↓
+data_exportacao_dados = NOW()
+  ↓
+Botão vira aviso: "✅ Dados exportados"
+
+DIA 0 (expiração):
+  ↓
+Middleware bloqueia acesso
+  ↓
+Status = SUSPENSO
+  ↓
+Dados permanecem seguros por +30 dias
+
+ATIVAÇÃO DE ASSINATURA:
+  ↓
+Status = ATIVO
+  ↓
+Acesso restaurado
+  ↓
+Todos os dados disponíveis novamente
+```
+
+### 🎨 UX e Design
+
+**Botão "Recuperar Dados":**
+- Cor: Gradiente verde (#8FD14F → #6E9B3B)
+- Hover: Scale 1.05 + shadow
+- Loading: Spinner animado "⏳ Exportando..."
+
+**Aviso pós-exportação:**
+- Cor: Verde sucesso (#D4EDDA)
+- Border: #28A745
+- Texto: "✅ Dados exportados e enviados por email"
+
+**Discreto e não-intrusivo:**
+- Não bloqueia uso do sistema
+- Não abre modais ou popups
+- Feedback claro via alerts nativos
+
+### 🛠️ Arquivos do Sistema
+
+**Backend:**
+- `/apps/api/src/shared/services/data-export.service.ts` - Serviço de exportação
+- `/apps/api/src/modules/tenants/data-export.routes.ts` - Endpoints de exportação
+- `/apps/api/src/shared/services/sendgrid.service.ts` - Métodos de email (warning + export)
+- `/apps/api/src/shared/jobs/trial-warning-job.ts` - Job de email automático
+- `/apps/api/src/server.ts` - Registro das rotas de exportação
+- `/apps/api/prisma/schema.prisma` - Novos campos no modelo Tenant
+
+**Frontend:**
+- `/apps/web/components/DataExportButton.tsx` - Botão de exportação
+- `/apps/web/app/dashboard/layout.tsx` - Integração do botão no header
+
+**Dependências:**
+- `json2csv@6.0.0-alpha.2` - Geração de arquivos CSV
+
+### ⚙️ Configuração em Produção
+
+**SendGrid:**
+- API Key configurada: ✅
+- Domínio verificado: integrius.com.br ✅
+- From: noreply@integrius.com.br ✅
+
+**Cron Job (Render.com):**
+1. Criar arquivo `cron.yaml` na raiz do projeto:
+```yaml
+jobs:
+  - name: trial-warning-email
+    schedule: "0 9 * * *"  # Todo dia às 9h UTC
+    command: "cd apps/api && npx tsx src/shared/jobs/trial-warning-job.ts"
+```
+
+2. Ou usar endpoint com GitHub Actions:
+```yaml
+# .github/workflows/trial-warning.yml
+name: Trial Warning Email
+on:
+  schedule:
+    - cron: '0 9 * * *'  # 9h UTC
+jobs:
+  send-emails:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger Job
+        run: |
+          curl -X POST https://imobiflow-saas-1.onrender.com/api/v1/jobs/trial-warning \
+            -H "X-Cron-Secret: ${{ secrets.CRON_SECRET }}"
+```
+
+### 🚀 Melhorias Futuras
+
+1. **Dashboard de Exportações:**
+   - Histórico de exportações
+   - Download direto dos CSVs do dashboard
+   - Preview dos dados antes de exportar
+
+2. **Formatos Adicionais:**
+   - JSON
+   - Excel (.xlsx)
+   - PDF com relatório
+
+3. **Agendamento de Exportação:**
+   - Exportação automática semanal/mensal
+   - Backup contínuo para clientes premium
+
+4. **Notificações In-App:**
+   - Toast/notification ao lado do sino
+   - Timeline de eventos do trial
+
+5. **Limpeza Automática:**
+   - Job para deletar dados 30 dias após expiração
+   - Notificar cliente 7 dias antes da limpeza
+   - Opção de extensão de retenção
+
+---
+
 ## Histórico de Configurações
+
+### 2026-01-02
+
+#### Sistema de Recuperação de Dados para Clientes Trial ✅
+- ✅ **Email Automático 5 Dias Antes do Término**
+  - Template profissional com gradiente laranja (#FFB627)
+  - Avisa sobre fim do trial e opções de recuperação de dados
+  - Lista todos os tipos de dados que serão exportados
+  - Explica proteção de 30 dias após expiração
+  - CTA para ativar assinatura
+  - Método: `sendTrialWarningEmail()` no SendGrid service
+
+- ✅ **Job Automático para Envio de Email**
+  - Arquivo: `/apps/api/src/shared/jobs/trial-warning-job.ts`
+  - Busca tenants em trial que expiram em ~5 dias
+  - Filtra apenas os que não receberam email (`email_5dias_enviado: false`)
+  - Envia email para admin do tenant
+  - Marca flag após envio bem-sucedido
+  - Executar diariamente via cron
+
+- ✅ **Botão "Recuperar Dados" no Header**
+  - Aparece apenas nos últimos 5 dias do trial
+  - Desaparece após exportação (mostra aviso de sucesso)
+  - Componente: `/apps/web/components/DataExportButton.tsx`
+  - Integrado no header do dashboard
+  - Design: gradiente verde, discreto e profissional
+
+- ✅ **Serviço de Exportação para CSV**
+  - Classe `DataExportService` com método `exportTenantData()`
+  - Exporta 5 arquivos CSV: leads, imóveis, proprietários, negociações, agendamentos
+  - Formato: CSV com separador `;`, encoding UTF-8 com BOM
+  - Compatível com Excel, Google Sheets, LibreOffice
+  - Biblioteca: `json2csv@6.0.0-alpha.2`
+
+- ✅ **Endpoints de Exportação**
+  - GET `/api/v1/export/can-export` - Verifica se pode mostrar botão
+  - POST `/api/v1/export/data` - Exporta e envia dados por email
+  - Validações: últimos 5 dias, não exportado anteriormente
+  - Arquivo: `/apps/api/src/modules/tenants/data-export.routes.ts`
+
+- ✅ **Email de Confirmação com Anexos CSV**
+  - Template com stats em grid 2x3
+  - Anexa todos os arquivos CSV em base64
+  - Design: gradiente verde (#8FD14F) - sucesso
+  - Método: `sendDataExportEmail()` no SendGrid service
+  - Informações importantes e CTA para ativação
+
+- ✅ **Novos Campos no Modelo Tenant**
+  - `data_exportacao_dados` (DateTime?) - Registra quando exportou
+  - `email_5dias_enviado` (Boolean) - Flag de email de aviso
+  - Migration aplicada via `npx prisma db push`
+
+- ✅ **Arquivos Criados/Modificados**
+  - Backend:
+    - `/apps/api/src/shared/services/data-export.service.ts` - Serviço de exportação
+    - `/apps/api/src/modules/tenants/data-export.routes.ts` - Endpoints
+    - `/apps/api/src/shared/services/sendgrid.service.ts` - Templates de email
+    - `/apps/api/src/shared/jobs/trial-warning-job.ts` - Job automático
+    - `/apps/api/src/server.ts` - Registro de rotas
+    - `/apps/api/prisma/schema.prisma` - Novos campos
+  - Frontend:
+    - `/apps/web/components/DataExportButton.tsx` - Botão de exportação
+    - `/apps/web/app/dashboard/layout.tsx` - Integração no header
+  - Dependências: `json2csv` instalada
+  - Documentação completa adicionada ao CLAUDE.md
+
+### 2025-12-31
+
+#### Sistema de Trial e Expiração de Assinatura ✅
+- ✅ **Validação Automática de Expiração Implementada**
+  - Middleware valida `data_expiracao` em toda requisição
+  - Status muda automaticamente de `TRIAL` → `SUSPENSO` quando expira
+  - Bloqueia acesso com mensagem clara ao usuário
+  - Trial de 30 dias configurado na criação de tenant
+
+- ✅ **Endpoint de Informações do Trial**
+  - GET `/api/v1/trial-info` retorna dias restantes e status
+  - Calcula dias restantes dinamicamente
+  - Suporte para tenants `TRIAL` e `ATIVO`
+
+- ✅ **Componente de Aviso Visual no Frontend**
+  - Aviso discreto no topo do dashboard
+  - Aparece apenas nos últimos 7 dias do trial
+  - Cores dinâmicas (amarelo → vermelho) conforme urgência
+  - Mensagens personalizadas por quantidade de dias
+
+- ✅ **Arquivos Criados/Modificados**
+  - `apps/api/src/shared/middlewares/tenant.middleware.ts`: Validação de expiração
+  - `apps/api/src/modules/tenants/tenant.routes.ts`: Endpoint de trial-info
+  - `apps/web/components/TrialWarning.tsx`: Componente de aviso
+  - `apps/web/app/dashboard/layout.tsx`: Integração do aviso
+  - Documentação completa adicionada ao CLAUDE.md
 
 ### 2025-12-30
 

@@ -36,6 +36,8 @@ model Tenant {
   plano          PlanoTenant  @default(BASICO)
   status         StatusTenant @default(TRIAL)
   data_expiracao DateTime?
+  data_exportacao_dados DateTime? // Data da última exportação de dados
+  email_5dias_enviado Boolean @default(false) // Email de aviso 5 dias antes enviado
 
   // Limites por plano
   limite_usuarios   Int @default(3)
