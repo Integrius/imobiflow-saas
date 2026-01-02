@@ -2916,6 +2916,13 @@ jobs:
 - ✅ **Novos Campos no Modelo Tenant**
   - `data_exportacao_dados` (DateTime?) - Registra quando exportou
   - `email_5dias_enviado` (Boolean) - Flag de email de aviso
+
+- ✅ **Ambiente de Testes Criado**
+  - Tenant: `testes` (testes.integrius.com.br)
+  - Trial: 11 dias (expira 13/01/2026)
+  - Usuário ADMIN: testecorretor@testes.co.br (senha: teste123)
+  - Corretor vinculado com CRECI: TESTE-123
+  - Propósito: testar sistema trial e funcionalidades de exportação
   - Migration aplicada via `npx prisma db push`
 
 - ✅ **Arquivos Criados/Modificados**
