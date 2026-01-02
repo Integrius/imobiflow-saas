@@ -165,9 +165,17 @@ export async function middleware(request: NextRequest) {
   // Se tem subdomínio válido (ex: vivoly.integrius.com.br)
   // Usuário está tentando acessar um tenant específico
 
-  // Se está acessando a raiz (/) com subdomínio, redirecionar para /login do tenant
+  // Se está acessando a raiz (/) com subdomínio
   if (url.pathname === '/') {
-    return NextResponse.redirect(new URL('/login', request.url));
+    const token = request.cookies.get('token')?.value;
+
+    if (token) {
+      // Tem token: redirecionar para dashboard
+      return NextResponse.redirect(new URL('/dashboard', request.url));
+    } else {
+      // Sem token: redirecionar para login
+      return NextResponse.redirect(new URL('/login', request.url));
+    }
   }
 
   // Se está tentando acessar /register via subdomínio, redirecionar para domínio base
