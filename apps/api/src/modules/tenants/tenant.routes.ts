@@ -4,6 +4,57 @@ import { authMiddleware } from '../../shared/middlewares/auth.middleware'
 import { prisma } from '../../shared/database/prisma.service'
 
 export async function tenantRoutes(server: FastifyInstance) {
+  /**
+   * GET /api/v1/tenants/by-subdomain/:subdomain
+   *
+   * Valida se um tenant existe pelo subdomínio
+   * Endpoint público (sem autenticação) para validação de login
+   */
+  server.get(
+    '/by-subdomain/:subdomain',
+    async (request, reply) => {
+      try {
+        const { subdomain } = request.params as { subdomain: string }
+
+        const tenant = await prisma.tenant.findUnique({
+          where: { subdominio: subdomain },
+          select: {
+            id: true,
+            nome: true,
+            slug: true,
+            subdominio: true,
+            status: true
+          }
+        })
+
+        if (!tenant) {
+          return reply.status(404).send({
+            error: 'Tenant não encontrado',
+            message: `Imobiliária "${subdomain}" não foi encontrada`
+          })
+        }
+
+        if (tenant.status !== 'ATIVO' && tenant.status !== 'TRIAL') {
+          return reply.status(403).send({
+            error: 'Tenant inativo',
+            message: 'Esta imobiliária está temporariamente indisponível'
+          })
+        }
+
+        return reply.send({
+          id: tenant.id,
+          nome: tenant.nome,
+          slug: tenant.slug,
+          subdominio: tenant.subdominio,
+          status: tenant.status
+        })
+      } catch (error) {
+        server.log.error({ error }, 'Erro ao validar tenant')
+        return reply.status(500).send({ error: 'Erro ao validar tenant' })
+      }
+    }
+  )
+
   // Endpoint para obter informações do trial
   server.get(
     '/trial-info',
