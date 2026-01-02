@@ -2,7 +2,7 @@ import { FastifyInstance } from 'fastify'
 import { tenantMiddleware } from '../../shared/middlewares/tenant.middleware'
 import { authMiddleware } from '../../shared/middlewares/auth.middleware'
 import { DataExportService } from '../../shared/services/data-export.service'
-import { sendgridService } from '../../shared/services/sendgrid.service'
+import { sendGridService } from '../../shared/services/sendgrid.service'
 import { prisma } from '../../shared/database/prisma.service'
 
 export async function dataExportRoutes(server: FastifyInstance) {
@@ -28,7 +28,7 @@ export async function dataExportRoutes(server: FastifyInstance) {
           showMessage: canExport && hasExported
         })
       } catch (error) {
-        server.log.error('Erro ao verificar exportação:', error)
+        server.log.error({ error }, 'Erro ao verificar exportação')
         return reply.status(500).send({ error: 'Erro ao verificar exportação' })
       }
     }
@@ -136,7 +136,7 @@ export async function dataExportRoutes(server: FastifyInstance) {
           : 0
 
         // Enviar email com anexos
-        await sendgridService.sendDataExportEmail(
+        await sendGridService.sendDataExportEmail(
           user.email,
           user.nome,
           tenant.nome,
@@ -168,7 +168,7 @@ export async function dataExportRoutes(server: FastifyInstance) {
           }
         })
       } catch (error) {
-        server.log.error('Erro ao exportar dados:', error)
+        server.log.error({ error }, 'Erro ao exportar dados')
         return reply.status(500).send({ error: 'Erro ao exportar dados' })
       }
     }

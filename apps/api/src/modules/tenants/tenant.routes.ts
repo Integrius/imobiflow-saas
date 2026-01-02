@@ -55,7 +55,7 @@ export async function tenantRoutes(server: FastifyInstance) {
           expirado: diasRestantes <= 0
         })
       } catch (error) {
-        server.log.error('Erro ao buscar informações do trial:', error)
+        server.log.error({ error }, 'Erro ao buscar informações do trial')
         return reply.status(500).send({ error: 'Erro ao buscar informações do trial' })
       }
     }

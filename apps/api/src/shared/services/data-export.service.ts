@@ -1,4 +1,5 @@
 import { prisma } from '../database/prisma.service'
+// @ts-ignore - json2csv não tem tipos definidos
 import { Parser } from 'json2csv'
 
 interface ExportResult {
@@ -65,36 +66,41 @@ export class DataExportService {
     })
 
     const imoveisCSV = this.generateCSV(
-      imoveis.map(imovel => ({
-        ID: imovel.id,
-        Título: imovel.titulo,
-        Descrição: imovel.descricao || '',
-        'Tipo Negócio': imovel.tipo_negocio,
-        'Tipo Imóvel': imovel.tipo_imovel,
-        Valor: imovel.valor?.toString() || '',
-        'Valor Aluguel': imovel.valor_aluguel?.toString() || '',
-        'Valor Condomínio': imovel.valor_condominio?.toString() || '',
-        'Valor IPTU': imovel.valor_iptu?.toString() || '',
-        CEP: imovel.cep || '',
-        Estado: imovel.estado,
-        Município: imovel.municipio,
-        Bairro: imovel.bairro,
-        Logradouro: imovel.logradouro || '',
-        Número: imovel.numero || '',
-        Complemento: imovel.complemento || '',
-        Quartos: imovel.quartos || '',
-        Suítes: imovel.suites || '',
-        Banheiros: imovel.banheiros || '',
-        Vagas: imovel.vagas || '',
-        'Área Total': imovel.area_total?.toString() || '',
-        'Área Útil': imovel.area_util?.toString() || '',
-        Status: imovel.status,
-        'Aceita Pets': imovel.aceita_pets ? 'Sim' : 'Não',
-        Mobiliado: imovel.mobiliado ? 'Sim' : 'Não',
-        Proprietário: imovel.proprietario?.nome || '',
-        'Corretor Responsável': imovel.corretor_responsavel?.user.nome || '',
-        'Data Criação': imovel.created_at.toISOString()
-      }))
+      imoveis.map(imovel => {
+        const endereco = imovel.endereco as any || {};
+        const caracteristicas = imovel.caracteristicas as any || {};
+
+        return {
+          ID: imovel.id,
+          Código: imovel.codigo,
+          Título: imovel.titulo,
+          Descrição: imovel.descricao || '',
+          Tipo: imovel.tipo,
+          Categoria: imovel.categoria,
+          Status: imovel.status,
+          Preço: imovel.preco?.toString() || '',
+          Condomínio: imovel.condominio?.toString() || '',
+          IPTU: imovel.iptu?.toString() || '',
+          CEP: endereco.cep || '',
+          Estado: endereco.estado || '',
+          Município: endereco.municipio || '',
+          Bairro: endereco.bairro || '',
+          Logradouro: endereco.logradouro || '',
+          Número: endereco.numero || '',
+          Complemento: endereco.complemento || '',
+          Quartos: caracteristicas.quartos || '',
+          Suítes: caracteristicas.suites || '',
+          Banheiros: caracteristicas.banheiros || '',
+          Vagas: caracteristicas.vagas || '',
+          'Área Total': caracteristicas.area_total || '',
+          'Área Útil': caracteristicas.area_util || '',
+          'Aceita Pets': caracteristicas.aceita_pets ? 'Sim' : 'Não',
+          Mobiliado: caracteristicas.mobiliado ? 'Sim' : 'Não',
+          Proprietário: imovel.proprietario?.nome || '',
+          'Corretor Responsável': imovel.corretor_responsavel?.user.nome || '',
+          'Data Criação': imovel.created_at.toISOString()
+        };
+      })
     )
 
     // 3. Exportar Proprietários
@@ -106,17 +112,12 @@ export class DataExportService {
       proprietarios.map(prop => ({
         ID: prop.id,
         Nome: prop.nome,
+        'CPF/CNPJ': prop.cpf_cnpj,
+        'Tipo Pessoa': prop.tipo_pessoa,
         Email: prop.email || '',
         Telefone: prop.telefone,
-        CPF: prop.cpf || '',
-        RG: prop.rg || '',
-        CEP: prop.cep || '',
-        Estado: prop.estado || '',
-        Município: prop.municipio || '',
-        Bairro: prop.bairro || '',
-        Logradouro: prop.logradouro || '',
-        Número: prop.numero || '',
-        Complemento: prop.complemento || '',
+        'Forma Pagamento': prop.forma_pagamento,
+        'Percentual Comissão': prop.percentual_comissao?.toString() || '',
         'Data Criação': prop.created_at.toISOString()
       }))
     )
@@ -138,15 +139,15 @@ export class DataExportService {
     const negociacoesCSV = this.generateCSV(
       negociacoes.map(neg => ({
         ID: neg.id,
+        Código: neg.codigo,
         Lead: neg.lead.nome,
         'Lead Email': neg.lead.email || '',
         'Lead Telefone': neg.lead.telefone,
         Imóvel: neg.imovel.titulo,
-        'Tipo Negócio': neg.tipo_negocio,
         'Valor Proposta': neg.valor_proposta?.toString() || '',
+        'Valor Aprovado': neg.valor_aprovado?.toString() || '',
         Status: neg.status,
         Corretor: neg.corretor?.user.nome || '',
-        Observações: neg.observacoes || '',
         'Data Criação': neg.created_at.toISOString(),
         'Última Atualização': neg.updated_at.toISOString()
       }))

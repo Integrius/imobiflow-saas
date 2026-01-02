@@ -13,7 +13,7 @@
  */
 
 import { prisma } from '../database/prisma.service'
-import { sendgridService } from '../services/sendgrid.service'
+import { sendGridService } from '../services/sendgrid.service'
 
 async function sendTrialWarningEmails() {
   console.log('🔔 Iniciando job de aviso de trial...')
@@ -72,7 +72,7 @@ async function sendTrialWarningEmails() {
 
         console.log(`  📤 Enviando email para ${tenant.nome} (${emailDestino})...`)
 
-        await sendgridService.sendTrialWarningEmail(
+        await sendGridService.sendTrialWarningEmail(
           emailDestino,
           nomeDestino,
           tenant.nome,
