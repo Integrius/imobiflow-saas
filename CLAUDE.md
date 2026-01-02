@@ -2869,6 +2869,53 @@ jobs:
 
 ### 2026-01-02
 
+#### Painel de Administração Geral (Tenant Vivoly) ✅
+- ✅ **Acesso Restrito ao Tenant Vivoly**
+  - Apenas administradores do tenant "vivoly" podem acessar
+  - Validação no backend (middleware requireVivolyAdmin)
+  - Validação no frontend (subdomain check)
+  - Menu condicional: item "Admin Geral" só aparece para Vivoly
+
+- ✅ **Backend - Rotas de Administração**
+  - Módulo: `/apps/api/src/modules/admin/admin.routes.ts`
+  - GET `/api/v1/admin/tenants` - Lista todos os tenants do sistema
+  - GET `/api/v1/admin/tenants/:id` - Detalhes de tenant específico
+  - GET `/api/v1/admin/stats` - Estatísticas gerais do sistema
+  - Retorna: nome, email, status, plano, admin principal, uso/limites
+
+- ✅ **Frontend - Painel de Administração**
+  - Página: `/apps/web/app/dashboard/admin/tenants/page.tsx`
+  - URL: `vivoly.integrius.com.br/dashboard/admin/tenants`
+  - Tabela completa de todos os tenants cadastrados
+  - Mostra admin principal de cada tenant (nome + email)
+  - Cards de estatísticas (total, novos 30 dias, trials expirando)
+  - Filtros: status, plano, busca textual (nome, email, slug)
+  - Badges coloridos para status e plano
+  - Indicador de dias restantes para trials
+  - Link clicável para subdomínio de cada tenant
+
+- ✅ **Recursos da Listagem**
+  - Informações por tenant:
+    - Nome, slug, subdomínio, email, telefone
+    - Status (TRIAL, ATIVO, INATIVO, SUSPENSO, CANCELADO)
+    - Plano (BASICO, PRO, ENTERPRISE, CUSTOM)
+    - Admin principal (nome, email, último login)
+    - Trial: dias restantes, data de expiração
+    - Uso atual vs limites (usuários, imóveis)
+    - Data de cadastro
+  - Estatísticas globais:
+    - Total de tenants
+    - Novos nos últimos 30 dias
+    - Trials expirando em 5 dias
+    - Distribuição por status e plano
+
+- ✅ **Segurança Implementada**
+  - Validação dupla (backend + frontend)
+  - Middleware customizado para verificar tenant "vivoly"
+  - Requer autenticação (authMiddleware)
+  - Requer tipo ADMIN no tenant Vivoly
+  - Retorna 403 Forbidden para outros tenants
+
 #### Sistema de Recuperação de Dados para Clientes Trial ✅
 - ✅ **Email Automático 5 Dias Antes do Término**
   - Template profissional com gradiente laranja (#FFB627)
