@@ -151,6 +151,7 @@ function extractSubdomain(host: string): string | null {
   // Lista de domínios principais
   const mainDomains = [
     'imobiflow.com',
+    'integrius.com.br',
     'localhost',
     '127.0.0.1'
   ]
