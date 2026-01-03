@@ -14,8 +14,17 @@ export default function Home() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   useEffect(() => {
+    // Verificar se realmente tem um token válido
     const token = getToken();
-    setIsAuthenticated(!!token);
+    const hasValidToken = !!token && token.trim() !== '';
+
+    console.log('[Landing Page] Token check:', {
+      hasToken: !!token,
+      tokenLength: token?.length || 0,
+      isAuthenticated: hasValidToken
+    });
+
+    setIsAuthenticated(hasValidToken);
   }, []);
 
   return (
@@ -54,29 +63,18 @@ export default function Home() {
               </a>
             </div>
             <div className="flex items-center gap-4">
-              {isAuthenticated ? (
-                <Link
-                  href="/dashboard"
-                  className="px-6 py-2.5 bg-[#00C48C] text-white rounded-lg hover:bg-[#00B07D] transition-all duration-200 font-medium shadow-sm hover:shadow-md hover:-translate-y-0.5"
-                >
-                  Dashboard
-                </Link>
-              ) : (
-                <>
-                  <Link
-                    href="/login"
-                    className="px-6 py-2.5 text-[#0A2540] hover:text-[#00C48C] transition-colors font-medium"
-                  >
-                    Entrar
-                  </Link>
-                  <Link
-                    href="/register"
-                    className="px-6 py-2.5 bg-[#00C48C] text-white rounded-lg hover:bg-[#00B07D] transition-all duration-200 font-medium shadow-sm hover:shadow-md hover:-translate-y-0.5"
-                  >
-                    Começar Grátis
-                  </Link>
-                </>
-              )}
+              <Link
+                href="/login"
+                className="px-6 py-2.5 text-[#0A2540] hover:text-[#00C48C] transition-colors font-medium"
+              >
+                Entrar
+              </Link>
+              <Link
+                href="/register"
+                className="px-6 py-2.5 bg-[#00C48C] text-white rounded-lg hover:bg-[#00B07D] transition-all duration-200 font-medium shadow-sm hover:shadow-md hover:-translate-y-0.5"
+              >
+                Começar Grátis
+              </Link>
             </div>
           </div>
         </div>
