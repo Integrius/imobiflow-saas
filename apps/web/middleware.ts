@@ -13,10 +13,10 @@ const RESERVED_SUBDOMAINS = [
   'test',
 ];
 
-// Domínio base da aplicação (alterar conforme ambiente)
+// Domínio base da aplicação SaaS
 const BASE_DOMAIN = process.env.NEXT_PUBLIC_BASE_DOMAIN || 'integrius.com.br';
 
-// Domínio do marketplace (landing page de produtos)
+// Domínio do marketplace (independente, não é subdomínio)
 const MARKETPLACE_DOMAIN = 'vivoly.com.br';
 
 // Rotas públicas que não precisam de autenticação
@@ -86,12 +86,13 @@ export async function middleware(request: NextRequest) {
   // 2. VERIFICAR MARKETPLACE (vivoly.com.br)
   // ============================================
 
-  // Se está acessando o marketplace (vivoly.com.br), SEMPRE mostrar landing page
-  // NUNCA redirecionar para login, mesmo que tenha cookie
+  // vivoly.com.br é um marketplace INDEPENDENTE (não é subdomínio)
+  // SEMPRE mostra landing page do marketplace, sem redirects
   const isMarketplace = hostname === MARKETPLACE_DOMAIN || hostname === `www.${MARKETPLACE_DOMAIN}`;
 
   if (isMarketplace) {
-    // Marketplace: sempre permitir acesso, nunca redirecionar
+    // Marketplace independente: sempre permitir acesso
+    // Não redireciona para login ou dashboard
     return NextResponse.next();
   }
 
@@ -141,41 +142,47 @@ export async function middleware(request: NextRequest) {
   }
 
   // ============================================
-  // 4. DOMÍNIO BASE (integrius.com.br)
+  // 4. DOMÍNIO BASE (integrius.com.br) - Landing Page SaaS
   // ============================================
 
-  // Se não tem subdomínio ou é um subdomínio reservado (domínio base)
+  // integrius.com.br é a landing page do SaaS
+  // Objetivo: divulgar, captar leads, cadastrar tenants
+  // Tem botão "Entrar" que leva para /login (que pode ter lógica de redirect)
   if (!subdomain || RESERVED_SUBDOMAINS.includes(subdomain)) {
-    // Está acessando pelo domínio base (integrius.com.br ou www.integrius.com.br)
-    // SEMPRE mostra a landing page pública (não redireciona para subdomínio)
+    // Está no domínio base (integrius.com.br ou www.integrius.com.br)
 
     if (isPublicRoute) {
-      // Rota pública: permitir acesso direto à landing page
+      // Rotas públicas (/, /login, /register): sempre permitir
       return NextResponse.next();
     }
 
     if (isProtectedRoute) {
-      // Tentando acessar rota protegida sem estar em subdomínio
-      // Redirecionar para landing page (raiz)
+      // Tentando acessar rota protegida (ex: /dashboard) sem subdomínio
+      // Redirecionar para landing page
       return NextResponse.redirect(new URL('/', request.url));
     }
 
-    // Outras rotas: permitir acesso
+    // Outras rotas: permitir
     return NextResponse.next();
   }
 
-  // Se tem subdomínio válido (ex: vivoly.integrius.com.br)
-  // Usuário está tentando acessar um tenant específico
+  // ============================================
+  // 5. SUBDOMÍNIOS (vivoly.integrius.com.br, etc.)
+  // ============================================
+
+  // Subdomínios são tenants específicos
+  // Se tem cookie ativo (30min): vai para dashboard
+  // Se não tem cookie: vai para login
 
   // Se está acessando a raiz (/) com subdomínio
   if (url.pathname === '/') {
     const token = request.cookies.get('token')?.value;
 
     if (token) {
-      // Tem token: redirecionar para dashboard
+      // Tem token válido (30 minutos): redirecionar para dashboard
       return NextResponse.redirect(new URL('/dashboard', request.url));
     } else {
-      // Sem token: redirecionar para login
+      // Sem token ou expirado: redirecionar para login
       return NextResponse.redirect(new URL('/login', request.url));
     }
   }

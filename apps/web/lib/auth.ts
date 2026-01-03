@@ -104,8 +104,9 @@ export async function login(data: LoginData): Promise<AuthResponse> {
     localStorage.setItem('token', response.data.token);
     localStorage.setItem('user', JSON.stringify(response.data.user));
 
-    // Também armazenar em cookie para usar no middleware
-    document.cookie = `token=${response.data.token}; path=/; max-age=${7 * 24 * 60 * 60}; SameSite=Lax`;
+    // Cookie de sessão: 30 minutos
+    const SESSION_DURATION = 30 * 60; // 30 minutos em segundos
+    document.cookie = `token=${response.data.token}; path=/; max-age=${SESSION_DURATION}; SameSite=Lax`;
 
     // Armazenar tenant_slug em cookie de longa duração (90 dias) para lembrança de último acesso
     if (subdomain) {
@@ -164,8 +165,9 @@ export async function loginWithGoogle(credential: string): Promise<AuthResponse>
     localStorage.setItem('token', response.data.token);
     localStorage.setItem('user', JSON.stringify(response.data.user));
 
-    // Também armazenar em cookie para usar no middleware
-    document.cookie = `token=${response.data.token}; path=/; max-age=${7 * 24 * 60 * 60}; SameSite=Lax`;
+    // Cookie de sessão: 30 minutos
+    const SESSION_DURATION = 30 * 60; // 30 minutos em segundos
+    document.cookie = `token=${response.data.token}; path=/; max-age=${SESSION_DURATION}; SameSite=Lax`;
 
     // Armazenar tenant_slug em cookie de longa duração (90 dias) para lembrança de último acesso
     if (subdomain) {
