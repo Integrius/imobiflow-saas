@@ -40,8 +40,8 @@ export const landingConfig: LandingConfig = {
   hero: {
     imagePath: '/Emoticon.png',
     imageAlt: 'Vivoly - Gestão Imobiliária Inteligente',
-    imageWidth: 400,
-    imageHeight: 400,
+    imageWidth: 520,
+    imageHeight: 520,
   },
 
   cta: {
