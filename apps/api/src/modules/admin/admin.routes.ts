@@ -322,4 +322,72 @@ export async function adminRoutes(server: FastifyInstance) {
       }
     }
   )
+
+  /**
+   * PATCH /api/v1/admin/tenants/bulk-update-status
+   *
+   * Atualiza status de múltiplos tenants em lote
+   *
+   * Body: { tenant_ids: string[], novo_status: string }
+   *
+   * Acesso: Apenas ADMIN do tenant Vivoly
+   */
+  server.patch(
+    '/tenants/bulk-update-status',
+    {
+      preHandler: [authMiddleware, requireVivolyAdmin]
+    },
+    async (request, reply) => {
+      try {
+        const { tenant_ids, novo_status } = request.body as {
+          tenant_ids: string[]
+          novo_status: string
+        }
+
+        // Validar input
+        if (!Array.isArray(tenant_ids) || tenant_ids.length === 0) {
+          return reply.status(400).send({
+            error: 'tenant_ids deve ser um array não vazio'
+          })
+        }
+
+        const statusValidos = ['TRIAL', 'ATIVO', 'INATIVO', 'SUSPENSO', 'CANCELADO']
+        if (!statusValidos.includes(novo_status)) {
+          return reply.status(400).send({
+            error: `Status inválido. Use: ${statusValidos.join(', ')}`
+          })
+        }
+
+        // Atualizar status em lote
+        const result = await prisma.tenant.updateMany({
+          where: {
+            id: {
+              in: tenant_ids
+            }
+          },
+          data: {
+            status: novo_status,
+            updated_at: new Date()
+          }
+        })
+
+        server.log.info({
+          tenant_ids,
+          novo_status,
+          count: result.count
+        }, 'Atualização em lote de status de tenants')
+
+        return reply.send({
+          success: true,
+          message: `${result.count} tenant(s) atualizado(s) para status ${novo_status}`,
+          updated_count: result.count
+        })
+      } catch (error) {
+        server.log.error({ error }, 'Erro ao atualizar status em lote')
+        return reply.status(500).send({
+          error: 'Erro ao atualizar status dos tenants'
+        })
+      }
+    }
+  )
 }

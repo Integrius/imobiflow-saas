@@ -54,6 +54,11 @@ export default function AdminTenantsPage() {
   const [filtroPlan, setFiltroPlan] = useState<string>('TODOS');
   const [searchTerm, setSearchTerm] = useState('');
 
+  // Estados para seleção em lote
+  const [selectedTenants, setSelectedTenants] = useState<Set<string>>(new Set());
+  const [bulkStatus, setBulkStatus] = useState<string>('');
+  const [updatingBulk, setUpdatingBulk] = useState(false);
+
   useEffect(() => {
     loadData();
   }, []);
@@ -76,6 +81,66 @@ export default function AdminTenantsPage() {
       setError(err.response?.data?.message || 'Erro ao carregar dados');
     } finally {
       setLoading(false);
+    }
+  };
+
+  // Toggle seleção de um tenant
+  const toggleTenantSelection = (tenantId: string) => {
+    const newSelected = new Set(selectedTenants);
+    if (newSelected.has(tenantId)) {
+      newSelected.delete(tenantId);
+    } else {
+      newSelected.add(tenantId);
+    }
+    setSelectedTenants(newSelected);
+  };
+
+  // Selecionar/Desselecionar todos os tenants filtrados
+  const toggleSelectAll = () => {
+    if (selectedTenants.size === tenantsFiltrados.length && tenantsFiltrados.length > 0) {
+      setSelectedTenants(new Set());
+    } else {
+      const allIds = new Set(tenantsFiltrados.map(t => t.id));
+      setSelectedTenants(allIds);
+    }
+  };
+
+  // Atualizar status em lote
+  const handleBulkStatusUpdate = async () => {
+    if (selectedTenants.size === 0) {
+      alert('Selecione pelo menos um tenant');
+      return;
+    }
+
+    if (!bulkStatus) {
+      alert('Selecione um status');
+      return;
+    }
+
+    const confirmMsg = \`Alterar status de \${selectedTenants.size} tenant(s) para "\${bulkStatus}"?\`;
+    if (!confirm(confirmMsg)) {
+      return;
+    }
+
+    try {
+      setUpdatingBulk(true);
+
+      const response = await api.patch('/admin/tenants/bulk-update-status', {
+        tenant_ids: Array.from(selectedTenants),
+        novo_status: bulkStatus
+      });
+
+      alert(response.data.message || 'Status atualizado com sucesso!');
+
+      // Limpar seleção e recarregar dados
+      setSelectedTenants(new Set());
+      setBulkStatus('');
+      await loadData();
+    } catch (err: any) {
+      console.error('Erro ao atualizar status:', err);
+      alert(err.response?.data?.error || 'Erro ao atualizar status');
+    } finally {
+      setUpdatingBulk(false);
     }
   };
 
@@ -116,7 +181,7 @@ export default function AdminTenantsPage() {
     };
 
     return (
-      <span className={`px-2 py-1 text-xs font-semibold rounded border ${colors[status as keyof typeof colors] || 'bg-gray-100'}`}>
+      <span className={\`px-2 py-1 text-xs font-semibold rounded border \${colors[status as keyof typeof colors] || 'bg-gray-100'}\`}>
         {status}
       </span>
     );
@@ -131,7 +196,7 @@ export default function AdminTenantsPage() {
     };
 
     return (
-      <span className={`px-2 py-1 text-xs font-semibold rounded border ${colors[plano as keyof typeof colors] || 'bg-gray-100'}`}>
+      <span className={\`px-2 py-1 text-xs font-semibold rounded border \${colors[plano as keyof typeof colors] || 'bg-gray-100'}\`}>
         {plano}
       </span>
     );
@@ -216,6 +281,59 @@ export default function AdminTenantsPage() {
         </div>
       )}
 
+      {/* Ações em Lote */}
+      {selectedTenants.size > 0 && (
+        <div className="bg-gradient-to-r from-[#8FD14F]/10 to-[#8FD14F]/5 border-2 border-[#8FD14F]/30 rounded-lg p-4">
+          <div className="flex flex-wrap items-center gap-4">
+            <div className="flex items-center gap-2">
+              <span className="font-semibold text-[#2C2C2C]">
+                {selectedTenants.size} tenant(s) selecionado(s)
+              </span>
+            </div>
+
+            <div className="flex items-center gap-2">
+              <label className="text-sm font-medium text-gray-700">
+                Alterar status para:
+              </label>
+              <select
+                value={bulkStatus}
+                onChange={(e) => setBulkStatus(e.target.value)}
+                className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#8FD14F] focus:border-transparent"
+              >
+                <option value="">Selecione...</option>
+                <option value="TRIAL">Trial</option>
+                <option value="ATIVO">Ativo</option>
+                <option value="INATIVO">Inativo</option>
+                <option value="SUSPENSO">Suspenso</option>
+                <option value="CANCELADO">Cancelado</option>
+              </select>
+            </div>
+
+            <button
+              onClick={handleBulkStatusUpdate}
+              disabled={!bulkStatus || updatingBulk}
+              className="px-4 py-2 bg-[#8FD14F] text-white rounded-lg hover:bg-[#7FB344] transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+            >
+              {updatingBulk ? (
+                <>
+                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                  Atualizando...
+                </>
+              ) : (
+                '✓ Aplicar'
+              )}
+            </button>
+
+            <button
+              onClick={() => setSelectedTenants(new Set())}
+              className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors font-medium"
+            >
+              Limpar Seleção
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* Filtros */}
       <div className="bg-white rounded-lg shadow-md p-6">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
@@ -283,6 +401,14 @@ export default function AdminTenantsPage() {
             <thead className="bg-gray-50">
               <tr>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <input
+                    type="checkbox"
+                    checked={selectedTenants.size === tenantsFiltrados.length && tenantsFiltrados.length > 0}
+                    onChange={toggleSelectAll}
+                    className="w-4 h-4 text-[#8FD14F] border-gray-300 rounded focus:ring-[#8FD14F]"
+                  />
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Tenant
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -305,6 +431,16 @@ export default function AdminTenantsPage() {
             <tbody className="bg-white divide-y divide-gray-200">
               {tenantsFiltrados.map((tenant) => (
                 <tr key={tenant.id} className="hover:bg-gray-50">
+                  {/* Checkbox */}
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <input
+                      type="checkbox"
+                      checked={selectedTenants.has(tenant.id)}
+                      onChange={() => toggleTenantSelection(tenant.id)}
+                      className="w-4 h-4 text-[#8FD14F] border-gray-300 rounded focus:ring-[#8FD14F]"
+                    />
+                  </td>
+
                   {/* Tenant Info */}
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="flex items-center">
@@ -314,7 +450,7 @@ export default function AdminTenantsPage() {
                         </div>
                         <div className="text-sm text-gray-500">
                           <a
-                            href={`https://${tenant.subdominio}`}
+                            href={\`https://\${tenant.subdominio}\`}
                             target="_blank"
                             rel="noopener noreferrer"
                             className="text-blue-600 hover:text-blue-800"
@@ -363,7 +499,7 @@ export default function AdminTenantsPage() {
                     {tenant.status === 'TRIAL' && tenant.dias_restantes !== null ? (
                       <div>
                         {tenant.dias_restantes > 0 ? (
-                          <span className={`font-medium ${tenant.dias_restantes <= 5 ? 'text-red-600' : 'text-yellow-600'}`}>
+                          <span className={\`font-medium \${tenant.dias_restantes <= 5 ? 'text-red-600' : 'text-yellow-600'}\`}>
                             {tenant.dias_restantes} {tenant.dias_restantes === 1 ? 'dia' : 'dias'}
                           </span>
                         ) : (
