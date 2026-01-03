@@ -120,15 +120,23 @@ export async function middleware(request: NextRequest) {
     return NextResponse.next();
   } else {
     // Em produção, extrai o subdomínio do hostname
-    const parts = hostname.split('.');
 
-    // Se tem 3 ou mais partes (subdomain.domain.tld), pega o primeiro
-    if (parts.length >= 3) {
-      subdomain = parts[0];
-    } else if (parts.length === 2) {
-      // Se tem apenas 2 partes (domain.tld), é o domínio base
-      // Ex: integrius.com.br → sem subdomínio
+    // Primeiro, verificar se é o domínio base (integrius.com.br ou www.integrius.com.br)
+    if (hostname === BASE_DOMAIN || hostname === `www.${BASE_DOMAIN}`) {
       subdomain = null;
+    } else {
+      // Não é o domínio base, então extrai o subdomínio
+      const parts = hostname.split('.');
+
+      // Para domínios .com.br (3+ partes), o subdomínio é tudo antes do domínio base
+      // Ex: vivoly.integrius.com.br → vivoly
+      // Ex: www.integrius.com.br → www (mas já tratado acima)
+      if (parts.length >= 3) {
+        // Pega o primeiro segmento como subdomínio
+        subdomain = parts[0];
+      } else {
+        subdomain = null;
+      }
     }
   }
 
