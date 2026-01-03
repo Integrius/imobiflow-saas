@@ -15,10 +15,8 @@ export default function Home() {
 
   useEffect(() => {
     const token = getToken();
-    if (token) {
-      setIsAuthenticated(true);
-    }
-  }, [router]);
+    setIsAuthenticated(!!token);
+  }, []);
 
   return (
     <div className="min-h-screen bg-white relative">
@@ -126,12 +124,12 @@ export default function Home() {
                   </svg>
                 </Link>
 
-                <a
-                  href="#features"
+                <Link
+                  href="/login"
                   className="px-8 py-4 bg-transparent border-2 border-[#0A2540] text-[#0A2540] rounded-lg hover:bg-[#0A2540] hover:text-white transition-all duration-200 font-semibold text-lg flex items-center justify-center gap-2"
                 >
-                  Ver Como Funciona
-                </a>
+                  Entrar
+                </Link>
               </div>
 
               {/* Trust Indicators */}
