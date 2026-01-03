@@ -64,6 +64,9 @@ export async function login(data: LoginData): Promise<AuthResponse> {
   const subdomain = getSubdomain();
   let tenantId: string | null = null;
 
+  // TEMPORÁRIO: Validação desabilitada até deploy do endpoint
+  // TODO: Reabilitar após deploy do endpoint /tenants/by-subdomain/:subdomain
+  /*
   if (subdomain) {
     try {
       tenantId = await getTenantIdBySubdomain(subdomain);
@@ -79,6 +82,7 @@ export async function login(data: LoginData): Promise<AuthResponse> {
       throw new Error('Erro ao conectar com o servidor. Tente novamente.');
     }
   }
+  */
 
   // Fazer login com ou sem tenant_id
   // Se não há subdomínio, o backend deve retornar o tenant do usuário
@@ -121,6 +125,9 @@ export async function loginWithGoogle(credential: string): Promise<AuthResponse>
   const subdomain = getSubdomain();
   let tenantId: string | null = null;
 
+  // TEMPORÁRIO: Validação desabilitada até deploy do endpoint
+  // TODO: Reabilitar após deploy do endpoint /tenants/by-subdomain/:subdomain
+  /*
   if (subdomain) {
     try {
       tenantId = await getTenantIdBySubdomain(subdomain);
@@ -136,6 +143,7 @@ export async function loginWithGoogle(credential: string): Promise<AuthResponse>
       throw new Error('Erro ao conectar com o servidor. Tente novamente.');
     }
   }
+  */
 
   // Fazer login Google com ou sem tenant_id
   const config = tenantId ? {
