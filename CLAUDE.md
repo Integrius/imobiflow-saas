@@ -2867,6 +2867,34 @@ jobs:
 
 ## Histórico de Configurações
 
+### 2026-01-03
+
+#### Correções no Sistema Multi-Tenant e Login ✅
+- ✅ **Fix: Domínio Principal no Middleware**
+  - Adicionado `integrius.com.br` à lista de domínios principais no tenant middleware
+  - Arquivo: `/apps/api/src/shared/middlewares/tenant.middleware.ts`
+  - Permite extração correta do subdomínio de URLs como `vivoly.integrius.com.br`
+  - Evita erro "Tenant não encontrado" ao acessar subdomínios
+
+- ✅ **Endpoint Público de Validação de Tenant**
+  - Criado endpoint `GET /api/v1/tenants/by-subdomain/:subdomain`
+  - Arquivo: `/apps/api/src/modules/tenants/tenant.routes.ts`
+  - Valida se tenant existe pelo subdomínio
+  - Verifica se tenant está ativo (ATIVO ou TRIAL)
+  - Usado pelo frontend para validar tenant antes do login
+  - Endpoint público (não requer autenticação)
+
+- ✅ **Fix Temporário: Validação de Tenant no Login**
+  - Desabilitada validação de tenant em `/apps/web/lib/auth.ts`
+  - Desabilitada validação de tenant em `/apps/web/app/login/page.tsx`
+  - Necessário até que o endpoint `/tenants/by-subdomain` seja deployado
+  - TODOs marcados para reabilitar após deploy
+
+- ✅ **Credenciais de Acesso Vivoly**
+  - Email: `admin@vivoly.com`
+  - Senha: `admin123`
+  - URL: https://vivoly.integrius.com.br
+
 ### 2026-01-02
 
 #### Painel de Administração Geral (Tenant Vivoly) ✅
@@ -3165,11 +3193,17 @@ jobs:
 
 ---
 
-**Última atualização**: 30 de dezembro de 2025
-**Versão**: 1.5.0
+**Última atualização**: 03 de janeiro de 2026
+**Versão**: 1.5.1
 **Status**: Em produção ✅
 
-**Novidades da versão 1.5.0**:
+**Novidades da versão 1.5.1** (03 de janeiro de 2026):
+- ✅ Fix: Domínio `integrius.com.br` adicionado ao tenant middleware
+- ✅ Endpoint público de validação de tenant (`/tenants/by-subdomain/:subdomain`)
+- ✅ Correções no fluxo de login para tenant Vivoly
+- ✅ Painel de Administração Geral acessível em `vivoly.integrius.com.br/dashboard/admin/tenants`
+
+**Versão 1.5.0** (30 de dezembro de 2025):
 - ✅ Sistema de Cookies de Lembrança (Tenant Cookies) - 90 dias
 - ✅ Redirecionamento automático para último tenant acessado
 - ✅ Fluxo de autenticação profissional (Landing Page First)
