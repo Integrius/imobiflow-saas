@@ -3,10 +3,12 @@
 import { useState, useEffect } from 'react';
 
 export default function ChristmasFloat() {
-  const [isVisible, setIsVisible] = useState(true);
+  // ChristmasFloat desabilitado permanentemente
+  const [isVisible, setIsVisible] = useState(false);
   const [showMessage, setShowMessage] = useState(false);
 
   useEffect(() => {
+    // DESABILITADO: ChristmasFloat removido a pedido do usuário
     // Verificar se deve exibir baseado na data
     const checkDateVisibility = () => {
       const now = new Date();
@@ -23,9 +25,8 @@ export default function ChristmasFloat() {
         (now <= endFirstPeriod) ||
         (now >= startSecondPeriod && now <= endSecondPeriod);
 
-      if (!shouldShow) {
-        setIsVisible(false);
-      }
+      // DESABILITADO: sempre ocultar
+      setIsVisible(false);
     };
 
     checkDateVisibility();
