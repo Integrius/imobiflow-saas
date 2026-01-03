@@ -139,26 +139,20 @@ export async function middleware(request: NextRequest) {
   // Se não tem subdomínio ou é um subdomínio reservado (domínio base)
   if (!subdomain || RESERVED_SUBDOMAINS.includes(subdomain)) {
     // Está acessando pelo domínio base (integrius.com.br ou www.integrius.com.br)
+    // SEMPRE mostra a landing page pública (não redireciona para subdomínio)
 
-    // Verificar se tem cookie de último tenant
-    const lastTenant = request.cookies.get('last_tenant')?.value;
-
-    if (lastTenant && !isPublicRoute) {
-      // Tem cookie e está tentando acessar rota protegida
-      // Redirecionar para o subdomínio do tenant
-      const tenantUrl = new URL(request.url);
-      tenantUrl.hostname = `${lastTenant}.${BASE_DOMAIN}`;
-      return NextResponse.redirect(tenantUrl);
+    if (isPublicRoute) {
+      // Rota pública: permitir acesso direto à landing page
+      return NextResponse.next();
     }
 
-    if (!lastTenant && !isPublicRoute) {
-      // Sem cookie e tentando acessar rota protegida
-      // Redirecionar para marketplace
-      return NextResponse.redirect(`https://${MARKETPLACE_DOMAIN}`);
+    if (isProtectedRoute) {
+      // Tentando acessar rota protegida sem estar em subdomínio
+      // Redirecionar para landing page (raiz)
+      return NextResponse.redirect(new URL('/', request.url));
     }
 
-    // Rota pública sem cookie ou com cookie
-    // Permitir acesso
+    // Outras rotas: permitir acesso
     return NextResponse.next();
   }
 
