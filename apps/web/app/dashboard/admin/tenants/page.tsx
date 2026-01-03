@@ -117,7 +117,7 @@ export default function AdminTenantsPage() {
       return;
     }
 
-    const confirmMsg = \`Alterar status de \${selectedTenants.size} tenant(s) para "\${bulkStatus}"?\`;
+    const confirmMsg = `Alterar status de ${selectedTenants.size} tenant(s) para "${bulkStatus}"?`;
     if (!confirm(confirmMsg)) {
       return;
     }
@@ -181,7 +181,7 @@ export default function AdminTenantsPage() {
     };
 
     return (
-      <span className={\`px-2 py-1 text-xs font-semibold rounded border \${colors[status as keyof typeof colors] || 'bg-gray-100'}\`}>
+      <span className={`px-2 py-1 text-xs font-semibold rounded border ${colors[status as keyof typeof colors] || 'bg-gray-100'}`}>
         {status}
       </span>
     );
@@ -196,7 +196,7 @@ export default function AdminTenantsPage() {
     };
 
     return (
-      <span className={\`px-2 py-1 text-xs font-semibold rounded border \${colors[plano as keyof typeof colors] || 'bg-gray-100'}\`}>
+      <span className={`px-2 py-1 text-xs font-semibold rounded border ${colors[plano as keyof typeof colors] || 'bg-gray-100'}`}>
         {plano}
       </span>
     );
@@ -450,7 +450,7 @@ export default function AdminTenantsPage() {
                         </div>
                         <div className="text-sm text-gray-500">
                           <a
-                            href={\`https://\${tenant.subdominio}\`}
+                            href={`https://${tenant.subdominio}`}
                             target="_blank"
                             rel="noopener noreferrer"
                             className="text-blue-600 hover:text-blue-800"
@@ -499,7 +499,7 @@ export default function AdminTenantsPage() {
                     {tenant.status === 'TRIAL' && tenant.dias_restantes !== null ? (
                       <div>
                         {tenant.dias_restantes > 0 ? (
-                          <span className={\`font-medium \${tenant.dias_restantes <= 5 ? 'text-red-600' : 'text-yellow-600'}\`}>
+                          <span className={`font-medium ${tenant.dias_restantes <= 5 ? 'text-red-600' : 'text-yellow-600'}`}>
                             {tenant.dias_restantes} {tenant.dias_restantes === 1 ? 'dia' : 'dias'}
                           </span>
                         ) : (
