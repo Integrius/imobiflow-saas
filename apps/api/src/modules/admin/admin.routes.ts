@@ -366,7 +366,7 @@ export async function adminRoutes(server: FastifyInstance) {
             }
           },
           data: {
-            status: novo_status,
+            status: novo_status as any, // Cast para enum StatusTenant
             updated_at: new Date()
           }
         })
