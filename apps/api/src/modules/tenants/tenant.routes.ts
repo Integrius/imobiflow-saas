@@ -24,25 +24,6 @@ export async function tenantRoutes(server: FastifyInstance) {
   })
 
   /**
-   * GET /api/v1/tenants/:id
-   * Busca tenant por ID (requer autenticação)
-   */
-  server.get('/tenants/:id', {
-    preHandler: [authMiddleware]
-  }, async (request, reply) => {
-    return tenantController.findById(request, reply)
-  })
-
-  /**
-   * PATCH /api/v1/tenants/:id
-   * Atualiza tenant (requer autenticação)
-   */
-  server.patch('/tenants/:id', {
-    preHandler: [authMiddleware]
-  }, async (request, reply) => {
-    return tenantController.update(request, reply)
-  })
-  /**
    * GET /api/v1/tenants/by-subdomain/:subdomain
    *
    * Valida se um tenant existe pelo subdomínio
@@ -93,7 +74,10 @@ export async function tenantRoutes(server: FastifyInstance) {
     }
   )
 
-  // Endpoint para obter informações do trial
+  /**
+   * GET /api/v1/tenants/trial-info
+   * Informações do trial do tenant atual (requer autenticação)
+   */
   server.get(
     '/tenants/trial-info',
     {
@@ -128,7 +112,7 @@ export async function tenantRoutes(server: FastifyInstance) {
         // Calcular dias restantes
         const now = new Date()
         const expirationDate = tenant.data_expiracao ? new Date(tenant.data_expiracao) : null
-        
+
         let diasRestantes = 0
         if (expirationDate) {
           const diffTime = expirationDate.getTime() - now.getTime()
@@ -149,4 +133,24 @@ export async function tenantRoutes(server: FastifyInstance) {
       }
     }
   )
+
+  /**
+   * GET /api/v1/tenants/:id
+   * Busca tenant por ID (requer autenticação)
+   */
+  server.get('/tenants/:id', {
+    preHandler: [authMiddleware]
+  }, async (request, reply) => {
+    return tenantController.findById(request, reply)
+  })
+
+  /**
+   * PATCH /api/v1/tenants/:id
+   * Atualiza tenant (requer autenticação)
+   */
+  server.patch('/tenants/:id', {
+    preHandler: [authMiddleware]
+  }, async (request, reply) => {
+    return tenantController.update(request, reply)
+  })
 }
