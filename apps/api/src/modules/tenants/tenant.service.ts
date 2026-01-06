@@ -12,6 +12,16 @@ export class TenantService {
   }
 
   async create(data: CreateTenantDTO) {
+    // DEBUG: Log dos dados recebidos
+    console.log('🔍 TenantService.create - Dados recebidos:', {
+      nome: data.nome,
+      slug: data.slug,
+      adminNome: data.adminNome,
+      adminEmail: data.adminEmail,
+      adminSenhaPresente: !!data.adminSenha,
+      hasAdminData: !!(data.adminNome && data.adminEmail && data.adminSenha)
+    })
+
     // Verificar se slug já existe
     const slugExists = await this.repository.findBySlug(data.slug)
     if (slugExists) {
@@ -29,6 +39,7 @@ export class TenantService {
 
     // Se dados do admin foram fornecidos, criar tenant + admin em uma transação
     if (data.adminNome && data.adminEmail && data.adminSenha) {
+      console.log('✅ Iniciando transação para criar tenant + admin')
       const adminNome = data.adminNome
       const adminEmail = data.adminEmail
       const adminSenha = data.adminSenha
