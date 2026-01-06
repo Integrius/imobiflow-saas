@@ -11,7 +11,7 @@ export async function tenantRoutes(server: FastifyInstance) {
    * POST /api/v1/tenants
    * Cria um novo tenant (público - para registro)
    */
-  server.post('/tenants', async (request, reply) => {
+  server.post('/', async (request, reply) => {
     return tenantController.create(request, reply)
   })
 
@@ -19,7 +19,7 @@ export async function tenantRoutes(server: FastifyInstance) {
    * GET /api/v1/tenants/slug/:slug
    * Verifica disponibilidade de slug (público)
    */
-  server.get('/tenants/slug/:slug', async (request, reply) => {
+  server.get('/slug/:slug', async (request, reply) => {
     return tenantController.findBySlug(request, reply)
   })
 
@@ -30,7 +30,7 @@ export async function tenantRoutes(server: FastifyInstance) {
    * Endpoint público (sem autenticação) para validação de login
    */
   server.get(
-    '/tenants/by-subdomain/:subdomain',
+    '/by-subdomain/:subdomain',
     async (request, reply) => {
       try {
         const { subdomain } = request.params as { subdomain: string }
@@ -79,7 +79,7 @@ export async function tenantRoutes(server: FastifyInstance) {
    * Informações do trial do tenant atual (requer autenticação)
    */
   server.get(
-    '/tenants/trial-info',
+    '/trial-info',
     {
       preHandler: [tenantMiddleware, authMiddleware]
     },
@@ -138,7 +138,7 @@ export async function tenantRoutes(server: FastifyInstance) {
    * GET /api/v1/tenants/:id
    * Busca tenant por ID (requer autenticação)
    */
-  server.get('/tenants/:id', {
+  server.get('/:id', {
     preHandler: [authMiddleware]
   }, async (request, reply) => {
     return tenantController.findById(request, reply)
@@ -148,7 +148,7 @@ export async function tenantRoutes(server: FastifyInstance) {
    * PATCH /api/v1/tenants/:id
    * Atualiza tenant (requer autenticação)
    */
-  server.patch('/tenants/:id', {
+  server.patch('/:id', {
     preHandler: [authMiddleware]
   }, async (request, reply) => {
     return tenantController.update(request, reply)
