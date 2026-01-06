@@ -2,8 +2,46 @@ import { FastifyInstance } from 'fastify'
 import { tenantMiddleware } from '../../shared/middlewares/tenant.middleware'
 import { authMiddleware } from '../../shared/middlewares/auth.middleware'
 import { prisma } from '../../shared/database/prisma.service'
+import { TenantController } from './tenant.controller'
 
 export async function tenantRoutes(server: FastifyInstance) {
+  const tenantController = new TenantController(prisma)
+
+  /**
+   * POST /api/v1/tenants
+   * Cria um novo tenant (público - para registro)
+   */
+  server.post('/tenants', async (request, reply) => {
+    return tenantController.create(request, reply)
+  })
+
+  /**
+   * GET /api/v1/tenants/slug/:slug
+   * Verifica disponibilidade de slug (público)
+   */
+  server.get('/tenants/slug/:slug', async (request, reply) => {
+    return tenantController.findBySlug(request, reply)
+  })
+
+  /**
+   * GET /api/v1/tenants/:id
+   * Busca tenant por ID (requer autenticação)
+   */
+  server.get('/tenants/:id', {
+    preHandler: [authMiddleware]
+  }, async (request, reply) => {
+    return tenantController.findById(request, reply)
+  })
+
+  /**
+   * PATCH /api/v1/tenants/:id
+   * Atualiza tenant (requer autenticação)
+   */
+  server.patch('/tenants/:id', {
+    preHandler: [authMiddleware]
+  }, async (request, reply) => {
+    return tenantController.update(request, reply)
+  })
   /**
    * GET /api/v1/tenants/by-subdomain/:subdomain
    *
@@ -11,7 +49,7 @@ export async function tenantRoutes(server: FastifyInstance) {
    * Endpoint público (sem autenticação) para validação de login
    */
   server.get(
-    '/by-subdomain/:subdomain',
+    '/tenants/by-subdomain/:subdomain',
     async (request, reply) => {
       try {
         const { subdomain } = request.params as { subdomain: string }
@@ -57,7 +95,7 @@ export async function tenantRoutes(server: FastifyInstance) {
 
   // Endpoint para obter informações do trial
   server.get(
-    '/trial-info',
+    '/tenants/trial-info',
     {
       preHandler: [tenantMiddleware, authMiddleware]
     },
