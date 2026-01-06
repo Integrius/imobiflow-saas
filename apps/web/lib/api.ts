@@ -1,7 +1,25 @@
 import axios from 'axios';
 import { getTenantId } from './tenant';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3333';
+// Detectar automaticamente a URL da API baseado no ambiente
+const getApiUrl = () => {
+  // Se a variável de ambiente estiver definida, usar ela
+  if (process.env.NEXT_PUBLIC_API_URL) {
+    return process.env.NEXT_PUBLIC_API_URL;
+  }
+
+  // Em produção (Render), usar URL absoluta da API
+  if (typeof window !== 'undefined' && window.location.hostname !== 'localhost') {
+    return 'https://imobiflow-saas-1.onrender.com';
+  }
+
+  // Desenvolvimento local
+  return 'http://localhost:3333';
+};
+
+const API_URL = getApiUrl();
+
+console.log('🔧 API configurada para:', API_URL);
 
 export const api = axios.create({
   baseURL: `${API_URL}/api/v1`,
