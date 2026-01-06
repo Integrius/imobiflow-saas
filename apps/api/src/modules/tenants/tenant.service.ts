@@ -2,6 +2,7 @@ import { PrismaClient } from '@prisma/client'
 import { TenantRepository } from './tenant.repository'
 import { CreateTenantDTO, UpdateTenantDTO } from './tenant.schema'
 import { AppError } from '../../shared/errors/AppError'
+import bcrypt from 'bcryptjs'
 
 export class TenantService {
   private repository: TenantRepository
@@ -26,7 +27,66 @@ export class TenantService {
     // Criar subdomínio baseado no slug
     const subdominio = data.slug
 
-    // Criar tenant
+    // Se dados do admin foram fornecidos, criar tenant + admin em uma transação
+    if (data.adminNome && data.adminEmail && data.adminSenha) {
+      const adminNome = data.adminNome
+      const adminEmail = data.adminEmail
+      const adminSenha = data.adminSenha
+
+      return await this.prisma.$transaction(async (tx) => {
+        // 1. Criar tenant
+        const tenant = await tx.tenant.create({
+          data: {
+            nome: data.nome,
+            slug: data.slug,
+            subdominio,
+            email: data.email,
+            telefone: data.telefone,
+            plano: data.plano,
+            status: 'TRIAL',
+            data_expiracao: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 dias
+            limite_usuarios: 3,
+            limite_imoveis: 100,
+            limite_storage_mb: 1000
+          }
+        })
+
+        // 2. Hash da senha
+        const senha_hash = bcrypt.hashSync(adminSenha, 10)
+
+        // 3. Criar usuário admin
+        const user = await tx.user.create({
+          data: {
+            nome: adminNome,
+            email: adminEmail,
+            senha_hash,
+            tipo: 'ADMIN',
+            ativo: true,
+            tenant_id: tenant.id
+          }
+        })
+
+        // 4. Criar registro Corretor (obrigatório para ADMIN/GESTOR/CORRETOR)
+        await tx.corretor.create({
+          data: {
+            user_id: user.id,
+            tenant_id: tenant.id,
+            creci: 'ADMIN-' + tenant.id.substring(0, 8), // CRECI temporário para admin
+            telefone: data.telefone || '(00) 00000-0000' // Telefone padrão se não fornecido
+          }
+        })
+
+        // 5. Atualizar contador de usuários do tenant
+        await tx.tenant.update({
+          where: { id: tenant.id },
+          data: { total_usuarios: 1 }
+        })
+
+        return tenant
+      })
+    }
+
+    // Criar apenas tenant (compatibilidade com código antigo)
     const tenant = await this.repository.create({
       ...data,
       subdominio

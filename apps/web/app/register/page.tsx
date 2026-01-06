@@ -142,27 +142,20 @@ export default function RegisterPage() {
     setLoading(true);
 
     try {
-      // 1. Criar tenant
-      const tenantResponse = await api.post('/tenants', {
+      // Criar tenant + usuário admin em uma única requisição
+      await api.post('/tenants', {
         nome: formData.nome,
         slug: formData.slug,
         email: formData.email,
         telefone: formData.telefone || undefined,
         plano: formData.plano,
+        // Dados do admin
+        adminNome: formData.adminNome,
+        adminEmail: formData.adminEmail,
+        adminSenha: formData.adminSenha
       });
 
-      const tenant = tenantResponse.data;
-
-      // 2. Criar usuário administrador
-      await api.post('/users', {
-        nome: formData.adminNome,
-        email: formData.adminEmail,
-        senha: formData.adminSenha,
-        tipo: 'ADMIN',
-        tenant_id: tenant.id,
-      });
-
-      // 3. Redirecionar para o subdomínio do tenant
+      // Redirecionar para o subdomínio do tenant
       const subdomain = `${formData.slug}.${process.env.NEXT_PUBLIC_BASE_DOMAIN}`;
       window.location.href = `https://${subdomain}/login?new=true`;
     } catch (error: any) {
