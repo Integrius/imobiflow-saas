@@ -142,8 +142,8 @@ export default function RegisterPage() {
     setLoading(true);
 
     try {
-      // Criar tenant + usuário admin em uma única requisição
-      await api.post('/tenants', {
+      // Preparar dados para envio
+      const payload = {
         nome: formData.nome,
         slug: formData.slug,
         email: formData.email,
@@ -153,7 +153,15 @@ export default function RegisterPage() {
         adminNome: formData.adminNome,
         adminEmail: formData.adminEmail,
         adminSenha: formData.adminSenha
+      };
+
+      console.log('📤 Enviando dados para criação de tenant:', {
+        ...payload,
+        adminSenha: '***' // Ocultar senha no log
       });
+
+      // Criar tenant + usuário admin em uma única requisição
+      await api.post('/tenants', payload);
 
       // Redirecionar para o subdomínio do tenant
       const subdomain = `${formData.slug}.${process.env.NEXT_PUBLIC_BASE_DOMAIN}`;
