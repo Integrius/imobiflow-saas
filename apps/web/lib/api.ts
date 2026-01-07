@@ -2,14 +2,21 @@ import axios from 'axios';
 import { getTenantId } from './tenant';
 
 // Detectar automaticamente a URL da API baseado no ambiente
+// IMPORTANTE: Esta função deve ser executada apenas no cliente (browser)
 const getApiUrl = () => {
+  // Verificar se está no browser
+  if (typeof window === 'undefined') {
+    // Durante SSR/build, retornar URL de produção como fallback
+    return process.env.NEXT_PUBLIC_API_URL || 'https://imobiflow-saas-1.onrender.com';
+  }
+
   // Se a variável de ambiente estiver definida, usar ela
   if (process.env.NEXT_PUBLIC_API_URL) {
     return process.env.NEXT_PUBLIC_API_URL;
   }
 
   // Em produção (Render), usar URL absoluta da API
-  if (typeof window !== 'undefined' && window.location.hostname !== 'localhost') {
+  if (window.location.hostname !== 'localhost' && !window.location.hostname.includes('127.0.0.1')) {
     return 'https://imobiflow-saas-1.onrender.com';
   }
 
@@ -17,20 +24,32 @@ const getApiUrl = () => {
   return 'http://localhost:3333';
 };
 
-const API_URL = getApiUrl();
-
-console.log('🔧 API configurada para:', API_URL);
-
+// Criar instância do axios SEM baseURL definido
+// O baseURL será definido dinamicamente no interceptor
 export const api = axios.create({
-  baseURL: `${API_URL}/api/v1`,
   headers: {
     'Content-Type': 'application/json',
   },
 });
 
-// Interceptor para adicionar token e tenant
+// Interceptor para adicionar token, tenant e configurar baseURL dinamicamente
 api.interceptors.request.use((config) => {
+  // Configurar baseURL dinamicamente (apenas no cliente)
   if (typeof window !== 'undefined') {
+    const apiUrl = getApiUrl();
+    const baseURL = `${apiUrl}/api/v1`;
+
+    // Sobrescrever baseURL apenas se não estiver definido
+    if (!config.baseURL) {
+      config.baseURL = baseURL;
+    }
+
+    // Log para debug (apenas primeira vez)
+    if (!api.defaults.baseURL) {
+      console.log('🔧 API configurada para:', baseURL);
+      api.defaults.baseURL = baseURL; // Salvar para próximas requisições
+    }
+
     // Adicionar token de autenticação
     const token = localStorage.getItem('token');
     if (token) {
