@@ -153,4 +153,14 @@ export async function tenantRoutes(server: FastifyInstance) {
   }, async (request, reply) => {
     return tenantController.update(request, reply)
   })
+
+  /**
+   * POST /api/v1/tenants/cancel
+   * Cancela assinatura do tenant atual (requer autenticação de ADMIN)
+   */
+  server.post('/cancel', {
+    preHandler: [authMiddleware]
+  }, async (request, reply) => {
+    return tenantController.cancelAssinatura(request, reply)
+  })
 }

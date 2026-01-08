@@ -223,6 +223,157 @@ export class TenantService {
     })
   }
 
+  async cancelAssinatura(tenantId: string, userId: string, motivo: string, request: any) {
+    // Buscar tenant e usuário
+    const tenant = await this.findById(tenantId)
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId }
+    })
+
+    if (!user) {
+      throw new AppError('Usuário não encontrado', 404)
+    }
+
+    // Atualizar status do tenant para CANCELADO
+    await this.repository.update(tenantId, {
+      status: 'CANCELADO'
+    })
+
+    // Registrar log de cancelamento
+    await ActivityLogService.log({
+      tenant_id: tenantId,
+      user_id: userId,
+      tipo: 'TENANT_CANCELADO' as any,
+      acao: `Assinatura cancelada por ${user.nome}`,
+      detalhes: { motivo },
+      request
+    })
+
+    // Enviar email de confirmação (assíncrono)
+    setImmediate(async () => {
+      try {
+        const primeiroNome = user.nome.split(' ')[0]
+        await sendGridService.sendEmail({
+          to: user.email,
+          subject: `Confirmação de Cancelamento - ${tenant.nome}`,
+          html: `
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      line-height: 1.6;
+      color: #2C2C2C;
+      background-color: #FAF8F5;
+      margin: 0;
+      padding: 0;
+    }
+    .container {
+      max-width: 600px;
+      margin: 40px auto;
+      background: white;
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    }
+    .header {
+      background: linear-gradient(135deg, #DC2626 0%, #991B1B 100%);
+      padding: 40px 30px;
+      text-align: center;
+      color: white;
+    }
+    .header h1 {
+      margin: 0;
+      font-size: 28px;
+      font-weight: 800;
+    }
+    .content {
+      padding: 40px 30px;
+    }
+    .info-box {
+      background: #FEF2F2;
+      border-left: 4px solid #DC2626;
+      padding: 20px;
+      margin: 25px 0;
+      border-radius: 8px;
+    }
+    .footer {
+      background: #F8F9FA;
+      padding: 30px;
+      text-align: center;
+      font-size: 14px;
+      color: #6C757D;
+      border-top: 1px solid #E9ECEF;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>🚫 Assinatura Cancelada</h1>
+    </div>
+
+    <div class="content">
+      <p style="font-size: 18px; font-weight: 600;">
+        Olá, ${primeiroNome}!
+      </p>
+
+      <p>
+        Confirmamos o cancelamento da sua assinatura do <strong>ImobiFlow</strong> para <strong>${tenant.nome}</strong>.
+      </p>
+
+      <div class="info-box">
+        <h3 style="margin: 0 0 10px 0; color: #DC2626;">📋 Próximos Passos:</h3>
+        <ul style="margin: 10px 0; padding-left: 20px;">
+          <li>Seu acesso ao sistema será bloqueado imediatamente</li>
+          <li>Todos os seus dados serão mantidos por <strong>30 dias</strong></li>
+          <li>Você pode solicitar a exportação dos dados durante este período</li>
+          <li>Após 30 dias, todos os dados serão excluídos permanentemente</li>
+        </ul>
+      </div>
+
+      <p>
+        <strong>Motivo do cancelamento:</strong><br>
+        <em>"${motivo}"</em>
+      </p>
+
+      <p>
+        Lamentamos vê-lo partir! Seu feedback é muito importante para nós e nos ajudará a melhorar nosso serviço.
+      </p>
+
+      <p style="margin-top: 30px;">
+        Se tiver alguma dúvida ou quiser reverter o cancelamento, entre em contato conosco em até 30 dias: <strong>contato@integrius.com.br</strong>
+      </p>
+    </div>
+
+    <div class="footer">
+      <p style="margin: 0 0 10px 0;">
+        <strong>ImobiFlow</strong> - Gestão Imobiliária Inteligente
+      </p>
+      <p style="margin: 0; font-size: 12px;">
+        © 2025-2026 ImobiFlow. Todos os direitos reservados.
+      </p>
+    </div>
+  </div>
+</body>
+</html>
+          `.trim()
+        })
+        console.log(`✅ Email de confirmação de cancelamento enviado para ${user.email}`)
+      } catch (error) {
+        console.error('❌ Erro ao enviar email de cancelamento:', error)
+      }
+    })
+
+    return {
+      tenant_id: tenantId,
+      status: 'CANCELADO',
+      data_cancelamento: new Date()
+    }
+  }
+
   private getPlanLimits(plano: string) {
     switch (plano) {
       case 'BASICO':

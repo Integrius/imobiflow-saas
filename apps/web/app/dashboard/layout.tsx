@@ -74,7 +74,8 @@ export default function DashboardLayout({
       icon: '⚙️',
       iconImage: null,
       subItems: [
-        { name: 'Logs', href: '/dashboard/logs', icon: '📋' }
+        { name: 'Logs', href: '/dashboard/logs', icon: '📋' },
+        { name: 'Cancelar Assinatura', href: '/dashboard/cancelar-assinatura', icon: '🚫' }
       ]
     }
   ];

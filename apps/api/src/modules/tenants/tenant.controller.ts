@@ -126,4 +126,32 @@ export class TenantController {
       })
     }
   }
+
+  async cancelAssinatura(request: FastifyRequest, reply: FastifyReply) {
+    try {
+      const user = (request as any).user
+      const { motivo } = request.body as { motivo: string }
+
+      // Verificar se é ADMIN
+      if (user.tipo !== 'ADMIN') {
+        throw new AppError('Apenas administradores podem cancelar a assinatura', 403)
+      }
+
+      if (!motivo || !motivo.trim()) {
+        throw new AppError('Motivo do cancelamento é obrigatório', 400)
+      }
+
+      const result = await this.service.cancelAssinatura(user.tenantId, user.userId, motivo.trim(), request)
+
+      return reply.send({
+        success: true,
+        message: 'Assinatura cancelada com sucesso',
+        ...result
+      })
+    } catch (error: any) {
+      return reply.status(error.statusCode || 500).send({
+        error: error.message || 'Erro ao cancelar assinatura'
+      })
+    }
+  }
 }
