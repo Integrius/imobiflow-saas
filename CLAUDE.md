@@ -2867,7 +2867,75 @@ jobs:
 
 ## Histórico de Configurações
 
+### 2026-01-08
+
+#### Sistema de Exportação Automática e Ajustes no Trial ✅
+- ✅ **Exportação Automática no Cancelamento de Assinatura**
+  - Removido botão "Recuperar Dados" do header do dashboard
+  - Exportação de dados agora é **automática** ao cancelar assinatura
+  - Sistema chama `DataExportService` automaticamente no cancelamento
+  - Dados exportados para CSV e enviados por email ao admin do tenant
+  - Email de confirmação de cancelamento informa sobre exportação automática
+  - Campo `data_exportacao_dados` marcado na tabela Tenant
+  - Arquivo: `/apps/api/src/modules/tenants/tenant.service.ts`
+
+- ✅ **Correção do Período Trial (30 → 14 dias)**
+  - Criado script `/apps/api/src/shared/scripts/fix-trial-period.ts`
+  - Script atualiza `data_expiracao` para 14 dias após `created_at`
+  - Executado com sucesso em 5 tenants ativos:
+    - `testes`: 8 dias restantes (expira 16/01/2026)
+    - `teste-api-direto-123`: 12 dias restantes (expira 20/01/2026)
+    - `teste-completo-api-789`: 12 dias restantes (expira 20/01/2026)
+    - `teste-deploy-novo-999`: 12 dias restantes (expira 20/01/2026)
+    - `imobiliariazacarias`: 13 dias restantes (expira 21/01/2026)
+  - Todos novos tenants criados agora têm trial de 14 dias (configurado em `tenant.repository.ts`)
+
+- ✅ **Aviso de Trial no Header (Sempre Visível)**
+  - Componente `TrialWarning` movido do main content para header (top navigation)
+  - Design compacto e discreto com fundo escuro translúcido
+  - Formato: `Trial: X dias` com ícone
+  - Cores dinâmicas baseadas na urgência:
+    - Verde (>7 dias): ✅ `Trial: 8 dias`
+    - Amarelo (4-7 dias): ⏰ `Trial: 5 dias`
+    - Vermelho (0-3 dias): ⚠️ `Trial: 2 dias`
+  - Sempre visível no header para todos os tenants em trial
+  - Arquivos: `/apps/web/components/TrialWarning.tsx`, `/apps/web/app/dashboard/layout.tsx`
+
+- ✅ **Componente DataExportButton Removido**
+  - Removido import e uso de `DataExportButton` no layout
+  - Botão não é mais necessário pois exportação é automática
+  - Arquivo: `/apps/web/app/dashboard/layout.tsx`
+
 ### 2026-01-03
+
+#### Sistema de Avisos de Trial e Funcionalidades Avançadas ✅
+- ✅ **Sistema Completo de Avisos de Trial**
+  - Aviso sempre visível no dashboard mostrando dias restantes (cores: verde/amarelo/vermelho)
+  - Email automático 5 dias antes da expiração (template amarelo)
+  - Email automático 2 dias antes da expiração (template vermelho urgente)
+  - Jobs cron: `trial-warning-job.ts` e `trial-warning-2days-job.ts`
+  - Flags no modelo Tenant: `email_5dias_enviado`, `email_2dias_enviado`
+
+- ✅ **Sistema de Cálculo de Comissões para Corretores**
+  - Checkboxes na tabela de corretores (select all + individual)
+  - Botão "Calcular Comissões" (gradiente laranja)
+  - Backend calcula baseado em negociações com status FECHADO
+  - Comissão: usa `valor_comissao` se definido, senão 5% do `valor_final`
+  - Modal rico com stats agregadas e breakdown por corretor
+  - Lista expandível de negociações por corretor
+  - Resultados ordenados por maior comissão
+  - Endpoint: `POST /api/v1/comissoes/calcular`
+  - Campo `valor_final` adicionado ao modelo Negociacao
+
+- ✅ **Sistema de Recuperação de Senha**
+  - Modelo `PasswordResetToken` com tokens de 6 dígitos
+  - Expiração de 5 minutos por segurança
+  - Endpoints públicos: `/auth/forgot-password` e `/auth/reset-password`
+  - Email com token de 6 dígitos (template azul profissional)
+  - Página `/recuperar-senha` com two-step flow (email → token/password)
+  - Validações: token 6 dígitos, senha mínima 6 chars, confirmação
+  - Link "Esqueceu a senha?" já existe na página de login
+  - Segurança: tokens de uso único, não revela se email existe
 
 #### Correções no Sistema Multi-Tenant e Login ✅
 - ✅ **Fix: Domínio Principal no Middleware**
@@ -3193,15 +3261,24 @@ jobs:
 
 ---
 
-**Última atualização**: 03 de janeiro de 2026
-**Versão**: 1.5.1
+**Última atualização**: 08 de janeiro de 2026
+**Versão**: 1.6.0
 **Status**: Em produção ✅
 
-**Novidades da versão 1.5.1** (03 de janeiro de 2026):
+**Novidades da versão 1.6.0** (08 de janeiro de 2026):
+- ✅ Exportação automática de dados no cancelamento de assinatura
+- ✅ Período trial corrigido de 30 para 14 dias (5 tenants atualizados)
+- ✅ Aviso de trial movido para header (sempre visível, design compacto)
+- ✅ Removido botão "Recuperar Dados" (exportação agora é automática)
+- ✅ Script de correção de período trial criado e executado com sucesso
+
+**Versão 1.5.1** (03 de janeiro de 2026):
+- ✅ Sistema completo de avisos de trial (emails 5 dias e 2 dias antes)
+- ✅ Sistema de cálculo de comissões para corretores
+- ✅ Sistema de recuperação de senha com tokens de 6 dígitos
 - ✅ Fix: Domínio `integrius.com.br` adicionado ao tenant middleware
-- ✅ Endpoint público de validação de tenant (`/tenants/by-subdomain/:subdomain`)
-- ✅ Correções no fluxo de login para tenant Vivoly
-- ✅ Painel de Administração Geral acessível em `vivoly.integrius.com.br/dashboard/admin/tenants`
+- ✅ Endpoint público de validação de tenant
+- ✅ Painel de Administração Geral para Vivoly
 
 **Versão 1.5.0** (30 de dezembro de 2025):
 - ✅ Sistema de Cookies de Lembrança (Tenant Cookies) - 90 dias
