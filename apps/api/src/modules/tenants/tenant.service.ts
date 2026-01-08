@@ -254,8 +254,33 @@ export class TenantService {
     // Exportar dados automaticamente e enviar por email (assíncrono)
     setImmediate(async () => {
       try {
-        const dataExportService = new DataExportService(this.prisma)
-        const stats = await dataExportService.exportTenantData(tenantId, user.email, tenant.nome)
+        // Exportar dados para CSV
+        const exportedData = await DataExportService.exportTenantData(tenantId)
+
+        // Preparar stats para o email
+        const stats = {
+          leads: exportedData.leads.totalRecords,
+          imoveis: exportedData.imoveis.totalRecords,
+          proprietarios: exportedData.proprietarios.totalRecords,
+          negociacoes: exportedData.negociacoes.totalRecords,
+          agendamentos: exportedData.agendamentos.totalRecords
+        }
+
+        // Enviar email com os CSVs anexados
+        await sendGridService.sendDataExportEmail(
+          user.email,
+          user.nome,
+          tenant.nome,
+          stats,
+          [
+            { filename: exportedData.leads.fileName, content: exportedData.leads.csvContent },
+            { filename: exportedData.imoveis.fileName, content: exportedData.imoveis.csvContent },
+            { filename: exportedData.proprietarios.fileName, content: exportedData.proprietarios.csvContent },
+            { filename: exportedData.negociacoes.fileName, content: exportedData.negociacoes.csvContent },
+            { filename: exportedData.agendamentos.fileName, content: exportedData.agendamentos.csvContent }
+          ]
+        )
+
         console.log(`✅ Dados exportados automaticamente para ${user.email} no cancelamento`)
       } catch (error) {
         console.error('❌ Erro ao exportar dados no cancelamento:', error)
