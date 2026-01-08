@@ -156,6 +156,11 @@ function extractSubdomain(host: string): string | null {
     '127.0.0.1'
   ]
 
+  // Verifica se é um domínio do Render (sem subdomínio próprio)
+  if (hostname.endsWith('.onrender.com') && !hostname.includes('.', hostname.indexOf('.onrender.com') - 1)) {
+    return null // Render sem subdomínio customizado
+  }
+
   // Verifica se é um dos domínios principais
   const isMainDomain = mainDomains.some(domain => hostname === domain || hostname === `www.${domain}`)
   if (isMainDomain) {
