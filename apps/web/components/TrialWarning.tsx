@@ -34,18 +34,28 @@ export default function TrialWarning() {
 
   const { dias_restantes } = trialInfo;
 
-  // Não mostrar se ainda tem mais de 7 dias
+  // Definir cor e ícone baseado nos dias restantes
+  let bgColor = 'bg-[#00C48C]/10';
+  let borderColor = 'border-[#00C48C]/30';
+  let textColor = 'text-[#00C48C]';
+  let icon = '✅';
+
+  // Verde: mais de 7 dias
   if (dias_restantes > 7) {
-    return null;
+    bgColor = 'bg-[#00C48C]/10';
+    borderColor = 'border-[#00C48C]/30';
+    textColor = 'text-[#00C48C]';
+    icon = '✅';
   }
-
-  // Definir cor baseado nos dias restantes
-  let bgColor = 'bg-[#FFB627]/10';
-  let borderColor = 'border-[#FFB627]/30';
-  let textColor = 'text-[#FFB627]';
-  let icon = '⏰';
-
-  if (dias_restantes <= 3) {
+  // Amarelo: 4-7 dias
+  else if (dias_restantes >= 4) {
+    bgColor = 'bg-[#FFB627]/10';
+    borderColor = 'border-[#FFB627]/30';
+    textColor = 'text-[#FFB627]';
+    icon = '⏰';
+  }
+  // Vermelho: 0-3 dias
+  else {
     bgColor = 'bg-[#FF6B6B]/10';
     borderColor = 'border-[#FF6B6B]/30';
     textColor = 'text-[#FF006E]';

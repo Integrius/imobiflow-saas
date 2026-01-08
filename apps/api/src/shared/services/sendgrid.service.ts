@@ -826,6 +826,192 @@ class SendGridService {
   }
 
   /**
+   * Email URGENTE de aviso 2 dias antes do término do trial
+   */
+  async sendTrialUrgentWarningEmail(
+    email: string,
+    nomeUsuario: string,
+    nomeTenant: string,
+    diasRestantes: number
+  ): Promise<boolean> {
+    const primeiroNome = nomeUsuario.split(' ')[0];
+
+    const html = `
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      line-height: 1.6;
+      color: #2C2C2C;
+      background-color: #FAF8F5;
+      margin: 0;
+      padding: 0;
+    }
+    .container {
+      max-width: 600px;
+      margin: 40px auto;
+      background: white;
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    }
+    .header {
+      background: linear-gradient(135deg, #DC2626 0%, #991B1B 100%);
+      padding: 40px 30px;
+      text-align: center;
+      color: white;
+    }
+    .header h1 {
+      margin: 0;
+      font-size: 28px;
+      font-weight: 800;
+    }
+    .content {
+      padding: 40px 30px;
+    }
+    .urgent-box {
+      background: linear-gradient(135deg, #FEE2E2 0%, #FECACA 100%);
+      border-left: 4px solid #DC2626;
+      padding: 25px;
+      margin: 25px 0;
+      border-radius: 8px;
+      border: 2px solid #DC2626;
+    }
+    .urgent-box h2 {
+      margin: 0 0 15px 0;
+      color: #DC2626;
+      font-size: 22px;
+    }
+    .highlight {
+      background: #DC2626;
+      color: white;
+      padding: 4px 10px;
+      border-radius: 4px;
+      font-weight: 700;
+      font-size: 18px;
+    }
+    .info-box {
+      background: #F0F8FF;
+      border-left: 4px solid #4A90E2;
+      padding: 20px;
+      margin: 25px 0;
+      border-radius: 8px;
+    }
+    .info-box h3 {
+      margin: 0 0 10px 0;
+      color: #2C2C2C;
+      font-size: 18px;
+    }
+    .cta-button {
+      display: inline-block;
+      background: linear-gradient(135deg, #DC2626 0%, #991B1B 100%);
+      color: white;
+      text-decoration: none;
+      padding: 18px 36px;
+      border-radius: 8px;
+      font-weight: 700;
+      margin: 20px 0;
+      text-align: center;
+      font-size: 18px;
+      box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3);
+    }
+    .footer {
+      background: #F8F9FA;
+      padding: 30px;
+      text-align: center;
+      font-size: 14px;
+      color: #6C757D;
+      border-top: 1px solid #E9ECEF;
+    }
+    ul {
+      padding-left: 20px;
+    }
+    li {
+      margin: 10px 0;
+      color: #555;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>🚨 URGENTE: Seu teste expira em ${diasRestantes} ${diasRestantes === 1 ? 'dia' : 'dias'}!</h1>
+    </div>
+
+    <div class="content">
+      <p style="font-size: 18px; font-weight: 600;">
+        Olá, ${primeiroNome}! 👋
+      </p>
+
+      <p style="font-size: 16px;">
+        Este é um <strong>aviso urgente</strong> sobre o término do seu período de teste no <strong>ImobiFlow</strong> para <strong>${nomeTenant}</strong>.
+      </p>
+
+      <div class="urgent-box">
+        <h2>⚠️ ATENÇÃO: ÚLTIMA CHANCE!</h2>
+        <p style="margin: 0; font-size: 16px;">
+          Seu período de teste gratuito termina em apenas <span class="highlight">${diasRestantes} ${diasRestantes === 1 ? 'DIA' : 'DIAS'}</span>!
+        </p>
+        <p style="margin: 15px 0 0 0; font-weight: 600; color: #DC2626;">
+          Após o término, você perderá acesso ao sistema!
+        </p>
+      </div>
+
+      <div class="info-box">
+        <h3>💡 O que você precisa fazer AGORA:</h3>
+        <ul>
+          <li><strong>📦 Exportar seus dados:</strong> Clique em "Recuperar Dados" no dashboard</li>
+          <li><strong>💚 Ativar sua assinatura:</strong> Entre em contato conosco para continuar usando</li>
+        </ul>
+      </div>
+
+      <div class="info-box">
+        <h3>🔒 Proteção dos Seus Dados</h3>
+        <p style="margin: 5px 0;">
+          Após o término do trial, seus dados ficarão <strong>protegidos por 30 dias</strong>. Durante este período, você pode:
+        </p>
+        <ul>
+          <li>Solicitar exportação de dados em qualquer momento</li>
+          <li>Ativar sua assinatura e recuperar tudo automaticamente</li>
+        </ul>
+      </div>
+
+      <div style="text-align: center; margin: 30px 0;">
+        <a href="mailto:contato@integrius.com.br?subject=URGENTE%20-%20Ativar%20Assinatura%20ImobiFlow" class="cta-button">
+          🚨 ATIVAR MINHA ASSINATURA AGORA
+        </a>
+      </div>
+
+      <p style="font-size: 14px; color: #666; text-align: center; margin-top: 30px;">
+        <strong>Dúvidas ou precisa de ajuda?</strong><br>
+        WhatsApp/Email: <strong>contato@integrius.com.br</strong>
+      </p>
+    </div>
+
+    <div class="footer">
+      <p style="margin: 0 0 10px 0;">
+        <strong>ImobiFlow</strong> - Gestão Imobiliária Inteligente
+      </p>
+      <p style="margin: 0; font-size: 12px;">
+        Este é um email automático de sistema. Não perca seus dados!
+      </p>
+    </div>
+  </div>
+</body>
+</html>
+    `.trim();
+
+    return this.sendEmail({
+      to: email,
+      subject: `🚨 URGENTE: Seu teste expira em ${diasRestantes} ${diasRestantes === 1 ? 'dia' : 'dias'}! - ${nomeTenant}`,
+      html
+    });
+  }
+
+  /**
    * Email com dados exportados em CSV
    */
   async sendDataExportEmail(
