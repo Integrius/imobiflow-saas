@@ -184,7 +184,18 @@ export async function getMe(): Promise<User> {
   return response.data;
 }
 
-export function logout() {
+export async function logout() {
+  try {
+    // Registrar logout no backend (log de atividade)
+    await api.post('/auth/logout').catch(err => {
+      // Se falhar, apenas loga mas não impede o logout
+      console.error('Erro ao registrar logout:', err);
+    });
+  } catch (error) {
+    // Ignora erro de logout no backend
+    console.error('Erro ao fazer logout no backend:', error);
+  }
+
   // Remover de localStorage
   localStorage.removeItem('token');
   localStorage.removeItem('user');

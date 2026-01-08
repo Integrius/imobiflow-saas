@@ -120,6 +120,31 @@ export class AuthController {
     }
   }
 
+  async logout(request: FastifyRequest, reply: FastifyReply) {
+    try {
+      const user = (request as any).user
+
+      // ✅ Registrar log de logout
+      await ActivityLogService.logLogout(
+        user.tenantId,
+        user.userId,
+        request
+      )
+
+      return reply.status(200).send({
+        success: true,
+        message: 'Logout realizado com sucesso'
+      })
+    } catch (error: any) {
+      // Mesmo com erro, retorna sucesso (logout não deve falhar)
+      console.error('Erro ao registrar logout:', error)
+      return reply.status(200).send({
+        success: true,
+        message: 'Logout realizado'
+      })
+    }
+  }
+
   async definirSenhaPrimeiroAcesso(request: FastifyRequest, reply: FastifyReply) {
     try {
       const user = (request as any).user

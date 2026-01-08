@@ -24,6 +24,11 @@ export async function authRoutes(server: FastifyInstance) {
     preHandler: authMiddleware
   }, controller.me.bind(controller))
 
+  // Rota de logout (registra log de atividade)
+  server.post('/logout', {
+    preHandler: authMiddleware
+  }, controller.logout.bind(controller))
+
   // Rota para definir senha no primeiro acesso
   server.post('/primeiro-acesso', {
     preHandler: authMiddleware
