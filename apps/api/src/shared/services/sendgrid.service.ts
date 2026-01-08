@@ -1475,6 +1475,166 @@ class SendGridService {
       html
     });
   }
+
+  /**
+   * Email de recuperação de senha com token de 6 dígitos
+   */
+  async sendPasswordResetEmail(
+    email: string,
+    nomeUsuario: string,
+    nomeTenant: string,
+    token: string
+  ): Promise<boolean> {
+    const primeiroNome = nomeUsuario.split(' ')[0];
+
+    const html = `
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      line-height: 1.6;
+      color: #2C2C2C;
+      background-color: #FAF8F5;
+      margin: 0;
+      padding: 0;
+    }
+    .container {
+      max-width: 600px;
+      margin: 40px auto;
+      background: white;
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    }
+    .header {
+      background: linear-gradient(135deg, #3B82F6 0%, #2563EB 100%);
+      padding: 40px 30px;
+      text-align: center;
+      color: white;
+    }
+    .header h1 {
+      margin: 0;
+      font-size: 28px;
+      font-weight: 800;
+    }
+    .content {
+      padding: 40px 30px;
+    }
+    .token-box {
+      background: linear-gradient(135deg, #EEF2FF 0%, #E0E7FF 100%);
+      border: 3px solid #3B82F6;
+      padding: 30px;
+      margin: 25px 0;
+      border-radius: 12px;
+      text-align: center;
+    }
+    .token {
+      font-size: 48px;
+      font-weight: 900;
+      color: #3B82F6;
+      letter-spacing: 8px;
+      font-family: 'Courier New', monospace;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+    }
+    .warning-box {
+      background: #FEF2F2;
+      border-left: 4px solid #DC2626;
+      padding: 20px;
+      margin: 25px 0;
+      border-radius: 8px;
+    }
+    .info-box {
+      background: #F0F8FF;
+      border-left: 4px solid #4A90E2;
+      padding: 20px;
+      margin: 25px 0;
+      border-radius: 8px;
+    }
+    .footer {
+      background: #F8F9FA;
+      padding: 30px;
+      text-align: center;
+      font-size: 14px;
+      color: #6C757D;
+      border-top: 1px solid #E9ECEF;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>🔐 Recuperação de Senha</h1>
+    </div>
+
+    <div class="content">
+      <p style="font-size: 18px; font-weight: 600;">
+        Olá, ${primeiroNome}! 👋
+      </p>
+
+      <p>
+        Você solicitou a recuperação de senha para sua conta no <strong>ImobiFlow</strong> (<strong>${nomeTenant}</strong>).
+      </p>
+
+      <div class="token-box">
+        <p style="margin: 0 0 15px 0; font-size: 14px; color: #4B5563; font-weight: 600;">
+          Seu código de verificação é:
+        </p>
+        <div class="token">${token}</div>
+        <p style="margin: 15px 0 0 0; font-size: 12px; color: #6B7280;">
+          ⏰ Este código expira em <strong>5 minutos</strong>
+        </p>
+      </div>
+
+      <div class="info-box">
+        <p style="margin: 0; font-size: 14px;">
+          <strong>✅ Como usar:</strong>
+        </p>
+        <ol style="margin: 10px 0; padding-left: 20px; font-size: 14px;">
+          <li>Volte para a página de recuperação de senha</li>
+          <li>Digite o código acima</li>
+          <li>Crie sua nova senha</li>
+        </ol>
+      </div>
+
+      <div class="warning-box">
+        <p style="margin: 0; font-size: 14px; color: #DC2626; font-weight: 600;">
+          ⚠️ <strong>Atenção:</strong>
+        </p>
+        <ul style="margin: 10px 0; padding-left: 20px; font-size: 14px;">
+          <li>Se você não solicitou esta recuperação, ignore este email</li>
+          <li>Nunca compartilhe este código com ninguém</li>
+          <li>Este código só funciona uma vez</li>
+        </ul>
+      </div>
+
+      <p style="font-size: 14px; color: #666; text-align: center; margin-top: 30px;">
+        <strong>Precisa de ajuda?</strong><br>
+        Entre em contato: <strong>contato@integrius.com.br</strong>
+      </p>
+    </div>
+
+    <div class="footer">
+      <p style="margin: 0 0 10px 0;">
+        <strong>ImobiFlow</strong> - Gestão Imobiliária Inteligente
+      </p>
+      <p style="margin: 0; font-size: 12px;">
+        Este é um email automático de segurança. Não responda.
+      </p>
+    </div>
+  </div>
+</body>
+</html>
+    `.trim();
+
+    return this.sendEmail({
+      to: email,
+      subject: `🔐 Código de recuperação de senha: ${token} - ${nomeTenant}`,
+      html
+    });
+  }
 }
 
 // Singleton

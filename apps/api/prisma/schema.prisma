@@ -188,6 +188,32 @@ enum UserType {
 }
 
 // ============================================
+// RECUPERAÇÃO DE SENHA
+// ============================================
+
+model PasswordResetToken {
+  id String @id @default(uuid())
+
+  // Dados do token
+  user_id String
+  email   String
+  token   String @unique // Token de 6 dígitos ou UUID
+  expires DateTime // Expira em 5 minutos
+
+  // Controle de uso
+  usado  Boolean   @default(false)
+  usado_em DateTime?
+
+  // Timestamps
+  created_at DateTime @default(now())
+
+  @@index([email])
+  @@index([token])
+  @@index([expires])
+  @@map("password_reset_tokens")
+}
+
+// ============================================
 // CORRETORES
 // ============================================
 

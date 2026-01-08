@@ -3,6 +3,7 @@ import { AuthController } from './auth.controller'
 import { authMiddleware } from '../../shared/middlewares/auth.middleware'
 import { tenantMiddleware } from '../../shared/middlewares/tenant.middleware'
 import { prisma } from '../../shared/database/prisma.service'
+import { passwordResetRoutes } from './password-reset.routes'
 
 export async function authRoutes(server: FastifyInstance) {
   const controller = new AuthController(prisma)
@@ -33,4 +34,7 @@ export async function authRoutes(server: FastifyInstance) {
   server.post('/primeiro-acesso', {
     preHandler: authMiddleware
   }, controller.definirSenhaPrimeiroAcesso.bind(controller))
+
+  // Rotas de recuperação de senha
+  await passwordResetRoutes(server)
 }
