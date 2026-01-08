@@ -9,6 +9,21 @@ import ToastContainer from '@/components/ToastContainer';
 import TrialWarning from '@/components/TrialWarning';
 import DataExportButton from '@/components/DataExportButton';
 
+// Tipos para navegação
+interface SubMenuItem {
+  name: string;
+  href: string;
+  icon: string;
+}
+
+interface MenuItem {
+  name: string;
+  icon: string;
+  iconImage: string | null;
+  href?: string;
+  subItems?: SubMenuItem[];
+}
+
 export default function DashboardLayout({
   children,
 }: {
@@ -19,6 +34,7 @@ export default function DashboardLayout({
   const [user, setUser] = useState<any>(null);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [isVivolyAdmin, setIsVivolyAdmin] = useState(false);
+  const [expandedMenu, setExpandedMenu] = useState<string | null>(null);
 
   useEffect(() => {
     const token = getToken();
@@ -45,20 +61,37 @@ export default function DashboardLayout({
   }, [router]);
 
   // Navegação base (todos os tenants)
-  const baseNavigation = [
+  const baseNavigation: MenuItem[] = [
     { name: 'Dashboard', href: '/dashboard', icon: '📊', iconImage: '/ico-dashboard.png' },
     { name: 'Leads', href: '/dashboard/leads', icon: '👥', iconImage: '/ico-Leads.png' },
     { name: 'Corretores', href: '/dashboard/corretores', icon: '🏢', iconImage: '/ico-corretores.png' },
     { name: 'Proprietários', href: '/dashboard/proprietarios', icon: '🏠', iconImage: '/ico-proprietarios.png' },
     { name: 'Imóveis', href: '/dashboard/imoveis', icon: '🏘️', iconImage: '/ico-imoveis.png' },
     { name: 'Negociações', href: '/dashboard/negociacoes', icon: '💼', iconImage: '/ico-negociacoes.png' },
+    // Menu Administração para tenants normais
+    {
+      name: 'Administração',
+      icon: '⚙️',
+      iconImage: null,
+      subItems: [
+        { name: 'Logs', href: '/dashboard/logs', icon: '📋' }
+      ]
+    }
   ];
 
-  // Adicionar item de admin se for Vivoly
+  // Adicionar item de admin se for Vivoly (com submenu)
   const navigation = isVivolyAdmin
     ? [
-        ...baseNavigation,
-        { name: 'Admin Geral', href: '/dashboard/admin/tenants', icon: '🔐', iconImage: null }
+        ...baseNavigation.slice(0, -1), // Remove "Administração" para Vivoly
+        {
+          name: 'Admin Geral',
+          icon: '🔐',
+          iconImage: null,
+          subItems: [
+            { name: 'Tenants', href: '/dashboard/admin/tenants', icon: '🏢' },
+            { name: 'Logs', href: '/dashboard/admin/logs', icon: '📋' }
+          ]
+        }
       ]
     : baseNavigation;
 
@@ -114,11 +147,73 @@ export default function DashboardLayout({
             <div className="flex-1 flex flex-col pt-8 pb-6 overflow-y-auto">
               <nav className="mt-2 flex-1 px-4 space-y-2">
                 {navigation.map((item) => {
+                  // Se tem subitens, é um submenu
+                  if (item.subItems) {
+                    const isExpanded = expandedMenu === item.name;
+                    const isAnySubItemActive = item.subItems.some(subItem => pathname === subItem.href);
+
+                    return (
+                      <div key={item.name}>
+                        {/* Item principal do submenu */}
+                        <button
+                          onClick={() => setExpandedMenu(isExpanded ? null : item.name)}
+                          className={`group flex items-center justify-between w-full px-4 py-3 text-sm font-semibold rounded-lg transition-all duration-200 ${
+                            isAnySubItemActive
+                              ? 'bg-gradient-to-r from-[#00C48C] to-[#059669] text-white shadow-md glow-green'
+                              : 'bg-white text-gray-700 hover:bg-gray-50 hover:text-[#00C48C]'
+                          }`}
+                        >
+                          <div className="flex items-center">
+                            {item.iconImage ? (
+                              <Image
+                                src={item.iconImage}
+                                alt={item.name}
+                                width={24}
+                                height={24}
+                                className="mr-3"
+                              />
+                            ) : (
+                              <span className="mr-3 text-2xl">{item.icon}</span>
+                            )}
+                            <span className="font-semibold">{item.name}</span>
+                          </div>
+                          <span className={`text-lg transition-transform duration-200 ${isExpanded ? 'rotate-90' : ''}`}>
+                            ▶
+                          </span>
+                        </button>
+
+                        {/* Subitens */}
+                        {isExpanded && (
+                          <div className="ml-6 mt-2 space-y-1">
+                            {item.subItems.map((subItem) => {
+                              const isActive = pathname === subItem.href;
+                              return (
+                                <Link
+                                  key={subItem.href}
+                                  href={subItem.href}
+                                  className={`group flex items-center px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200 ${
+                                    isActive
+                                      ? 'bg-[#00C48C]/10 text-[#00C48C]'
+                                      : 'text-gray-600 hover:bg-gray-50 hover:text-[#00C48C]'
+                                  }`}
+                                >
+                                  <span className="mr-2 text-lg">{subItem.icon}</span>
+                                  <span>{subItem.name}</span>
+                                </Link>
+                              );
+                            })}
+                          </div>
+                        )}
+                      </div>
+                    );
+                  }
+
+                  // Item normal sem submenu
                   const isActive = pathname === item.href;
                   return (
                     <Link
                       key={item.name}
-                      href={item.href}
+                      href={item.href!}
                       className={`group flex items-center px-4 py-3 text-sm font-semibold rounded-lg transition-all duration-200 ${
                         isActive
                           ? 'bg-gradient-to-r from-[#00C48C] to-[#059669] text-white shadow-md glow-green'
@@ -175,11 +270,74 @@ export default function DashboardLayout({
               <div className="flex-1 h-0 pt-8 pb-6 overflow-y-auto">
                 <nav className="mt-2 px-4 space-y-2">
                   {navigation.map((item) => {
+                    // Se tem subitens, é um submenu
+                    if (item.subItems) {
+                      const isExpanded = expandedMenu === item.name;
+                      const isAnySubItemActive = item.subItems.some(subItem => pathname === subItem.href);
+
+                      return (
+                        <div key={item.name}>
+                          {/* Item principal do submenu */}
+                          <button
+                            onClick={() => setExpandedMenu(isExpanded ? null : item.name)}
+                            className={`group flex items-center justify-between w-full px-4 py-3 text-sm font-semibold rounded-lg transition-all duration-200 ${
+                              isAnySubItemActive
+                                ? 'bg-gradient-to-r from-[#00C48C] to-[#059669] text-white shadow-md'
+                                : 'bg-white text-gray-700 hover:bg-gray-50 hover:text-[#00C48C]'
+                            }`}
+                          >
+                            <div className="flex items-center">
+                              {item.iconImage ? (
+                                <Image
+                                  src={item.iconImage}
+                                  alt={item.name}
+                                  width={24}
+                                  height={24}
+                                  className="mr-3"
+                                />
+                              ) : (
+                                <span className="mr-3 text-2xl">{item.icon}</span>
+                              )}
+                              <span className="font-semibold">{item.name}</span>
+                            </div>
+                            <span className={`text-lg transition-transform duration-200 ${isExpanded ? 'rotate-90' : ''}`}>
+                              ▶
+                            </span>
+                          </button>
+
+                          {/* Subitens */}
+                          {isExpanded && (
+                            <div className="ml-6 mt-2 space-y-1">
+                              {item.subItems.map((subItem) => {
+                                const isActive = pathname === subItem.href;
+                                return (
+                                  <Link
+                                    key={subItem.href}
+                                    href={subItem.href}
+                                    onClick={() => setSidebarOpen(false)}
+                                    className={`group flex items-center px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200 ${
+                                      isActive
+                                        ? 'bg-[#00C48C]/10 text-[#00C48C]'
+                                        : 'text-gray-600 hover:bg-gray-50 hover:text-[#00C48C]'
+                                    }`}
+                                  >
+                                    <span className="mr-2 text-lg">{subItem.icon}</span>
+                                    <span>{subItem.name}</span>
+                                  </Link>
+                                );
+                              })}
+                            </div>
+                          )}
+                        </div>
+                      );
+                    }
+
+                    // Item normal sem submenu
                     const isActive = pathname === item.href;
                     return (
                       <Link
                         key={item.name}
-                        href={item.href}
+                        href={item.href!}
                         onClick={() => setSidebarOpen(false)}
                         className={`group flex items-center px-4 py-3 text-sm font-semibold rounded-lg transition-all duration-200 ${
                           isActive

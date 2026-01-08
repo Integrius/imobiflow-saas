@@ -62,13 +62,29 @@ export default function AdminLogsPage() {
   const [filtroDataInicio, setFiltroDataInicio] = useState('');
   const [filtroDataFim, setFiltroDataFim] = useState('');
 
+  // Lista de tenants para o filtro
+  const [tenants, setTenants] = useState<Array<{id: string; nome: string; slug: string}>>([]);
+
   // Estatísticas
   const [stats, setStats] = useState<any>(null);
+
+  useEffect(() => {
+    loadTenants();
+  }, []);
 
   useEffect(() => {
     loadLogs();
     loadStats();
   }, [page, filtroTipo, filtroTenant, filtroDataInicio, filtroDataFim]);
+
+  const loadTenants = async () => {
+    try {
+      const response = await api.get('/admin/tenants');
+      setTenants(response.data.tenants || []);
+    } catch (error) {
+      console.error('Erro ao carregar tenants:', error);
+    }
+  };
 
   const loadLogs = async () => {
     try {
@@ -168,7 +184,7 @@ export default function AdminLogsPage() {
       {/* Filtros */}
       <div className="bg-white rounded-lg shadow p-4 mb-6">
         <h2 className="text-lg font-semibold mb-4">🔍 Filtros</h2>
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Tipo de Atividade
@@ -185,6 +201,27 @@ export default function AdminLogsPage() {
               {Object.entries(TIPOS_ATIVIDADE).map(([key, label]) => (
                 <option key={key} value={key}>
                   {label}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Tenant
+            </label>
+            <select
+              value={filtroTenant}
+              onChange={(e) => {
+                setFiltroTenant(e.target.value);
+                setPage(0);
+              }}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#8FD14F] focus:border-transparent"
+            >
+              <option value="">Todos os Tenants</option>
+              {tenants.map((tenant) => (
+                <option key={tenant.id} value={tenant.id}>
+                  {tenant.nome} ({tenant.slug})
                 </option>
               ))}
             </select>
