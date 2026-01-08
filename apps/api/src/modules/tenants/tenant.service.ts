@@ -3,6 +3,7 @@ import { TenantRepository } from './tenant.repository'
 import { CreateTenantDTO, UpdateTenantDTO } from './tenant.schema'
 import { AppError } from '../../shared/errors/AppError'
 import bcrypt from 'bcryptjs'
+import { ActivityLogService } from '../../shared/services/activity-log.service'
 
 export class TenantService {
   private repository: TenantRepository
@@ -92,6 +93,9 @@ export class TenantService {
           where: { id: tenant.id },
           data: { total_usuarios: 1 }
         })
+
+        // 6. ✅ Log de criação do tenant
+        await ActivityLogService.logTenantCriado(tenant.id)
 
         return tenant
       })

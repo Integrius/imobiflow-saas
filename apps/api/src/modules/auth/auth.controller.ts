@@ -2,6 +2,7 @@ import { FastifyRequest, FastifyReply } from 'fastify'
 import { PrismaClient } from '@prisma/client'
 import { AuthService } from './auth.service'
 import { registerSchema, loginSchema } from './auth.schema'
+import { ActivityLogService } from '../../shared/services/activity-log.service'
 
 export class AuthController {
   private service: AuthService
@@ -37,6 +38,15 @@ export class AuthController {
       const tenantId = (request.headers['x-tenant-id'] as string) || null
 
       const result = await this.service.login(data, tenantId)
+
+      // ✅ Log de login bem-sucedido
+      await ActivityLogService.logLogin(
+        result.user.tenant_id,
+        result.user.id,
+        request,
+        true
+      )
+
       return reply.status(200).send(result)
     } catch (error: any) {
       if (error.name === 'ZodError') {
@@ -45,6 +55,23 @@ export class AuthController {
           details: error.errors
         })
       }
+
+      // ❌ Log de tentativa de login falha (se tiver tenant_id)
+      if (tenantId && (error.statusCode === 401 || error.statusCode === 403)) {
+        try {
+          // Tentar logar falha mesmo sem user_id (não temos pois login falhou)
+          await ActivityLogService.log({
+            tenant_id: tenantId,
+            tipo: 'LOGIN_FALHOU' as any,
+            acao: `Tentativa de login falhou para email: ${data.email}`,
+            detalhes: { email: data.email },
+            request,
+          })
+        } catch {
+          // Ignorar erro ao logar
+        }
+      }
+
       return reply.status(error.statusCode || 401).send({
         error: error.message || 'Erro ao fazer login'
       })
@@ -77,6 +104,15 @@ export class AuthController {
       const tenantId = (request.headers['x-tenant-id'] as string) || null
 
       const result = await this.service.googleLogin(credential, tenantId)
+
+      // ✅ Log de login via Google bem-sucedido
+      await ActivityLogService.logLogin(
+        result.user.tenant_id,
+        result.user.id,
+        request,
+        true
+      )
+
       return reply.status(200).send(result)
     } catch (error: any) {
       return reply.status(error.statusCode || 401).send({
@@ -96,7 +132,16 @@ export class AuthController {
         })
       }
 
-      const result = await this.service.definirSenhaPrimeiroAcesso(user.id, senha)
+      const result = await this.service.definirSenhaPrimeiroAcesso(user.userId, senha)
+
+      // ✅ Log de definição de senha no primeiro acesso
+      await ActivityLogService.logSenhaAlterada(
+        user.tenantId,
+        user.userId,
+        'Primeiro acesso',
+        request
+      )
+
       return reply.status(200).send(result)
     } catch (error: any) {
       return reply.status(error.statusCode || 400).send({

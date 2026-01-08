@@ -66,6 +66,7 @@ model Tenant {
   assinaturas   Assinatura[]
   messages      Message[]
   agendamentos  Agendamento[]
+  activity_logs ActivityLog[]
 
   @@index([slug])
   @@index([plano])
@@ -170,7 +171,8 @@ model User {
   ultimo_login DateTime?
 
   // Relacionamentos
-  corretor Corretor?
+  corretor      Corretor?
+  activity_logs ActivityLog[]
 
   @@unique([tenant_id, email])
   @@index([tenant_id])
@@ -882,4 +884,77 @@ enum Intent {
   NEGOCIACAO // Quer negociar/fazer proposta
   RECLAMACAO // Está reclamando
   OUTRO // Outros
+}
+
+// ============================================
+// LOGS DE ATIVIDADES (AUDIT TRAIL)
+// ============================================
+
+model ActivityLog {
+  id String @id @default(uuid())
+
+  // Multi-tenant
+  tenant_id String
+  tenant    Tenant @relation(fields: [tenant_id], references: [id], onDelete: Cascade)
+
+  // Usuário que executou a ação (pode ser null para ações automáticas)
+  user_id String?
+  user    User?   @relation(fields: [user_id], references: [id], onDelete: SetNull)
+
+  // Tipo de atividade
+  tipo TipoAtividade
+
+  // Descrição da atividade
+  acao        String // Ex: "Login realizado", "Senha alterada", "Tenant cancelado"
+  detalhes    Json? // Informações adicionais (sem dados sensíveis)
+  ip_address  String? // IP de onde a ação foi executada
+  user_agent  String? // Navegador/dispositivo usado
+
+  // Metadados
+  entidade_tipo String? // Ex: "Tenant", "User", "Lead"
+  entidade_id   String? // ID da entidade afetada
+
+  // Timestamp
+  created_at DateTime @default(now())
+
+  @@index([tenant_id])
+  @@index([user_id])
+  @@index([tipo])
+  @@index([created_at])
+  @@index([entidade_tipo, entidade_id])
+  @@map("activity_logs")
+}
+
+enum TipoAtividade {
+  // Autenticação
+  LOGIN
+  LOGOUT
+  LOGIN_FALHOU
+
+  // Segurança
+  SENHA_ALTERADA
+  SENHA_RESETADA
+  EMAIL_ALTERADO
+
+  // Tenant
+  TENANT_CRIADO
+  TENANT_CANCELADO
+  TENANT_REATIVADO
+  TENANT_EXPORTACAO_DADOS
+
+  // Assinatura
+  ASSINATURA_ATIVADA
+  ASSINATURA_CANCELADA
+  PAGAMENTO_REALIZADO
+  PAGAMENTO_FALHOU
+
+  // Usuários
+  USUARIO_CRIADO
+  USUARIO_EDITADO
+  USUARIO_DESATIVADO
+  USUARIO_REATIVADO
+
+  // Outros
+  CONFIGURACAO_ALTERADA
+  ACESSO_NEGADO
 }
