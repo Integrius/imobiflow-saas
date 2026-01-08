@@ -31,12 +31,11 @@ export class AuthController {
   }
 
   async login(request: FastifyRequest, reply: FastifyReply) {
+    // Extrair dados fora do try/catch para acessar no catch
+    const data = loginSchema.parse(request.body)
+    const tenantId = (request.headers['x-tenant-id'] as string) || null
+
     try {
-      const data = loginSchema.parse(request.body)
-
-      // Extrair tenant_id do header X-Tenant-ID (opcional)
-      const tenantId = (request.headers['x-tenant-id'] as string) || null
-
       const result = await this.service.login(data, tenantId)
 
       // ✅ Log de login bem-sucedido
