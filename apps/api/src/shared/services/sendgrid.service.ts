@@ -1036,6 +1036,259 @@ class SendGridService {
       throw new Error('Erro ao enviar email de exportação');
     }
   }
+
+  /**
+   * Email de boas-vindas ao registrar novo tenant
+   */
+  async enviarEmailBoasVindasRegistro(data: {
+    nomeUsuario: string;
+    emailUsuario: string;
+    nomeTenant: string;
+    dataExpiracao: Date;
+  }): Promise<boolean> {
+    const primeiroNome = data.nomeUsuario.split(' ')[0];
+
+    const dataFormatada = data.dataExpiracao.toLocaleDateString('pt-BR', {
+      day: '2-digit',
+      month: 'long',
+      year: 'numeric'
+    });
+
+    const html = `
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      line-height: 1.6;
+      color: #2C2C2C;
+      background-color: #FAF8F5;
+      margin: 0;
+      padding: 0;
+    }
+    .container {
+      max-width: 600px;
+      margin: 40px auto;
+      background: white;
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    }
+    .header {
+      background: linear-gradient(135deg, #8FD14F 0%, #6E9B3B 100%);
+      padding: 40px 30px;
+      text-align: center;
+      color: white;
+    }
+    .header h1 {
+      margin: 0;
+      font-size: 32px;
+      font-weight: 800;
+    }
+    .header p {
+      margin: 10px 0 0 0;
+      font-size: 18px;
+      opacity: 0.95;
+    }
+    .content {
+      padding: 40px 30px;
+    }
+    .greeting {
+      font-size: 20px;
+      font-weight: 600;
+      color: #2C2C2C;
+      margin-bottom: 20px;
+    }
+    .message {
+      font-size: 16px;
+      color: #555;
+      margin-bottom: 15px;
+      line-height: 1.7;
+    }
+    .trial-box {
+      background: linear-gradient(135deg, #FFF8DC 0%, #FFE4B5 100%);
+      border-left: 4px solid #FFB627;
+      padding: 25px;
+      margin: 30px 0;
+      border-radius: 8px;
+    }
+    .trial-box h2 {
+      margin: 0 0 15px 0;
+      color: #FF9500;
+      font-size: 22px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .trial-box .highlight {
+      background: #FFB627;
+      color: white;
+      padding: 4px 12px;
+      border-radius: 6px;
+      font-weight: 700;
+      font-size: 20px;
+    }
+    .info-box {
+      background: #F0F8FF;
+      border-left: 4px solid #4A90E2;
+      padding: 25px;
+      margin: 25px 0;
+      border-radius: 8px;
+    }
+    .info-box h3 {
+      margin: 0 0 15px 0;
+      color: #2C2C2C;
+      font-size: 18px;
+      font-weight: 700;
+    }
+    .info-box ul {
+      margin: 10px 0;
+      padding-left: 25px;
+    }
+    .info-box li {
+      margin: 10px 0;
+      color: #555;
+      line-height: 1.6;
+    }
+    .warning-box {
+      background: #FFF3CD;
+      border-left: 4px solid #FFC107;
+      padding: 20px;
+      margin: 25px 0;
+      border-radius: 8px;
+    }
+    .warning-box p {
+      margin: 5px 0;
+      color: #856404;
+      font-size: 15px;
+    }
+    .cta-button {
+      display: inline-block;
+      background: linear-gradient(135deg, #8FD14F 0%, #6E9B3B 100%);
+      color: white;
+      text-decoration: none;
+      padding: 16px 32px;
+      border-radius: 8px;
+      font-weight: 700;
+      margin: 25px 0;
+      text-align: center;
+      font-size: 16px;
+    }
+    .footer {
+      background: #F8F9FA;
+      padding: 30px;
+      text-align: center;
+      font-size: 14px;
+      color: #6C757D;
+      border-top: 1px solid #E9ECEF;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>🎉 Bem-vindo ao ImobiFlow!</h1>
+      <p>Gestão Imobiliária Inteligente</p>
+    </div>
+
+    <div class="content">
+      <p class="greeting">
+        Olá, ${primeiroNome}! 👋
+      </p>
+
+      <p class="message">
+        É um grande prazer ter você e a <strong>${data.nomeTenant}</strong> conosco!
+        Bem-vindo à plataforma <strong>ImobiFlow</strong>, seu sistema completo de gestão imobiliária com inteligência artificial.
+      </p>
+
+      <p class="message">
+        Estamos empolgados em ajudá-lo a transformar a forma como você gerencia leads, imóveis e negociações.
+        Com nossas ferramentas, você terá mais eficiência, automação e insights inteligentes para fechar mais negócios!
+      </p>
+
+      <div class="trial-box">
+        <h2>
+          <span>🎁</span>
+          Período de Teste Gratuito
+        </h2>
+        <p style="margin: 10px 0; color: #555; font-size: 16px;">
+          Você tem <span class="highlight">14 dias</span> para explorar todas as funcionalidades do ImobiFlow sem nenhum custo!
+        </p>
+        <p style="margin: 10px 0; color: #666; font-size: 15px;">
+          📅 Seu período trial expira em: <strong>${dataFormatada}</strong>
+        </p>
+      </div>
+
+      <div class="info-box">
+        <h3>💳 Como Funcionam os Pagamentos?</h3>
+        <ul>
+          <li>
+            <strong>Durante o trial (14 dias):</strong> Use todas as funcionalidades gratuitamente, sem cartão de crédito!
+          </li>
+          <li>
+            <strong>Antes do último dia:</strong> Informe seus dados de pagamento para continuar usando o sistema.
+          </li>
+          <li>
+            <strong>Cobrança mensal:</strong> Após ativar, cobraremos mensalmente sempre no mesmo dia do seu cadastro.
+          </li>
+          <li>
+            <strong>Sem surpresas:</strong> Você será avisado com antecedência sobre o término do trial e poderá exportar seus dados.
+          </li>
+        </ul>
+      </div>
+
+      <div class="warning-box">
+        <p style="font-weight: 600;">
+          ⚙️ <strong>Cancelamento Simples e Transparente</strong>
+        </p>
+        <p>
+          Você pode cancelar sua assinatura a qualquer momento através do menu <strong>"Opções"</strong> no painel administrativo.
+          Não há taxas de cancelamento ou multas!
+        </p>
+      </div>
+
+      <div style="text-align: center; margin: 30px 0;">
+        <p style="font-size: 16px; color: #555; margin-bottom: 15px;">
+          Comece agora mesmo a explorar o ImobiFlow:
+        </p>
+        <a href="https://${data.nomeTenant.toLowerCase().replace(/\s+/g, '')}.integrius.com.br/login" class="cta-button">
+          🚀 Acessar Minha Conta
+        </a>
+      </div>
+
+      <p class="message" style="margin-top: 30px;">
+        Se tiver qualquer dúvida ou precisar de ajuda, nossa equipe está à disposição!
+      </p>
+
+      <p class="message" style="text-align: center; color: #666;">
+        📧 Suporte: <strong>contato@integrius.com.br</strong>
+      </p>
+    </div>
+
+    <div class="footer">
+      <p style="margin: 0 0 10px 0;">
+        <strong>ImobiFlow</strong> - Gestão Imobiliária Inteligente
+      </p>
+      <p style="margin: 0 0 10px 0;">
+        Tecnologia e IA para impulsionar seu negócio imobiliário
+      </p>
+      <p style="margin: 0; font-size: 12px;">
+        © 2025-2026 ImobiFlow. Todos os direitos reservados.
+      </p>
+    </div>
+  </div>
+</body>
+</html>
+    `.trim();
+
+    return this.sendEmail({
+      to: data.emailUsuario,
+      subject: `🎉 Bem-vindo ao ImobiFlow, ${primeiroNome}! Seu trial de 14 dias começou`,
+      html
+    });
+  }
 }
 
 // Singleton

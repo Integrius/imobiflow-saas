@@ -51,7 +51,7 @@ export class TenantRepository {
         ...data,
         ...limites,
         status: 'TRIAL',
-        data_expiracao: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000) // 30 dias
+        data_expiracao: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000) // 14 dias
       }
     })
   }

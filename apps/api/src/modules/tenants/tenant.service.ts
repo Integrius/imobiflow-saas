@@ -4,6 +4,7 @@ import { CreateTenantDTO, UpdateTenantDTO } from './tenant.schema'
 import { AppError } from '../../shared/errors/AppError'
 import bcrypt from 'bcryptjs'
 import { ActivityLogService } from '../../shared/services/activity-log.service'
+import { sendGridService } from '../../shared/services/sendgrid.service'
 
 export class TenantService {
   private repository: TenantRepository
@@ -47,6 +48,7 @@ export class TenantService {
 
       return await this.prisma.$transaction(async (tx) => {
         // 1. Criar tenant
+        const dataExpiracao = new Date(Date.now() + 14 * 24 * 60 * 60 * 1000) // 14 dias
         const tenant = await tx.tenant.create({
           data: {
             nome: data.nome,
@@ -56,7 +58,7 @@ export class TenantService {
             telefone: data.telefone,
             plano: data.plano,
             status: 'TRIAL',
-            data_expiracao: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 dias
+            data_expiracao: dataExpiracao,
             limite_usuarios: 3,
             limite_imoveis: 100,
             limite_storage_mb: 1000
@@ -96,6 +98,22 @@ export class TenantService {
 
         // 6. ✅ Log de criação do tenant
         await ActivityLogService.logTenantCriado(tenant.id)
+
+        // 7. 📧 Enviar email de boas-vindas (assíncrono, não bloqueia)
+        setImmediate(async () => {
+          try {
+            await sendGridService.enviarEmailBoasVindasRegistro({
+              nomeUsuario: adminNome,
+              emailUsuario: adminEmail,
+              nomeTenant: tenant.nome,
+              dataExpiracao: dataExpiracao
+            })
+            console.log(`✅ Email de boas-vindas enviado para ${adminEmail}`)
+          } catch (error) {
+            console.error('❌ Erro ao enviar email de boas-vindas:', error)
+            // Não propaga erro - email é não-crítico
+          }
+        })
 
         return tenant
       })
