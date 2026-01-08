@@ -5,6 +5,7 @@ import { AppError } from '../../shared/errors/AppError'
 import bcrypt from 'bcryptjs'
 import { ActivityLogService } from '../../shared/services/activity-log.service'
 import { sendGridService } from '../../shared/services/sendgrid.service'
+import { DataExportService } from '../../shared/services/data-export.service'
 
 export class TenantService {
   private repository: TenantRepository
@@ -236,7 +237,8 @@ export class TenantService {
 
     // Atualizar status do tenant para CANCELADO
     await this.repository.update(tenantId, {
-      status: 'CANCELADO'
+      status: 'CANCELADO',
+      data_exportacao_dados: new Date() // Marcar que dados foram exportados
     })
 
     // Registrar log de cancelamento
@@ -249,7 +251,18 @@ export class TenantService {
       request
     })
 
-    // Enviar email de confirmação (assíncrono)
+    // Exportar dados automaticamente e enviar por email (assíncrono)
+    setImmediate(async () => {
+      try {
+        const dataExportService = new DataExportService(this.prisma)
+        const stats = await dataExportService.exportTenantData(tenantId, user.email, tenant.nome)
+        console.log(`✅ Dados exportados automaticamente para ${user.email} no cancelamento`)
+      } catch (error) {
+        console.error('❌ Erro ao exportar dados no cancelamento:', error)
+      }
+    })
+
+    // Enviar email de confirmação de cancelamento (assíncrono)
     setImmediate(async () => {
       try {
         const primeiroNome = user.nome.split(' ')[0]
@@ -329,7 +342,7 @@ export class TenantService {
         <ul style="margin: 10px 0; padding-left: 20px;">
           <li>Seu acesso ao sistema será bloqueado imediatamente</li>
           <li>Todos os seus dados serão mantidos por <strong>30 dias</strong></li>
-          <li>Você pode solicitar a exportação dos dados durante este período</li>
+          <li><strong>✅ Seus dados foram exportados automaticamente e enviados para este email em formato CSV</strong></li>
           <li>Após 30 dias, todos os dados serão excluídos permanentemente</li>
         </ul>
       </div>

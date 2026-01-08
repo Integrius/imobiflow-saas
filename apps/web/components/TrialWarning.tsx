@@ -35,51 +35,31 @@ export default function TrialWarning() {
   const { dias_restantes } = trialInfo;
 
   // Definir cor e ícone baseado nos dias restantes
-  let bgColor = 'bg-[#00C48C]/10';
-  let borderColor = 'border-[#00C48C]/30';
-  let textColor = 'text-[#00C48C]';
+  let textColor = 'text-white';
   let icon = '✅';
 
   // Verde: mais de 7 dias
   if (dias_restantes > 7) {
-    bgColor = 'bg-[#00C48C]/10';
-    borderColor = 'border-[#00C48C]/30';
     textColor = 'text-[#00C48C]';
     icon = '✅';
   }
   // Amarelo: 4-7 dias
   else if (dias_restantes >= 4) {
-    bgColor = 'bg-[#FFB627]/10';
-    borderColor = 'border-[#FFB627]/30';
     textColor = 'text-[#FFB627]';
     icon = '⏰';
   }
   // Vermelho: 0-3 dias
   else {
-    bgColor = 'bg-[#FF6B6B]/10';
-    borderColor = 'border-[#FF6B6B]/30';
-    textColor = 'text-[#FF006E]';
+    textColor = 'text-[#FF6B6B]';
     icon = '⚠️';
   }
 
   return (
-    <div className={`${bgColor} border-2 ${borderColor} rounded-lg p-3 mb-4`}>
-      <div className="flex items-center gap-3">
-        <span className="text-2xl">{icon}</span>
-        <div className="flex-1">
-          <p className={`text-sm font-bold ${textColor}`}>
-            {dias_restantes === 1 
-              ? 'Último dia de teste!' 
-              : dias_restantes === 0
-              ? 'Período de teste expirando hoje'
-              : `${dias_restantes} dias restantes no período de teste`
-            }
-          </p>
-          <p className="text-xs text-[#4B5563] mt-0.5">
-            Entre em contato para ativar sua assinatura e continuar usando o ImobiFlow
-          </p>
-        </div>
-      </div>
+    <div className="flex items-center gap-2 bg-white/10 rounded-lg px-3 py-2 backdrop-blur-sm border border-white/20">
+      <span className="text-lg">{icon}</span>
+      <span className={`text-sm font-semibold ${textColor}`}>
+        Trial: {dias_restantes} {dias_restantes === 1 ? 'dia' : 'dias'}
+      </span>
     </div>
   );
 }
