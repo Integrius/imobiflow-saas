@@ -1,6 +1,8 @@
 import { FastifyInstance } from 'fastify'
 import { authMiddleware } from '../../shared/middlewares/auth.middleware'
 import { prisma } from '../../shared/database/prisma.service'
+import { ActivityLogService } from '../../shared/services/activity-log.service'
+import { TipoAtividade } from '@prisma/client'
 
 /**
  * Rotas de Administração Geral
@@ -386,6 +388,199 @@ export async function adminRoutes(server: FastifyInstance) {
         server.log.error({ error }, 'Erro ao atualizar status em lote')
         return reply.status(500).send({
           error: 'Erro ao atualizar status dos tenants'
+        })
+      }
+    }
+  )
+
+  /**
+   * GET /api/v1/admin/activity-logs
+   *
+   * Lista logs de atividades de TODOS os tenants do sistema
+   * Permite filtros por tenant, tipo, data, usuário
+   *
+   * Acesso: Apenas ADMIN do tenant Vivoly
+   */
+  server.get(
+    '/activity-logs',
+    {
+      preHandler: [authMiddleware, requireVivolyAdmin]
+    },
+    async (request, reply) => {
+      try {
+        const query = request.query as any
+
+        // Parâmetros de busca
+        const params: any = {
+          limit: query.limit ? parseInt(query.limit) : 50,
+          offset: query.offset ? parseInt(query.offset) : 0,
+        }
+
+        // Filtros opcionais
+        if (query.tenant_id) params.tenant_id = query.tenant_id
+        if (query.user_id) params.user_id = query.user_id
+        if (query.tipo) params.tipo = query.tipo as TipoAtividade
+        if (query.entidade_tipo) params.entidade_tipo = query.entidade_tipo
+        if (query.entidade_id) params.entidade_id = query.entidade_id
+        if (query.data_inicio) params.data_inicio = new Date(query.data_inicio)
+        if (query.data_fim) params.data_fim = new Date(query.data_fim)
+
+        // Buscar logs usando o service
+        // Como é admin geral, vamos buscar diretamente do Prisma sem filtro de tenant
+        const where: any = {}
+
+        if (params.tenant_id) where.tenant_id = params.tenant_id
+        if (params.user_id) where.user_id = params.user_id
+        if (params.tipo) where.tipo = params.tipo
+        if (params.entidade_tipo) where.entidade_tipo = params.entidade_tipo
+        if (params.entidade_id) where.entidade_id = params.entidade_id
+
+        if (params.data_inicio || params.data_fim) {
+          where.created_at = {}
+          if (params.data_inicio) where.created_at.gte = params.data_inicio
+          if (params.data_fim) where.created_at.lte = params.data_fim
+        }
+
+        const [logs, total] = await Promise.all([
+          prisma.activityLog.findMany({
+            where,
+            include: {
+              user: {
+                select: {
+                  id: true,
+                  nome: true,
+                  email: true,
+                  tipo: true,
+                },
+              },
+              tenant: {
+                select: {
+                  id: true,
+                  nome: true,
+                  slug: true,
+                  email: true,
+                },
+              },
+            },
+            orderBy: { created_at: 'desc' },
+            take: params.limit,
+            skip: params.offset,
+          }),
+          prisma.activityLog.count({ where }),
+        ])
+
+        return reply.send({
+          success: true,
+          logs,
+          total,
+          limit: params.limit,
+          offset: params.offset,
+        })
+      } catch (error) {
+        server.log.error({ error }, 'Erro ao buscar logs de atividades')
+        return reply.status(500).send({
+          error: 'Erro ao buscar logs de atividades',
+        })
+      }
+    }
+  )
+
+  /**
+   * GET /api/v1/admin/activity-logs/stats
+   *
+   * Estatísticas de logs do sistema inteiro
+   *
+   * Acesso: Apenas ADMIN do tenant Vivoly
+   */
+  server.get(
+    '/activity-logs/stats',
+    {
+      preHandler: [authMiddleware, requireVivolyAdmin]
+    },
+    async (request, reply) => {
+      try {
+        const query = request.query as any
+
+        const data_inicio = query.data_inicio ? new Date(query.data_inicio) : undefined
+        const data_fim = query.data_fim ? new Date(query.data_fim) : undefined
+
+        // Buscar logs para estatísticas
+        const where: any = {}
+        if (data_inicio || data_fim) {
+          where.created_at = {}
+          if (data_inicio) where.created_at.gte = data_inicio
+          if (data_fim) where.created_at.lte = data_fim
+        }
+
+        const logs = await prisma.activityLog.findMany({
+          where,
+          select: {
+            tipo: true,
+            created_at: true,
+            tenant_id: true,
+          },
+        })
+
+        // Agrupar por tipo
+        const porTipo: Record<string, number> = {}
+        logs.forEach((log) => {
+          porTipo[log.tipo] = (porTipo[log.tipo] || 0) + 1
+        })
+
+        // Agrupar por tenant
+        const porTenant: Record<string, number> = {}
+        logs.forEach((log) => {
+          porTenant[log.tenant_id] = (porTenant[log.tenant_id] || 0) + 1
+        })
+
+        // Top 5 tenants com mais atividades
+        const topTenants = await prisma.tenant.findMany({
+          where: {
+            id: {
+              in: Object.keys(porTenant),
+            },
+          },
+          select: {
+            id: true,
+            nome: true,
+            slug: true,
+          },
+        })
+
+        const topTenantsComCount = topTenants
+          .map((tenant) => ({
+            ...tenant,
+            count: porTenant[tenant.id],
+          }))
+          .sort((a, b) => b.count - a.count)
+          .slice(0, 5)
+
+        // Últimas 24 horas
+        const ultimas24h = logs.filter((log) => {
+          const diff = Date.now() - new Date(log.created_at).getTime()
+          return diff < 24 * 60 * 60 * 1000
+        }).length
+
+        // Últimos 7 dias
+        const ultimos7dias = logs.filter((log) => {
+          const diff = Date.now() - new Date(log.created_at).getTime()
+          return diff < 7 * 24 * 60 * 60 * 1000
+        }).length
+
+        return reply.send({
+          success: true,
+          stats: {
+            total: logs.length,
+            ultimas24h,
+            ultimos7dias,
+            porTipo,
+            topTenants: topTenantsComCount,
+          },
+        })
+      } catch (error) {
+        server.log.error({ error }, 'Erro ao buscar estatísticas de logs')
+        return reply.status(500).send({
+          error: 'Erro ao buscar estatísticas',
         })
       }
     }
