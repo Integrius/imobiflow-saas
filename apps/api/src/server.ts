@@ -22,6 +22,7 @@ import { setupRoutes } from './modules/setup/setup.routes'
 import { propostasRoutes } from './modules/propostas/propostas.routes'
 import { adminRoutes } from './modules/admin/admin.routes'
 import { activityLogsRoutes } from './modules/activity-logs/activity-logs.routes'
+import { comissoesRoutes } from './modules/comissoes/comissoes.routes'
 
 const server = Fastify({
   logger: true
@@ -80,6 +81,7 @@ server.register(propostasRoutes, { prefix: '/api/v1/propostas' }) // Rotas de pr
 server.register(usersRoutes, { prefix: '/api/v1/users' }) // Rotas de gerenciamento de usuários
 server.register(activityLogsRoutes, { prefix: '/api/v1/activity-logs' }) // Rotas de logs de atividades (apenas ADMIN)
 server.register(adminRoutes, { prefix: '/api/v1/admin' }) // Rotas de administração geral (Vivoly)
+server.register(comissoesRoutes, { prefix: '/api/v1/comissoes' }) // Rotas de cálculo de comissões
 server.register(setupRoutes, { prefix: '/api/v1/setup' }) // ⚠️ SETUP INICIAL - Remover em produção!
 
 const start = async () => {

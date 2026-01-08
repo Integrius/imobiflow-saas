@@ -592,6 +592,7 @@ model Negociacao {
   // Proposta
   valor_proposta Decimal? @db.Decimal(10, 2)
   valor_aprovado Decimal? @db.Decimal(10, 2)
+  valor_final    Decimal? @db.Decimal(10, 2) // Valor real de fechamento da negociação
   condicoes      Json?
 
   // Comissões

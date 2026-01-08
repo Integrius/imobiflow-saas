@@ -64,6 +64,12 @@ export default function CorretoresPage() {
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const [originalFormData, setOriginalFormData] = useState<any>(null);
 
+  // Estados para cálculo de comissões
+  const [selectedCorretores, setSelectedCorretores] = useState<string[]>([]);
+  const [comissoesModalOpen, setComissoesModalOpen] = useState(false);
+  const [comissoesData, setComissoesData] = useState<any>(null);
+  const [loadingComissoes, setLoadingComissoes] = useState(false);
+
   const [formData, setFormData] = useState<CorretorForm>({
     nome: '',
     email: '',
@@ -232,6 +238,46 @@ export default function CorretoresPage() {
     }
   };
 
+  // Funções de seleção de corretores
+  const toggleCorretorSelection = (corretorId: string) => {
+    setSelectedCorretores(prev =>
+      prev.includes(corretorId)
+        ? prev.filter(id => id !== corretorId)
+        : [...prev, corretorId]
+    );
+  };
+
+  const toggleSelectAll = () => {
+    if (selectedCorretores.length === filteredCorretores.length) {
+      setSelectedCorretores([]);
+    } else {
+      setSelectedCorretores(filteredCorretores.map(c => c.id));
+    }
+  };
+
+  // Função para calcular comissões
+  const calcularComissoes = async () => {
+    if (selectedCorretores.length === 0) {
+      toast.error('Selecione pelo menos um corretor');
+      return;
+    }
+
+    try {
+      setLoadingComissoes(true);
+      const response = await api.post('/comissoes/calcular', {
+        corretor_ids: selectedCorretores
+      });
+
+      setComissoesData(response.data);
+      setComissoesModalOpen(true);
+    } catch (error: any) {
+      console.error('Erro ao calcular comissões:', error);
+      toast.error(error.response?.data?.error || 'Erro ao calcular comissões');
+    } finally {
+      setLoadingComissoes(false);
+    }
+  };
+
   const filteredCorretores = corretores.filter(
     (corretor) =>
       corretor.nome.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -256,15 +302,43 @@ export default function CorretoresPage() {
             <span className="text-[#00C48C] text-lg font-bold">{corretores.length}</span> corretores cadastrados
           </p>
         </div>
-        <button
-          onClick={openCreateModal}
-          className="px-6 py-3 btn-primary"
-          style={{
-            boxShadow: 'inset 0 -2px 4px rgba(0, 0, 0, 0.2), 0 4px 8px rgba(0, 0, 0, 0.2)'
-          }}
-        >
-          + Novo Corretor
-        </button>
+        <div className="flex gap-3">
+          <button
+            onClick={calcularComissoes}
+            disabled={selectedCorretores.length === 0 || loadingComissoes}
+            className={`px-6 py-3 rounded-lg font-semibold transition-all duration-200 ${
+              selectedCorretores.length === 0 || loadingComissoes
+                ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                : 'bg-gradient-to-r from-[#FFB627] to-[#FF9500] text-white hover:scale-105'
+            }`}
+            style={{
+              boxShadow: selectedCorretores.length > 0 && !loadingComissoes
+                ? 'inset 0 -2px 4px rgba(0, 0, 0, 0.2), 0 4px 8px rgba(0, 0, 0, 0.2)'
+                : 'none'
+            }}
+          >
+            {loadingComissoes ? (
+              <span className="flex items-center gap-2">
+                <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                </svg>
+                Calculando...
+              </span>
+            ) : (
+              <>💰 Calcular Comissões ({selectedCorretores.length})</>
+            )}
+          </button>
+          <button
+            onClick={openCreateModal}
+            className="px-6 py-3 btn-primary"
+            style={{
+              boxShadow: 'inset 0 -2px 4px rgba(0, 0, 0, 0.2), 0 4px 8px rgba(0, 0, 0, 0.2)'
+            }}
+          >
+            + Novo Corretor
+          </button>
+        </div>
       </div>
 
       {/* Busca */}
@@ -283,6 +357,14 @@ export default function CorretoresPage() {
         <table className="min-w-full divide-y divide-slate-600">
           <thead className="bg-gradient-to-r from-[#3B82F6] to-[#3B82F6]">
             <tr>
+              <th className="px-4 py-4 text-center">
+                <input
+                  type="checkbox"
+                  checked={selectedCorretores.length === filteredCorretores.length && filteredCorretores.length > 0}
+                  onChange={toggleSelectAll}
+                  className="w-5 h-5 text-[#00C48C] bg-white border-gray-300 rounded focus:ring-[#00C48C] cursor-pointer"
+                />
+              </th>
               <th className="px-6 py-4 text-left text-xs font-bold text-white uppercase tracking-wider">Nome</th>
               <th className="px-6 py-4 text-left text-xs font-bold text-white uppercase tracking-wider">Email</th>
               <th className="px-6 py-4 text-left text-xs font-bold text-white uppercase tracking-wider">CRECI</th>
@@ -294,7 +376,7 @@ export default function CorretoresPage() {
           <tbody className="bg-white divide-y divide-[rgba(169,126,111,0.1)]">
             {filteredCorretores.length === 0 ? (
               <tr>
-                <td colSpan={6} className="px-6 py-4">
+                <td colSpan={7} className="px-6 py-4">
                   <EmptyState
                     icon={EmptyStateIcons.UserGroup}
                     title={searchTerm ? 'Nenhum corretor encontrado' : 'Nenhum corretor cadastrado'}
@@ -310,6 +392,14 @@ export default function CorretoresPage() {
             ) : (
               filteredCorretores.map((corretor, index) => (
                 <tr key={corretor.id} className={`hover:bg-[#F9FAFB] transition-colors ${index % 2 === 0 ? 'bg-white' : 'bg-white/70'}`}>
+                  <td className="px-4 py-4 text-center">
+                    <input
+                      type="checkbox"
+                      checked={selectedCorretores.includes(corretor.id)}
+                      onChange={() => toggleCorretorSelection(corretor.id)}
+                      className="w-5 h-5 text-[#00C48C] bg-gray-100 border-gray-300 rounded focus:ring-[#00C48C] cursor-pointer"
+                    />
+                  </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-bold text-[#0A2540]">
                     {corretor.nome}
                   </td>
@@ -683,6 +773,111 @@ export default function CorretoresPage() {
             </button>
           </div>
         </div>
+      </Modal>
+
+      {/* Modal de Resultados de Comissões */}
+      <Modal
+        isOpen={comissoesModalOpen}
+        onClose={() => {
+          setComissoesModalOpen(false);
+          setComissoesData(null);
+        }}
+        title="💰 Relatório de Comissões"
+      >
+        {comissoesData && (
+          <div className="space-y-6">
+            {/* Resumo Geral */}
+            <div className="grid grid-cols-3 gap-4">
+              <div className="bg-gradient-to-br from-[#00C48C]/10 to-[#00C48C]/5 border-2 border-[#00C48C]/30 rounded-lg p-4 text-center">
+                <p className="text-xs text-gray-600 font-semibold mb-1">Corretores</p>
+                <p className="text-2xl font-bold text-[#00C48C]">{comissoesData.total_corretores}</p>
+              </div>
+              <div className="bg-gradient-to-br from-[#3B82F6]/10 to-[#3B82F6]/5 border-2 border-[#3B82F6]/30 rounded-lg p-4 text-center">
+                <p className="text-xs text-gray-600 font-semibold mb-1">Negociações</p>
+                <p className="text-2xl font-bold text-[#3B82F6]">{comissoesData.total_negociacoes}</p>
+              </div>
+              <div className="bg-gradient-to-br from-[#FFB627]/10 to-[#FFB627]/5 border-2 border-[#FFB627]/30 rounded-lg p-4 text-center">
+                <p className="text-xs text-gray-600 font-semibold mb-1">Total Comissões</p>
+                <p className="text-2xl font-bold text-[#FFB627]">
+                  R$ {comissoesData.comissoes.reduce((sum: number, c: any) => sum + c.total_comissao, 0).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                </p>
+              </div>
+            </div>
+
+            {/* Lista de Comissões por Corretor */}
+            <div className="space-y-4 max-h-[500px] overflow-y-auto pr-2">
+              {comissoesData.comissoes.map((corretor: any) => (
+                <div key={corretor.corretor_id} className="border-2 border-gray-200 rounded-lg p-4 hover:border-[#00C48C]/50 transition-colors">
+                  {/* Header do Corretor */}
+                  <div className="flex items-center justify-between mb-3">
+                    <div>
+                      <h3 className="text-lg font-bold text-gray-900">{corretor.corretor_nome}</h3>
+                      <p className="text-xs text-gray-500">{corretor.corretor_email}</p>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-xs text-gray-600 font-semibold">Total Comissão</p>
+                      <p className="text-xl font-bold text-[#FFB627]">
+                        R$ {corretor.total_comissao.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Stats do Corretor */}
+                  <div className="grid grid-cols-2 gap-3 mb-3">
+                    <div className="bg-gray-50 rounded p-2 text-center">
+                      <p className="text-xs text-gray-600">Total em Vendas</p>
+                      <p className="text-sm font-bold text-gray-900">
+                        R$ {corretor.total_vendas.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                      </p>
+                    </div>
+                    <div className="bg-gray-50 rounded p-2 text-center">
+                      <p className="text-xs text-gray-600">Negociações Fechadas</p>
+                      <p className="text-sm font-bold text-gray-900">{corretor.negociacoes.length}</p>
+                    </div>
+                  </div>
+
+                  {/* Lista de Negociações */}
+                  <details className="mt-3">
+                    <summary className="cursor-pointer text-sm font-semibold text-[#00C48C] hover:text-[#059669]">
+                      Ver {corretor.negociacoes.length} negociação(ões) →
+                    </summary>
+                    <div className="mt-3 space-y-2 pl-4 border-l-2 border-gray-200">
+                      {corretor.negociacoes.map((neg: any) => (
+                        <div key={neg.id} className="text-xs bg-gray-50 rounded p-2">
+                          <div className="flex items-center justify-between mb-1">
+                            <span className="font-mono text-[#3B82F6] font-bold">{neg.codigo}</span>
+                            <span className="text-gray-500">
+                              {new Date(neg.data_fechamento).toLocaleDateString('pt-BR')}
+                            </span>
+                          </div>
+                          <p className="font-semibold text-gray-900">{neg.imovel_titulo}</p>
+                          <p className="text-gray-600">Cliente: {neg.lead_nome}</p>
+                          <div className="flex items-center justify-between mt-2">
+                            <span className="text-gray-700">Valor: <strong>R$ {neg.valor_final.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</strong></span>
+                            <span className="text-[#FFB627] font-bold">Comissão: R$ {neg.valor_comissao.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</span>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </details>
+                </div>
+              ))}
+            </div>
+
+            {/* Botão Fechar */}
+            <div className="flex justify-end pt-4 border-t">
+              <button
+                onClick={() => {
+                  setComissoesModalOpen(false);
+                  setComissoesData(null);
+                }}
+                className="px-6 py-2.5 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 font-bold transition-all"
+              >
+                Fechar
+              </button>
+            </div>
+          </div>
+        )}
       </Modal>
     </div>
   );
