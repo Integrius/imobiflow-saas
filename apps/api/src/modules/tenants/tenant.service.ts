@@ -272,6 +272,7 @@ export class TenantService {
           user.nome,
           tenant.nome,
           stats,
+          0, // diasRestantes: 0 pois a assinatura foi cancelada
           [
             { filename: exportedData.leads.fileName, content: exportedData.leads.csvContent },
             { filename: exportedData.imoveis.fileName, content: exportedData.imoveis.csvContent },
