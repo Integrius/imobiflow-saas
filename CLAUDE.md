@@ -3017,6 +3017,31 @@ jobs:
 - ✅ **Fix: Parâmetro Faltante no SendGrid**
   - Erro: `sendDataExportEmail` esperava 6 parâmetros, recebeu 5
   - Adicionado parâmetro `diasRestantes: 0` (pois assinatura foi cancelada)
+
+- ✅ **Fix CRÍTICO: Login Falhando com 401 (Tenant ID Incorreto)**
+  - **Problema Identificado:**
+    - Interceptor do axios (`api.ts`) adiciona header `X-Tenant-ID` em TODAS as requisições
+    - `getTenantId()` retorna `tenant_id` do localStorage de login anterior
+    - Ao fazer login em outro tenant, envia tenant_id ERRADO no header
+    - Backend busca usuário no tenant errado → 401 "Email ou senha inválidos"
+  - **Root Cause:**
+    - Linhas 36-38 de `/apps/web/lib/api.ts`: interceptor adiciona `X-Tenant-ID` globalmente
+    - Linha 115 de `/apps/web/lib/tenant.ts`: `getTenantId()` prioriza localStorage
+    - Usuário faz login em tenant A → `tenant_id` salvo no localStorage
+    - Usuário acessa tenant B → interceptor envia `tenant_id` do tenant A
+    - Backend recebe tenant_id errado → busca usuário no tenant errado → falha
+  - **Solução Implementada:**
+    - Limpar `localStorage.tenant_id` ANTES de fazer login (email ou Google OAuth)
+    - Previne que interceptor envie tenant_id de sessão anterior
+    - Permite login em qualquer tenant sem conflito
+    - Arquivos modificados:
+      - `/apps/web/lib/auth.ts` (login email - linhas 87-92)
+      - `/apps/web/lib/auth.ts` (login Google - linhas 156-161)
+    - Commit: 615d936
+  - **Impacto:**
+    - Fix resolve falha de login reportada em `imobiliariazacarias.integrius.com.br`
+    - Usuários podem fazer login em diferentes tenants sem erro 401
+    - localStorage.tenant_id só é salvo APÓS login bem-sucedido
   - Commit: 2924d0a
 
 - ✅ **Fix: Suporte para Domínios Render.com**
@@ -3424,11 +3449,18 @@ jobs:
 
 ---
 
-**Última atualização**: 08 de janeiro de 2026
-**Versão**: 1.6.3
+**Última atualização**: 09 de janeiro de 2026
+**Versão**: 1.6.4
 **Status**: Em produção ✅
 
-**Novidades da versão 1.6.3** (08 de janeiro de 2026):
+**Novidades da versão 1.6.4** (09 de janeiro de 2026):
+- ✅ **Fix CRÍTICO:** Login falhando com 401 devido a tenant_id incorreto no localStorage
+- ✅ localStorage.tenant_id agora é limpo ANTES do login para evitar conflitos
+- ✅ Usuários podem fazer login em diferentes tenants sem erro 401
+- ✅ Interceptor do axios não envia mais tenant_id de sessões anteriores durante login
+- ✅ Problema resolvido: Login em `imobiliariazacarias.integrius.com.br` funciona corretamente
+
+**Versão 1.6.3** (08 de janeiro de 2026):
 - ✅ **Fix CRÍTICO:** loginSchema.parse estava fora do try/catch (login quebrado)
 - ✅ **Fix crítico:** Google OAuth bloqueando login em tenants não autorizados
 - ✅ Login tradicional (email/senha) TOTALMENTE restaurado
