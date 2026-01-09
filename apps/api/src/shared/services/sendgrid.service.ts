@@ -1635,6 +1635,241 @@ class SendGridService {
       html
     });
   }
+
+  /**
+   * Email de boas-vindas com senha temporária para novo corretor
+   */
+  async enviarSenhaTemporariaCorretor(data: {
+    nome: string;
+    email: string;
+    senhaTemporaria: string;
+    tenantUrl: string; // vivoly.integrius.com.br
+    nomeTenant: string;
+    horasValidade: number; // 12
+  }): Promise<boolean> {
+    const primeiroNome = data.nome.split(' ')[0];
+
+    const html = `
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      line-height: 1.6;
+      color: #2C2C2C;
+      background-color: #FAF8F5;
+      margin: 0;
+      padding: 0;
+    }
+    .container {
+      max-width: 600px;
+      margin: 40px auto;
+      background: white;
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    }
+    .header {
+      background: linear-gradient(135deg, #8FD14F 0%, #6E9B3B 100%);
+      padding: 40px 30px;
+      text-align: center;
+      color: white;
+    }
+    .header h1 {
+      margin: 0;
+      font-size: 28px;
+      font-weight: 800;
+    }
+    .content {
+      padding: 40px 30px;
+    }
+    .credentials-box {
+      background: linear-gradient(135deg, #F0F8FF 0%, #E0F2FE 100%);
+      border: 3px solid #3B82F6;
+      padding: 30px;
+      margin: 25px 0;
+      border-radius: 12px;
+      text-align: center;
+    }
+    .credentials-box h2 {
+      margin: 0 0 20px 0;
+      color: #1E40AF;
+      font-size: 20px;
+    }
+    .credential-item {
+      background: white;
+      padding: 15px;
+      margin: 10px 0;
+      border-radius: 8px;
+      text-align: left;
+    }
+    .credential-label {
+      font-size: 12px;
+      color: #6B7280;
+      font-weight: 600;
+      text-transform: uppercase;
+      margin-bottom: 5px;
+    }
+    .credential-value {
+      font-size: 18px;
+      color: #1F2937;
+      font-weight: 700;
+      font-family: 'Courier New', monospace;
+      word-break: break-all;
+    }
+    .password-value {
+      font-size: 32px;
+      color: #3B82F6;
+      letter-spacing: 4px;
+    }
+    .warning-box {
+      background: #FEF2F2;
+      border-left: 4px solid #DC2626;
+      padding: 20px;
+      margin: 25px 0;
+      border-radius: 8px;
+    }
+    .info-box {
+      background: #FFF3CD;
+      border-left: 4px solid #FFC107;
+      padding: 20px;
+      margin: 25px 0;
+      border-radius: 8px;
+    }
+    .cta-button {
+      display: inline-block;
+      background: linear-gradient(135deg, #8FD14F 0%, #6E9B3B 100%);
+      color: white;
+      text-decoration: none;
+      padding: 16px 32px;
+      border-radius: 8px;
+      font-weight: 700;
+      margin: 20px 0;
+      text-align: center;
+      font-size: 16px;
+    }
+    .footer {
+      background: #F8F9FA;
+      padding: 30px;
+      text-align: center;
+      font-size: 14px;
+      color: #6C757D;
+      border-top: 1px solid #E9ECEF;
+    }
+    ol {
+      padding-left: 20px;
+    }
+    li {
+      margin: 10px 0;
+      color: #555;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>🎉 Bem-vindo ao ImobiFlow!</h1>
+      <p style="margin: 10px 0 0 0; font-size: 16px;">${data.nomeTenant}</p>
+    </div>
+
+    <div class="content">
+      <p style="font-size: 18px; font-weight: 600;">
+        Olá, ${primeiroNome}! 👋
+      </p>
+
+      <p>
+        Você foi cadastrado como <strong>corretor</strong> no sistema <strong>ImobiFlow</strong>
+        de <strong>${data.nomeTenant}</strong>. Seja bem-vindo à equipe!
+      </p>
+
+      <div class="credentials-box">
+        <h2>🔐 Suas Credenciais de Acesso</h2>
+
+        <div class="credential-item">
+          <div class="credential-label">📧 Email de acesso:</div>
+          <div class="credential-value">${data.email}</div>
+        </div>
+
+        <div class="credential-item">
+          <div class="credential-label">🔑 Senha Temporária:</div>
+          <div class="credential-value password-value">${data.senhaTemporaria}</div>
+        </div>
+
+        <div style="margin-top: 20px;">
+          <a href="https://${data.tenantUrl}/login" class="cta-button">
+            🚀 Acessar Sistema Agora
+          </a>
+        </div>
+      </div>
+
+      <div class="warning-box">
+        <p style="margin: 0; font-size: 14px; color: #DC2626; font-weight: 600;">
+          ⏰ <strong>ATENÇÃO: Senha Temporária</strong>
+        </p>
+        <p style="margin: 10px 0 0 0; font-size: 14px; color: #991B1B;">
+          Esta senha expira em <strong>${data.horasValidade} horas</strong>.
+          Após este período, será necessário solicitar uma nova senha ao administrador.
+        </p>
+      </div>
+
+      <div class="info-box">
+        <p style="margin: 0 0 10px 0; font-weight: 600; color: #856404;">
+          📝 Como fazer seu primeiro acesso:
+        </p>
+        <ol style="margin: 10px 0; padding-left: 20px; color: #856404;">
+          <li>Clique no botão "Acessar Sistema" acima ou acesse:
+            <a href="https://${data.tenantUrl}/login" style="color: #3B82F6;">
+              ${data.tenantUrl}/login
+            </a>
+          </li>
+          <li>Digite seu email e a senha temporária acima</li>
+          <li>Você será redirecionado automaticamente para definir sua nova senha</li>
+          <li>Escolha uma senha forte e pessoal (mínimo 6 caracteres)</li>
+          <li>Pronto! Agora você já pode usar o sistema normalmente</li>
+        </ol>
+      </div>
+
+      <div style="background: #F0F8FF; padding: 20px; border-radius: 8px; margin: 25px 0;">
+        <p style="margin: 0; font-weight: 600; color: #1E40AF;">
+          💡 Dica de Segurança:
+        </p>
+        <p style="margin: 10px 0 0 0; color: #1F2937; font-size: 14px;">
+          • Nunca compartilhe sua senha com ninguém<br>
+          • Use uma senha diferente de outros sistemas<br>
+          • Memorize ou guarde em local seguro
+        </p>
+      </div>
+
+      <p style="font-size: 14px; color: #666; text-align: center; margin-top: 30px;">
+        <strong>Dúvidas ou problemas para acessar?</strong><br>
+        Entre em contato com o administrador do sistema.
+      </p>
+    </div>
+
+    <div class="footer">
+      <p style="margin: 0 0 10px 0;">
+        <strong>ImobiFlow</strong> - Gestão Imobiliária Inteligente
+      </p>
+      <p style="margin: 0 0 10px 0;">
+        ${data.nomeTenant}
+      </p>
+      <p style="margin: 0; font-size: 12px;">
+        Este é um email automático de sistema. Não responda.
+      </p>
+    </div>
+  </div>
+</body>
+</html>
+    `.trim();
+
+    return this.sendEmail({
+      to: data.email,
+      subject: `🎉 Bem-vindo ao ImobiFlow - ${data.nomeTenant}`,
+      html
+    });
+  }
 }
 
 // Singleton

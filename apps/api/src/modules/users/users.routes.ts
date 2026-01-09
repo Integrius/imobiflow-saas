@@ -9,6 +9,9 @@ import { prisma } from '../../shared/database/prisma.service';
 import { authMiddleware } from '../../shared/middlewares/auth.middleware';
 import { requireAdmin, requireManager, Permissions } from '../../shared/middlewares/permissions.middleware';
 import bcrypt from 'bcryptjs';
+import { PasswordGeneratorService } from '../../shared/utils/password-generator.service';
+import { sendGridService } from '../../shared/services/sendgrid.service';
+import { twilioService } from '../../shared/services/twilio.service';
 
 interface CreateUserBody {
   nome: string;
@@ -224,8 +227,23 @@ export async function usersRoutes(server: FastifyInstance) {
         }
       });
 
-      // Se for CORRETOR, criar registro de corretor
+      // Se for CORRETOR, criar registro de corretor E enviar notificações
       if (tipo === 'CORRETOR' && telefone) {
+        // Gerar senha temporária
+        const senhaTemporaria = PasswordGeneratorService.generate(6);
+        const senhaExpiraEm = PasswordGeneratorService.getExpirationDate();
+
+        // Atualizar usuário com senha temporária
+        await prisma.user.update({
+          where: { id: newUser.id },
+          data: {
+            senha_temporaria: senhaTemporaria,
+            senha_temp_expira_em: senhaExpiraEm,
+            primeiro_acesso: true // Forçar primeiro acesso
+          }
+        });
+
+        // Criar registro de corretor
         await prisma.corretor.create({
           data: {
             tenant_id: currentUser.tenant_id,
@@ -236,6 +254,45 @@ export async function usersRoutes(server: FastifyInstance) {
             comissao_padrao: 3.0
           }
         });
+
+        // Buscar informações do tenant para URLs
+        const tenant = await prisma.tenant.findUnique({
+          where: { id: currentUser.tenant_id },
+          select: { slug: true, nome: true }
+        });
+
+        const tenantUrl = `${tenant?.slug}.integrius.com.br`;
+
+        // Enviar email com senha temporária (ASSÍNCRONO)
+        sendGridService.enviarSenhaTemporariaCorretor({
+          nome: newUser.nome,
+          email: newUser.email,
+          senhaTemporaria,
+          tenantUrl,
+          nomeTenant: tenant?.nome || 'ImobiFlow',
+          horasValidade: 12
+        }).catch(error => {
+          server.log.error('Erro ao enviar email de senha temporária:', error);
+        });
+
+        // Enviar WhatsApp com senha temporária (ASSÍNCRONO)
+        // Formatar telefone para padrão internacional (+55...)
+        const telefoneFormatado = telefone.startsWith('+')
+          ? telefone
+          : `+55${telefone.replace(/\D/g, '')}`;
+
+        twilioService.enviarSenhaTemporaria({
+          telefone: telefoneFormatado,
+          nome: newUser.nome,
+          email: newUser.email,
+          senhaTemporaria,
+          tenantUrl,
+          nomeTenant: tenant?.nome || 'ImobiFlow'
+        }).catch(error => {
+          server.log.error('Erro ao enviar WhatsApp de senha temporária:', error);
+        });
+
+        server.log.info(`✅ Senha temporária gerada para ${newUser.email}: ${senhaTemporaria} (expira em 12h)`);
       }
 
       // Atualizar contador de usuários do tenant

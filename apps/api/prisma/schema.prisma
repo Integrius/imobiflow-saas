@@ -166,6 +166,11 @@ model User {
   ativo           Boolean  @default(true)
   primeiro_acesso Boolean  @default(true) // True = usuário precisa definir senha
 
+  // Senha temporária (primeiro acesso)
+  senha_temporaria     String?   // Senha em texto plano para envio (apenas temporária)
+  senha_temp_expira_em DateTime? // Expiração da senha temporária (12 horas)
+  senha_temp_usada     Boolean   @default(false) // Controle se senha temporária foi usada
+
   // Timestamps
   created_at   DateTime  @default(now())
   updated_at   DateTime  @updatedAt

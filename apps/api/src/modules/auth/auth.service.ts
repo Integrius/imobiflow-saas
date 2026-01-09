@@ -5,6 +5,7 @@ import axios from 'axios'
 import { AuthRepository } from './auth.repository'
 import { RegisterDTO, LoginDTO } from './auth.schema'
 import { AppError } from '../../shared/errors/AppError'
+import { PasswordGeneratorService } from '../../shared/utils/password-generator.service'
 
 export class AuthService {
   private repository: AuthRepository
@@ -79,7 +80,48 @@ export class AuthService {
       throw new AppError('Use o login com Google para esta conta', 401)
     }
 
-    // Verificar senha
+    // NOVIDADE: Verificar se é primeiro acesso com senha temporária
+    if (user.primeiro_acesso && user.senha_temporaria && user.senha_temp_expira_em) {
+      // Validar senha temporária
+      if (data.senha !== user.senha_temporaria) {
+        throw new AppError('Senha temporária inválida', 401)
+      }
+
+      // Verificar se senha temporária expirou
+      if (PasswordGeneratorService.isExpired(user.senha_temp_expira_em)) {
+        throw new AppError(
+          'Senha temporária expirada. Entre em contato com o administrador para gerar uma nova.',
+          403
+        )
+      }
+
+      // Marcar senha temporária como usada
+      await this.prisma.user.update({
+        where: { id: user.id },
+        data: { senha_temp_usada: true }
+      })
+
+      // Atualizar último login
+      await this.repository.updateLastLogin(user.id)
+
+      // Gerar token com tenant_id e tipo
+      const token = this.generateToken(user.id, user.tenant_id, user.tipo)
+
+      // Retornar com flag de primeiro acesso
+      return {
+        user: {
+          id: user.id,
+          nome: user.nome,
+          email: user.email,
+          tipo: user.tipo,
+          tenant_id: user.tenant_id,
+          primeiro_acesso: true // Flag para frontend redirecionar
+        },
+        token
+      }
+    }
+
+    // Login normal com senha permanente
     const passwordMatch = await bcrypt.compare(data.senha, user.senha_hash)
     if (!passwordMatch) {
       throw new AppError('Email ou senha inválidos', 401)
@@ -97,7 +139,8 @@ export class AuthService {
         nome: user.nome,
         email: user.email,
         tipo: user.tipo,
-        tenant_id: user.tenant_id
+        tenant_id: user.tenant_id,
+        primeiro_acesso: false
       },
       token
     }
@@ -248,19 +291,28 @@ export class AuthService {
       throw new AppError('Usuário não encontrado', 404)
     }
 
+    // Verificar se é realmente primeiro acesso
     if (!user.primeiro_acesso) {
       throw new AppError('Senha já foi definida anteriormente', 400)
+    }
+
+    // Verificar se senha temporária foi usada
+    if (!user.senha_temp_usada) {
+      throw new AppError('Faça login com a senha temporária antes de definir uma nova senha', 400)
     }
 
     // Hash da nova senha
     const senha_hash = await bcrypt.hash(senha, 10)
 
-    // Atualizar usuário
+    // Atualizar usuário: nova senha permanente + limpar dados temporários
     await this.prisma.user.update({
       where: { id: userId },
       data: {
         senha_hash,
         primeiro_acesso: false,
+        senha_temporaria: null,
+        senha_temp_expira_em: null,
+        senha_temp_usada: false,
         updated_at: new Date()
       }
     })
@@ -269,7 +321,7 @@ export class AuthService {
     const token = this.generateToken(user.id, user.tenant_id, user.tipo)
 
     return {
-      message: 'Senha definida com sucesso',
+      message: 'Senha definida com sucesso! Você já pode usar o sistema normalmente.',
       user: {
         id: user.id,
         nome: user.nome,
