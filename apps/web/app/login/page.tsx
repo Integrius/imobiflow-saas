@@ -522,23 +522,43 @@ export default function LoginPage() {
               </button>
             </form>
 
-            {/* Divider */}
-            <div className="relative my-6">
-              <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-gray-200"></div>
-              </div>
-              <div className="relative flex justify-center text-sm">
-                <span className="px-4 bg-white text-gray-500">ou continue com</span>
-              </div>
-            </div>
+            {/* Divider - Apenas se Google OAuth estiver disponível */}
+            {(function() {
+              // Lista de tenants autorizados para Google OAuth
+              const GOOGLE_OAUTH_ALLOWED_SUBDOMAINS = ['vivoly', 'localhost', '127.0.0.1'];
 
-            {/* Google Login */}
-            <div className="flex justify-center">
-              <GoogleLoginButton
-                onSuccess={handleGoogleSuccess}
-                onError={handleGoogleError}
-              />
-            </div>
+              const hostname = typeof window !== 'undefined' ? window.location.hostname : '';
+              const parts = hostname.split('.');
+              const subdomain = parts.length >= 3 ? parts[0] : hostname.split('.')[0];
+
+              const isGoogleOAuthAllowed =
+                hostname.includes('localhost') ||
+                hostname.includes('127.0.0.1') ||
+                GOOGLE_OAUTH_ALLOWED_SUBDOMAINS.includes(subdomain);
+
+              if (!isGoogleOAuthAllowed) return null;
+
+              return (
+                <>
+                  <div className="relative my-6">
+                    <div className="absolute inset-0 flex items-center">
+                      <div className="w-full border-t border-gray-200"></div>
+                    </div>
+                    <div className="relative flex justify-center text-sm">
+                      <span className="px-4 bg-white text-gray-500">ou continue com</span>
+                    </div>
+                  </div>
+
+                  {/* Google Login */}
+                  <div className="flex justify-center">
+                    <GoogleLoginButton
+                      onSuccess={handleGoogleSuccess}
+                      onError={handleGoogleError}
+                    />
+                  </div>
+                </>
+              );
+            })()}
 
             {/* Sign up link */}
             <div className="mt-8 text-center">
