@@ -141,7 +141,7 @@ export class TenantController {
         throw new AppError('Motivo do cancelamento é obrigatório', 400)
       }
 
-      const result = await this.service.cancelAssinatura(user.tenantId, user.userId, motivo.trim(), request)
+      const result = await this.service.cancelAssinatura(user.tenant_id, user.id, motivo.trim(), request)
 
       return reply.send({
         success: true,

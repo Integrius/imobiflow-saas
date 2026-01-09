@@ -21,7 +21,7 @@ export async function activityLogsRoutes(server: FastifyInstance) {
         const query = request.query as any;
 
         const params = {
-          tenant_id: user.tenantId,
+          tenant_id: user.tenant_id,
           user_id: query.user_id,
           tipo: query.tipo as TipoAtividade,
           entidade_tipo: query.entidade_tipo,
@@ -86,7 +86,7 @@ export async function activityLogsRoutes(server: FastifyInstance) {
 
         // Buscar logs agrupados por tipo
         const result = await ActivityLogService.findLogs({
-          tenant_id: user.tenantId,
+          tenant_id: user.tenant_id,
           data_inicio,
           data_fim,
           limit: 10000, // Buscar muitos para fazer estatísticas

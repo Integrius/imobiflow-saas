@@ -82,7 +82,7 @@ export class AuthController {
 
   async me(request: FastifyRequest, reply: FastifyReply) {
     try {
-      const userId = (request as any).user.userId
+      const userId = (request as any).user.id
       const result = await this.service.me(userId)
       return reply.send(result)
     } catch (error: any) {
@@ -129,8 +129,8 @@ export class AuthController {
 
       // ✅ Registrar log de logout
       await ActivityLogService.logLogout(
-        user.tenantId,
-        user.userId,
+        user.tenant_id,
+        user.id,
         request
       )
 
@@ -159,12 +159,12 @@ export class AuthController {
         })
       }
 
-      const result = await this.service.definirSenhaPrimeiroAcesso(user.userId, senha)
+      const result = await this.service.definirSenhaPrimeiroAcesso(user.id, senha)
 
       // ✅ Log de definição de senha no primeiro acesso
       await ActivityLogService.logSenhaAlterada(
-        user.tenantId,
-        user.userId,
+        user.tenant_id,
+        user.id,
         'Primeiro acesso',
         request
       )
