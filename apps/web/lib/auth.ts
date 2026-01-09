@@ -84,6 +84,13 @@ export async function login(data: LoginData): Promise<AuthResponse> {
   }
   */
 
+  // IMPORTANTE: Limpar tenant_id antigo do localStorage antes de fazer login
+  // Isso previne que o interceptor do axios envie um tenant_id antigo
+  // de um login anterior em outro tenant
+  if (typeof window !== 'undefined') {
+    localStorage.removeItem('tenant_id');
+  }
+
   // Fazer login com ou sem tenant_id
   // Se não há subdomínio, o backend deve retornar o tenant do usuário
   const config = tenantId ? {
@@ -145,6 +152,13 @@ export async function loginWithGoogle(credential: string): Promise<AuthResponse>
     }
   }
   */
+
+  // IMPORTANTE: Limpar tenant_id antigo do localStorage antes de fazer login
+  // Isso previne que o interceptor do axios envie um tenant_id antigo
+  // de um login anterior em outro tenant
+  if (typeof window !== 'undefined') {
+    localStorage.removeItem('tenant_id');
+  }
 
   // Fazer login Google com ou sem tenant_id
   const config = tenantId ? {
