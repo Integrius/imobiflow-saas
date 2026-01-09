@@ -3,7 +3,7 @@ import { PrismaClient } from '@prisma/client'
 export class DashboardService {
   constructor(private prisma: PrismaClient) {}
 
-  async getOverview() {
+  async getOverview(tenant_id: string) {
     const [
       totalLeads,
       totalImoveis,
@@ -12,12 +12,12 @@ export class DashboardService {
       imoveisDisponiveis,
       leadsQuentes
     ] = await Promise.all([
-      this.prisma.lead.count(),
-      this.prisma.imovel.count(),
-      this.prisma.negociacao.count(),
-      this.prisma.negociacao.count({ where: { status: 'FECHADO' } }),
-      this.prisma.imovel.count({ where: { status: 'DISPONIVEL' } }),
-      this.prisma.lead.count({ where: { temperatura: 'QUENTE' } })
+      this.prisma.lead.count({ where: { tenant_id } }),
+      this.prisma.imovel.count({ where: { tenant_id } }),
+      this.prisma.negociacao.count({ where: { tenant_id } }),
+      this.prisma.negociacao.count({ where: { tenant_id, status: 'FECHADO' } }),
+      this.prisma.imovel.count({ where: { tenant_id, status: 'DISPONIVEL' } }),
+      this.prisma.lead.count({ where: { tenant_id, temperatura: 'QUENTE' } })
     ])
 
     // Taxa de conversão
@@ -42,9 +42,10 @@ export class DashboardService {
     }
   }
 
-  async getLeadsByOrigem() {
+  async getLeadsByOrigem(tenant_id: string) {
     const leads = await this.prisma.lead.groupBy({
       by: ['origem'],
+      where: { tenant_id },
       _count: true
     })
 
@@ -54,9 +55,10 @@ export class DashboardService {
     }))
   }
 
-  async getLeadsByTemperatura() {
+  async getLeadsByTemperatura(tenant_id: string) {
     const leads = await this.prisma.lead.groupBy({
       by: ['temperatura'],
+      where: { tenant_id },
       _count: true
     })
 
@@ -66,9 +68,10 @@ export class DashboardService {
     }))
   }
 
-  async getNegociacoesByStatus() {
+  async getNegociacoesByStatus(tenant_id: string) {
     const negociacoes = await this.prisma.negociacao.groupBy({
       by: ['status'],
+      where: { tenant_id },
       _count: true
     })
 
@@ -78,9 +81,10 @@ export class DashboardService {
     }))
   }
 
-  async getImoveisByTipo() {
+  async getImoveisByTipo(tenant_id: string) {
     const imoveis = await this.prisma.imovel.groupBy({
       by: ['tipo'],
+      where: { tenant_id },
       _count: true
     })
 
@@ -90,9 +94,10 @@ export class DashboardService {
     }))
   }
 
-  async getImoveisByCategoria() {
+  async getImoveisByCategoria(tenant_id: string) {
     const imoveis = await this.prisma.imovel.groupBy({
       by: ['categoria'],
+      where: { tenant_id },
       _count: true
     })
 
@@ -102,8 +107,9 @@ export class DashboardService {
     }))
   }
 
-  async getPerformanceCorretores() {
+  async getPerformanceCorretores(tenant_id: string) {
     const corretores = await this.prisma.corretor.findMany({
+      where: { tenant_id },
       include: {
         user: {
           select: {
@@ -115,7 +121,7 @@ export class DashboardService {
           select: { id: true }
         },
         negociacoes: {
-          select: { 
+          select: {
             id: true,
             status: true
           }
@@ -135,9 +141,10 @@ export class DashboardService {
     }))
   }
 
-  async getFunilVendas() {
+  async getFunilVendas(tenant_id: string) {
     const pipeline = await this.prisma.negociacao.groupBy({
       by: ['status'],
+      where: { tenant_id },
       _count: true
     })
 
@@ -153,9 +160,10 @@ export class DashboardService {
     return funil
   }
 
-  async getRecentActivity(limit: number = 10) {
+  async getRecentActivity(tenant_id: string, limit: number = 10) {
     const [recentLeads, recentNegociacoes] = await Promise.all([
       this.prisma.lead.findMany({
+        where: { tenant_id },
         take: limit,
         orderBy: { created_at: 'desc' },
         select: {
@@ -168,6 +176,7 @@ export class DashboardService {
         }
       }),
       this.prisma.negociacao.findMany({
+        where: { tenant_id },
         take: limit,
         orderBy: { updated_at: 'desc' },
         select: {
@@ -204,9 +213,10 @@ export class DashboardService {
     }
   }
 
-  async getValorMedioNegociacoes() {
+  async getValorMedioNegociacoes(tenant_id: string) {
     const negociacoes = await this.prisma.negociacao.findMany({
       where: {
+        tenant_id,
         valor_proposta: {
           not: null
         }
@@ -245,7 +255,7 @@ export class DashboardService {
    * Retorna contagem mensal de Leads, Imóveis e Negociações
    * nos últimos X meses
    */
-  async getHistoricalData(months: number) {
+  async getHistoricalData(tenant_id: string, months: number) {
     const now = new Date()
     const startDate = new Date()
     startDate.setMonth(now.getMonth() - months)
@@ -254,6 +264,7 @@ export class DashboardService {
     const [leads, imoveis, negociacoes] = await Promise.all([
       this.prisma.lead.findMany({
         where: {
+          tenant_id,
           created_at: {
             gte: startDate
           }
@@ -264,6 +275,7 @@ export class DashboardService {
       }),
       this.prisma.imovel.findMany({
         where: {
+          tenant_id,
           created_at: {
             gte: startDate
           }
@@ -274,6 +286,7 @@ export class DashboardService {
       }),
       this.prisma.negociacao.findMany({
         where: {
+          tenant_id,
           created_at: {
             gte: startDate
           }
@@ -324,11 +337,11 @@ export class DashboardService {
   /**
    * Retorna dados históricos para 3, 6 e 12 meses
    */
-  async getChartsData() {
+  async getChartsData(tenant_id: string) {
     const [data3months, data6months, data12months] = await Promise.all([
-      this.getHistoricalData(3),
-      this.getHistoricalData(6),
-      this.getHistoricalData(12)
+      this.getHistoricalData(tenant_id, 3),
+      this.getHistoricalData(tenant_id, 6),
+      this.getHistoricalData(tenant_id, 12)
     ])
 
     return {

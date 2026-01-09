@@ -11,7 +11,8 @@ export class DashboardController {
 
   async getOverview(request: FastifyRequest, reply: FastifyReply) {
     try {
-      const overview = await this.service.getOverview()
+      const tenantId = (request as any).user.tenantId
+      const overview = await this.service.getOverview(tenantId)
       return reply.send(overview)
     } catch (error: any) {
       return reply.status(500).send({
@@ -22,7 +23,8 @@ export class DashboardController {
 
   async getLeadsByOrigem(request: FastifyRequest, reply: FastifyReply) {
     try {
-      const data = await this.service.getLeadsByOrigem()
+      const tenantId = (request as any).user.tenantId
+      const data = await this.service.getLeadsByOrigem(tenantId)
       return reply.send(data)
     } catch (error: any) {
       return reply.status(500).send({
@@ -33,7 +35,8 @@ export class DashboardController {
 
   async getLeadsByTemperatura(request: FastifyRequest, reply: FastifyReply) {
     try {
-      const data = await this.service.getLeadsByTemperatura()
+      const tenantId = (request as any).user.tenantId
+      const data = await this.service.getLeadsByTemperatura(tenantId)
       return reply.send(data)
     } catch (error: any) {
       return reply.status(500).send({
@@ -44,7 +47,8 @@ export class DashboardController {
 
   async getNegociacoesByStatus(request: FastifyRequest, reply: FastifyReply) {
     try {
-      const data = await this.service.getNegociacoesByStatus()
+      const tenantId = (request as any).user.tenantId
+      const data = await this.service.getNegociacoesByStatus(tenantId)
       return reply.send(data)
     } catch (error: any) {
       return reply.status(500).send({
@@ -55,7 +59,8 @@ export class DashboardController {
 
   async getImoveisByTipo(request: FastifyRequest, reply: FastifyReply) {
     try {
-      const data = await this.service.getImoveisByTipo()
+      const tenantId = (request as any).user.tenantId
+      const data = await this.service.getImoveisByTipo(tenantId)
       return reply.send(data)
     } catch (error: any) {
       return reply.status(500).send({
@@ -66,7 +71,8 @@ export class DashboardController {
 
   async getImoveisByCategoria(request: FastifyRequest, reply: FastifyReply) {
     try {
-      const data = await this.service.getImoveisByCategoria()
+      const tenantId = (request as any).user.tenantId
+      const data = await this.service.getImoveisByCategoria(tenantId)
       return reply.send(data)
     } catch (error: any) {
       return reply.status(500).send({
@@ -77,7 +83,8 @@ export class DashboardController {
 
   async getPerformanceCorretores(request: FastifyRequest, reply: FastifyReply) {
     try {
-      const data = await this.service.getPerformanceCorretores()
+      const tenantId = (request as any).user.tenantId
+      const data = await this.service.getPerformanceCorretores(tenantId)
       return reply.send(data)
     } catch (error: any) {
       return reply.status(500).send({
@@ -88,7 +95,8 @@ export class DashboardController {
 
   async getFunilVendas(request: FastifyRequest, reply: FastifyReply) {
     try {
-      const data = await this.service.getFunilVendas()
+      const tenantId = (request as any).user.tenantId
+      const data = await this.service.getFunilVendas(tenantId)
       return reply.send(data)
     } catch (error: any) {
       return reply.status(500).send({
@@ -99,8 +107,9 @@ export class DashboardController {
 
   async getRecentActivity(request: FastifyRequest, reply: FastifyReply) {
     try {
+      const tenantId = (request as any).user.tenantId
       const { limit } = request.query as { limit?: string }
-      const data = await this.service.getRecentActivity(limit ? parseInt(limit) : 10)
+      const data = await this.service.getRecentActivity(tenantId, limit ? parseInt(limit) : 10)
       return reply.send(data)
     } catch (error: any) {
       return reply.status(500).send({
@@ -111,7 +120,8 @@ export class DashboardController {
 
   async getValorMedioNegociacoes(request: FastifyRequest, reply: FastifyReply) {
     try {
-      const data = await this.service.getValorMedioNegociacoes()
+      const tenantId = (request as any).user.tenantId
+      const data = await this.service.getValorMedioNegociacoes(tenantId)
       return reply.send(data)
     } catch (error: any) {
       return reply.status(500).send({
@@ -122,7 +132,8 @@ export class DashboardController {
 
   async getChartsData(request: FastifyRequest, reply: FastifyReply) {
     try {
-      const data = await this.service.getChartsData()
+      const tenantId = (request as any).user.tenantId
+      const data = await this.service.getChartsData(tenantId)
       return reply.send(data)
     } catch (error: any) {
       console.error('Erro ao buscar dados históricos:', error)
