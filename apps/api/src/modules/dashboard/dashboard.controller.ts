@@ -11,7 +11,7 @@ export class DashboardController {
 
   async getOverview(request: FastifyRequest, reply: FastifyReply) {
     try {
-      const tenantId = (request as any).user.tenantId
+      const tenantId = (request as any).user.tenant_id
       const overview = await this.service.getOverview(tenantId)
       return reply.send(overview)
     } catch (error: any) {
@@ -23,7 +23,7 @@ export class DashboardController {
 
   async getLeadsByOrigem(request: FastifyRequest, reply: FastifyReply) {
     try {
-      const tenantId = (request as any).user.tenantId
+      const tenantId = (request as any).user.tenant_id
       const data = await this.service.getLeadsByOrigem(tenantId)
       return reply.send(data)
     } catch (error: any) {
@@ -35,7 +35,7 @@ export class DashboardController {
 
   async getLeadsByTemperatura(request: FastifyRequest, reply: FastifyReply) {
     try {
-      const tenantId = (request as any).user.tenantId
+      const tenantId = (request as any).user.tenant_id
       const data = await this.service.getLeadsByTemperatura(tenantId)
       return reply.send(data)
     } catch (error: any) {
@@ -47,7 +47,7 @@ export class DashboardController {
 
   async getNegociacoesByStatus(request: FastifyRequest, reply: FastifyReply) {
     try {
-      const tenantId = (request as any).user.tenantId
+      const tenantId = (request as any).user.tenant_id
       const data = await this.service.getNegociacoesByStatus(tenantId)
       return reply.send(data)
     } catch (error: any) {
@@ -59,7 +59,7 @@ export class DashboardController {
 
   async getImoveisByTipo(request: FastifyRequest, reply: FastifyReply) {
     try {
-      const tenantId = (request as any).user.tenantId
+      const tenantId = (request as any).user.tenant_id
       const data = await this.service.getImoveisByTipo(tenantId)
       return reply.send(data)
     } catch (error: any) {
@@ -71,7 +71,7 @@ export class DashboardController {
 
   async getImoveisByCategoria(request: FastifyRequest, reply: FastifyReply) {
     try {
-      const tenantId = (request as any).user.tenantId
+      const tenantId = (request as any).user.tenant_id
       const data = await this.service.getImoveisByCategoria(tenantId)
       return reply.send(data)
     } catch (error: any) {
@@ -83,7 +83,7 @@ export class DashboardController {
 
   async getPerformanceCorretores(request: FastifyRequest, reply: FastifyReply) {
     try {
-      const tenantId = (request as any).user.tenantId
+      const tenantId = (request as any).user.tenant_id
       const data = await this.service.getPerformanceCorretores(tenantId)
       return reply.send(data)
     } catch (error: any) {
@@ -95,7 +95,7 @@ export class DashboardController {
 
   async getFunilVendas(request: FastifyRequest, reply: FastifyReply) {
     try {
-      const tenantId = (request as any).user.tenantId
+      const tenantId = (request as any).user.tenant_id
       const data = await this.service.getFunilVendas(tenantId)
       return reply.send(data)
     } catch (error: any) {
@@ -107,7 +107,7 @@ export class DashboardController {
 
   async getRecentActivity(request: FastifyRequest, reply: FastifyReply) {
     try {
-      const tenantId = (request as any).user.tenantId
+      const tenantId = (request as any).user.tenant_id
       const { limit } = request.query as { limit?: string }
       const data = await this.service.getRecentActivity(tenantId, limit ? parseInt(limit) : 10)
       return reply.send(data)
@@ -120,7 +120,7 @@ export class DashboardController {
 
   async getValorMedioNegociacoes(request: FastifyRequest, reply: FastifyReply) {
     try {
-      const tenantId = (request as any).user.tenantId
+      const tenantId = (request as any).user.tenant_id
       const data = await this.service.getValorMedioNegociacoes(tenantId)
       return reply.send(data)
     } catch (error: any) {
@@ -132,7 +132,7 @@ export class DashboardController {
 
   async getChartsData(request: FastifyRequest, reply: FastifyReply) {
     try {
-      const tenantId = (request as any).user.tenantId
+      const tenantId = (request as any).user.tenant_id
       const data = await this.service.getChartsData(tenantId)
       return reply.send(data)
     } catch (error: any) {
