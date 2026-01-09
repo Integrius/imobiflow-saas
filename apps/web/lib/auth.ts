@@ -111,8 +111,8 @@ export async function login(data: LoginData): Promise<AuthResponse> {
     localStorage.setItem('token', response.data.token);
     localStorage.setItem('user', JSON.stringify(response.data.user));
 
-    // Cookie de sessão: 30 minutos
-    const SESSION_DURATION = 30 * 60; // 30 minutos em segundos
+    // Cookie de sessão: 7 dias (mesmo tempo do JWT no backend)
+    const SESSION_DURATION = 7 * 24 * 60 * 60; // 7 dias em segundos
     document.cookie = `token=${response.data.token}; path=/; max-age=${SESSION_DURATION}; SameSite=Lax`;
 
     // Armazenar tenant_slug em cookie de longa duração (90 dias) para lembrança de último acesso
@@ -179,8 +179,8 @@ export async function loginWithGoogle(credential: string): Promise<AuthResponse>
     localStorage.setItem('token', response.data.token);
     localStorage.setItem('user', JSON.stringify(response.data.user));
 
-    // Cookie de sessão: 30 minutos
-    const SESSION_DURATION = 30 * 60; // 30 minutos em segundos
+    // Cookie de sessão: 7 dias (mesmo tempo do JWT no backend)
+    const SESSION_DURATION = 7 * 24 * 60 * 60; // 7 dias em segundos
     document.cookie = `token=${response.data.token}; path=/; max-age=${SESSION_DURATION}; SameSite=Lax`;
 
     // Armazenar tenant_slug em cookie de longa duração (90 dias) para lembrança de último acesso
