@@ -228,7 +228,7 @@ export async function usersRoutes(server: FastifyInstance) {
       });
 
       // Se for CORRETOR, criar registro de corretor E enviar notificações
-      if (tipo === 'CORRETOR' && telefone) {
+      if (tipo === 'CORRETOR') {
         // Gerar senha temporária
         const senhaTemporaria = PasswordGeneratorService.generate(6);
         const senhaExpiraEm = PasswordGeneratorService.getExpirationDate();
@@ -249,7 +249,7 @@ export async function usersRoutes(server: FastifyInstance) {
             tenant_id: currentUser.tenant_id,
             user_id: newUser.id,
             creci: creci || '',
-            telefone,
+            telefone: telefone || '',
             especializacoes: [],
             comissao_padrao: 3.0
           }
@@ -263,7 +263,7 @@ export async function usersRoutes(server: FastifyInstance) {
 
         const tenantUrl = `${tenant?.slug}.integrius.com.br`;
 
-        // Enviar email com senha temporária (ASSÍNCRONO)
+        // Enviar email com senha temporária (ASSÍNCRONO) - SEMPRE
         sendGridService.enviarSenhaTemporariaCorretor({
           nome: newUser.nome,
           email: newUser.email,
@@ -275,22 +275,23 @@ export async function usersRoutes(server: FastifyInstance) {
           server.log.error('Erro ao enviar email de senha temporária:', error);
         });
 
-        // Enviar WhatsApp com senha temporária (ASSÍNCRONO)
-        // Formatar telefone para padrão internacional (+55...)
-        const telefoneFormatado = telefone.startsWith('+')
-          ? telefone
-          : `+55${telefone.replace(/\D/g, '')}`;
+        // Enviar WhatsApp com senha temporária (ASSÍNCRONO) - APENAS SE TEM TELEFONE
+        if (telefone) {
+          const telefoneFormatado = telefone.startsWith('+')
+            ? telefone
+            : `+55${telefone.replace(/\D/g, '')}`;
 
-        twilioService.enviarSenhaTemporaria({
-          telefone: telefoneFormatado,
-          nome: newUser.nome,
-          email: newUser.email,
-          senhaTemporaria,
-          tenantUrl,
-          nomeTenant: tenant?.nome || 'ImobiFlow'
-        }).catch(error => {
-          server.log.error('Erro ao enviar WhatsApp de senha temporária:', error);
-        });
+          twilioService.enviarSenhaTemporaria({
+            telefone: telefoneFormatado,
+            nome: newUser.nome,
+            email: newUser.email,
+            senhaTemporaria,
+            tenantUrl,
+            nomeTenant: tenant?.nome || 'ImobiFlow'
+          }).catch(error => {
+            server.log.error('Erro ao enviar WhatsApp de senha temporária:', error);
+          });
+        }
 
         server.log.info(`✅ Senha temporária gerada para ${newUser.email}: ${senhaTemporaria} (expira em 12h)`);
       }
