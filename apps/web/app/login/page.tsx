@@ -204,7 +204,7 @@ export default function LoginPage() {
 
       // Verificar se é primeiro acesso
       if (response.user.primeiro_acesso === true) {
-        router.push('/primeiro-acesso');
+        router.push('/set-password');
       } else {
         router.push('/dashboard');
       }
@@ -241,7 +241,7 @@ export default function LoginPage() {
 
       // Verificar se é primeiro acesso
       if (response.user.primeiro_acesso === true) {
-        router.push('/primeiro-acesso');
+        router.push('/set-password');
       } else {
         router.push('/dashboard');
       }
