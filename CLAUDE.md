@@ -3069,6 +3069,26 @@ jobs:
   # Response 200 OK com token JWT válido
   ```
 
+#### Fix: Google OAuth Bloqueando Login (Erro 403) ✅
+
+- ✅ **Problema Identificado**
+  - Botão do Google OAuth carregava em TODOS os tenants
+  - Subdomínios não autorizados no Google Console (ex: imobiliariazacarias)
+  - Erro 403: "The given origin is not allowed for the given client ID"
+  - **Bloqueava completamente o login tradicional (email/senha)**
+
+- ✅ **Solução Implementada**
+  - Lista de tenants autorizados para Google OAuth: `['vivoly', 'localhost', '127.0.0.1']`
+  - Botão do Google renderizado apenas para tenants autorizados
+  - Tenants não autorizados usam apenas login tradicional
+  - Código com IIFE para validação dinâmica do hostname
+
+- ✅ **Resultado**
+  - Login tradicional funciona em TODOS os tenants
+  - Google OAuth disponível apenas para Vivoly (e localhost/dev)
+  - Sem erros 403 em tenants não configurados
+  - Commit: 4132242
+
 #### Arquivos Modificados
 
 **Backend:**
@@ -3080,6 +3100,7 @@ jobs:
 - `/apps/web/app/dashboard/layout.tsx` - TrialWarning no header, DataExportButton removido
 - `/apps/web/components/TrialWarning.tsx` - Redesign completo (badge compacto)
 - `/apps/web/components/DataExportButton.tsx` - **REMOVIDO**
+- `/apps/web/app/login/page.tsx` - Google OAuth condicional por tenant
 
 **Documentação:**
 - `CLAUDE.md` - Atualizado com todas as mudanças (este arquivo)
@@ -3383,10 +3404,13 @@ jobs:
 ---
 
 **Última atualização**: 08 de janeiro de 2026
-**Versão**: 1.6.1
+**Versão**: 1.6.2
 **Status**: Em produção ✅
 
-**Novidades da versão 1.6.1** (08 de janeiro de 2026):
+**Novidades da versão 1.6.2** (08 de janeiro de 2026):
+- ✅ **Fix crítico:** Google OAuth bloqueando login em tenants não autorizados
+- ✅ Login tradicional (email/senha) agora funciona em TODOS os tenants
+- ✅ Google OAuth restrito apenas para tenants autorizados (Vivoly)
 - ✅ **Problema de login resolvido:** Credenciais corretas documentadas
 - ✅ Exportação automática de dados no cancelamento de assinatura
 - ✅ Período trial corrigido de 30 para 14 dias (5 tenants atualizados)
