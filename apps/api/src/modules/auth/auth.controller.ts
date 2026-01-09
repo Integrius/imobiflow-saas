@@ -31,11 +31,14 @@ export class AuthController {
   }
 
   async login(request: FastifyRequest, reply: FastifyReply) {
-    // Extrair dados fora do try/catch para acessar no catch
-    const data = loginSchema.parse(request.body)
+    // Extrair tenantId fora do try/catch
     const tenantId = (request.headers['x-tenant-id'] as string) || null
+    let data: any
 
     try {
+      // Parse dos dados dentro do try/catch para capturar erros de validação
+      data = loginSchema.parse(request.body)
+
       const result = await this.service.login(data, tenantId)
 
       // ✅ Log de login bem-sucedido
@@ -55,8 +58,8 @@ export class AuthController {
         })
       }
 
-      // ❌ Log de tentativa de login falha (se tiver tenant_id)
-      if (tenantId && (error.statusCode === 401 || error.statusCode === 403)) {
+      // ❌ Log de tentativa de login falha (se tiver tenant_id e dados parseados)
+      if (tenantId && data && (error.statusCode === 401 || error.statusCode === 403)) {
         try {
           // Tentar logar falha mesmo sem user_id (não temos pois login falhou)
           await ActivityLogService.log({
