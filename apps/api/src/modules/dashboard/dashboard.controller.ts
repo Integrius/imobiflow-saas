@@ -12,9 +12,13 @@ export class DashboardController {
   async getOverview(request: FastifyRequest, reply: FastifyReply) {
     try {
       const tenantId = (request as any).user.tenant_id
+      console.log('🔍 Dashboard Overview - Tenant ID:', tenantId)
+      console.log('🔍 User completo:', JSON.stringify((request as any).user))
       const overview = await this.service.getOverview(tenantId)
+      console.log('📊 Overview result:', JSON.stringify(overview))
       return reply.send(overview)
     } catch (error: any) {
+      console.error('❌ Erro no getOverview:', error)
       return reply.status(500).send({
         error: 'Erro ao buscar overview do dashboard'
       })
