@@ -2963,6 +2963,127 @@ jobs:
   - Senha: `admin123`
   - URL: https://vivoly.integrius.com.br
 
+### 2026-01-08
+
+#### Modificações no Sistema de Trial e Exportação de Dados ✅
+
+- ✅ **Remoção do Botão "Recuperar Dados"**
+  - Botão removido do header do dashboard
+  - Exportação de dados agora é **automática** ao cancelar assinatura
+  - Admin recebe email com CSVs anexados automaticamente
+  - Arquivo removido: `/apps/web/components/DataExportButton.tsx`
+  - Email de cancelamento atualizado informando sobre exportação automática
+
+- ✅ **Exportação Automática no Cancelamento**
+  - Método `cancelAssinatura` modificado em `tenant.service.ts`
+  - Chama `DataExportService.exportTenantData()` automaticamente
+  - Envia email com CSVs anexados via SendGrid (assíncrono com `setImmediate`)
+  - Não bloqueia resposta do cancelamento
+  - Logs completos de sucesso/erro no console
+
+- ✅ **Correção do Período de Trial: 30 → 14 dias**
+  - Script criado: `/apps/api/src/shared/scripts/fix-trial-period.ts`
+  - Atualiza `data_expiracao` de todos os tenants em TRIAL
+  - Calcula nova expiração: `created_at + 14 dias`
+  - Executado em 08/01/2026 às 21h (horário de Brasília)
+  - **5 tenants atualizados com sucesso:**
+    - `testes`: 8 dias restantes (expira 16/01/2026)
+    - `teste-api-direto-123`: 12 dias restantes (expira 20/01/2026)
+    - `teste-completo-api-789`: 12 dias restantes (expira 20/01/2026)
+    - `teste-deploy-novo-999`: 12 dias restantes (expira 20/01/2026)
+    - `imobiliariazacarias`: 13 dias restantes (expira 21/01/2026)
+
+- ✅ **Trial Warning Movido para Header**
+  - Componente `TrialWarning` redesenhado para formato compacto
+  - Movido de main content para header (barra superior de navegação)
+  - Sempre visível ao lado do nome do usuário
+  - Design: badge discreto com cor indicadora de urgência
+  - **Cores dinâmicas:**
+    - Verde (✅): mais de 7 dias restantes
+    - Amarelo (⏰): 4-7 dias restantes
+    - Vermelho (⚠️): 0-3 dias restantes
+  - Formato: "Trial: X dias" (compacto)
+  - Arquivo: `/apps/web/components/TrialWarning.tsx` (redesenhado)
+  - Integração: `/apps/web/app/dashboard/layout.tsx` (linha 128)
+
+#### Correções de Build e Deploy ✅
+
+- ✅ **Fix: Chamada do DataExportService**
+  - Erro: chamada incorreta de método estático como instância
+  - Corrigido para: `DataExportService.exportTenantData(tenantId)`
+  - Método estático não requer instância da classe
+  - Commit: 58cc8f6
+
+- ✅ **Fix: Parâmetro Faltante no SendGrid**
+  - Erro: `sendDataExportEmail` esperava 6 parâmetros, recebeu 5
+  - Adicionado parâmetro `diasRestantes: 0` (pois assinatura foi cancelada)
+  - Commit: 2924d0a
+
+- ✅ **Fix: Suporte para Domínios Render.com**
+  - Middleware de tenant não reconhecia `*.onrender.com`
+  - Adicionada lógica especial para tratar Render como domínio principal
+  - Permite acesso via `imobiflow-saas-1.onrender.com` sem erro
+  - Arquivo: `/apps/api/src/shared/middlewares/tenant.middleware.ts` (linhas 159-162)
+  - Commit: 89ac79b
+
+#### Resolução do Problema de Login ✅
+
+- ✅ **Diagnóstico Completo**
+  - Problema reportado: "Email ou senha inválidos"
+  - Investigação: AuthController, AuthService, AuthRepository
+  - **Causa raiz identificada:** Senha incorreta sendo usada
+  - Login funciona perfeitamente via Render.com (sem tenant no subdomínio)
+  - Backend suporta corretamente `findByEmailAnyTenant` quando sem tenant_id
+
+- ✅ **Credenciais Corretas Documentadas**
+  - **Tenant Vivoly - Opção 1:**
+    - Email: `admin@vivoly.com`
+    - Senha: `admin123`
+    - Nome: Administrador Vivoly
+
+  - **Tenant Vivoly - Opção 2:**
+    - Email: `admin@vivoly.com.br`
+    - Senha: `vivoly2025`
+    - Nome: Administrador
+
+  - **Tenant Imobiliária Zacarias:**
+    - Email: `ia.hcdoh@gmail.com`
+    - Senha: (verificar com admin)
+    - Tipo: ADMIN
+
+  - **Tenant Testes ImobiFlow:**
+    - Email: `testecorretor@testes.co.br`
+    - Senha: `teste123`
+    - Tipo: ADMIN
+
+- ✅ **URLs de Acesso Válidas**
+  - Via subdomínio: `https://vivoly.integrius.com.br`
+  - Via Render (API direta): `https://imobiflow-saas-1.onrender.com`
+  - Ambas funcionam corretamente após correções
+
+- ✅ **Teste de Login Confirmado**
+  ```bash
+  curl -X POST "https://imobiflow-saas-1.onrender.com/api/v1/auth/login" \
+    -H "Content-Type: application/json" \
+    -d '{"email":"admin@vivoly.com","senha":"admin123"}'
+  # Response 200 OK com token JWT válido
+  ```
+
+#### Arquivos Modificados
+
+**Backend:**
+- `/apps/api/src/modules/tenants/tenant.service.ts` - Exportação automática no cancelamento
+- `/apps/api/src/shared/scripts/fix-trial-period.ts` - Script de correção (novo)
+- `/apps/api/src/shared/middlewares/tenant.middleware.ts` - Suporte Render.com
+
+**Frontend:**
+- `/apps/web/app/dashboard/layout.tsx` - TrialWarning no header, DataExportButton removido
+- `/apps/web/components/TrialWarning.tsx` - Redesign completo (badge compacto)
+- `/apps/web/components/DataExportButton.tsx` - **REMOVIDO**
+
+**Documentação:**
+- `CLAUDE.md` - Atualizado com todas as mudanças (este arquivo)
+
 ### 2026-01-02
 
 #### Painel de Administração Geral (Tenant Vivoly) ✅
@@ -3262,15 +3383,19 @@ jobs:
 ---
 
 **Última atualização**: 08 de janeiro de 2026
-**Versão**: 1.6.0
+**Versão**: 1.6.1
 **Status**: Em produção ✅
 
-**Novidades da versão 1.6.0** (08 de janeiro de 2026):
+**Novidades da versão 1.6.1** (08 de janeiro de 2026):
+- ✅ **Problema de login resolvido:** Credenciais corretas documentadas
 - ✅ Exportação automática de dados no cancelamento de assinatura
 - ✅ Período trial corrigido de 30 para 14 dias (5 tenants atualizados)
 - ✅ Aviso de trial movido para header (sempre visível, design compacto)
 - ✅ Removido botão "Recuperar Dados" (exportação agora é automática)
-- ✅ Script de correção de período trial criado e executado com sucesso
+- ✅ Script de correção de período trial criado e executado
+- ✅ Fix: Suporte para domínios Render.com no tenant middleware
+- ✅ Fix: Chamada correta do DataExportService (método estático)
+- ✅ Fix: Parâmetro diasRestantes adicionado no sendDataExportEmail
 
 **Versão 1.5.1** (03 de janeiro de 2026):
 - ✅ Sistema completo de avisos de trial (emails 5 dias e 2 dias antes)
