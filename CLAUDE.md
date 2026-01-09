@@ -3089,12 +3089,33 @@ jobs:
   - Sem erros 403 em tenants não configurados
   - Commit: 4132242
 
+#### Fix Crítico: loginSchema.parse Fora do try/catch ✅
+
+- ✅ **Problema Identificado**
+  - Commit anterior (`f05865c`) moveu `loginSchema.parse()` para FORA do try/catch
+  - Objetivo era acessar `data` no catch para logs
+  - **Efeito colateral:** Erros de validação Zod não eram capturados
+  - Login comum quebrou completamente (exceção não tratada)
+
+- ✅ **Solução Implementada**
+  - Movido `loginSchema.parse()` de volta para DENTRO do try/catch
+  - Mantido `tenantId` fora (pode ser acessado no catch)
+  - Declarado `data` com `let` para permitir acesso no catch
+  - Adicionado verificação `if (data && ...)` antes de usar no log
+  - Commit: 386039c
+
+- ✅ **Resultado**
+  - Login tradicional voltou a funcionar
+  - Erros de validação capturados corretamente
+  - Logs de falha ainda funcionam quando aplicável
+
 #### Arquivos Modificados
 
 **Backend:**
 - `/apps/api/src/modules/tenants/tenant.service.ts` - Exportação automática no cancelamento
 - `/apps/api/src/shared/scripts/fix-trial-period.ts` - Script de correção (novo)
 - `/apps/api/src/shared/middlewares/tenant.middleware.ts` - Suporte Render.com
+- `/apps/api/src/modules/auth/auth.controller.ts` - **Fix crítico:** loginSchema.parse dentro do try/catch
 
 **Frontend:**
 - `/apps/web/app/dashboard/layout.tsx` - TrialWarning no header, DataExportButton removido
@@ -3404,12 +3425,13 @@ jobs:
 ---
 
 **Última atualização**: 08 de janeiro de 2026
-**Versão**: 1.6.2
+**Versão**: 1.6.3
 **Status**: Em produção ✅
 
-**Novidades da versão 1.6.2** (08 de janeiro de 2026):
+**Novidades da versão 1.6.3** (08 de janeiro de 2026):
+- ✅ **Fix CRÍTICO:** loginSchema.parse estava fora do try/catch (login quebrado)
 - ✅ **Fix crítico:** Google OAuth bloqueando login em tenants não autorizados
-- ✅ Login tradicional (email/senha) agora funciona em TODOS os tenants
+- ✅ Login tradicional (email/senha) TOTALMENTE restaurado
 - ✅ Google OAuth restrito apenas para tenants autorizados (Vivoly)
 - ✅ **Problema de login resolvido:** Credenciais corretas documentadas
 - ✅ Exportação automática de dados no cancelamento de assinatura
