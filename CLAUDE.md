@@ -3051,6 +3051,50 @@ jobs:
   - Arquivo: `/apps/api/src/shared/middlewares/tenant.middleware.ts` (linhas 159-162)
   - Commit: 89ac79b
 
+- ✅ **Fix CRÍTICO: Cookie de Sessão Expirando em 30 Minutos**
+  - **Problema Identificado:**
+    - Cookie `token` tinha duração de apenas 30 minutos
+    - JWT do backend tem validade de 7 dias
+    - Usuário era deslogado ao navegar após 30 minutos
+    - Redirecionado para `/login?redirect=/dashboard/corretores` ao acessar páginas internas
+    - Middleware verificava cookie, mas ele já havia expirado
+  - **Solução Implementada:**
+    - Aumentado `SESSION_DURATION` de 30 minutos para 7 dias
+    - Sincronizado duração do cookie com JWT do backend
+    - Usuário permanece logado por 7 dias
+    - Navegação entre páginas funciona normalmente sem deslogar
+  - **Arquivos Modificados:**
+    - `/apps/web/lib/auth.ts` (linhas 115, 183) - Ambos login email e Google OAuth
+    - Alterado: `30 * 60` → `7 * 24 * 60 * 60`
+  - **Commit:** a5e8287
+  - **Impacto:**
+    - Usuários não são mais deslogados ao navegar no dashboard
+    - Experiência de usuário melhorada (sessão persistente)
+    - Alinhamento com duração do JWT do backend
+
+- ✅ **Scripts Utilitários para Gestão de Usuários**
+  - Criados scripts para debug e manutenção:
+    - `list-all-users.ts` - Lista todos os usuários do banco com detalhes
+    - `test-password.ts` - Testa se senha corresponde ao hash do usuário
+    - `test-common-passwords.ts` - Testa senhas comuns em múltiplos usuários
+    - `reset-primeiro-acesso.ts` - Reseta flag primeiro_acesso de um usuário
+    - `reset-all-primeiro-acesso.ts` - Reseta flag de todos os usuários
+    - `reset-passwords.ts` - Reseta senhas de múltiplos usuários
+  - Diretório: `/apps/api/src/shared/scripts/`
+  - **Descoberta:** Flag `primeiro_acesso: true` redireciona para `/primeiro-acesso`
+  - **Ação:** Resetados 7 usuários com `primeiro_acesso: true` para `false`
+  - **Resultado:** Todos os usuários podem fazer login e acessar dashboard normalmente
+
+- ✅ **Arquivo de Credenciais de Teste**
+  - Criado: `/CREDENCIAIS_TESTE.md`
+  - Documenta todas as credenciais de teste de 4 tenants:
+    - Imobiliaria Zacarias (2 usuários)
+    - Vivoly Imobiliária (5 usuários)
+    - Testes ImobiFlow (1 usuário)
+    - Teste Deploy Novo (1 usuário)
+  - Senhas verificadas via bcrypt ou resetadas para `teste123`
+  - Total: 9 usuários prontos para teste
+
 #### Resolução do Problema de Login ✅
 
 - ✅ **Diagnóstico Completo**
@@ -3450,10 +3494,19 @@ jobs:
 ---
 
 **Última atualização**: 09 de janeiro de 2026
-**Versão**: 1.6.4
+**Versão**: 1.6.5
 **Status**: Em produção ✅
 
-**Novidades da versão 1.6.4** (09 de janeiro de 2026):
+**Novidades da versão 1.6.5** (09 de janeiro de 2026):
+- ✅ **Fix CRÍTICO:** Cookie de sessão expirando em 30 minutos (usuário deslogado ao navegar)
+- ✅ Duração do cookie aumentada de 30min para 7 dias (sincronizado com JWT)
+- ✅ Usuários não são mais deslogados ao navegar entre páginas do dashboard
+- ✅ Flag `primeiro_acesso` resetada para 7 usuários (evita redirect para `/primeiro-acesso`)
+- ✅ Scripts utilitários criados para gestão de usuários e senhas
+- ✅ Arquivo CREDENCIAIS_TESTE.md com 9 usuários de 4 tenants prontos para teste
+- ✅ Todas as senhas verificadas via bcrypt ou resetadas para valores conhecidos
+
+**Versão 1.6.4** (09 de janeiro de 2026):
 - ✅ **Fix CRÍTICO:** Login falhando com 401 devido a tenant_id incorreto no localStorage
 - ✅ localStorage.tenant_id agora é limpo ANTES do login para evitar conflitos
 - ✅ Usuários podem fazer login em diferentes tenants sem erro 401
