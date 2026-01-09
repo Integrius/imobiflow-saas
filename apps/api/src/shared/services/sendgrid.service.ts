@@ -46,9 +46,15 @@ class SendGridService {
   constructor() {
     const apiKey = process.env.SENDGRID_API_KEY;
 
+    console.log('🔍 SendGrid - Verificando configuração...');
+    console.log(`   SENDGRID_API_KEY presente: ${apiKey ? 'SIM' : 'NÃO'}`);
+    console.log(`   SENDGRID_FROM_EMAIL: ${process.env.SENDGRID_FROM_EMAIL || 'NÃO CONFIGURADO'}`);
+    console.log(`   SENDGRID_FROM_NAME: ${process.env.SENDGRID_FROM_NAME || 'NÃO CONFIGURADO'}`);
+
     if (apiKey) {
       sgMail.setApiKey(apiKey);
       this.isConfigured = true;
+      console.log('✅ SendGrid configurado com sucesso');
     } else {
       console.warn('⚠️  SENDGRID_API_KEY não configurado - emails desabilitados');
     }

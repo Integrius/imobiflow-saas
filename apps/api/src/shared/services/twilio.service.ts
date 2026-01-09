@@ -21,6 +21,11 @@ class TwilioService {
     const authToken = process.env.TWILIO_AUTH_TOKEN;
     this.fromNumber = process.env.TWILIO_WHATSAPP_FROM || 'whatsapp:+14155238886'; // Sandbox padrão
 
+    console.log('🔍 Twilio - Verificando configuração...');
+    console.log(`   TWILIO_ACCOUNT_SID presente: ${accountSid ? 'SIM' : 'NÃO'}`);
+    console.log(`   TWILIO_AUTH_TOKEN presente: ${authToken ? 'SIM' : 'NÃO'}`);
+    console.log(`   TWILIO_WHATSAPP_FROM: ${this.fromNumber}`);
+
     if (accountSid && authToken) {
       this.client = twilio(accountSid, authToken);
       this.isConfigured = true;

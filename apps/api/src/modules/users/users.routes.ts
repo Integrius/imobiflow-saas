@@ -229,9 +229,12 @@ export async function usersRoutes(server: FastifyInstance) {
 
       // Se for CORRETOR, criar registro de corretor E enviar notificações
       if (tipo === 'CORRETOR') {
+        server.log.info('🔵 Iniciando processo de senha temporária para CORRETOR');
+
         // Gerar senha temporária
         const senhaTemporaria = PasswordGeneratorService.generate(6);
         const senhaExpiraEm = PasswordGeneratorService.getExpirationDate();
+        server.log.info(`🔑 Senha temporária gerada: ${senhaTemporaria}`);
 
         // Atualizar usuário com senha temporária
         await prisma.user.update({
@@ -242,6 +245,7 @@ export async function usersRoutes(server: FastifyInstance) {
             primeiro_acesso: true // Forçar primeiro acesso
           }
         });
+        server.log.info('✅ Usuário atualizado com senha temporária');
 
         // Criar registro de corretor
         await prisma.corretor.create({
@@ -254,6 +258,7 @@ export async function usersRoutes(server: FastifyInstance) {
             comissao_padrao: 3.0
           }
         });
+        server.log.info('✅ Registro de corretor criado');
 
         // Buscar informações do tenant para URLs
         const tenant = await prisma.tenant.findUnique({
@@ -262,8 +267,10 @@ export async function usersRoutes(server: FastifyInstance) {
         });
 
         const tenantUrl = `${tenant?.slug}.integrius.com.br`;
+        server.log.info(`🌐 Tenant URL: ${tenantUrl}`);
 
         // Enviar email com senha temporária (ASSÍNCRONO) - SEMPRE
+        server.log.info(`📧 Tentando enviar email para: ${newUser.email}`);
         sendGridService.enviarSenhaTemporariaCorretor({
           nome: newUser.nome,
           email: newUser.email,
@@ -271,8 +278,10 @@ export async function usersRoutes(server: FastifyInstance) {
           tenantUrl,
           nomeTenant: tenant?.nome || 'ImobiFlow',
           horasValidade: 12
+        }).then(() => {
+          server.log.info(`✅ Email enviado com sucesso para ${newUser.email}`);
         }).catch(error => {
-          server.log.error('Erro ao enviar email de senha temporária:', error);
+          server.log.error(`❌ Erro ao enviar email de senha temporária para ${newUser.email}:`, error);
         });
 
         // Enviar WhatsApp com senha temporária (ASSÍNCRONO) - APENAS SE TEM TELEFONE
@@ -281,6 +290,7 @@ export async function usersRoutes(server: FastifyInstance) {
             ? telefone
             : `+55${telefone.replace(/\D/g, '')}`;
 
+          server.log.info(`📱 Tentando enviar WhatsApp para: ${telefoneFormatado}`);
           twilioService.enviarSenhaTemporaria({
             telefone: telefoneFormatado,
             nome: newUser.nome,
@@ -288,9 +298,13 @@ export async function usersRoutes(server: FastifyInstance) {
             senhaTemporaria,
             tenantUrl,
             nomeTenant: tenant?.nome || 'ImobiFlow'
+          }).then(() => {
+            server.log.info(`✅ WhatsApp enviado com sucesso para ${telefoneFormatado}`);
           }).catch(error => {
-            server.log.error('Erro ao enviar WhatsApp de senha temporária:', error);
+            server.log.error(`❌ Erro ao enviar WhatsApp de senha temporária para ${telefoneFormatado}:`, error);
           });
+        } else {
+          server.log.warn('⚠️ Telefone não fornecido, WhatsApp não será enviado');
         }
 
         server.log.info(`✅ Senha temporária gerada para ${newUser.email}: ${senhaTemporaria} (expira em 12h)`);
