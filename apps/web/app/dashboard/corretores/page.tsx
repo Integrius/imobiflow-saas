@@ -5,6 +5,7 @@ import { api } from '@/lib/api';
 import { toast } from '@/lib/toast';
 import Modal from '@/components/Modal';
 import EmptyState, { EmptyStateIcons } from '@/components/EmptyState';
+import CorretorStatusLed from '@/components/CorretorStatusLed';
 import { formatPhone, unformatNumbers } from '@/lib/formatters';
 
 interface Corretor {
@@ -15,6 +16,8 @@ interface Corretor {
   creci: string;
   especialidade?: string;
   comissao?: number;
+  ativo?: boolean;
+  primeiro_acesso?: boolean;
 }
 
 interface CorretorForm {
@@ -401,7 +404,13 @@ export default function CorretoresPage() {
                     />
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-bold text-[#0A2540]">
-                    {corretor.nome}
+                    <div className="flex items-center gap-3">
+                      <CorretorStatusLed
+                        ativo={corretor.ativo ?? true}
+                        primeiroAcesso={corretor.primeiro_acesso ?? false}
+                      />
+                      <span>{corretor.nome}</span>
+                    </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-[#4B5563]">{corretor.email}</td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-[#4B5563]">

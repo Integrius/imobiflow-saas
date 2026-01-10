@@ -114,6 +114,7 @@ export class CorretoresRepository {
             email: true,
             tipo: true,
             ativo: true,
+            primeiro_acesso: true,
           },
         },
       },
@@ -127,6 +128,8 @@ export class CorretoresRepository {
       creci: corretor.creci,
       especialidade: corretor.especializacoes[0] || null,
       comissao: Number(corretor.comissao_padrao),
+      ativo: corretor.user.ativo,
+      primeiro_acesso: corretor.user.primeiro_acesso,
     }))
   }
 
@@ -144,6 +147,7 @@ export class CorretoresRepository {
             email: true,
             tipo: true,
             ativo: true,
+            primeiro_acesso: true,
           },
         },
       },
@@ -159,6 +163,8 @@ export class CorretoresRepository {
       creci: corretor.creci,
       especialidade: corretor.especializacoes[0] || null,
       comissao: Number(corretor.comissao_padrao),
+      ativo: corretor.user.ativo,
+      primeiro_acesso: corretor.user.primeiro_acesso,
     }
   }
 
