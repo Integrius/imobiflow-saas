@@ -343,7 +343,7 @@ export class AuthService {
         console.log(`📧 [PrimeiroAcesso] Enviando confirmação para ${user.email}...`)
 
         // 📧 Email de confirmação
-        await sendGridService.send({
+        await sendGridService.sendEmail({
           to: user.email,
           from: {
             email: 'noreply@integrius.com.br',
