@@ -4,81 +4,10 @@ import { useState, FormEvent, useRef, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
-import { GoogleLogin, CredentialResponse, useGoogleOAuth } from '@react-oauth/google';
-import { login, loginWithGoogle, getLastTenant, getLastLoginMethod, isAdminUser } from '@/lib/auth';
+import { login, getLastTenant, isAdminUser } from '@/lib/auth';
 import { api } from '@/lib/api';
 
-// Componente wrapper para Google Login que verifica se esta disponivel
-function GoogleLoginButton({
-  onSuccess,
-  onError
-}: {
-  onSuccess: (response: CredentialResponse) => void;
-  onError: () => void;
-}) {
-  const [isAvailable, setIsAvailable] = useState(false);
-  const [isChecking, setIsChecking] = useState(true);
-
-  useEffect(() => {
-    // Verificar se o Google OAuth Provider esta disponivel
-    try {
-      // Tentar acessar o contexto do Google OAuth
-      const checkAvailability = () => {
-        // Se window.google existe, o script foi carregado
-        if (typeof window !== 'undefined' && (window as any).google?.accounts) {
-          setIsAvailable(true);
-        } else {
-          // Se nao, verificar novamente em 500ms (o script pode ainda estar carregando)
-          setTimeout(() => {
-            if (typeof window !== 'undefined' && (window as any).google?.accounts) {
-              setIsAvailable(true);
-            }
-            setIsChecking(false);
-          }, 1000);
-          return;
-        }
-        setIsChecking(false);
-      };
-
-      checkAvailability();
-    } catch {
-      setIsAvailable(false);
-      setIsChecking(false);
-    }
-  }, []);
-
-  if (isChecking) {
-    return (
-      <div className="w-full h-10 bg-gray-100 rounded-lg animate-pulse flex items-center justify-center">
-        <span className="text-gray-400 text-sm">Carregando login Google...</span>
-      </div>
-    );
-  }
-
-  if (!isAvailable) {
-    return (
-      <div className="w-full text-center py-3 px-4 bg-gray-50 rounded-lg border border-gray-200">
-        <p className="text-gray-500 text-sm">
-          Login com Google temporariamente indisponivel.
-        </p>
-        <p className="text-gray-400 text-xs mt-1">
-          Use email e senha para entrar.
-        </p>
-      </div>
-    );
-  }
-
-  return (
-    <GoogleLogin
-      onSuccess={onSuccess}
-      onError={onError}
-      theme="outline"
-      size="large"
-      text="signin_with"
-      locale="pt-BR"
-    />
-  );
-}
+// Google OAuth removido por questões de segurança
 
 export default function LoginPage() {
   const router = useRouter();
@@ -223,60 +152,7 @@ export default function LoginPage() {
     }
   }
 
-  async function handleGoogleSuccess(credentialResponse: CredentialResponse) {
-    // Limpa erro anterior e timeout
-    if (errorTimeoutRef.current) {
-      clearTimeout(errorTimeoutRef.current);
-    }
-    setError('');
-    setLoading(true);
-
-    try {
-      if (!credentialResponse.credential) {
-        throw new Error('Credencial do Google não recebida');
-      }
-
-      const response = await loginWithGoogle(credentialResponse.credential);
-      setLoading(false);
-
-      // Verificar se é primeiro acesso
-      if (response.user.primeiro_acesso === true) {
-        router.push('/set-password');
-      } else {
-        router.push('/dashboard');
-      }
-    } catch (err: any) {
-      const errorMessage = err.message || err.response?.data?.error || 'Erro ao fazer login com Google';
-      console.log('🔴 ERRO GOOGLE OAUTH:', errorMessage, '- Será exibido por 15 segundos');
-      setError(errorMessage);
-      setLoading(false);
-
-      // GARANTE que a mensagem fica 15 SEGUNDOS
-      errorTimeoutRef.current = setTimeout(() => {
-        console.log('⏰ Limpando mensagem de erro Google após 15 segundos');
-        setError('');
-        errorTimeoutRef.current = null;
-      }, 15000);
-    }
-  }
-
-  function handleGoogleError() {
-    // Limpa erro anterior
-    if (errorTimeoutRef.current) {
-      clearTimeout(errorTimeoutRef.current);
-    }
-
-    const errorMessage = 'Erro ao fazer login com Google. Tente novamente.';
-    console.log('🔴 ERRO GOOGLE OAUTH (callback):', errorMessage, '- Será exibido por 15 segundos');
-    setError(errorMessage);
-
-    // GARANTE que a mensagem fica 15 SEGUNDOS
-    errorTimeoutRef.current = setTimeout(() => {
-      console.log('⏰ Limpando mensagem de erro Google após 15 segundos');
-      setError('');
-      errorTimeoutRef.current = null;
-    }, 15000);
-  }
+  // Funções Google OAuth removidas
 
   return (
     <div className="min-h-screen flex bg-white relative overflow-hidden">
@@ -522,43 +398,7 @@ export default function LoginPage() {
               </button>
             </form>
 
-            {/* Divider - Apenas se Google OAuth estiver disponível */}
-            {(function() {
-              // Lista de tenants autorizados para Google OAuth
-              const GOOGLE_OAUTH_ALLOWED_SUBDOMAINS = ['vivoly', 'localhost', '127.0.0.1'];
-
-              const hostname = typeof window !== 'undefined' ? window.location.hostname : '';
-              const parts = hostname.split('.');
-              const subdomain = parts.length >= 3 ? parts[0] : hostname.split('.')[0];
-
-              const isGoogleOAuthAllowed =
-                hostname.includes('localhost') ||
-                hostname.includes('127.0.0.1') ||
-                GOOGLE_OAUTH_ALLOWED_SUBDOMAINS.includes(subdomain);
-
-              if (!isGoogleOAuthAllowed) return null;
-
-              return (
-                <>
-                  <div className="relative my-6">
-                    <div className="absolute inset-0 flex items-center">
-                      <div className="w-full border-t border-gray-200"></div>
-                    </div>
-                    <div className="relative flex justify-center text-sm">
-                      <span className="px-4 bg-white text-gray-500">ou continue com</span>
-                    </div>
-                  </div>
-
-                  {/* Google Login */}
-                  <div className="flex justify-center">
-                    <GoogleLoginButton
-                      onSuccess={handleGoogleSuccess}
-                      onError={handleGoogleError}
-                    />
-                  </div>
-                </>
-              );
-            })()}
+            {/* Google OAuth removido por questões de segurança */}
 
             {/* Sign up link */}
             <div className="mt-8 text-center">
