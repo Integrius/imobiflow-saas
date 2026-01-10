@@ -345,10 +345,8 @@ export class AuthService {
         // 📧 Email de confirmação
         await sendGridService.sendEmail({
           to: user.email,
-          from: {
-            email: 'noreply@integrius.com.br',
-            name: user.tenant?.nome || 'Integrius'
-          },
+          from: 'noreply@integrius.com.br',
+          fromName: user.tenant?.nome || 'Integrius',
           subject: '✅ Senha Definida com Sucesso - Integrius',
           html: `
             <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
