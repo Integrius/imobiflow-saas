@@ -56,10 +56,24 @@ class TwilioService {
     }
 
     try {
-      // Garantir que número tenha prefixo whatsapp:
-      const toNumber = data.to.startsWith('whatsapp:')
-        ? data.to
-        : `whatsapp:${data.to}`;
+      // Normalizar número de telefone
+      let phoneNumber = data.to;
+
+      // Remover whatsapp: se já tiver
+      phoneNumber = phoneNumber.replace('whatsapp:', '');
+
+      // Remover caracteres não numéricos
+      phoneNumber = phoneNumber.replace(/\D/g, '');
+
+      // Adicionar +55 se não tiver código do país
+      if (!phoneNumber.startsWith('55') && phoneNumber.length === 11) {
+        phoneNumber = `55${phoneNumber}`;
+      }
+
+      // Adicionar prefixo whatsapp:
+      const toNumber = `whatsapp:+${phoneNumber}`;
+
+      console.log(`📱 Twilio: Número normalizado de "${data.to}" para "${toNumber}"`);
 
       const message = await this.client.messages.create({
         body: data.message,
@@ -67,7 +81,7 @@ class TwilioService {
         to: toNumber
       });
 
-      console.log(`✅ WhatsApp enviado para ${data.to} (SID: ${message.sid})`);
+      console.log(`✅ WhatsApp enviado para ${toNumber} (SID: ${message.sid})`);
       return true;
     } catch (error: any) {
       console.error('❌ Erro ao enviar WhatsApp:', error.message);
