@@ -103,10 +103,10 @@ export class CorretoresService {
         await twilioService.enviarSenhaTemporaria({
           telefone: corretor.telefone,
           nome: corretor.nome,
+          email: corretor.email,
           senhaTemporaria,
-          tenantUrl: `https://${tenant.slug}.integrius.com.br`,
-          nomeTenant: tenant.nome,
-          horasValidade: 12
+          tenantUrl: `${tenant.slug}.integrius.com.br`,
+          nomeTenant: tenant.nome
         })
         whatsappSent++
       } catch (error) {
