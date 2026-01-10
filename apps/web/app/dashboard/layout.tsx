@@ -47,6 +47,13 @@ export default function DashboardLayout({
       const parsedUser = JSON.parse(userData);
       setUser(parsedUser);
 
+      // 🔐 Verificar se é primeiro acesso e redirecionar
+      if (parsedUser.primeiro_acesso && pathname !== '/primeiro-acesso') {
+        console.log('🔐 Primeiro acesso detectado - redirecionando para /primeiro-acesso');
+        router.push('/primeiro-acesso');
+        return;
+      }
+
       // Verificar se é admin do tenant Vivoly
       const tenantData = localStorage.getItem('tenant_id');
       const hostname = window.location.hostname;
@@ -57,7 +64,7 @@ export default function DashboardLayout({
         (subdomain === 'vivoly' || hostname.includes('vivoly'))
       );
     }
-  }, [router]);
+  }, [router, pathname]);
 
   // Navegação base (todos os tenants)
   const baseNavigation: MenuItem[] = [

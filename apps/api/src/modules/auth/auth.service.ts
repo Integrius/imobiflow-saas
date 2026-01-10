@@ -6,6 +6,8 @@ import { AuthRepository } from './auth.repository'
 import { RegisterDTO, LoginDTO } from './auth.schema'
 import { AppError } from '../../shared/errors/AppError'
 import { PasswordGeneratorService } from '../../shared/utils/password-generator.service'
+import { sendGridService } from '../../shared/services/sendgrid.service'
+import { twilioService } from '../../shared/services/twilio.service'
 
 export class AuthService {
   private repository: AuthRepository
@@ -291,9 +293,18 @@ export class AuthService {
   }
 
   async definirSenhaPrimeiroAcesso(userId: string, senha: string) {
-    // Buscar usuário
+    // Buscar usuário com corretor (se existir) e tenant
     const user = await this.prisma.user.findUnique({
-      where: { id: userId }
+      where: { id: userId },
+      include: {
+        corretor: true,
+        tenant: {
+          select: {
+            slug: true,
+            nome: true
+          }
+        }
+      }
     })
 
     if (!user) {
@@ -323,6 +334,105 @@ export class AuthService {
         senha_temp_expira_em: null,
         senha_temp_usada: false,
         updated_at: new Date()
+      }
+    })
+
+    // 🔔 Enviar notificações assíncronas (não bloqueantes)
+    setImmediate(async () => {
+      try {
+        console.log(`📧 [PrimeiroAcesso] Enviando confirmação para ${user.email}...`)
+
+        // 📧 Email de confirmação
+        await sendGridService.send({
+          to: user.email,
+          from: {
+            email: 'noreply@integrius.com.br',
+            name: user.tenant?.nome || 'Integrius'
+          },
+          subject: '✅ Senha Definida com Sucesso - Integrius',
+          html: `
+            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+              <div style="background: linear-gradient(135deg, #8FD14F 0%, #6E9B3B 100%); padding: 30px; text-align: center; border-radius: 10px 10px 0 0;">
+                <h1 style="color: white; margin: 0;">✅ Senha Definida!</h1>
+              </div>
+
+              <div style="background: #ffffff; padding: 30px; border-radius: 0 0 10px 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                <p style="font-size: 16px; color: #2C2C2C;">
+                  Olá, <strong>${user.nome.split(' ')[0]}</strong>! 👋
+                </p>
+
+                <p style="font-size: 14px; color: #8B7F76; line-height: 1.6;">
+                  Sua senha foi definida com <strong>sucesso</strong>! ✨
+                </p>
+
+                <p style="font-size: 14px; color: #8B7F76; line-height: 1.6;">
+                  A partir de agora, você pode acessar o sistema usando:
+                </p>
+
+                <div style="background: #f8f9fa; padding: 20px; border-radius: 8px; margin: 20px 0;">
+                  <p style="margin: 0; color: #2C2C2C;">
+                    <strong>📧 Email:</strong> ${user.email}<br>
+                    <strong>🔒 Senha:</strong> A senha que você acabou de definir
+                  </p>
+                </div>
+
+                <p style="font-size: 14px; color: #8B7F76; line-height: 1.6;">
+                  🌐 <strong>Acesse:</strong>
+                  <a href="https://${user.tenant?.slug}.integrius.com.br/login"
+                     style="color: #8FD14F; text-decoration: none;">
+                    ${user.tenant?.slug}.integrius.com.br/login
+                  </a>
+                </p>
+
+                <div style="background: #D1F2EB; border-left: 4px solid #00C48C; padding: 15px; margin: 20px 0; border-radius: 4px;">
+                  <p style="margin: 0; font-size: 13px; color: #00695C;">
+                    💡 <strong>Dica:</strong> Guarde sua senha em um local seguro e nunca compartilhe com outras pessoas.
+                  </p>
+                </div>
+
+                <p style="font-size: 12px; color: #8B7F76; margin-top: 30px; padding-top: 20px; border-top: 1px solid #E0E0E0;">
+                  Qualquer dúvida, entre em contato com o administrador.<br>
+                  <em>Integrius - Gestão Imobiliária Inteligente</em>
+                </p>
+              </div>
+            </div>
+          `
+        })
+
+        console.log(`✅ [PrimeiroAcesso] Email enviado com sucesso`)
+
+        // 📱 WhatsApp de confirmação (se corretor e tiver telefone)
+        if (user.corretor?.telefone && twilioService.isEnabled()) {
+          console.log(`📱 [PrimeiroAcesso] Enviando WhatsApp para ${user.corretor.telefone}...`)
+
+          const primeiroNome = user.nome.split(' ')[0]
+
+          await twilioService.sendWhatsApp({
+            to: user.corretor.telefone,
+            message: `✅ *Senha Definida - ${user.tenant?.nome}*
+
+Olá, ${primeiroNome}! 👋
+
+Sua senha foi definida com *sucesso*! ✨
+
+Agora você pode acessar o sistema usando:
+
+📧 *Email:* ${user.email}
+🔒 *Senha:* A que você acabou de definir
+
+🌐 *Acesse:* https://${user.tenant?.slug}.integrius.com.br/login
+
+💡 *Importante:* Guarde sua senha em local seguro e nunca compartilhe com outras pessoas.
+
+---
+Integrius - Gestão Imobiliária Inteligente`.trim()
+          })
+
+          console.log(`✅ [PrimeiroAcesso] WhatsApp enviado com sucesso`)
+        }
+
+      } catch (error: any) {
+        console.error(`❌ [PrimeiroAcesso] Erro ao enviar notificações:`, error.message || error)
       }
     })
 
