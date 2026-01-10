@@ -3,34 +3,52 @@
 interface CorretorStatusLedProps {
   ativo: boolean;
   primeiroAcesso: boolean;
+  statusConta?: 'ATIVO' | 'SUSPENSO' | 'CANCELADO';
 }
 
-export default function CorretorStatusLed({ ativo, primeiroAcesso }: CorretorStatusLedProps) {
+export default function CorretorStatusLed({ ativo, primeiroAcesso, statusConta }: CorretorStatusLedProps) {
   // Determinar cor e mensagem do LED
   const getStatus = () => {
-    if (!ativo) {
+    // Status CANCELADO tem prioridade máxima
+    if (statusConta === 'CANCELADO') {
       return {
         color: 'bg-red-500',
         pulseColor: 'bg-red-400',
-        tooltip: 'Corretor desabilitado/inativo - Não pode acessar o sistema',
-        label: 'Inativo'
+        tooltip: 'Conta cancelada - Acesso permanentemente bloqueado',
+        label: 'Cancelado',
+        pulse: false
       };
     }
 
+    // Status SUSPENSO
+    if (statusConta === 'SUSPENSO' || !ativo) {
+      return {
+        color: 'bg-orange-500',
+        pulseColor: 'bg-orange-400',
+        tooltip: 'Conta suspensa - Login temporariamente bloqueado',
+        label: 'Suspenso',
+        pulse: false
+      };
+    }
+
+    // Aguardando primeiro acesso
     if (primeiroAcesso) {
       return {
         color: 'bg-yellow-500',
         pulseColor: 'bg-yellow-400',
         tooltip: 'Aguardando primeiro acesso - Corretor ainda não trocou a senha temporária',
-        label: 'Pendente'
+        label: 'Pendente',
+        pulse: true
       };
     }
 
+    // Ativo e funcionando
     return {
       color: 'bg-green-500',
       pulseColor: 'bg-green-400',
       tooltip: 'Corretor ativo - Sistema liberado e funcionando normalmente',
-      label: 'Ativo'
+      label: 'Ativo',
+      pulse: true
     };
   };
 
@@ -40,8 +58,8 @@ export default function CorretorStatusLed({ ativo, primeiroAcesso }: CorretorSta
     <div className="group relative inline-flex items-center gap-2">
       {/* LED com animação de pulso */}
       <div className="relative flex items-center justify-center">
-        {/* Pulso animado (apenas para ativo e pendente) */}
-        {ativo && (
+        {/* Pulso animado (apenas para status com pulse=true) */}
+        {status.pulse && (
           <span className={`absolute inline-flex h-4 w-4 rounded-full ${status.pulseColor} opacity-75 animate-ping`}></span>
         )}
         {/* LED principal */}

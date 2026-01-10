@@ -4,6 +4,8 @@ import {
   createCorretorSchema,
   updateCorretorSchema,
   listCorretoresSchema,
+  bulkUpdateStatusSchema,
+  bulkResendCredentialsSchema,
 } from './corretores.schema'
 
 export class CorretoresController {
@@ -50,5 +52,27 @@ export class CorretoresController {
     const { id } = request.params as { id: string }
     const imoveis = await this.corretoresService.getImoveis(id, tenantId)
     return reply.send(imoveis)
+  }
+
+  async bulkUpdateStatus(request: FastifyRequest, reply: FastifyReply) {
+    const tenantId = (request as any).tenantId || 'default-tenant-id'
+    const data = bulkUpdateStatusSchema.parse(request.body)
+    const result = await this.corretoresService.bulkUpdateStatus(
+      data.corretor_ids,
+      data.status,
+      data.ativo,
+      tenantId
+    )
+    return reply.send(result)
+  }
+
+  async bulkResendCredentials(request: FastifyRequest, reply: FastifyReply) {
+    const tenantId = (request as any).tenantId || 'default-tenant-id'
+    const data = bulkResendCredentialsSchema.parse(request.body)
+    const result = await this.corretoresService.bulkResendCredentials(
+      data.corretor_ids,
+      tenantId
+    )
+    return reply.send(result)
   }
 }

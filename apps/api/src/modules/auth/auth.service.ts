@@ -75,6 +75,15 @@ export class AuthService {
       throw new AppError('Usuário inativo. Entre em contato com o administrador.', 403)
     }
 
+    // Verificar status da conta
+    if (user.status_conta === 'SUSPENSO') {
+      throw new AppError('Conta suspensa. Entre em contato com o administrador para reativação.', 403)
+    }
+
+    if (user.status_conta === 'CANCELADO') {
+      throw new AppError('Conta cancelada. Entre em contato com o administrador.', 403)
+    }
+
     // Verificar se usuário tem senha (não é OAuth)
     if (!user.senha_hash) {
       throw new AppError('Use o login com Google para esta conta', 401)

@@ -42,4 +42,13 @@ export async function corretoresRoutes(server: FastifyInstance) {
   server.delete('/:id', async (request, reply) => {
     return controller.delete(request, reply)
   })
+
+  // Bulk operations
+  server.patch('/bulk-status', async (request, reply) => {
+    return controller.bulkUpdateStatus(request, reply)
+  })
+
+  server.post('/bulk-resend-credentials', async (request, reply) => {
+    return controller.bulkResendCredentials(request, reply)
+  })
 }

@@ -165,6 +165,7 @@ model User {
   tipo            UserType @default(CORRETOR)
   ativo           Boolean  @default(true)
   primeiro_acesso Boolean  @default(true) // True = usuário precisa definir senha
+  status_conta    StatusConta @default(ATIVO) // Status da conta: ATIVO, SUSPENSO, CANCELADO
 
   // Senha temporária (primeiro acesso)
   senha_temporaria     String?   // Senha em texto plano para envio (apenas temporária)
@@ -190,6 +191,12 @@ enum UserType {
   ADMIN
   GESTOR
   CORRETOR
+}
+
+enum StatusConta {
+  ATIVO
+  SUSPENSO
+  CANCELADO
 }
 
 // ============================================

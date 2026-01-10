@@ -115,6 +115,7 @@ export class CorretoresRepository {
             tipo: true,
             ativo: true,
             primeiro_acesso: true,
+            status_conta: true,
           },
         },
       },
@@ -130,6 +131,7 @@ export class CorretoresRepository {
       comissao: Number(corretor.comissao_padrao),
       ativo: corretor.user.ativo,
       primeiro_acesso: corretor.user.primeiro_acesso,
+      status_conta: corretor.user.status_conta,
     }))
   }
 
@@ -148,6 +150,7 @@ export class CorretoresRepository {
             tipo: true,
             ativo: true,
             primeiro_acesso: true,
+            status_conta: true,
           },
         },
       },
@@ -284,5 +287,101 @@ export class CorretoresRepository {
       fotoPrincipal: imovel.fotos[0] || null,
       endereco: imovel.endereco
     }))
+  }
+
+  async bulkUpdateStatus(
+    corretorIds: string[],
+    status: 'ATIVO' | 'SUSPENSO' | 'CANCELADO',
+    ativo: boolean,
+    tenantId: string
+  ): Promise<number> {
+    // Buscar os user_ids dos corretores
+    const corretores = await this.prisma.corretor.findMany({
+      where: {
+        id: { in: corretorIds },
+        tenant_id: tenantId
+      },
+      select: {
+        user_id: true
+      }
+    })
+
+    const userIds = corretores.map(c => c.user_id)
+
+    // Atualizar status dos usuários
+    const result = await this.prisma.user.updateMany({
+      where: {
+        id: { in: userIds },
+        tenant_id: tenantId
+      },
+      data: {
+        ativo,
+        status_conta: status
+      }
+    })
+
+    return result.count
+  }
+
+  async findByIds(corretorIds: string[], tenantId: string): Promise<any[]> {
+    const corretores = await this.prisma.corretor.findMany({
+      where: {
+        id: { in: corretorIds },
+        tenant_id: tenantId
+      },
+      include: {
+        user: {
+          select: {
+            id: true,
+            nome: true,
+            email: true
+          }
+        }
+      }
+    })
+
+    return corretores.map(corretor => ({
+      id: corretor.id,
+      userId: corretor.user_id,
+      nome: corretor.user.nome,
+      email: corretor.user.email,
+      telefone: corretor.telefone
+    }))
+  }
+
+  async getTenantInfo(tenantId: string) {
+    const tenant = await this.prisma.tenant.findUnique({
+      where: { id: tenantId },
+      select: {
+        slug: true,
+        nome: true
+      }
+    })
+
+    if (!tenant) {
+      throw new Error('Tenant não encontrado')
+    }
+
+    return tenant
+  }
+
+  async updateUserPassword(userId: string, senhaTemporaria: string) {
+    const hashedPassword = await bcrypt.hash(senhaTemporaria, 10)
+
+    await this.prisma.user.update({
+      where: { id: userId },
+      data: {
+        senha_hash: hashedPassword
+      }
+    })
+  }
+
+  async resetPrimeiroAcesso(userId: string) {
+    await this.prisma.user.update({
+      where: { id: userId },
+      data: {
+        primeiro_acesso: true
+      }
+    })
   }
 }

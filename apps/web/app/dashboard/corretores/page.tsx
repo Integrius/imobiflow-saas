@@ -18,6 +18,7 @@ interface Corretor {
   comissao?: number;
   ativo?: boolean;
   primeiro_acesso?: boolean;
+  status_conta?: 'ATIVO' | 'SUSPENSO' | 'CANCELADO';
 }
 
 interface CorretorForm {
@@ -281,6 +282,107 @@ export default function CorretoresPage() {
     }
   };
 
+  // Função para ativar corretor(es)
+  const ativarCorretores = async () => {
+    if (selectedCorretores.length === 0) {
+      toast.error('Selecione pelo menos um corretor');
+      return;
+    }
+
+    if (!confirm(`Deseja ativar ${selectedCorretores.length} corretor(es)?`)) {
+      return;
+    }
+
+    try {
+      await api.patch('/corretores/bulk-status', {
+        corretor_ids: selectedCorretores,
+        status: 'ATIVO',
+        ativo: true
+      });
+
+      toast.success(`${selectedCorretores.length} corretor(es) ativado(s) com sucesso`);
+      loadCorretores();
+      setSelectedCorretores([]);
+    } catch (error: any) {
+      toast.error(error.response?.data?.error || 'Erro ao ativar corretores');
+    }
+  };
+
+  // Função para suspender corretor(es)
+  const suspenderCorretores = async () => {
+    if (selectedCorretores.length === 0) {
+      toast.error('Selecione pelo menos um corretor');
+      return;
+    }
+
+    if (!confirm(`Deseja suspender ${selectedCorretores.length} corretor(es)? Eles não poderão fazer login.`)) {
+      return;
+    }
+
+    try {
+      await api.patch('/corretores/bulk-status', {
+        corretor_ids: selectedCorretores,
+        status: 'SUSPENSO',
+        ativo: false
+      });
+
+      toast.success(`${selectedCorretores.length} corretor(es) suspenso(s) com sucesso`);
+      loadCorretores();
+      setSelectedCorretores([]);
+    } catch (error: any) {
+      toast.error(error.response?.data?.error || 'Erro ao suspender corretores');
+    }
+  };
+
+  // Função para cancelar corretor(es)
+  const cancelarCorretores = async () => {
+    if (selectedCorretores.length === 0) {
+      toast.error('Selecione pelo menos um corretor');
+      return;
+    }
+
+    if (!confirm(`ATENÇÃO: Deseja cancelar ${selectedCorretores.length} corretor(es)? Isso bloqueará o acesso permanentemente.`)) {
+      return;
+    }
+
+    try {
+      await api.patch('/corretores/bulk-status', {
+        corretor_ids: selectedCorretores,
+        status: 'CANCELADO',
+        ativo: false
+      });
+
+      toast.success(`${selectedCorretores.length} corretor(es) cancelado(s) com sucesso`);
+      loadCorretores();
+      setSelectedCorretores([]);
+    } catch (error: any) {
+      toast.error(error.response?.data?.error || 'Erro ao cancelar corretores');
+    }
+  };
+
+  // Função para reenviar credenciais
+  const reenviarCredenciais = async () => {
+    if (selectedCorretores.length === 0) {
+      toast.error('Selecione pelo menos um corretor');
+      return;
+    }
+
+    if (!confirm(`Deseja reenviar email e WhatsApp de boas-vindas para ${selectedCorretores.length} corretor(es)?`)) {
+      return;
+    }
+
+    try {
+      await api.post('/corretores/bulk-resend-credentials', {
+        corretor_ids: selectedCorretores
+      });
+
+      toast.success(`Credenciais reenviadas para ${selectedCorretores.length} corretor(es)`);
+      setSelectedCorretores([]);
+    } catch (error: any) {
+      toast.error(error.response?.data?.error || 'Erro ao reenviar credenciais');
+    }
+  };
+
   const filteredCorretores = corretores.filter(
     (corretor) =>
       corretor.nome.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -298,49 +400,141 @@ export default function CorretoresPage() {
 
   return (
     <div>
-      <div className="flex justify-between items-center mb-8">
-        <div>
-          <h2 className="text-4xl font-bold text-[#0A2540] tracking-tight">Corretores</h2>
-          <p className="text-sm text-[#4B5563] mt-2 font-medium">
-            <span className="text-[#00C48C] text-lg font-bold">{corretores.length}</span> corretores cadastrados
-          </p>
+      <div className="mb-8">
+        {/* Header */}
+        <div className="flex justify-between items-center mb-6">
+          <div>
+            <h2 className="text-4xl font-bold text-[#0A2540] tracking-tight">Corretores</h2>
+            <p className="text-sm text-[#4B5563] mt-2 font-medium">
+              <span className="text-[#00C48C] text-lg font-bold">{corretores.length}</span> corretores cadastrados
+            </p>
+          </div>
         </div>
-        <div className="flex gap-3">
-          <button
-            onClick={calcularComissoes}
-            disabled={selectedCorretores.length === 0 || loadingComissoes}
-            className={`px-6 py-3 rounded-lg font-semibold transition-all duration-200 ${
-              selectedCorretores.length === 0 || loadingComissoes
-                ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                : 'bg-gradient-to-r from-[#FFB627] to-[#FF9500] text-white hover:scale-105'
-            }`}
-            style={{
-              boxShadow: selectedCorretores.length > 0 && !loadingComissoes
-                ? 'inset 0 -2px 4px rgba(0, 0, 0, 0.2), 0 4px 8px rgba(0, 0, 0, 0.2)'
-                : 'none'
-            }}
-          >
-            {loadingComissoes ? (
-              <span className="flex items-center gap-2">
-                <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24">
-                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
-                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
-                </svg>
-                Calculando...
+
+        {/* Painel de Controle */}
+        <div className="bg-gradient-to-br from-slate-50 to-slate-100 rounded-xl p-4 border-2 border-slate-200 shadow-sm">
+          <h3 className="text-sm font-bold text-slate-700 uppercase tracking-wide mb-3">Painel de Controle</h3>
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
+            {/* Botão: Ativar */}
+            <button
+              onClick={ativarCorretores}
+              disabled={selectedCorretores.length === 0}
+              className={`px-4 py-2.5 rounded-lg font-semibold text-sm transition-all duration-200 ${
+                selectedCorretores.length === 0
+                  ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                  : 'bg-gradient-to-r from-[#00C48C] to-[#00A374] text-white hover:scale-105'
+              }`}
+              style={{
+                boxShadow: selectedCorretores.length > 0
+                  ? 'inset 0 -2px 4px rgba(0, 0, 0, 0.2), 0 4px 8px rgba(0, 0, 0, 0.2)'
+                  : 'none'
+              }}
+            >
+              <span className="flex items-center justify-center gap-1.5">
+                <span className="inline-block w-2.5 h-2.5 rounded-full bg-green-400 ring-2 ring-white"></span>
+                Ativar {selectedCorretores.length > 0 && `(${selectedCorretores.length})`}
               </span>
-            ) : (
-              <>💰 Calcular Comissões ({selectedCorretores.length})</>
-            )}
-          </button>
-          <button
-            onClick={openCreateModal}
-            className="px-6 py-3 btn-primary"
-            style={{
-              boxShadow: 'inset 0 -2px 4px rgba(0, 0, 0, 0.2), 0 4px 8px rgba(0, 0, 0, 0.2)'
-            }}
-          >
-            + Novo Corretor
-          </button>
+            </button>
+
+            {/* Botão: Suspender */}
+            <button
+              onClick={suspenderCorretores}
+              disabled={selectedCorretores.length === 0}
+              className={`px-4 py-2.5 rounded-lg font-semibold text-sm transition-all duration-200 ${
+                selectedCorretores.length === 0
+                  ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                  : 'bg-gradient-to-r from-[#FF9500] to-[#FF7A00] text-white hover:scale-105'
+              }`}
+              style={{
+                boxShadow: selectedCorretores.length > 0
+                  ? 'inset 0 -2px 4px rgba(0, 0, 0, 0.2), 0 4px 8px rgba(0, 0, 0, 0.2)'
+                  : 'none'
+              }}
+            >
+              <span className="flex items-center justify-center gap-1.5">
+                <span className="inline-block w-2.5 h-2.5 rounded-full bg-orange-400 ring-2 ring-white"></span>
+                Suspender {selectedCorretores.length > 0 && `(${selectedCorretores.length})`}
+              </span>
+            </button>
+
+            {/* Botão: Cancelar */}
+            <button
+              onClick={cancelarCorretores}
+              disabled={selectedCorretores.length === 0}
+              className={`px-4 py-2.5 rounded-lg font-semibold text-sm transition-all duration-200 ${
+                selectedCorretores.length === 0
+                  ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                  : 'bg-gradient-to-r from-[#EF4444] to-[#DC2626] text-white hover:scale-105'
+              }`}
+              style={{
+                boxShadow: selectedCorretores.length > 0
+                  ? 'inset 0 -2px 4px rgba(0, 0, 0, 0.2), 0 4px 8px rgba(0, 0, 0, 0.2)'
+                  : 'none'
+              }}
+            >
+              <span className="flex items-center justify-center gap-1.5">
+                <span className="inline-block w-2.5 h-2.5 rounded-full bg-red-400 ring-2 ring-white"></span>
+                Cancelar {selectedCorretores.length > 0 && `(${selectedCorretores.length})`}
+              </span>
+            </button>
+
+            {/* Botão: Reenviar Credenciais */}
+            <button
+              onClick={reenviarCredenciais}
+              disabled={selectedCorretores.length === 0}
+              className={`px-4 py-2.5 rounded-lg font-semibold text-sm transition-all duration-200 ${
+                selectedCorretores.length === 0
+                  ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                  : 'bg-gradient-to-r from-[#3B82F6] to-[#2563EB] text-white hover:scale-105'
+              }`}
+              style={{
+                boxShadow: selectedCorretores.length > 0
+                  ? 'inset 0 -2px 4px rgba(0, 0, 0, 0.2), 0 4px 8px rgba(0, 0, 0, 0.2)'
+                  : 'none'
+              }}
+            >
+              📧 Reenviar {selectedCorretores.length > 0 && `(${selectedCorretores.length})`}
+            </button>
+
+            {/* Botão: Calcular Comissões */}
+            <button
+              onClick={calcularComissoes}
+              disabled={selectedCorretores.length === 0 || loadingComissoes}
+              className={`px-4 py-2.5 rounded-lg font-semibold text-sm transition-all duration-200 ${
+                selectedCorretores.length === 0 || loadingComissoes
+                  ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                  : 'bg-gradient-to-r from-[#FFB627] to-[#FF9500] text-white hover:scale-105'
+              }`}
+              style={{
+                boxShadow: selectedCorretores.length > 0 && !loadingComissoes
+                  ? 'inset 0 -2px 4px rgba(0, 0, 0, 0.2), 0 4px 8px rgba(0, 0, 0, 0.2)'
+                  : 'none'
+              }}
+            >
+              {loadingComissoes ? (
+                <span className="flex items-center justify-center gap-2">
+                  <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                  </svg>
+                  Calculando...
+                </span>
+              ) : (
+                <>💰 Comissões {selectedCorretores.length > 0 && `(${selectedCorretores.length})`}</>
+              )}
+            </button>
+
+            {/* Botão: Novo Corretor */}
+            <button
+              onClick={openCreateModal}
+              className="px-4 py-2.5 btn-primary text-sm"
+              style={{
+                boxShadow: 'inset 0 -2px 4px rgba(0, 0, 0, 0.2), 0 4px 8px rgba(0, 0, 0, 0.2)'
+              }}
+            >
+              + Novo Corretor
+            </button>
+          </div>
         </div>
       </div>
 
@@ -408,6 +602,7 @@ export default function CorretoresPage() {
                       <CorretorStatusLed
                         ativo={corretor.ativo ?? true}
                         primeiroAcesso={corretor.primeiro_acesso ?? false}
+                        statusConta={corretor.status_conta}
                       />
                       <span>{corretor.nome}</span>
                     </div>

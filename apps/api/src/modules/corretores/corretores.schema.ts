@@ -24,6 +24,18 @@ export const listCorretoresSchema = z.object({
   search: z.string().optional(),
 })
 
+export const bulkUpdateStatusSchema = z.object({
+  corretor_ids: z.array(z.string().uuid()),
+  status: z.enum(['ATIVO', 'SUSPENSO', 'CANCELADO']),
+  ativo: z.boolean(),
+})
+
+export const bulkResendCredentialsSchema = z.object({
+  corretor_ids: z.array(z.string().uuid()),
+})
+
 export type CreateCorretorDTO = z.infer<typeof createCorretorSchema>
 export type UpdateCorretorDTO = z.infer<typeof updateCorretorSchema>
 export type ListCorretoresQuery = z.infer<typeof listCorretoresSchema>
+export type BulkUpdateStatusDTO = z.infer<typeof bulkUpdateStatusSchema>
+export type BulkResendCredentialsDTO = z.infer<typeof bulkResendCredentialsSchema>
