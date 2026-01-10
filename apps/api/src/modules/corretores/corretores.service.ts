@@ -100,7 +100,7 @@ export class CorretoresService {
 
       // Enviar WhatsApp
       try {
-        await twilioService.enviarSenhaTemporariaCorretor({
+        await twilioService.enviarSenhaTemporaria({
           telefone: corretor.telefone,
           nome: corretor.nome,
           senhaTemporaria,
