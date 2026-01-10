@@ -1,8 +1,8 @@
 import { CorretoresRepository } from './corretores.repository'
 import { CreateCorretorDTO, UpdateCorretorDTO, ListCorretoresQuery } from './corretores.schema'
 import { AppError } from '../../shared/errors/app-error'
-import { SendGridService } from '../../shared/services/sendgrid.service'
-import { TwilioService } from '../../shared/services/twilio.service'
+import { sendGridService } from '../../shared/services/sendgrid.service'
+import { twilioService } from '../../shared/services/twilio.service'
 
 export class CorretoresService {
   constructor(private corretoresRepository: CorretoresRepository) {}
@@ -66,9 +66,6 @@ export class CorretoresService {
     if (corretores.length === 0) {
       throw new AppError('Nenhum corretor encontrado', 404, 'CORRETORES_NOT_FOUND')
     }
-
-    const sendGridService = new SendGridService()
-    const twilioService = new TwilioService()
 
     let emailsSent = 0
     let whatsappSent = 0
