@@ -78,7 +78,7 @@ class SendGridService {
    * Nome padrão do remetente
    */
   private getDefaultFromName(): string {
-    return process.env.SENDGRID_FROM_NAME || 'ImobiFlow';
+    return process.env.SENDGRID_FROM_NAME || 'Integrius';
   }
 
   /**
@@ -205,14 +205,14 @@ class SendGridService {
 <body>
   <div class="container">
     <div class="header">
-      <h1>🏡 ImobiFlow</h1>
+      <h1>🏡 Integrius</h1>
     </div>
 
     <div class="content">
       <p class="greeting">Olá, ${primeiroNome}! 👋</p>
 
       <p class="message">
-        Muito obrigado por usar o <strong>ImobiFlow</strong> para encontrar o imóvel dos seus sonhos!
+        Muito obrigado por usar o <strong>Integrius</strong> para encontrar o imóvel dos seus sonhos!
       </p>
 
       <p class="message">
@@ -242,7 +242,7 @@ class SendGridService {
     </div>
 
     <div class="footer">
-      <p><strong>ImobiFlow</strong></p>
+      <p><strong>Integrius</strong></p>
       <p>Tecnologia e inteligência para encontrar o imóvel perfeito</p>
       <p style="margin-top: 20px; font-size: 12px;">
         📧 contato@integrius.com.br | 📱 WhatsApp em breve
@@ -377,7 +377,7 @@ class SendGridService {
     </div>
 
     <div class="footer">
-      <p><strong>ImobiFlow</strong></p>
+      <p><strong>Integrius</strong></p>
       <p>Tecnologia e inteligência para encontrar o imóvel perfeito</p>
       <p style="margin-top: 20px; font-size: 12px;">
         📧 contato@integrius.com.br
@@ -624,7 +624,7 @@ class SendGridService {
 
     <div class="footer">
       <p style="margin: 0 0 10px 0;">
-        <strong>ImobiFlow</strong> - Sua plataforma imobiliária inteligente
+        <strong>Integrius</strong> - Sua plataforma imobiliária inteligente
       </p>
       <p style="margin: 0; font-size: 12px;">
         Este é um email automático, não responda diretamente.
@@ -762,7 +762,7 @@ class SendGridService {
       </p>
 
       <p style="font-size: 16px;">
-        Esperamos que você esteja aproveitando o <strong>ImobiFlow</strong> e todas as ferramentas que oferecemos para <strong>${nomeTenant}</strong>.
+        Esperamos que você esteja aproveitando o <strong>Integrius</strong> e todas as ferramentas que oferecemos para <strong>${nomeTenant}</strong>.
       </p>
 
       <div class="warning-box">
@@ -801,7 +801,7 @@ class SendGridService {
       </div>
 
       <div style="text-align: center; margin: 30px 0;">
-        <a href="mailto:contato@integrius.com.br?subject=Ativar%20Assinatura%20ImobiFlow" class="cta-button">
+        <a href="mailto:contato@integrius.com.br?subject=Ativar%20Assinatura%20Integrius" class="cta-button">
           💚 Ativar Minha Assinatura Agora
         </a>
       </div>
@@ -813,7 +813,7 @@ class SendGridService {
 
     <div class="footer">
       <p style="margin: 0 0 10px 0;">
-        <strong>ImobiFlow</strong> - Gestão Imobiliária Inteligente
+        <strong>Integrius</strong> - Gestão Imobiliária Inteligente
       </p>
       <p style="margin: 0; font-size: 12px;">
         Este é um email automático de sistema.
@@ -953,7 +953,7 @@ class SendGridService {
       </p>
 
       <p style="font-size: 16px;">
-        Este é um <strong>aviso urgente</strong> sobre o término do seu período de teste no <strong>ImobiFlow</strong> para <strong>${nomeTenant}</strong>.
+        Este é um <strong>aviso urgente</strong> sobre o término do seu período de teste no <strong>Integrius</strong> para <strong>${nomeTenant}</strong>.
       </p>
 
       <div class="urgent-box">
@@ -986,7 +986,7 @@ class SendGridService {
       </div>
 
       <div style="text-align: center; margin: 30px 0;">
-        <a href="mailto:contato@integrius.com.br?subject=URGENTE%20-%20Ativar%20Assinatura%20ImobiFlow" class="cta-button">
+        <a href="mailto:contato@integrius.com.br?subject=URGENTE%20-%20Ativar%20Assinatura%20Integrius" class="cta-button">
           🚨 ATIVAR MINHA ASSINATURA AGORA
         </a>
       </div>
@@ -1146,7 +1146,7 @@ class SendGridService {
       </div>
 
       <p>
-        Conforme solicitado, exportamos todos os dados do seu CRM Integrius e estamos enviando em anexo neste email.
+        Conforme solicitado, exportamos todos os dados do seu CRM <strong>Integrius</strong> e estamos enviando em anexo neste email.
       </p>
 
       <div class="stats-grid">
@@ -1187,17 +1187,17 @@ class SendGridService {
       </div>
 
       <p style="font-size: 16px; margin-top: 30px;">
-        <strong>💚 Quer continuar usando o ImobiFlow?</strong><br>
+        <strong>💚 Quer continuar usando o Integrius?</strong><br>
         Entre em contato conosco para ativar sua assinatura: <a href="mailto:contato@integrius.com.br">contato@integrius.com.br</a>
       </p>
     </div>
 
     <div class="footer">
       <p style="margin: 0 0 10px 0;">
-        <strong>ImobiFlow</strong> - Gestão Imobiliária Inteligente
+        <strong>Integrius</strong> - Gestão Imobiliária Inteligente
       </p>
       <p style="margin: 0; font-size: 12px;">
-        © 2025 CRM Integrius. Todos os direitos reservados.
+        © 2025 Integrius. Todos os direitos reservados.
       </p>
     </div>
   </div>
@@ -1381,7 +1381,7 @@ class SendGridService {
 <body>
   <div class="container">
     <div class="header">
-      <h1>🎉 Bem-vindo ao ImobiFlow!</h1>
+      <h1>🎉 Bem-vindo ao Integrius!</h1>
       <p>Gestão Imobiliária Inteligente</p>
     </div>
 
@@ -1392,7 +1392,7 @@ class SendGridService {
 
       <p class="message">
         É um grande prazer ter você e a <strong>${data.nomeTenant}</strong> conosco!
-        Bem-vindo à plataforma <strong>ImobiFlow</strong>, seu sistema completo de gestão imobiliária com inteligência artificial.
+        Bem-vindo à plataforma <strong>Integrius</strong>, seu sistema completo de gestão imobiliária com inteligência artificial.
       </p>
 
       <p class="message">
@@ -1406,7 +1406,7 @@ class SendGridService {
           Período de Teste Gratuito
         </h2>
         <p style="margin: 10px 0; color: #555; font-size: 16px;">
-          Você tem <span class="highlight">14 dias</span> para explorar todas as funcionalidades do ImobiFlow sem nenhum custo!
+          Você tem <span class="highlight">14 dias</span> para explorar todas as funcionalidades do Integrius sem nenhum custo!
         </p>
         <p style="margin: 10px 0; color: #666; font-size: 15px;">
           📅 Seu período trial expira em: <strong>${dataFormatada}</strong>
@@ -1443,7 +1443,7 @@ class SendGridService {
 
       <div style="text-align: center; margin: 30px 0;">
         <p style="font-size: 16px; color: #555; margin-bottom: 15px;">
-          Comece agora mesmo a explorar o ImobiFlow:
+          Comece agora mesmo a explorar o Integrius:
         </p>
         <a href="https://${data.nomeTenant.toLowerCase().replace(/\s+/g, '')}.integrius.com.br/login" class="cta-button">
           🚀 Acessar Minha Conta
@@ -1461,13 +1461,13 @@ class SendGridService {
 
     <div class="footer">
       <p style="margin: 0 0 10px 0;">
-        <strong>ImobiFlow</strong> - Gestão Imobiliária Inteligente
+        <strong>Integrius</strong> - Gestão Imobiliária Inteligente
       </p>
       <p style="margin: 0 0 10px 0;">
         Tecnologia e IA para impulsionar seu negócio imobiliário
       </p>
       <p style="margin: 0; font-size: 12px;">
-        © 2025-2026 ImobiFlow. Todos os direitos reservados.
+        © 2025-2026 Integrius. Todos os direitos reservados.
       </p>
     </div>
   </div>
@@ -1477,7 +1477,7 @@ class SendGridService {
 
     return this.sendEmail({
       to: data.emailUsuario,
-      subject: `🎉 Bem-vindo ao ImobiFlow, ${primeiroNome}! Seu trial de 14 dias começou`,
+      subject: `🎉 Bem-vindo ao Integrius, ${primeiroNome}! Seu trial de 14 dias começou`,
       html
     });
   }
@@ -1581,7 +1581,7 @@ class SendGridService {
       </p>
 
       <p>
-        Você solicitou a recuperação de senha para sua conta no <strong>ImobiFlow</strong> (<strong>${nomeTenant}</strong>).
+        Você solicitou a recuperação de senha para sua conta no <strong>Integrius</strong> (<strong>${nomeTenant}</strong>).
       </p>
 
       <div class="token-box">
@@ -1776,7 +1776,7 @@ class SendGridService {
 <body>
   <div class="container">
     <div class="header">
-      <h1>🎉 Bem-vindo ao ImobiFlow!</h1>
+      <h1>🎉 Bem-vindo ao Integrius!</h1>
       <p style="margin: 10px 0 0 0; font-size: 16px;">${data.nomeTenant}</p>
     </div>
 
@@ -1786,7 +1786,7 @@ class SendGridService {
       </p>
 
       <p>
-        Você foi cadastrado como <strong>corretor</strong> no sistema <strong>ImobiFlow</strong>
+        Você foi cadastrado como <strong>corretor</strong> no sistema <strong>Integrius</strong>
         de <strong>${data.nomeTenant}</strong>. Seja bem-vindo à equipe!
       </p>
 
@@ -1856,7 +1856,7 @@ class SendGridService {
 
     <div class="footer">
       <p style="margin: 0 0 10px 0;">
-        <strong>ImobiFlow</strong> - Gestão Imobiliária Inteligente
+        <strong>Integrius</strong> - Gestão Imobiliária Inteligente
       </p>
       <p style="margin: 0 0 10px 0;">
         ${data.nomeTenant}
@@ -1872,7 +1872,7 @@ class SendGridService {
 
     return this.sendEmail({
       to: data.email,
-      subject: `🎉 Bem-vindo ao ImobiFlow - ${data.nomeTenant}`,
+      subject: `🎉 Bem-vindo ao Integrius - ${data.nomeTenant}`,
       html
     });
   }

@@ -54,7 +54,7 @@ export async function testRoutes(server: FastifyInstance) {
         email,
         senhaTemporaria: 'TESTE123',
         tenantUrl: 'teste.integrius.com.br',
-        nomeTenant: 'Teste ImobiFlow',
+        nomeTenant: 'Teste Integrius',
         horasValidade: 12
       });
 
@@ -90,7 +90,7 @@ export async function testRoutes(server: FastifyInstance) {
         email: 'teste@teste.com',
         senhaTemporaria: 'TESTE123',
         tenantUrl: 'teste.integrius.com.br',
-        nomeTenant: 'Teste ImobiFlow'
+        nomeTenant: 'Teste Integrius'
       });
 
       return reply.send({

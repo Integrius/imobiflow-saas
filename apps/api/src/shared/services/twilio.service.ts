@@ -91,11 +91,11 @@ class TwilioService {
   }): Promise<boolean> {
     const primeiroNome = data.nome.split(' ')[0];
 
-    const message = `🏡 *ImobiFlow - ${data.nomeTenant}*
+    const message = `🏡 *Integrius - ${data.nomeTenant}*
 
 Olá, ${primeiroNome}! 👋
 
-Você foi cadastrado no sistema ImobiFlow. Aqui estão suas credenciais de acesso:
+Você foi cadastrado no sistema Integrius. Aqui estão suas credenciais de acesso:
 
 📧 *Email:* ${data.email}
 🔐 *Senha temporária:* ${data.senhaTemporaria}
@@ -112,7 +112,7 @@ Você foi cadastrado no sistema ImobiFlow. Aqui estão suas credenciais de acess
 Qualquer dúvida, entre em contato com o administrador.
 
 ---
-ImobiFlow - Gestão Imobiliária Inteligente`.trim();
+Integrius - Gestão Imobiliária Inteligente`.trim();
 
     return this.sendWhatsApp({
       to: data.telefone,

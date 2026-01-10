@@ -276,7 +276,7 @@ export async function usersRoutes(server: FastifyInstance) {
           email: newUser.email,
           senhaTemporaria,
           tenantUrl,
-          nomeTenant: tenant?.nome || 'ImobiFlow',
+          nomeTenant: tenant?.nome || 'Integrius',
           horasValidade: 12
         }).then(() => {
           server.log.info(`✅ Email enviado com sucesso para ${newUser.email}`);
