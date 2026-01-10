@@ -11,6 +11,7 @@ export interface EmailConfig {
   subject: string;
   html: string;
   from?: string;
+  fromName?: string; // Nome customizado do remetente (ex: nome do tenant)
   replyTo?: string;
 }
 
@@ -91,7 +92,9 @@ class SendGridService {
     }
 
     try {
-      const from = config.from || `${this.getDefaultFromName()} <${this.getDefaultFrom()}>`;
+      // Usar fromName customizado se fornecido, senão usar padrão
+      const fromName = config.fromName || this.getDefaultFromName();
+      const from = config.from || `${fromName} <${this.getDefaultFrom()}>`;
 
       await sgMail.send({
         to: config.to,
@@ -101,7 +104,7 @@ class SendGridService {
         replyTo: config.replyTo
       });
 
-      console.log(`✅ Email enviado para ${config.to}`);
+      console.log(`✅ Email enviado para ${config.to} (from: ${fromName})`);
       return true;
     } catch (error: any) {
       console.error('Erro ao enviar email SendGrid:', error.response?.body || error.message);
@@ -1873,7 +1876,8 @@ class SendGridService {
     return this.sendEmail({
       to: data.email,
       subject: `🎉 Bem-vindo ao Integrius - ${data.nomeTenant}`,
-      html
+      html,
+      fromName: data.nomeTenant // Usar nome do tenant como remetente
     });
   }
 }
