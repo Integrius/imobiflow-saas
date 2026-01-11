@@ -23,11 +23,28 @@ if (typeof window !== 'undefined') {
   console.log('🔧 API Cliente configurado:', API_BASE_URL);
 }
 
+/**
+ * Helper para ler cookie
+ */
+function getCookie(name: string): string | null {
+  if (typeof window === 'undefined') return null;
+
+  const value = `; ${document.cookie}`;
+  const parts = value.split(`; ${name}=`);
+
+  if (parts.length === 2) {
+    return parts.pop()?.split(';').shift() || null;
+  }
+
+  return null;
+}
+
 // Interceptor para adicionar token e tenant
 api.interceptors.request.use((config) => {
   if (typeof window !== 'undefined') {
-    // Adicionar token de autenticação
-    const token = localStorage.getItem('token');
+    // Adicionar token de autenticação do COOKIE DE SESSÃO
+    // Token não está mais em localStorage, apenas em cookie
+    const token = getCookie('token');
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
@@ -49,7 +66,8 @@ api.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response?.status === 401 && typeof window !== 'undefined') {
-      localStorage.removeItem('token');
+      // Remover cookie de sessão
+      document.cookie = 'token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
       window.location.href = '/login';
     }
     return Promise.reject(error);

@@ -97,12 +97,14 @@ export async function login(data: LoginData): Promise<AuthResponse> {
       localStorage.setItem('tenant_id', finalTenantId);
     }
 
-    localStorage.setItem('token', response.data.token);
+    // IMPORTANTE: Não armazena token em localStorage para evitar sessões persistentes
+    // Token só existe em cookie de sessão que expira ao fechar navegador
     localStorage.setItem('user', JSON.stringify(response.data.user));
 
-    // Cookie de sessão: 10 minutos (600 segundos)
-    const SESSION_DURATION = 600; // 10 minutos em segundos
-    document.cookie = `token=${response.data.token}; path=/; max-age=${SESSION_DURATION}; SameSite=Lax`;
+    // Cookie de SESSÃO (sem max-age): expira automaticamente ao fechar navegador
+    // Isso garante que cada acesso ao tenant exige novo login
+    // Ideal para empresas pequenas com computadores compartilhados
+    document.cookie = `token=${response.data.token}; path=/; SameSite=Lax; Secure`;
 
     // Armazenar tenant_slug em cookie de longa duração (90 dias) para lembrança de último acesso
     if (subdomain) {
@@ -132,12 +134,11 @@ export async function logout() {
     console.error('Erro ao fazer logout no backend:', error);
   }
 
-  // Remover de localStorage
-  localStorage.removeItem('token');
+  // Remover de localStorage (token não está mais no localStorage, mas removemos user e tenant_id)
   localStorage.removeItem('user');
   localStorage.removeItem('tenant_id');
 
-  // Remover TODOS os cookies (incluindo last_tenant)
+  // Remover TODOS os cookies (incluindo token e last_tenant)
   // Isso garante que usuários administrativos sempre caiam na landing page após logout
   document.cookie = 'token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
   document.cookie = 'last_tenant=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
@@ -146,9 +147,13 @@ export async function logout() {
   window.location.href = '/';
 }
 
+/**
+ * Obter token de autenticação do cookie de sessão
+ * Token agora está APENAS em cookie (não em localStorage)
+ */
 export function getToken(): string | null {
   if (typeof window === 'undefined') return null;
-  return localStorage.getItem('token');
+  return getCookie('token');
 }
 
 /**
