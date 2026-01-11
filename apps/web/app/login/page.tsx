@@ -65,11 +65,10 @@ export default function LoginPage() {
           console.log('👤 Usuário administrativo detectado - não redireciona automaticamente');
         } else {
           const lastTenant = getLastTenant();
-          const lastMethod = getLastLoginMethod();
 
           if (lastTenant) {
             // Redirecionar para o subdomínio do último tenant usado
-            console.log(`🔄 Redirecionando para último tenant usado: ${lastTenant} (método: ${lastMethod})`);
+            console.log(`🔄 Redirecionando para último tenant usado: ${lastTenant}`);
 
             // Construir URL do tenant (garantir que não é localhost)
             const baseDomain = hostname.includes('localhost') ? 'localhost:3000' : 'integrius.com.br';
