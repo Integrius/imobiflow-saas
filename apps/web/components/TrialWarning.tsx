@@ -19,7 +19,7 @@ export default function TrialWarning() {
 
   const loadTrialInfo = async () => {
     try {
-      const response = await api.get('/trial-info');
+      const response = await api.get('/tenants/trial-info');
       setTrialInfo(response.data);
     } catch (error) {
       console.error('Erro ao carregar informações do trial:', error);

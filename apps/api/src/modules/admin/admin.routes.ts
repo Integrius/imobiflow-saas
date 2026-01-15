@@ -1,17 +1,50 @@
 import { FastifyInstance } from 'fastify'
 import { authMiddleware } from '../../shared/middlewares/auth.middleware'
 import { prisma } from '../../shared/database/prisma.service'
-import { ActivityLogService } from '../../shared/services/activity-log.service'
 import { TipoAtividade } from '@prisma/client'
 
 /**
  * Rotas de Administração Geral
  *
+ * CONFORMIDADE LGPD (Lei 13.709/2018):
+ *
+ * O ImobiFlow atua como OPERADOR de dados, enquanto cada tenant (imobiliária)
+ * é o CONTROLADOR dos dados de seus clientes.
+ *
+ * Conforme Art. 39 da LGPD: "O operador deverá realizar o tratamento segundo
+ * as instruções fornecidas pelo controlador"
+ *
+ * Por isso, o operador (Vivoly) NÃO tem acesso aos dados operacionais dos
+ * outros tenants (leads, negociações, etc.), apenas a:
+ * - Dados administrativos mínimos (nome, status, plano)
+ * - Seus próprios dados (tenant Vivoly)
+ *
  * Acesso restrito ao tenant "vivoly" (admin geral do sistema)
- * Permite visualizar todos os tenants cadastrados e seus administradores
  */
 
 export async function adminRoutes(server: FastifyInstance) {
+
+  // Cache do ID do tenant Vivoly para evitar consultas repetidas
+  let vivolyTenantId: string | null = null
+
+  /**
+   * Helper para obter o ID do tenant Vivoly
+   */
+  const getVivolyTenantId = async (): Promise<string | null> => {
+    if (vivolyTenantId) return vivolyTenantId
+
+    const vivoly = await prisma.tenant.findFirst({
+      where: { slug: 'vivoly' },
+      select: { id: true }
+    })
+
+    if (vivoly) {
+      vivolyTenantId = vivoly.id
+    }
+
+    return vivolyTenantId
+  }
+
   /**
    * Middleware para verificar se é o tenant admin (Vivoly)
    */
@@ -41,7 +74,10 @@ export async function adminRoutes(server: FastifyInstance) {
    * GET /api/v1/admin/tenants
    *
    * Lista todos os tenants cadastrados no sistema
-   * Retorna: nome, email, status, plano, data de criação, admin principal
+   *
+   * LGPD: Retorna apenas dados administrativos mínimos necessários
+   * para gestão da plataforma (nome, email, status, plano).
+   * NÃO retorna dados operacionais (leads, negociações, etc.)
    *
    * Acesso: Apenas ADMIN do tenant Vivoly
    */
@@ -52,7 +88,8 @@ export async function adminRoutes(server: FastifyInstance) {
     },
     async (request, reply) => {
       try {
-        // Buscar todos os tenants com seus admins
+        // Buscar todos os tenants - APENAS dados administrativos
+        // LGPD: Não incluímos contagens de leads/negociações (dados operacionais)
         const tenants = await prisma.tenant.findMany({
           select: {
             id: true,
@@ -67,15 +104,17 @@ export async function adminRoutes(server: FastifyInstance) {
             created_at: true,
             updated_at: true,
 
-            // Limites e uso
+            // Limites contratuais (não são dados pessoais)
             limite_usuarios: true,
             limite_imoveis: true,
             limite_storage_mb: true,
+
+            // Uso atual - apenas métricas de capacidade (não dados pessoais)
             total_usuarios: true,
             total_imoveis: true,
             storage_usado_mb: true,
 
-            // Buscar admin do tenant
+            // Buscar admin do tenant (necessário para contato comercial)
             users: {
               where: {
                 tipo: 'ADMIN',
@@ -91,11 +130,11 @@ export async function adminRoutes(server: FastifyInstance) {
               orderBy: {
                 created_at: 'asc'
               },
-              take: 1 // Pegar o primeiro admin (mais antigo)
+              take: 1
             }
           },
           orderBy: {
-            created_at: 'desc' // Mais recentes primeiro
+            created_at: 'desc'
           }
         })
 
@@ -126,19 +165,21 @@ export async function adminRoutes(server: FastifyInstance) {
             created_at: tenant.created_at,
             updated_at: tenant.updated_at,
 
-            // Limites e uso
+            // Limites contratuais
             limites: {
               usuarios: tenant.limite_usuarios,
               imoveis: tenant.limite_imoveis,
               storage_mb: tenant.limite_storage_mb
             },
+
+            // Uso de capacidade (sem dados sensíveis)
             uso: {
               usuarios: tenant.total_usuarios,
               imoveis: tenant.total_imoveis,
               storage_mb: tenant.storage_usado_mb
             },
 
-            // Admin do tenant
+            // Admin do tenant (contato comercial)
             admin: admin ? {
               id: admin.id,
               nome: admin.nome,
@@ -168,7 +209,9 @@ export async function adminRoutes(server: FastifyInstance) {
    * GET /api/v1/admin/tenants/:id
    *
    * Busca detalhes de um tenant específico
-   * Retorna: informações completas + todos os admins
+   *
+   * LGPD: Para tenants que NÃO são Vivoly, retorna apenas dados administrativos.
+   * Para o próprio tenant Vivoly, retorna dados completos (é o próprio controlador).
    *
    * Acesso: Apenas ADMIN do tenant Vivoly
    */
@@ -180,6 +223,10 @@ export async function adminRoutes(server: FastifyInstance) {
     async (request, reply) => {
       try {
         const { id } = request.params as { id: string }
+        const vivolyId = await getVivolyTenantId()
+
+        // Verificar se está consultando o próprio tenant (Vivoly)
+        const isOwnTenant = id === vivolyId
 
         const tenant = await prisma.tenant.findUnique({
           where: { id },
@@ -201,15 +248,18 @@ export async function adminRoutes(server: FastifyInstance) {
                 created_at: 'asc'
               }
             },
-            _count: {
-              select: {
-                users: true,
-                leads: true,
-                imoveis: true,
-                negociacoes: true,
-                proprietarios: true
+            // LGPD: Só incluir contagens se for o próprio tenant
+            ...(isOwnTenant ? {
+              _count: {
+                select: {
+                  users: true,
+                  leads: true,
+                  imoveis: true,
+                  negociacoes: true,
+                  proprietarios: true
+                }
               }
-            }
+            } : {})
           }
         })
 
@@ -228,14 +278,38 @@ export async function adminRoutes(server: FastifyInstance) {
           diasRestantes = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
         }
 
-        return reply.send({
+        // LGPD: Montar resposta baseada em se é o próprio tenant ou não
+        const response: any = {
           success: true,
           tenant: {
-            ...tenant,
+            id: tenant.id,
+            nome: tenant.nome,
+            slug: tenant.slug,
+            subdominio: tenant.subdominio,
+            email: tenant.email,
+            telefone: tenant.telefone,
+            plano: tenant.plano,
+            status: tenant.status,
+            data_expiracao: tenant.data_expiracao,
             dias_restantes: diasRestantes,
-            estatisticas: tenant._count
+            created_at: tenant.created_at,
+            updated_at: tenant.updated_at,
+            limite_usuarios: tenant.limite_usuarios,
+            limite_imoveis: tenant.limite_imoveis,
+            limite_storage_mb: tenant.limite_storage_mb,
+            total_usuarios: tenant.total_usuarios,
+            total_imoveis: tenant.total_imoveis,
+            storage_usado_mb: tenant.storage_usado_mb,
+            users: tenant.users
           }
-        })
+        }
+
+        // Só incluir estatísticas detalhadas se for o próprio tenant
+        if (isOwnTenant && (tenant as any)._count) {
+          response.tenant.estatisticas = (tenant as any)._count
+        }
+
+        return reply.send(response)
       } catch (error) {
         server.log.error({ error }, 'Erro ao buscar tenant')
         return reply.status(500).send({
@@ -250,6 +324,9 @@ export async function adminRoutes(server: FastifyInstance) {
    *
    * Estatísticas gerais do sistema
    *
+   * LGPD: Retorna apenas estatísticas agregadas e anonimizadas.
+   * Não expõe dados individuais de nenhum tenant.
+   *
    * Acesso: Apenas ADMIN do tenant Vivoly
    */
   server.get(
@@ -259,13 +336,13 @@ export async function adminRoutes(server: FastifyInstance) {
     },
     async (request, reply) => {
       try {
-        // Contar tenants por status
+        // Contar tenants por status (dados agregados, não pessoais)
         const tenantsByStatus = await prisma.tenant.groupBy({
           by: ['status'],
           _count: true
         })
 
-        // Contar tenants por plano
+        // Contar tenants por plano (dados agregados)
         const tenantsByPlan = await prisma.tenant.groupBy({
           by: ['plano'],
           _count: true
@@ -330,6 +407,9 @@ export async function adminRoutes(server: FastifyInstance) {
    *
    * Atualiza status de múltiplos tenants em lote
    *
+   * LGPD: Operação administrativa que não acessa dados pessoais dos tenants.
+   * Apenas altera o status do contrato (TRIAL, ATIVO, SUSPENSO, etc.)
+   *
    * Body: { tenant_ids: string[], novo_status: string }
    *
    * Acesso: Apenas ADMIN do tenant Vivoly
@@ -368,7 +448,7 @@ export async function adminRoutes(server: FastifyInstance) {
             }
           },
           data: {
-            status: novo_status as any, // Cast para enum StatusTenant
+            status: novo_status as any,
             updated_at: new Date()
           }
         })
@@ -396,8 +476,14 @@ export async function adminRoutes(server: FastifyInstance) {
   /**
    * GET /api/v1/admin/activity-logs
    *
-   * Lista logs de atividades de TODOS os tenants do sistema
-   * Permite filtros por tenant, tipo, data, usuário
+   * Lista logs de atividades APENAS do tenant Vivoly
+   *
+   * LGPD COMPLIANCE:
+   * Conforme Art. 39 da LGPD, o operador não deve acessar dados
+   * operacionais de outros controladores (tenants).
+   *
+   * Este endpoint agora retorna APENAS os logs do próprio tenant Vivoly,
+   * garantindo que o operador não tenha acesso às atividades de outros tenants.
    *
    * Acesso: Apenas ADMIN do tenant Vivoly
    */
@@ -410,35 +496,37 @@ export async function adminRoutes(server: FastifyInstance) {
       try {
         const query = request.query as any
 
+        // LGPD: Obter ID do tenant Vivoly para filtrar apenas seus logs
+        const vivolyId = await getVivolyTenantId()
+
+        if (!vivolyId) {
+          return reply.status(500).send({
+            error: 'Configuração inválida',
+            message: 'Tenant Vivoly não encontrado no sistema'
+          })
+        }
+
         // Parâmetros de busca
         const params: any = {
           limit: query.limit ? parseInt(query.limit) : 50,
           offset: query.offset ? parseInt(query.offset) : 0,
         }
 
-        // Filtros opcionais
-        if (query.tenant_id) params.tenant_id = query.tenant_id
-        if (query.user_id) params.user_id = query.user_id
-        if (query.tipo) params.tipo = query.tipo as TipoAtividade
-        if (query.entidade_tipo) params.entidade_tipo = query.entidade_tipo
-        if (query.entidade_id) params.entidade_id = query.entidade_id
-        if (query.data_inicio) params.data_inicio = new Date(query.data_inicio)
-        if (query.data_fim) params.data_fim = new Date(query.data_fim)
+        // LGPD: Filtro obrigatório pelo tenant Vivoly
+        const where: any = {
+          tenant_id: vivolyId  // SEMPRE filtrar pelo tenant Vivoly
+        }
 
-        // Buscar logs usando o service
-        // Como é admin geral, vamos buscar diretamente do Prisma sem filtro de tenant
-        const where: any = {}
+        // Filtros opcionais (dentro do tenant Vivoly)
+        if (query.user_id) where.user_id = query.user_id
+        if (query.tipo) where.tipo = query.tipo as TipoAtividade
+        if (query.entidade_tipo) where.entidade_tipo = query.entidade_tipo
+        if (query.entidade_id) where.entidade_id = query.entidade_id
 
-        if (params.tenant_id) where.tenant_id = params.tenant_id
-        if (params.user_id) where.user_id = params.user_id
-        if (params.tipo) where.tipo = params.tipo
-        if (params.entidade_tipo) where.entidade_tipo = params.entidade_tipo
-        if (params.entidade_id) where.entidade_id = params.entidade_id
-
-        if (params.data_inicio || params.data_fim) {
+        if (query.data_inicio || query.data_fim) {
           where.created_at = {}
-          if (params.data_inicio) where.created_at.gte = params.data_inicio
-          if (params.data_fim) where.created_at.lte = params.data_fim
+          if (query.data_inicio) where.created_at.gte = new Date(query.data_inicio)
+          if (query.data_fim) where.created_at.lte = new Date(query.data_fim)
         }
 
         const [logs, total] = await Promise.all([
@@ -458,7 +546,6 @@ export async function adminRoutes(server: FastifyInstance) {
                   id: true,
                   nome: true,
                   slug: true,
-                  email: true,
                 },
               },
             },
@@ -475,6 +562,8 @@ export async function adminRoutes(server: FastifyInstance) {
           total,
           limit: params.limit,
           offset: params.offset,
+          // Informar que os logs são apenas do tenant Vivoly
+          _lgpd_notice: 'Logs restritos ao tenant Vivoly conforme Art. 39 da LGPD'
         })
       } catch (error) {
         server.log.error({ error }, 'Erro ao buscar logs de atividades')
@@ -488,7 +577,11 @@ export async function adminRoutes(server: FastifyInstance) {
   /**
    * GET /api/v1/admin/activity-logs/stats
    *
-   * Estatísticas de logs do sistema inteiro
+   * Estatísticas de logs APENAS do tenant Vivoly
+   *
+   * LGPD COMPLIANCE:
+   * Estatísticas restritas ao próprio tenant, não expondo
+   * informações de atividades de outros controladores.
    *
    * Acesso: Apenas ADMIN do tenant Vivoly
    */
@@ -501,11 +594,24 @@ export async function adminRoutes(server: FastifyInstance) {
       try {
         const query = request.query as any
 
+        // LGPD: Obter ID do tenant Vivoly
+        const vivolyId = await getVivolyTenantId()
+
+        if (!vivolyId) {
+          return reply.status(500).send({
+            error: 'Configuração inválida',
+            message: 'Tenant Vivoly não encontrado no sistema'
+          })
+        }
+
         const data_inicio = query.data_inicio ? new Date(query.data_inicio) : undefined
         const data_fim = query.data_fim ? new Date(query.data_fim) : undefined
 
-        // Buscar logs para estatísticas
-        const where: any = {}
+        // LGPD: Filtro obrigatório pelo tenant Vivoly
+        const where: any = {
+          tenant_id: vivolyId  // SEMPRE filtrar pelo tenant Vivoly
+        }
+
         if (data_inicio || data_fim) {
           where.created_at = {}
           if (data_inicio) where.created_at.gte = data_inicio
@@ -517,7 +623,6 @@ export async function adminRoutes(server: FastifyInstance) {
           select: {
             tipo: true,
             created_at: true,
-            tenant_id: true,
           },
         })
 
@@ -526,34 +631,6 @@ export async function adminRoutes(server: FastifyInstance) {
         logs.forEach((log) => {
           porTipo[log.tipo] = (porTipo[log.tipo] || 0) + 1
         })
-
-        // Agrupar por tenant
-        const porTenant: Record<string, number> = {}
-        logs.forEach((log) => {
-          porTenant[log.tenant_id] = (porTenant[log.tenant_id] || 0) + 1
-        })
-
-        // Top 5 tenants com mais atividades
-        const topTenants = await prisma.tenant.findMany({
-          where: {
-            id: {
-              in: Object.keys(porTenant),
-            },
-          },
-          select: {
-            id: true,
-            nome: true,
-            slug: true,
-          },
-        })
-
-        const topTenantsComCount = topTenants
-          .map((tenant) => ({
-            ...tenant,
-            count: porTenant[tenant.id],
-          }))
-          .sort((a, b) => b.count - a.count)
-          .slice(0, 5)
 
         // Últimas 24 horas
         const ultimas24h = logs.filter((log) => {
@@ -574,8 +651,9 @@ export async function adminRoutes(server: FastifyInstance) {
             ultimas24h,
             ultimos7dias,
             porTipo,
-            topTenants: topTenantsComCount,
           },
+          // Informar que as estatísticas são apenas do tenant Vivoly
+          _lgpd_notice: 'Estatísticas restritas ao tenant Vivoly conforme Art. 39 da LGPD'
         })
       } catch (error) {
         server.log.error({ error }, 'Erro ao buscar estatísticas de logs')

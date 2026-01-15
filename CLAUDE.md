@@ -2867,6 +2867,55 @@ jobs:
 
 ## Histórico de Configurações
 
+### 2026-01-15
+
+#### Adequação LGPD - Isolamento de Dados do Operador ✅
+
+**IMPORTANTE - Conformidade com Art. 39 da LGPD:**
+
+O ImobiFlow atua como **OPERADOR** de dados, enquanto cada tenant (imobiliária) é o **CONTROLADOR** dos dados de seus clientes.
+
+Conforme Art. 39 da LGPD: *"O operador deverá realizar o tratamento segundo as instruções fornecidas pelo controlador"*
+
+**Alterações Implementadas:**
+
+- ✅ **Logs de Atividade Restritos ao Próprio Tenant**
+  - Endpoint `/api/v1/admin/activity-logs` agora retorna APENAS logs do tenant Vivoly
+  - Operador não tem mais acesso às atividades de outros tenants (controladores)
+  - Filtro obrigatório `tenant_id: vivolyId` em todas as queries de logs
+  - Resposta inclui `_lgpd_notice` informando a restrição
+
+- ✅ **Estatísticas de Logs Restritas**
+  - Endpoint `/api/v1/admin/activity-logs/stats` limitado ao tenant Vivoly
+  - Não expõe mais ranking de atividades de outros tenants
+  - Removido campo `topTenants` que listava tenants por atividade
+
+- ✅ **Contagens Sensíveis Removidas**
+  - Endpoint `/api/v1/admin/tenants/:id` não retorna mais `_count` de negociações/leads para outros tenants
+  - Contagens detalhadas disponíveis APENAS para o próprio tenant Vivoly
+  - Mantidos apenas dados administrativos (nome, status, plano, limites contratuais)
+
+- ✅ **Documentação de Conformidade**
+  - Comentários JSDoc explicando base legal (Art. 39 LGPD)
+  - Cada endpoint documenta quais dados são acessíveis e por quê
+
+**O que o Operador (Vivoly) PODE acessar de outros tenants:**
+- ✅ Dados administrativos: nome, slug, email, telefone
+- ✅ Status do contrato: plano, status, data_expiracao
+- ✅ Limites contratuais: limite_usuarios, limite_imoveis
+- ✅ Uso de capacidade: total_usuarios, total_imoveis (métricas de plano)
+- ✅ Admin principal: nome e email (para contato comercial)
+
+**O que o Operador NÃO pode mais acessar:**
+- ❌ Logs de atividades de outros tenants
+- ❌ Contagens de leads, negociações, proprietários
+- ❌ Qualquer dado operacional dos clientes dos tenants
+
+**Arquivos Modificados:**
+- `/apps/api/src/modules/admin/admin.routes.ts` - Restrições LGPD implementadas
+
+---
+
 ### 2026-01-08
 
 #### Sistema de Exportação Automática e Ajustes no Trial ✅
@@ -3493,11 +3542,19 @@ jobs:
 
 ---
 
-**Última atualização**: 09 de janeiro de 2026
-**Versão**: 1.6.5
+**Última atualização**: 15 de janeiro de 2026
+**Versão**: 1.7.0
 **Status**: Em produção ✅
 
-**Novidades da versão 1.6.5** (09 de janeiro de 2026):
+**Novidades da versão 1.7.0** (15 de janeiro de 2026):
+- ✅ **LGPD Compliance:** Adequação completa ao Art. 39 da Lei 13.709/2018
+- ✅ Operador (Vivoly) não tem mais acesso a logs de atividades de outros tenants
+- ✅ Contagens de leads/negociações removidas do painel admin para outros tenants
+- ✅ Estatísticas de logs restritas apenas ao próprio tenant
+- ✅ Documentação de conformidade LGPD nos endpoints
+- ✅ Isolamento completo entre controladores (tenants) e operador
+
+**Versão 1.6.5** (09 de janeiro de 2026):
 - ✅ **Fix CRÍTICO:** Cookie de sessão expirando em 30 minutos (usuário deslogado ao navegar)
 - ✅ Duração do cookie aumentada de 30min para 7 dias (sincronizado com JWT)
 - ✅ Usuários não são mais deslogados ao navegar entre páginas do dashboard
