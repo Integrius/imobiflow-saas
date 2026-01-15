@@ -66,8 +66,11 @@ export default function DashboardLayout({
     }
   }, [router, pathname]);
 
-  // Navegação base (todos os tenants)
-  const baseNavigation: MenuItem[] = [
+  // Verificar se é admin do tenant (ADMIN ou GESTOR)
+  const isAdmin = user?.tipo === 'ADMIN' || user?.tipo === 'GESTOR';
+
+  // Navegação para ADMIN/GESTOR (acesso completo)
+  const adminNavigation: MenuItem[] = [
     { name: 'Dashboard', href: '/dashboard', icon: '📊', iconImage: '/ico-dashboard.png' },
     { name: 'Leads', href: '/dashboard/leads', icon: '👥', iconImage: '/ico-Leads.png' },
     { name: 'Corretores', href: '/dashboard/corretores', icon: '🏢', iconImage: '/ico-corretores.png' },
@@ -86,10 +89,22 @@ export default function DashboardLayout({
     }
   ];
 
+  // Navegação para CORRETOR (acesso restrito - sem Corretores e Administração)
+  const corretorNavigation: MenuItem[] = [
+    { name: 'Dashboard', href: '/dashboard', icon: '📊', iconImage: '/ico-dashboard.png' },
+    { name: 'Leads', href: '/dashboard/leads', icon: '👥', iconImage: '/ico-Leads.png' },
+    { name: 'Proprietários', href: '/dashboard/proprietarios', icon: '🏠', iconImage: '/ico-proprietarios.png' },
+    { name: 'Imóveis', href: '/dashboard/imoveis', icon: '🏘️', iconImage: '/ico-imoveis.png' },
+    { name: 'Negociações', href: '/dashboard/negociacoes', icon: '💼', iconImage: '/ico-negociacoes.png' },
+  ];
+
+  // Selecionar navegação baseada no tipo de usuário
+  const baseNavigation = isAdmin ? adminNavigation : corretorNavigation;
+
   // Adicionar item de admin se for Vivoly (com submenu)
   const navigation = isVivolyAdmin
     ? [
-        ...baseNavigation.slice(0, -1), // Remove "Administração" para Vivoly
+        ...baseNavigation.filter(item => item.name !== 'Administração'), // Remove "Administração" para Vivoly
         {
           name: 'Admin Geral',
           icon: '🔐',

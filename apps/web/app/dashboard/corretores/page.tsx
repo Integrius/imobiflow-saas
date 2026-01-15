@@ -19,6 +19,7 @@ interface Corretor {
   ativo?: boolean;
   primeiro_acesso?: boolean;
   status_conta?: 'ATIVO' | 'SUSPENSO' | 'CANCELADO';
+  tipo?: 'ADMIN' | 'GESTOR' | 'CORRETOR';
 }
 
 interface CorretorForm {
@@ -28,6 +29,7 @@ interface CorretorForm {
   creci: string;
   especialidade: string;
   comissao: string;
+  tipo: 'ADMIN' | 'GESTOR' | 'CORRETOR';
 }
 
 interface Imovel {
@@ -81,6 +83,7 @@ export default function CorretoresPage() {
     creci: '',
     especialidade: '',
     comissao: '',
+    tipo: 'CORRETOR',
   });
 
   useEffect(() => {
@@ -120,6 +123,7 @@ export default function CorretoresPage() {
       creci: '',
       especialidade: '',
       comissao: '',
+      tipo: 'CORRETOR',
     });
     setOriginalFormData(null);
     setHasUnsavedChanges(false);
@@ -184,8 +188,9 @@ export default function CorretoresPage() {
       creci: corretor.creci,
       especialidade: corretor.especialidade || '',
       comissao: corretor.comissao?.toString() || '',
+      tipo: corretor.tipo || 'CORRETOR',
     };
-    setFormData(formDataToSet);
+    setFormData(formDataToSet as CorretorForm);
     setOriginalFormData({ ...formDataToSet });
     setHasUnsavedChanges(false);
     setActiveTab('dados');
@@ -206,6 +211,7 @@ export default function CorretoresPage() {
         ...formData,
         telefone: unformatNumbers(formData.telefone),
         comissao: formData.comissao ? parseFloat(formData.comissao) : undefined,
+        tipo: formData.tipo,
       };
 
       if (editingCorretor) {
@@ -563,6 +569,7 @@ export default function CorretoresPage() {
                 />
               </th>
               <th className="px-6 py-4 text-left text-xs font-bold text-white uppercase tracking-wider">Nome</th>
+              <th className="px-6 py-4 text-left text-xs font-bold text-white uppercase tracking-wider">Categoria</th>
               <th className="px-6 py-4 text-left text-xs font-bold text-white uppercase tracking-wider">Email</th>
               <th className="px-6 py-4 text-left text-xs font-bold text-white uppercase tracking-wider">CRECI</th>
               <th className="px-6 py-4 text-left text-xs font-bold text-white uppercase tracking-wider">Telefone</th>
@@ -573,7 +580,7 @@ export default function CorretoresPage() {
           <tbody className="bg-white divide-y divide-[rgba(169,126,111,0.1)]">
             {filteredCorretores.length === 0 ? (
               <tr>
-                <td colSpan={7} className="px-6 py-4">
+                <td colSpan={8} className="px-6 py-4">
                   <EmptyState
                     icon={EmptyStateIcons.UserGroup}
                     title={searchTerm ? 'Nenhum corretor encontrado' : 'Nenhum corretor cadastrado'}
@@ -606,6 +613,17 @@ export default function CorretoresPage() {
                       />
                       <span>{corretor.nome}</span>
                     </div>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm">
+                    <span className={`px-2 py-1 rounded-md text-xs font-bold ${
+                      corretor.tipo === 'ADMIN'
+                        ? 'bg-purple-100 text-purple-700 border border-purple-300'
+                        : corretor.tipo === 'GESTOR'
+                        ? 'bg-blue-100 text-blue-700 border border-blue-300'
+                        : 'bg-gray-100 text-gray-700 border border-gray-300'
+                    }`}>
+                      {corretor.tipo === 'ADMIN' ? '👑 Admin' : corretor.tipo === 'GESTOR' ? '📋 Gestor' : '🏠 Corretor'}
+                    </span>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-[#4B5563]">{corretor.email}</td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-[#4B5563]">
@@ -712,7 +730,28 @@ export default function CorretoresPage() {
         {activeTab === 'dados' && (
           <form onSubmit={handleSubmit} className="space-y-4">
           <div className="grid grid-cols-2 gap-4">
-            <div className="col-span-2">
+            <div>
+              <label className="block text-sm font-bold text-[#064E3B] mb-2">
+                Categoria *
+              </label>
+              <select
+                required
+                value={formData.tipo}
+                onChange={(e) => handleFormChange('tipo', e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-600 focus:border-transparent bg-white"
+              >
+                <option value="CORRETOR">Corretor</option>
+                <option value="GESTOR">Gestor</option>
+                <option value="ADMIN">Administrador</option>
+              </select>
+              <p className="text-xs text-gray-500 mt-1">
+                {formData.tipo === 'CORRETOR' && 'Acesso apenas aos próprios leads e imóveis'}
+                {formData.tipo === 'GESTOR' && 'Pode gerenciar corretores e ver todos os dados'}
+                {formData.tipo === 'ADMIN' && 'Acesso total ao sistema, incluindo configurações'}
+              </p>
+            </div>
+
+            <div>
               <label className="block text-sm font-bold text-[#064E3B] mb-2">
                 Nome *
               </label>

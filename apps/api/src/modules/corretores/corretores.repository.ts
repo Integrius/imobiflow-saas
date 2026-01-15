@@ -26,7 +26,7 @@ export class CorretoresRepository {
           nome: data.nome,
           email: data.email,
           senha_hash: hashedPassword,
-          tipo: 'CORRETOR',
+          tipo: data.tipo || 'CORRETOR',
           ativo: true,
         },
       })
@@ -132,6 +132,7 @@ export class CorretoresRepository {
       ativo: corretor.user.ativo,
       primeiro_acesso: corretor.user.primeiro_acesso,
       status_conta: corretor.user.status_conta,
+      tipo: corretor.user.tipo,
     }))
   }
 
@@ -168,6 +169,7 @@ export class CorretoresRepository {
       comissao: Number(corretor.comissao_padrao),
       ativo: corretor.user.ativo,
       primeiro_acesso: corretor.user.primeiro_acesso,
+      tipo: corretor.user.tipo,
     }
   }
 
@@ -194,13 +196,14 @@ export class CorretoresRepository {
       }
     }
 
-    // Atualizar usuário se nome ou email foram alterados
-    if (data.nome || data.email) {
+    // Atualizar usuário se nome, email ou tipo foram alterados
+    if (data.nome || data.email || data.tipo) {
       await this.prisma.user.update({
         where: { id: corretor.user_id },
         data: {
           ...(data.nome && { nome: data.nome }),
           ...(data.email && { email: data.email }),
+          ...(data.tipo && { tipo: data.tipo }),
         },
       })
     }
