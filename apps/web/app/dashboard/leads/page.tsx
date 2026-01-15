@@ -271,7 +271,7 @@ export default function LeadsPage() {
     <div>
       <div className="flex justify-between items-center mb-8">
         <div>
-          <h2 className="text-4xl font-bold text-[#0A2540] tracking-tight">Leads</h2>
+          <h2 className="text-4xl font-bold text-[#064E3B] tracking-tight">Leads</h2>
           <p className="text-sm text-[#4B5563] mt-2 font-medium">
             <span className="text-[#00C48C] text-lg font-bold">{leads.length}</span> leads cadastrados
           </p>
@@ -318,7 +318,7 @@ export default function LeadsPage() {
             ) : (
               filteredLeads.map((lead, index) => (
                 <tr key={lead.id} className={`hover:bg-[#F9FAFB] transition-colors ${index % 2 === 0 ? 'bg-white' : 'bg-[#F4F6F8]'}`}>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-bold text-[#0A2540]">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm font-bold text-[#064E3B]">
                     {lead.nome}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-[#4B5563]">{lead.email}</td>
@@ -370,10 +370,10 @@ export default function LeadsPage() {
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* Dados Básicos */}
           <div className="space-y-4">
-            <h4 className="text-md font-bold text-[#0A2540] border-b border-gray-200 pb-2">Dados Básicos</h4>
+            <h4 className="text-md font-bold text-[#064E3B] border-b border-gray-200 pb-2">Dados Básicos</h4>
             <div className="grid grid-cols-2 gap-4">
               <div className="col-span-2">
-                <label className="block text-sm font-bold text-[#0A2540] mb-2">Nome *</label>
+                <label className="block text-sm font-bold text-[#064E3B] mb-2">Nome *</label>
                 <input
                   type="text"
                   required
@@ -384,7 +384,7 @@ export default function LeadsPage() {
               </div>
 
               <div>
-                <label className="block text-sm font-bold text-[#0A2540] mb-2">Email *</label>
+                <label className="block text-sm font-bold text-[#064E3B] mb-2">Email *</label>
                 <input
                   type="email"
                   required
@@ -395,7 +395,7 @@ export default function LeadsPage() {
               </div>
 
               <div>
-                <label className="block text-sm font-bold text-[#0A2540] mb-2">Telefone *</label>
+                <label className="block text-sm font-bold text-[#064E3B] mb-2">Telefone *</label>
                 <input
                   type="tel"
                   required
@@ -407,7 +407,7 @@ export default function LeadsPage() {
               </div>
 
               <div>
-                <label className="block text-sm font-bold text-[#0A2540] mb-2">Status</label>
+                <label className="block text-sm font-bold text-[#064E3B] mb-2">Status</label>
                 <select
                   value={formData.status}
                   onChange={(e) => handleFormChange('status', e.target.value)}
@@ -420,7 +420,7 @@ export default function LeadsPage() {
               </div>
 
               <div>
-                <label className="block text-sm font-bold text-[#0A2540] mb-2">Origem</label>
+                <label className="block text-sm font-bold text-[#064E3B] mb-2">Origem</label>
                 <select
                   value={formData.origem}
                   onChange={(e) => handleFormChange('origem', e.target.value)}
@@ -438,15 +438,15 @@ export default function LeadsPage() {
 
           {/* Perfil do Cliente */}
           <div className="space-y-4">
-            <h4 className="text-md font-bold text-[#0A2540] border-b border-gray-200 pb-2">Perfil do Cliente</h4>
+            <h4 className="text-md font-bold text-[#064E3B] border-b border-gray-200 pb-2">Perfil do Cliente</h4>
             <div className="grid grid-cols-2 gap-4">
               <div className="col-span-2">
-                <label className="block text-sm font-bold text-[#0A2540] mb-2">O cliente é: *</label>
+                <label className="block text-sm font-bold text-[#064E3B] mb-2">O cliente é: *</label>
                 <div className="grid grid-cols-2 gap-3">
                   <label className={`flex items-center p-3 border-2 rounded-lg cursor-pointer transition-all ${
                     formData.perfil === 'PROPRIETARIO'
-                      ? 'bg-[#F0FDF4] border-[#00C48C] text-[#0A2540]'
-                      : 'bg-white border-gray-200 text-[#0A2540] hover:border-[#00C48C]/50'
+                      ? 'bg-[#F0FDF4] border-[#00C48C] text-[#064E3B]'
+                      : 'bg-white border-gray-200 text-[#064E3B] hover:border-[#00C48C]/50'
                   }`}>
                     <input
                       type="radio"
@@ -460,8 +460,8 @@ export default function LeadsPage() {
                   </label>
                   <label className={`flex items-center p-3 border-2 rounded-lg cursor-pointer transition-all ${
                     formData.perfil === 'INTERESSADO'
-                      ? 'bg-[#F0FDF4] border-[#00C48C] text-[#0A2540]'
-                      : 'bg-white border-gray-200 text-[#0A2540] hover:border-[#00C48C]/50'
+                      ? 'bg-[#F0FDF4] border-[#00C48C] text-[#064E3B]'
+                      : 'bg-white border-gray-200 text-[#064E3B] hover:border-[#00C48C]/50'
                   }`}>
                     <input
                       type="radio"
@@ -477,12 +477,12 @@ export default function LeadsPage() {
               </div>
 
               <div className="col-span-2">
-                <label className="block text-sm font-bold text-[#0A2540] mb-2">Finalidade: *</label>
+                <label className="block text-sm font-bold text-[#064E3B] mb-2">Finalidade: *</label>
                 <div className="grid grid-cols-2 gap-3">
                   <label className={`flex items-center p-3 border-2 rounded-lg cursor-pointer transition-all ${
                     formData.interesse.finalidade === 'VENDA'
-                      ? 'bg-[#F0FDF4] border-[#00C48C] text-[#0A2540]'
-                      : 'bg-white border-gray-200 text-[#0A2540] hover:border-[#00C48C]/50'
+                      ? 'bg-[#F0FDF4] border-[#00C48C] text-[#064E3B]'
+                      : 'bg-white border-gray-200 text-[#064E3B] hover:border-[#00C48C]/50'
                   }`}>
                     <input
                       type="radio"
@@ -496,8 +496,8 @@ export default function LeadsPage() {
                   </label>
                   <label className={`flex items-center p-3 border-2 rounded-lg cursor-pointer transition-all ${
                     formData.interesse.finalidade === 'LOCACAO'
-                      ? 'bg-[#F0FDF4] border-[#00C48C] text-[#0A2540]'
-                      : 'bg-white border-gray-200 text-[#0A2540] hover:border-[#00C48C]/50'
+                      ? 'bg-[#F0FDF4] border-[#00C48C] text-[#064E3B]'
+                      : 'bg-white border-gray-200 text-[#064E3B] hover:border-[#00C48C]/50'
                   }`}>
                     <input
                       type="radio"
@@ -513,7 +513,7 @@ export default function LeadsPage() {
               </div>
 
               <div className="col-span-2">
-                <label className="block text-sm font-bold text-[#0A2540] mb-2">Formas de Pagamento Aceitas/Desejadas:</label>
+                <label className="block text-sm font-bold text-[#064E3B] mb-2">Formas de Pagamento Aceitas/Desejadas:</label>
                 <div className="grid grid-cols-2 gap-2">
                   {['À Vista', 'Financiamento Bancário', 'Carta de Crédito', 'Consórcio', 'Permuta'].map((forma) => (
                     <label key={forma} className="flex items-center p-2 bg-white border border-gray-200 rounded-lg hover:border-[#00C48C]/50 cursor-pointer transition-all">
@@ -528,7 +528,7 @@ export default function LeadsPage() {
                         }}
                         className="mr-2"
                       />
-                      <span className="text-sm text-[#0A2540] font-medium">{forma}</span>
+                      <span className="text-sm text-[#064E3B] font-medium">{forma}</span>
                     </label>
                   ))}
                 </div>
@@ -538,7 +538,7 @@ export default function LeadsPage() {
 
           {/* Observações */}
           <div className="space-y-4">
-            <h4 className="text-md font-bold text-[#0A2540] border-b border-gray-200 pb-2">Observações</h4>
+            <h4 className="text-md font-bold text-[#064E3B] border-b border-gray-200 pb-2">Observações</h4>
             <textarea
               rows={3}
               value={formData.observacoes}
@@ -551,7 +551,7 @@ export default function LeadsPage() {
           {/* Vinculações - Apenas quando editando */}
           {editingLead && (
             <div className="space-y-4 bg-gradient-to-r from-[#F0FDF4] to-[#EFF6FF] p-4 rounded-lg border-2 border-[#00C48C]/30">
-              <h4 className="text-md font-bold text-[#0A2540] border-b border-[#00C48C]/30 pb-2 flex items-center gap-2">
+              <h4 className="text-md font-bold text-[#064E3B] border-b border-[#00C48C]/30 pb-2 flex items-center gap-2">
                 🔗 Vinculações
               </h4>
 
@@ -566,7 +566,7 @@ export default function LeadsPage() {
                     <div className="text-xs font-bold text-[#4B5563] mb-1">👤 CORRETOR</div>
                     {editingLead.corretor ? (
                       <div>
-                        <div className="text-sm font-bold text-[#0A2540]">{editingLead.corretor.user.nome}</div>
+                        <div className="text-sm font-bold text-[#064E3B]">{editingLead.corretor.user.nome}</div>
                         <div className="text-xs text-[#4B5563]">{editingLead.corretor.user.email}</div>
                       </div>
                     ) : (
@@ -623,7 +623,7 @@ export default function LeadsPage() {
         size="sm"
       >
         <div className="space-y-4">
-          <p className="text-[#0A2540] text-base">
+          <p className="text-[#064E3B] text-base">
             Tem certeza que deseja excluir o lead <strong className="text-[#059669]">{deletingLead?.nome}</strong>?
           </p>
           <p className="text-sm text-[#4B5563]">Esta ação não pode ser desfeita.</p>

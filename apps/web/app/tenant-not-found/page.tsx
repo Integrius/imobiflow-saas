@@ -33,7 +33,7 @@ export default function TenantNotFoundPage() {
               </p>
               <Link
                 href="/register"
-                className="block w-full px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl hover:from-blue-700 hover:to-indigo-700 transition-all duration-300 font-bold shadow-lg hover:shadow-xl"
+                className="block w-full px-6 py-3 bg-gradient-to-r from-[#00C48C] to-[#059669] text-white rounded-xl hover:from-[#059669] hover:to-[#047857] transition-all duration-300 font-bold shadow-lg hover:shadow-xl"
               >
                 Cadastrar minha imobiliária
               </Link>

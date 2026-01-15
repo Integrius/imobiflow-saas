@@ -9,7 +9,7 @@
     /* Cores Principais */
     --green-tech: #00C48C;         /* Verde Tech (principal) */
     --green-secondary: #059669;   /* Verde Secundário (mais escuro) */
-    --blue-deep: #0A2540;          /* Azul Profundo (escuro) */
+    --blue-deep: #064E3B;          /* Azul Profundo (escuro) */
     --bg-light: #F4F6F8;           /* Background claro */
     --white: #FFFFFF;              /* Branco puro */
 
@@ -59,7 +59,7 @@
 
     /* Gradientes */
     --gradient-primary: linear-gradient(135deg, var(--green-tech) 0%, var(--green-secondary) 100%);
-    --gradient-hero: linear-gradient(180deg, var(--blue-deep) 0%, #1E3A5F 100%);
+    --gradient-hero: linear-gradient(180deg, var(--blue-deep) 0%, #065F46 100%);
     --gradient-bg: linear-gradient(135deg, var(--bg-light) 0%, var(--white) 100%);
   }
 
@@ -104,7 +104,7 @@
   }
 
   .glass-effect-dark {
-    @apply backdrop-blur-lg bg-[#0A2540]/90 border border-white/10;
+    @apply backdrop-blur-lg bg-[#064E3B]/90 border border-white/10;
   }
 
   /* Glow Effects */

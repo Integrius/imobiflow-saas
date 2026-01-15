@@ -363,7 +363,7 @@ export default function ImoveisPage() {
     <div>
       <div className="flex justify-between items-center gap-4 mb-6">
         <div>
-          <h2 className="text-4xl font-bold text-[#0A2540] tracking-tight">Imóveis</h2>
+          <h2 className="text-4xl font-bold text-[#064E3B] tracking-tight">Imóveis</h2>
           <p className="text-sm text-[#4B5563] mt-2 font-medium">
             <span className="text-[#00C48C] text-lg font-bold">{imoveis.length}</span> imóveis cadastrados
           </p>
@@ -428,7 +428,7 @@ export default function ImoveisPage() {
               </div>
               <div className="p-5">
                 <div className="mb-3">
-                  <h3 className="text-xl font-bold text-[#0A2540] mb-1">
+                  <h3 className="text-xl font-bold text-[#064E3B] mb-1">
                     {imovel.titulo}
                   </h3>
                   <p className="text-xs font-semibold text-[#00C48C] uppercase tracking-wider bg-[#00C48C]/20 px-2 py-1 rounded-md inline-block border border-[#00C48C]/50">{imovel.tipo}</p>
@@ -436,7 +436,7 @@ export default function ImoveisPage() {
                 <p className="text-sm text-[#4B5563] mb-1 font-medium">📍 {imovel.endereco?.logradouro}, {imovel.endereco?.numero}</p>
                 <p className="text-xs text-[#4B5563] mb-4">{imovel.endereco?.cidade} - {imovel.endereco?.estado}</p>
 
-                <div className="flex flex-wrap gap-2 text-xs text-[#0A2540] mb-4">
+                <div className="flex flex-wrap gap-2 text-xs text-[#064E3B] mb-4">
                   {imovel.caracteristicas?.area_total && (
                     <span className="px-2 py-1 bg-[#059669]/20 rounded-md font-bold border border-[#059669]/50">📐 {imovel.caracteristicas.area_total}m²</span>
                   )}
@@ -461,13 +461,13 @@ export default function ImoveisPage() {
                 <div className="mb-4 space-y-2">
                   {/* Proprietário */}
                   <div className="text-sm">
-                    <span className="font-bold text-[#0A2540]">Proprietário:</span>{' '}
+                    <span className="font-bold text-[#064E3B]">Proprietário:</span>{' '}
                     <span className="text-[#4B5563]">{imovel.proprietario?.nome || 'Não informado'}</span>
                   </div>
 
                   {/* Corretor Responsável */}
                   <div className="text-sm">
-                    <span className="font-bold text-[#0A2540]">Corretor Responsável:</span>
+                    <span className="font-bold text-[#064E3B]">Corretor Responsável:</span>
                     <select
                       value={imovel.corretor_responsavel?.id || ''}
                       onChange={(e) => handleChangeCorretor(imovel.id, e.target.value)}
@@ -524,7 +524,7 @@ export default function ImoveisPage() {
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="grid grid-cols-2 gap-4">
             <div className="col-span-2">
-              <label className="block text-sm font-bold text-[#0A2540] mb-2">
+              <label className="block text-sm font-bold text-[#064E3B] mb-2">
                 Título *
               </label>
               <input
@@ -537,7 +537,7 @@ export default function ImoveisPage() {
             </div>
 
             <div>
-              <label className="block text-sm font-bold text-[#0A2540] mb-2">
+              <label className="block text-sm font-bold text-[#064E3B] mb-2">
                 Tipo *
               </label>
               <select
@@ -554,7 +554,7 @@ export default function ImoveisPage() {
             </div>
 
             <div>
-              <label className="block text-sm font-bold text-[#0A2540] mb-2">
+              <label className="block text-sm font-bold text-[#064E3B] mb-2">
                 Status *
               </label>
               <select
@@ -569,7 +569,7 @@ export default function ImoveisPage() {
             </div>
 
             <div>
-              <label className="block text-sm font-bold text-[#0A2540] mb-2">
+              <label className="block text-sm font-bold text-[#064E3B] mb-2">
                 Proprietário *
               </label>
               <select
@@ -588,7 +588,7 @@ export default function ImoveisPage() {
             </div>
 
             <div>
-              <label className="block text-sm font-bold text-[#0A2540] mb-2">
+              <label className="block text-sm font-bold text-[#064E3B] mb-2">
                 Valor (R$) *
               </label>
               <input
@@ -602,7 +602,7 @@ export default function ImoveisPage() {
             </div>
 
             <div className="col-span-2">
-              <label className="block text-sm font-bold text-[#0A2540] mb-2">
+              <label className="block text-sm font-bold text-[#064E3B] mb-2">
                 Endereço *
               </label>
               <input
@@ -615,7 +615,7 @@ export default function ImoveisPage() {
             </div>
 
             <div>
-              <label className="block text-sm font-bold text-[#0A2540] mb-2">
+              <label className="block text-sm font-bold text-[#064E3B] mb-2">
                 Cidade *
               </label>
               <input
@@ -628,7 +628,7 @@ export default function ImoveisPage() {
             </div>
 
             <div>
-              <label className="block text-sm font-bold text-[#0A2540] mb-2">
+              <label className="block text-sm font-bold text-[#064E3B] mb-2">
                 Estado *
               </label>
               <input
@@ -643,7 +643,7 @@ export default function ImoveisPage() {
             </div>
 
             <div>
-              <label className="block text-sm font-bold text-[#0A2540] mb-2">
+              <label className="block text-sm font-bold text-[#064E3B] mb-2">
                 CEP *
               </label>
               <input
@@ -657,7 +657,7 @@ export default function ImoveisPage() {
             </div>
 
             <div>
-              <label className="block text-sm font-bold text-[#0A2540] mb-2">
+              <label className="block text-sm font-bold text-[#064E3B] mb-2">
                 Área (m²)
               </label>
               <input
@@ -671,7 +671,7 @@ export default function ImoveisPage() {
             </div>
 
             <div>
-              <label className="block text-sm font-bold text-[#0A2540] mb-2">
+              <label className="block text-sm font-bold text-[#064E3B] mb-2">
                 Quartos
               </label>
               <input
@@ -684,7 +684,7 @@ export default function ImoveisPage() {
             </div>
 
             <div>
-              <label className="block text-sm font-bold text-[#0A2540] mb-2">
+              <label className="block text-sm font-bold text-[#064E3B] mb-2">
                 Banheiros
               </label>
               <input
@@ -697,7 +697,7 @@ export default function ImoveisPage() {
             </div>
 
             <div>
-              <label className="block text-sm font-bold text-[#0A2540] mb-2">
+              <label className="block text-sm font-bold text-[#064E3B] mb-2">
                 Vagas de Garagem
               </label>
               <input
@@ -710,7 +710,7 @@ export default function ImoveisPage() {
             </div>
 
             <div className="col-span-2">
-              <label className="block text-sm font-bold text-[#0A2540] mb-2">
+              <label className="block text-sm font-bold text-[#064E3B] mb-2">
                 Descrição
               </label>
               <textarea
@@ -755,14 +755,14 @@ export default function ImoveisPage() {
                 />
               ) : (
                 <div>
-                  <label className="block text-sm font-bold text-[#0A2540] mb-2">
+                  <label className="block text-sm font-bold text-[#064E3B] mb-2">
                     URLs das Fotos (uma por linha)
                   </label>
                   <textarea
                     rows={4}
                     value={formData.fotos}
                     onChange={(e) => handleFormChange('fotos', e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#00C48C] focus:border-[#00C48C] bg-[#F4F6F8] text-[#0A2540]"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#00C48C] focus:border-[#00C48C] bg-[#F4F6F8] text-[#064E3B]"
                     placeholder="https://exemplo.com/foto1.jpg&#10;https://exemplo.com/foto2.jpg"
                   />
                   <p className="text-xs text-[#4B5563] mt-1">
@@ -776,7 +776,7 @@ export default function ImoveisPage() {
           {/* Vinculações - Apenas quando editando */}
           {editingImovel && (
             <div className="space-y-4 bg-gradient-to-r from-[#F0FDF4] to-[#EFF6FF] p-4 rounded-lg border-2 border-[#00C48C]/30">
-              <h4 className="text-md font-bold text-[#0A2540] border-b border-[#00C48C]/30 pb-2 flex items-center gap-2">
+              <h4 className="text-md font-bold text-[#064E3B] border-b border-[#00C48C]/30 pb-2 flex items-center gap-2">
                 🔗 Vinculações
               </h4>
 
@@ -790,7 +790,7 @@ export default function ImoveisPage() {
                   <div className="bg-white p-3 rounded-lg border-2 border-[#FFB627]/30">
                     <div className="text-xs font-bold text-[#4B5563] mb-1">🏠 PROPRIETÁRIO</div>
                     {editingImovel.proprietario ? (
-                      <div className="text-sm font-bold text-[#0A2540]">{editingImovel.proprietario.nome}</div>
+                      <div className="text-sm font-bold text-[#064E3B]">{editingImovel.proprietario.nome}</div>
                     ) : (
                       <div className="text-sm text-[#9CA3AF]">Não informado</div>
                     )}
@@ -800,7 +800,7 @@ export default function ImoveisPage() {
                   <div className="bg-white p-3 rounded-lg border-2 border-[#A97E6F]/30">
                     <div className="text-xs font-bold text-[#4B5563] mb-1">👤 CORRETOR</div>
                     {editingImovel.corretor_responsavel ? (
-                      <div className="text-sm font-bold text-[#0A2540]">{editingImovel.corretor_responsavel.user.nome}</div>
+                      <div className="text-sm font-bold text-[#064E3B]">{editingImovel.corretor_responsavel.user.nome}</div>
                     ) : (
                       <div className="text-sm text-[#9CA3AF]">Não atribuído</div>
                     )}
@@ -846,7 +846,7 @@ export default function ImoveisPage() {
         size="sm"
       >
         <div className="space-y-4">
-          <p className="text-[#0A2540] text-base">
+          <p className="text-[#064E3B] text-base">
             Tem certeza que deseja excluir o imóvel <strong className="text-[#059669]">{deletingImovel?.titulo}</strong>?
           </p>
           <p className="text-sm text-[#4B5563]">Esta ação não pode ser desfeita.</p>

@@ -404,7 +404,7 @@ export default function CorretoresPage() {
         {/* Header */}
         <div className="flex justify-between items-center mb-6">
           <div>
-            <h2 className="text-4xl font-bold text-[#0A2540] tracking-tight">Corretores</h2>
+            <h2 className="text-4xl font-bold text-[#064E3B] tracking-tight">Corretores</h2>
             <p className="text-sm text-[#4B5563] mt-2 font-medium">
               <span className="text-[#00C48C] text-lg font-bold">{corretores.length}</span> corretores cadastrados
             </p>
@@ -597,7 +597,7 @@ export default function CorretoresPage() {
                       className="w-5 h-5 text-[#00C48C] bg-gray-100 border-gray-300 rounded focus:ring-[#00C48C] cursor-pointer"
                     />
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-bold text-[#0A2540]">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm font-bold text-[#064E3B]">
                     <div className="flex items-center gap-3">
                       <CorretorStatusLed
                         ativo={corretor.ativo ?? true}
@@ -713,7 +713,7 @@ export default function CorretoresPage() {
           <form onSubmit={handleSubmit} className="space-y-4">
           <div className="grid grid-cols-2 gap-4">
             <div className="col-span-2">
-              <label className="block text-sm font-bold text-[#0A2540] mb-2">
+              <label className="block text-sm font-bold text-[#064E3B] mb-2">
                 Nome *
               </label>
               <input
@@ -726,7 +726,7 @@ export default function CorretoresPage() {
             </div>
 
             <div>
-              <label className="block text-sm font-bold text-[#0A2540] mb-2">
+              <label className="block text-sm font-bold text-[#064E3B] mb-2">
                 Email *
               </label>
               <input
@@ -739,7 +739,7 @@ export default function CorretoresPage() {
             </div>
 
             <div>
-              <label className="block text-sm font-bold text-[#0A2540] mb-2">
+              <label className="block text-sm font-bold text-[#064E3B] mb-2">
                 Telefone *
               </label>
               <input
@@ -753,7 +753,7 @@ export default function CorretoresPage() {
             </div>
 
             <div>
-              <label className="block text-sm font-bold text-[#0A2540] mb-2">
+              <label className="block text-sm font-bold text-[#064E3B] mb-2">
                 CRECI *
               </label>
               <input
@@ -766,7 +766,7 @@ export default function CorretoresPage() {
             </div>
 
             <div>
-              <label className="block text-sm font-bold text-[#0A2540] mb-2">
+              <label className="block text-sm font-bold text-[#064E3B] mb-2">
                 Comissão (%)
               </label>
               <input
@@ -781,7 +781,7 @@ export default function CorretoresPage() {
             </div>
 
             <div className="col-span-2">
-              <label className="block text-sm font-bold text-[#0A2540] mb-2">
+              <label className="block text-sm font-bold text-[#064E3B] mb-2">
                 Especialidade
               </label>
               <input
@@ -846,7 +846,7 @@ export default function CorretoresPage() {
 
                     {/* Informações */}
                     <div className="flex-1">
-                      <h4 className="font-bold text-[#0A2540] text-lg">{imovel.titulo}</h4>
+                      <h4 className="font-bold text-[#064E3B] text-lg">{imovel.titulo}</h4>
                       <div className="flex gap-4 mt-2 text-sm">
                         <span className="px-2 py-1 bg-[#059669]/20 text-[#059669] rounded-md font-bold">
                           {imovel.tipo}
@@ -907,7 +907,7 @@ export default function CorretoresPage() {
                     {/* Informações */}
                     <div className="flex-1">
                       <div className="flex items-center gap-3">
-                        <h4 className="font-bold text-[#0A2540] text-lg">{lead.nome}</h4>
+                        <h4 className="font-bold text-[#064E3B] text-lg">{lead.nome}</h4>
                         <span className={`px-2 py-1 rounded-md text-xs font-bold ${
                           lead.temperatura === 'QUENTE'
                             ? 'bg-[#FF6B6B]/20 text-[#FF006E]'
@@ -956,7 +956,7 @@ export default function CorretoresPage() {
         size="sm"
       >
         <div className="space-y-4">
-          <p className="text-[#0A2540] text-base">
+          <p className="text-[#064E3B] text-base">
             Tem certeza que deseja excluir o corretor <strong className="text-[#059669]">{deletingCorretor?.nome}</strong>?
           </p>
           <p className="text-sm text-[#4B5563]">Esta ação não pode ser desfeita.</p>

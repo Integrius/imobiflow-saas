@@ -177,7 +177,7 @@ export default function LoginPage() {
         {/* Content */}
         <div className="space-y-8 max-w-lg">
           <div className="space-y-4">
-            <h2 className="text-5xl font-bold text-[#0A2540] leading-tight">
+            <h2 className="text-5xl font-bold text-[#064E3B] leading-tight">
               Integração inteligente para{' '}
               <span className="text-[#00C48C]">
                 processos imobiliários
@@ -199,7 +199,7 @@ export default function LoginPage() {
                   </svg>
                 </div>
                 <div>
-                  <h3 className="text-[#0A2540] font-semibold text-sm">Gestão Completa</h3>
+                  <h3 className="text-[#064E3B] font-semibold text-sm">Gestão Completa</h3>
                   <p className="text-gray-600 text-xs">Leads, imóveis e negociações</p>
                 </div>
               </div>
@@ -214,7 +214,7 @@ export default function LoginPage() {
                   </svg>
                 </div>
                 <div>
-                  <h3 className="text-[#0A2540] font-semibold text-sm">Rápido e Fácil</h3>
+                  <h3 className="text-[#064E3B] font-semibold text-sm">Rápido e Fácil</h3>
                   <p className="text-gray-600 text-xs">Interface intuitiva</p>
                 </div>
               </div>
@@ -223,13 +223,13 @@ export default function LoginPage() {
             {/* Feature 3 */}
             <div className="bg-white rounded-xl p-4 border border-gray-100 shadow-sm hover:-translate-y-1 transition-all duration-200">
               <div className="flex items-start space-x-3">
-                <div className="w-10 h-10 bg-[#0A2540] rounded-lg flex items-center justify-center flex-shrink-0">
+                <div className="w-10 h-10 bg-[#064E3B] rounded-lg flex items-center justify-center flex-shrink-0">
                   <svg className="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                   </svg>
                 </div>
                 <div>
-                  <h3 className="text-[#0A2540] font-semibold text-sm">100% Seguro</h3>
+                  <h3 className="text-[#064E3B] font-semibold text-sm">100% Seguro</h3>
                   <p className="text-gray-600 text-xs">Seus dados protegidos</p>
                 </div>
               </div>
@@ -244,7 +244,7 @@ export default function LoginPage() {
                   </svg>
                 </div>
                 <div>
-                  <h3 className="text-[#0A2540] font-semibold text-sm">Relatórios</h3>
+                  <h3 className="text-[#064E3B] font-semibold text-sm">Relatórios</h3>
                   <p className="text-gray-600 text-xs">Acompanhe resultados</p>
                 </div>
               </div>
@@ -256,11 +256,11 @@ export default function LoginPage() {
             <div className="flex -space-x-2">
               <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#00C48C] to-[#059669] border-2 border-white"></div>
               <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#059669] to-[#00C48C] border-2 border-white"></div>
-              <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#0A2540] to-[#00C48C] border-2 border-white"></div>
-              <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#00C48C] to-[#0A2540] border-2 border-white"></div>
+              <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#064E3B] to-[#00C48C] border-2 border-white"></div>
+              <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#00C48C] to-[#064E3B] border-2 border-white"></div>
             </div>
             <div>
-              <div className="text-[#0A2540] font-semibold text-sm">500+ imobiliárias</div>
+              <div className="text-[#064E3B] font-semibold text-sm">500+ imobiliárias</div>
               <div className="text-gray-600 text-xs">confiam no ImobiFlow</div>
             </div>
           </div>
@@ -291,7 +291,7 @@ export default function LoginPage() {
           {/* Form Card - Clean Style */}
           <div className="bg-white rounded-2xl p-8 shadow-lg border border-gray-100">
             <div className="mb-8">
-              <h2 className="text-3xl font-bold text-[#0A2540] mb-2">
+              <h2 className="text-3xl font-bold text-[#064E3B] mb-2">
                 Bem-vindo de volta
               </h2>
               <p className="text-gray-600">
@@ -310,7 +310,7 @@ export default function LoginPage() {
               )}
 
               <div>
-                <label htmlFor="email" className="block text-sm font-semibold text-[#0A2540] mb-2">
+                <label htmlFor="email" className="block text-sm font-semibold text-[#064E3B] mb-2">
                   Email
                 </label>
                 <input
@@ -326,7 +326,7 @@ export default function LoginPage() {
               </div>
 
               <div>
-                <label htmlFor="senha" className="block text-sm font-semibold text-[#0A2540] mb-2">
+                <label htmlFor="senha" className="block text-sm font-semibold text-[#064E3B] mb-2">
                   Senha
                 </label>
                 <div className="relative">
@@ -343,7 +343,7 @@ export default function LoginPage() {
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-[#0A2540] transition-colors p-1"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-[#064E3B] transition-colors p-1"
                     aria-label={showPassword ? "Ocultar senha" : "Mostrar senha"}
                   >
                     {showPassword ? (
@@ -404,7 +404,7 @@ export default function LoginPage() {
               {isSubdomain ? (
                 <div className="space-y-3">
                   <div className="bg-[#00C48C]/10 border-2 border-[#00C48C]/30 rounded-lg p-4">
-                    <p className="text-[#0A2540] text-sm font-medium mb-2">
+                    <p className="text-[#064E3B] text-sm font-medium mb-2">
                       Deseja cadastrar um novo corretor ou imobiliária?
                     </p>
                     <a

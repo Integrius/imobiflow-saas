@@ -106,7 +106,7 @@ export default function DashboardLayout({
     <div className="min-h-screen bg-[#F4F6F8]">
       <ToastContainer />
       {/* Top Navigation */}
-      <nav className="bg-gradient-to-r from-[#0A2540] to-[#1E3A5F] shadow-lg fixed w-full z-10 border-b border-white/10">
+      <nav className="bg-gradient-to-r from-[#064E3B] to-[#065F46] shadow-lg fixed w-full z-10 border-b border-white/10">
         <div className="px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between h-16">
             <div className="flex items-center">
@@ -247,7 +247,7 @@ export default function DashboardLayout({
             {/* Footer da Sidebar */}
             <div className="px-4 pb-6 mt-auto">
               <div className="bg-gradient-to-r from-[#F4F6F8] to-gray-100 rounded-lg p-4 text-center border border-gray-200">
-                <p className="text-sm text-[#0A2540] font-semibold">Vivoly</p>
+                <p className="text-sm text-[#064E3B] font-semibold">Vivoly</p>
                 <p className="text-xs text-gray-600 mt-1">versão 1.0.0</p>
               </div>
             </div>

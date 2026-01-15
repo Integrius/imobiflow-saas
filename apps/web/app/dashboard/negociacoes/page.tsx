@@ -408,7 +408,7 @@ export default function NegociacoesPage() {
     <div>
       <div className="flex justify-between items-center mb-8">
         <div>
-          <h2 className="text-4xl font-bold text-[#0A2540] tracking-tight">Negociações</h2>
+          <h2 className="text-4xl font-bold text-[#064E3B] tracking-tight">Negociações</h2>
           <p className="text-sm text-[#4B5563] mt-2 font-medium">
             <span className="text-[#00C48C] text-lg font-bold">{negociacoes.length}</span> negociações cadastradas
           </p>
@@ -460,7 +460,7 @@ export default function NegociacoesPage() {
             ) : (
               filteredNegociacoes.map((negociacao, index) => (
                 <tr key={negociacao.id} className={`hover:bg-[#F9FAFB] transition-colors ${index % 2 === 0 ? 'bg-white' : 'bg-white/70'}`}>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-bold text-[#0A2540]">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm font-bold text-[#064E3B]">
                     <span className="px-2 py-1 bg-[#059669]/20 text-[#059669] rounded-md font-mono text-xs border border-[#059669]/50">{negociacao.codigo}</span>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-[#4B5563] font-medium">
@@ -519,7 +519,7 @@ export default function NegociacoesPage() {
         {/* Vinculações - Apenas quando editando e tem imóvel selecionado */}
         {editingNegociacao && selectedImovelDetails && (
           <div className="bg-gradient-to-r from-[#F0FDF4] to-[#EFF6FF] p-4 rounded-lg border-2 border-[#00C48C]/30 mb-6">
-            <h4 className="text-md font-bold text-[#0A2540] border-b border-[#00C48C]/30 pb-2 mb-3 flex items-center gap-2">
+            <h4 className="text-md font-bold text-[#064E3B] border-b border-[#00C48C]/30 pb-2 mb-3 flex items-center gap-2">
               🔗 Vinculações
             </h4>
 
@@ -533,7 +533,7 @@ export default function NegociacoesPage() {
                 <div className="bg-white p-3 rounded-lg border-2 border-[#FFB627]/30">
                   <div className="text-xs font-bold text-[#4B5563] mb-1">🏠 PROPRIETÁRIO</div>
                   {selectedImovelDetails.proprietario ? (
-                    <div className="text-sm font-bold text-[#0A2540]">{selectedImovelDetails.proprietario.nome}</div>
+                    <div className="text-sm font-bold text-[#064E3B]">{selectedImovelDetails.proprietario.nome}</div>
                   ) : (
                     <div className="text-sm text-[#9CA3AF]">Não informado</div>
                   )}
@@ -543,7 +543,7 @@ export default function NegociacoesPage() {
                 <div className="bg-white p-3 rounded-lg border-2 border-[#A97E6F]/30">
                   <div className="text-xs font-bold text-[#4B5563] mb-1">👤 CORRETOR</div>
                   {selectedImovelDetails.corretor_responsavel ? (
-                    <div className="text-sm font-bold text-[#0A2540]">{selectedImovelDetails.corretor_responsavel.user.nome}</div>
+                    <div className="text-sm font-bold text-[#064E3B]">{selectedImovelDetails.corretor_responsavel.user.nome}</div>
                   ) : (
                     <div className="text-sm text-[#9CA3AF]">Não atribuído</div>
                   )}
@@ -566,7 +566,7 @@ export default function NegociacoesPage() {
           {/* Fotos do Imóvel - Exibir apenas se houver imóvel selecionado */}
           {selectedImovelDetails && selectedImovelDetails.fotos && selectedImovelDetails.fotos.length > 0 && (
             <div className="bg-gradient-to-br from-[#F9FAFB]/30 to-white border-2 border-[#059669]/20 rounded-xl p-4">
-              <h4 className="text-sm font-bold text-[#0A2540] mb-3 flex items-center gap-2">
+              <h4 className="text-sm font-bold text-[#064E3B] mb-3 flex items-center gap-2">
                 🏠 Fotos do Imóvel
               </h4>
               <div className="flex gap-3">
@@ -617,7 +617,7 @@ export default function NegociacoesPage() {
           {/* Formulário */}
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-[#0A2540] mb-1">
+              <label className="block text-sm font-medium text-[#064E3B] mb-1">
                 Cliente (Lead) *
               </label>
               <select
@@ -636,7 +636,7 @@ export default function NegociacoesPage() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-[#0A2540] mb-1">
+              <label className="block text-sm font-medium text-[#064E3B] mb-1">
                 Imóvel *
               </label>
               <select
@@ -665,7 +665,7 @@ export default function NegociacoesPage() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-[#0A2540] mb-1">
+              <label className="block text-sm font-medium text-[#064E3B] mb-1">
                 Corretor
               </label>
               <select
@@ -683,7 +683,7 @@ export default function NegociacoesPage() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-[#0A2540] mb-1">
+              <label className="block text-sm font-medium text-[#064E3B] mb-1">
                 Status *
               </label>
               <select
@@ -700,7 +700,7 @@ export default function NegociacoesPage() {
 
             {/* Valor Pedido */}
             <div>
-              <label className="block text-sm font-bold text-[#0A2540] mb-1">
+              <label className="block text-sm font-bold text-[#064E3B] mb-1">
                 Valor pedido *
               </label>
               <input
@@ -718,7 +718,7 @@ export default function NegociacoesPage() {
 
             {/* Melhor Proposta - Sempre mostra */}
             <div className="bg-gradient-to-r from-[#00C48C]/10 to-[#00C48C]/5 border-2 border-[#00C48C]/30 rounded-lg p-3">
-              <label className="block text-sm font-bold text-[#0A2540] mb-1 flex items-center gap-2">
+              <label className="block text-sm font-bold text-[#064E3B] mb-1 flex items-center gap-2">
                 🏆 Melhor proposta
               </label>
               {bestOffer ? (
@@ -741,7 +741,7 @@ export default function NegociacoesPage() {
 
             {/* Valor Proposto - Nova seção vazia */}
             <div>
-              <label className="block text-sm font-bold text-[#0A2540] mb-1">
+              <label className="block text-sm font-bold text-[#064E3B] mb-1">
                 Valor proposto
               </label>
               <input
@@ -757,7 +757,7 @@ export default function NegociacoesPage() {
             </div>
 
             <div>
-              <label className="block text-sm font-bold text-[#0A2540] mb-2">
+              <label className="block text-sm font-bold text-[#064E3B] mb-2">
                 % Comissão *
               </label>
               <input
@@ -774,7 +774,7 @@ export default function NegociacoesPage() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-[#0A2540] mb-1">
+              <label className="block text-sm font-medium text-[#064E3B] mb-1">
                 Data de Início *
               </label>
               <input
@@ -787,7 +787,7 @@ export default function NegociacoesPage() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-[#0A2540] mb-1">
+              <label className="block text-sm font-medium text-[#064E3B] mb-1">
                 Data de Conclusão
               </label>
               <input
@@ -799,7 +799,7 @@ export default function NegociacoesPage() {
             </div>
 
             <div className="col-span-2">
-              <label className="block text-sm font-medium text-[#0A2540] mb-1">
+              <label className="block text-sm font-medium text-[#064E3B] mb-1">
                 Observações
               </label>
               <textarea
@@ -815,7 +815,7 @@ export default function NegociacoesPage() {
             <button
               type="button"
               onClick={handleCloseModal}
-              className="px-4 py-2 text-[#0A2540] border border-gray-300 rounded-lg hover:bg-[#F9FAFB] transition-all"
+              className="px-4 py-2 text-[#064E3B] border border-gray-300 rounded-lg hover:bg-[#F9FAFB] transition-all"
             >
               Cancelar
             </button>
@@ -846,7 +846,7 @@ export default function NegociacoesPage() {
           <div className="flex justify-end gap-3 pt-4 border-t">
             <button
               onClick={() => setDeleteModalOpen(false)}
-              className="px-4 py-2 text-[#0A2540] border border-gray-300 rounded-lg hover:bg-[#F9FAFB] transition-all"
+              className="px-4 py-2 text-[#064E3B] border border-gray-300 rounded-lg hover:bg-[#F9FAFB] transition-all"
             >
               Cancelar
             </button>

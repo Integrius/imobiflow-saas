@@ -90,7 +90,7 @@ export default function PrimeiroAcessoPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#0A2540] via-[#1E3A5F] to-[#0A2540] p-4">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#064E3B] via-[#065F46] to-[#064E3B] p-4">
       <div className="w-full max-w-md">
         {/* Logo */}
         <div className="text-center mb-8">
@@ -114,7 +114,7 @@ export default function PrimeiroAcessoPage() {
         {/* Card de Primeiro Acesso */}
         <div className="bg-white/95 backdrop-blur-sm rounded-2xl shadow-2xl p-8">
           <div className="mb-6">
-            <h2 className="text-2xl font-bold text-[#0A2540] mb-2">
+            <h2 className="text-2xl font-bold text-[#064E3B] mb-2">
               Primeiro Acesso 🔐
             </h2>
             <p className="text-gray-600 text-sm">

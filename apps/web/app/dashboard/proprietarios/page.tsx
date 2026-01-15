@@ -314,7 +314,7 @@ export default function ProprietariosPage() {
     <div>
       <div className="flex justify-between items-center mb-8">
         <div>
-          <h2 className="text-4xl font-bold text-[#0A2540] tracking-tight">Proprietários</h2>
+          <h2 className="text-4xl font-bold text-[#064E3B] tracking-tight">Proprietários</h2>
           <p className="text-sm text-[#4B5563] mt-2 font-medium">
             <span className="text-[#00C48C] text-lg font-bold">{proprietarios.length}</span> proprietários cadastrados
           </p>
@@ -365,7 +365,7 @@ export default function ProprietariosPage() {
             ) : (
               filteredProprietarios.map((proprietario, index) => (
                 <tr key={proprietario.id} className={`hover:bg-[#F9FAFB] transition-colors ${index % 2 === 0 ? 'bg-white' : 'bg-white/70'}`}>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-bold text-[#0A2540]">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm font-bold text-[#064E3B]">
                     {proprietario.nome}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-[#4B5563]">{proprietario.contato?.email || '-'}</td>
@@ -478,7 +478,7 @@ export default function ProprietariosPage() {
           <form onSubmit={handleSubmit} className="space-y-4">
           <div className="grid grid-cols-2 gap-4">
             <div className="col-span-2">
-              <label className="block text-sm font-bold text-[#0A2540] mb-2">
+              <label className="block text-sm font-bold text-[#064E3B] mb-2">
                 Nome *
               </label>
               <input
@@ -491,7 +491,7 @@ export default function ProprietariosPage() {
             </div>
 
             <div>
-              <label className="block text-sm font-bold text-[#0A2540] mb-2">
+              <label className="block text-sm font-bold text-[#064E3B] mb-2">
                 Tipo *
               </label>
               <select
@@ -505,7 +505,7 @@ export default function ProprietariosPage() {
             </div>
 
             <div>
-              <label className="block text-sm font-bold text-[#0A2540] mb-2">
+              <label className="block text-sm font-bold text-[#064E3B] mb-2">
                 {formData.tipo_pessoa === 'FISICA' ? 'CPF *' : 'CNPJ *'}
               </label>
               <input
@@ -519,7 +519,7 @@ export default function ProprietariosPage() {
             </div>
 
             <div>
-              <label className="block text-sm font-bold text-[#0A2540] mb-2">
+              <label className="block text-sm font-bold text-[#064E3B] mb-2">
                 Email *
               </label>
               <input
@@ -532,7 +532,7 @@ export default function ProprietariosPage() {
             </div>
 
             <div>
-              <label className="block text-sm font-bold text-[#0A2540] mb-2">
+              <label className="block text-sm font-bold text-[#064E3B] mb-2">
                 Telefone *
               </label>
               <input
@@ -546,7 +546,7 @@ export default function ProprietariosPage() {
             </div>
 
             <div className="col-span-2">
-              <label className="block text-sm font-bold text-[#0A2540] mb-2">
+              <label className="block text-sm font-bold text-[#064E3B] mb-2">
                 Endereço
               </label>
               <input
@@ -610,7 +610,7 @@ export default function ProprietariosPage() {
 
                     {/* Informações */}
                     <div className="flex-1">
-                      <h4 className="font-bold text-[#0A2540] text-lg">{imovel.titulo}</h4>
+                      <h4 className="font-bold text-[#064E3B] text-lg">{imovel.titulo}</h4>
                       <div className="flex gap-4 mt-2 text-sm">
                         <span className="px-2 py-1 bg-[#059669]/20 text-[#059669] rounded-md font-bold">
                           {imovel.tipo}
@@ -650,7 +650,7 @@ export default function ProprietariosPage() {
         size="sm"
       >
         <div className="space-y-4">
-          <p className="text-[#0A2540] text-base">
+          <p className="text-[#064E3B] text-base">
             Tem certeza que deseja excluir o proprietário <strong className="text-[#059669]">{deletingProprietario?.nome}</strong>?
           </p>
           <p className="text-sm text-[#4B5563]">Esta ação não pode ser desfeita.</p>

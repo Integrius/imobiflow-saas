@@ -191,7 +191,7 @@ export default function AdminTenantsPage() {
     const colors = {
       BASICO: 'bg-emerald-100 text-emerald-800 border-emerald-200',
       PRO: 'bg-purple-100 text-purple-800 border-purple-200',
-      ENTERPRISE: 'bg-indigo-100 text-indigo-800 border-indigo-200',
+      ENTERPRISE: 'bg-emerald-100 text-emerald-800 border-emerald-200',
       CUSTOM: 'bg-pink-100 text-pink-800 border-pink-200'
     };
 

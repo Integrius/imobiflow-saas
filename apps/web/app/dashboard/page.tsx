@@ -69,7 +69,7 @@ export default function DashboardPage() {
   return (
     <div>
       <div className="mb-8">
-        <h2 className="text-4xl font-bold text-[#0A2540] tracking-tight">Dashboard</h2>
+        <h2 className="text-4xl font-bold text-[#064E3B] tracking-tight">Dashboard</h2>
         <p className="text-[#4B5563] mt-2 text-lg">Visão geral do seu negócio imobiliário</p>
       </div>
 
@@ -89,7 +89,7 @@ export default function DashboardPage() {
                 </div>
               </div>
               <div className="mt-4">
-                <div className="text-4xl font-bold text-[#0A2540] mb-2">
+                <div className="text-4xl font-bold text-[#064E3B] mb-2">
                   {data.leads.total}
                 </div>
                 <div className="flex items-center gap-2">
@@ -116,7 +116,7 @@ export default function DashboardPage() {
                 </div>
               </div>
               <div className="mt-4">
-                <div className="text-4xl font-bold text-[#0A2540] mb-2">
+                <div className="text-4xl font-bold text-[#064E3B] mb-2">
                   {data.imoveis.total}
                 </div>
                 <div className="flex items-center gap-2">
@@ -143,7 +143,7 @@ export default function DashboardPage() {
                 </div>
               </div>
               <div className="mt-4">
-                <div className="text-4xl font-bold text-[#0A2540] mb-2">
+                <div className="text-4xl font-bold text-[#064E3B] mb-2">
                   {data.negociacoes.total}
                 </div>
                 <div className="flex items-center gap-2">
@@ -164,12 +164,12 @@ export default function DashboardPage() {
       {/* Gráficos Históricos */}
       {chartData && (
         <div className="mt-12">
-          <h3 className="text-2xl font-bold text-[#0A2540] mb-6">Evolução nos Últimos Meses</h3>
+          <h3 className="text-2xl font-bold text-[#064E3B] mb-6">Evolução nos Últimos Meses</h3>
 
           <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
             {/* Gráfico 3 Meses */}
             <div className="card-clean p-6">
-              <h4 className="text-lg font-semibold text-[#0A2540] mb-4 text-center">Últimos 3 Meses</h4>
+              <h4 className="text-lg font-semibold text-[#064E3B] mb-4 text-center">Últimos 3 Meses</h4>
               <ResponsiveContainer width="100%" height={300}>
                 <BarChart data={chartData.last3Months}>
                   <CartesianGrid strokeDasharray="3 3" stroke="#E5E5E5" />
@@ -201,7 +201,7 @@ export default function DashboardPage() {
 
             {/* Gráfico 6 Meses */}
             <div className="card-clean p-6">
-              <h4 className="text-lg font-semibold text-[#0A2540] mb-4 text-center">Últimos 6 Meses</h4>
+              <h4 className="text-lg font-semibold text-[#064E3B] mb-4 text-center">Últimos 6 Meses</h4>
               <ResponsiveContainer width="100%" height={300}>
                 <BarChart data={chartData.last6Months}>
                   <CartesianGrid strokeDasharray="3 3" stroke="#E5E5E5" />
@@ -233,7 +233,7 @@ export default function DashboardPage() {
 
             {/* Gráfico 12 Meses */}
             <div className="card-clean p-6">
-              <h4 className="text-lg font-semibold text-[#0A2540] mb-4 text-center">Últimos 12 Meses</h4>
+              <h4 className="text-lg font-semibold text-[#064E3B] mb-4 text-center">Últimos 12 Meses</h4>
               <ResponsiveContainer width="100%" height={300}>
                 <BarChart data={chartData.last12Months}>
                   <CartesianGrid strokeDasharray="3 3" stroke="#E5E5E5" />
