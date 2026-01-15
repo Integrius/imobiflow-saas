@@ -110,8 +110,8 @@ export default function CancelarAssinaturaPage() {
               </li>
             </ul>
 
-            <div className="bg-blue-50 border-l-4 border-blue-400 p-4">
-              <p className="text-sm text-blue-700">
+            <div className="bg-emerald-50 border-l-4 border-emerald-400 p-4">
+              <p className="text-sm text-emerald-700">
                 💡 <strong>Dica:</strong> Se está enfrentando dificuldades técnicas ou tem dúvidas sobre o sistema, entre em contato com nosso suporte antes de cancelar: <a href="mailto:contato@integrius.com.br" className="underline font-medium">contato@integrius.com.br</a>
               </p>
             </div>

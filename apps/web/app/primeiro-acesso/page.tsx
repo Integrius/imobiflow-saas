@@ -232,11 +232,11 @@ export default function PrimeiroAcessoPage() {
             </button>
 
             {/* Dicas de Segurança */}
-            <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-              <h3 className="text-sm font-semibold text-blue-900 mb-2 flex items-center gap-2">
+            <div className="mt-6 p-4 bg-emerald-50 border border-emerald-200 rounded-lg">
+              <h3 className="text-sm font-semibold text-emerald-900 mb-2 flex items-center gap-2">
                 💡 Dicas de Segurança
               </h3>
-              <ul className="text-xs text-blue-700 space-y-1">
+              <ul className="text-xs text-emerald-700 space-y-1">
                 <li>• Use no mínimo 8 caracteres</li>
                 <li>• Combine letras maiúsculas e minúsculas</li>
                 <li>• Adicione números e símbolos (!@#$%)</li>

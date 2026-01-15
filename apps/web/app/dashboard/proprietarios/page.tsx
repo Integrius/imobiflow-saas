@@ -344,7 +344,7 @@ export default function ProprietariosPage() {
       {/* Tabela */}
       <div className="card-clean shadow-xl overflow-hidden">
         <table className="min-w-full divide-y divide-slate-600">
-          <thead className="bg-gradient-to-r from-[#3B82F6] to-[#3B82F6]">
+          <thead className="bg-gradient-to-r from-[#059669] to-[#059669]">
             <tr>
               <th className="px-6 py-4 text-left text-xs font-bold text-white uppercase tracking-wider">Nome</th>
               <th className="px-6 py-4 text-left text-xs font-bold text-white uppercase tracking-wider">Email</th>
@@ -375,8 +375,8 @@ export default function ProprietariosPage() {
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-[#4B5563]">
                     <span className={`px-3 py-1.5 text-xs font-bold rounded-full border-2 ${
                       proprietario.tipo_pessoa === 'FISICA'
-                        ? 'bg-[#3B82F6]/20 text-[#3B82F6] border-[#3B82F6]/50'
-                        : 'bg-[#3B82F6]/20 text-[#3B82F6] border-[#3B82F6]/50'
+                        ? 'bg-[#059669]/20 text-[#059669] border-[#059669]/50'
+                        : 'bg-[#059669]/20 text-[#059669] border-[#059669]/50'
                     }`}>
                       {proprietario.tipo_pessoa === 'FISICA' ? '👤 Pessoa Física' : '🏢 Pessoa Jurídica'}
                     </span>
@@ -385,7 +385,7 @@ export default function ProprietariosPage() {
                   <td className="px-6 py-4 whitespace-nowrap text-sm">
                     <button
                       onClick={() => openEditModal(proprietario)}
-                      className="text-[#00C48C] hover:text-[#3B82F6] mr-4 font-bold hover:underline transition-all"
+                      className="text-[#00C48C] hover:text-[#059669] mr-4 font-bold hover:underline transition-all"
                     >
                       👁️ Consultar
                     </button>
@@ -432,7 +432,7 @@ export default function ProprietariosPage() {
                 </div>
                 <div className="h-10 w-px bg-[#00C48C]/30"></div>
                 <div className="text-center">
-                  <div className="text-2xl font-bold text-[#3B82F6]">{proprietarioImoveis.length}</div>
+                  <div className="text-2xl font-bold text-[#059669]">{proprietarioImoveis.length}</div>
                   <div className="text-xs text-[#4B5563] font-medium">Imóveis</div>
                 </div>
                 <div className="h-10 w-px bg-[#00C48C]/30"></div>
@@ -486,7 +486,7 @@ export default function ProprietariosPage() {
                 required
                 value={formData.nome}
                 onChange={(e) => handleFormChange('nome', e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-600 focus:border-transparent"
               />
             </div>
 
@@ -497,7 +497,7 @@ export default function ProprietariosPage() {
               <select
                 value={formData.tipo_pessoa}
                 onChange={(e) => handleFormChange('tipo_pessoa', e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-600 focus:border-transparent"
               >
                 <option value="FISICA">Pessoa Física</option>
                 <option value="JURIDICA">Pessoa Jurídica</option>
@@ -513,7 +513,7 @@ export default function ProprietariosPage() {
                 required
                 value={formData.cpf_cnpj}
                 onChange={(e) => handleFormChange('cpf_cnpj', e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-600 focus:border-transparent"
                 placeholder={formData.tipo_pessoa === 'FISICA' ? '000.000.000-00' : '00.000.000/0000-00'}
               />
             </div>
@@ -527,7 +527,7 @@ export default function ProprietariosPage() {
                 required
                 value={formData.email}
                 onChange={(e) => handleFormChange('email', e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-600 focus:border-transparent"
               />
             </div>
 
@@ -540,7 +540,7 @@ export default function ProprietariosPage() {
                 required
                 value={formData.telefone}
                 onChange={(e) => handleFormChange('telefone', e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-600 focus:border-transparent"
                 placeholder="(11) 99999-9999"
               />
             </div>
@@ -553,7 +553,7 @@ export default function ProprietariosPage() {
                 type="text"
                 value={formData.endereco}
                 onChange={(e) => handleFormChange('endereco', e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-600 focus:border-transparent"
               />
             </div>
           </div>
@@ -562,14 +562,14 @@ export default function ProprietariosPage() {
             <button
               type="button"
               onClick={handleCloseModal}
-              className="px-6 py-2.5 text-[#3B82F6] border-2 border-[#3B82F6] rounded-lg hover:bg-[#3B82F6] hover:text-white font-bold transition-all"
+              className="px-6 py-2.5 text-[#059669] border-2 border-[#059669] rounded-lg hover:bg-[#059669] hover:text-white font-bold transition-all"
             >
               Cancelar
             </button>
             <button
               type="submit"
               disabled={submitting}
-              className="px-6 py-2.5 bg-gradient-to-r from-[#00C48C] to-[#3B82F6] text-white rounded-lg hover:shadow-lg font-bold transition-all disabled:opacity-50"
+              className="px-6 py-2.5 bg-gradient-to-r from-[#00C48C] to-[#059669] text-white rounded-lg hover:shadow-lg font-bold transition-all disabled:opacity-50"
             >
               {submitting ? 'Salvando...' : 'Salvar'}
             </button>
@@ -603,7 +603,7 @@ export default function ProprietariosPage() {
                         className="w-24 h-24 object-cover rounded-lg"
                       />
                     ) : (
-                      <div className="w-24 h-24 bg-[#F9FAFB] rounded-lg flex items-center justify-center border-2 border-[#3B82F6]/20">
+                      <div className="w-24 h-24 bg-[#F9FAFB] rounded-lg flex items-center justify-center border-2 border-[#059669]/20">
                         <span className="text-4xl">🏘️</span>
                       </div>
                     )}
@@ -612,7 +612,7 @@ export default function ProprietariosPage() {
                     <div className="flex-1">
                       <h4 className="font-bold text-[#0A2540] text-lg">{imovel.titulo}</h4>
                       <div className="flex gap-4 mt-2 text-sm">
-                        <span className="px-2 py-1 bg-[#3B82F6]/20 text-[#3B82F6] rounded-md font-bold">
+                        <span className="px-2 py-1 bg-[#059669]/20 text-[#059669] rounded-md font-bold">
                           {imovel.tipo}
                         </span>
                         <span className={`px-2 py-1 rounded-md font-bold ${
@@ -651,14 +651,14 @@ export default function ProprietariosPage() {
       >
         <div className="space-y-4">
           <p className="text-[#0A2540] text-base">
-            Tem certeza que deseja excluir o proprietário <strong className="text-[#3B82F6]">{deletingProprietario?.nome}</strong>?
+            Tem certeza que deseja excluir o proprietário <strong className="text-[#059669]">{deletingProprietario?.nome}</strong>?
           </p>
           <p className="text-sm text-[#4B5563]">Esta ação não pode ser desfeita.</p>
 
           <div className="flex justify-end gap-3 pt-6 border-t border-gray-200 mt-6">
             <button
               onClick={() => setDeleteModalOpen(false)}
-              className="px-6 py-2.5 text-[#3B82F6] border-2 border-[#3B82F6] rounded-lg hover:bg-[#3B82F6] hover:text-white font-bold transition-all"
+              className="px-6 py-2.5 text-[#059669] border-2 border-[#059669] rounded-lg hover:bg-[#059669] hover:text-white font-bold transition-all"
             >
               Cancelar
             </button>

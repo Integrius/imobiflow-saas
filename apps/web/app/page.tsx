@@ -84,7 +84,7 @@ export default function Home() {
       <section className="relative pt-32 pb-20 px-6 bg-gradient-to-br from-[#F4F6F8] to-white overflow-hidden">
         {/* Subtle background decoration */}
         <div className="absolute top-0 right-0 w-96 h-96 bg-[#00C48C]/5 rounded-full blur-3xl"></div>
-        <div className="absolute bottom-0 left-0 w-80 h-80 bg-[#3B82F6]/5 rounded-full blur-3xl"></div>
+        <div className="absolute bottom-0 left-0 w-80 h-80 bg-[#059669]/5 rounded-full blur-3xl"></div>
 
         <div className="relative max-w-7xl mx-auto">
           <div className="grid md:grid-cols-2 gap-16 items-center">
@@ -231,7 +231,7 @@ export default function Home() {
 
             {/* Feature 2 */}
             <div className="bg-white rounded-2xl p-8 border border-gray-100 shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-200">
-              <div className="w-14 h-14 bg-[#3B82F6] rounded-xl flex items-center justify-center mb-6">
+              <div className="w-14 h-14 bg-[#059669] rounded-xl flex items-center justify-center mb-6">
                 <svg className="w-7 h-7 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
                 </svg>
@@ -270,7 +270,7 @@ export default function Home() {
 
             {/* Feature 5 */}
             <div className="bg-white rounded-2xl p-8 border border-gray-100 shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-200">
-              <div className="w-14 h-14 bg-[#3B82F6] rounded-xl flex items-center justify-center mb-6">
+              <div className="w-14 h-14 bg-[#059669] rounded-xl flex items-center justify-center mb-6">
                 <svg className="w-7 h-7 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                 </svg>

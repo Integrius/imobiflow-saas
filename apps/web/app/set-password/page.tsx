@@ -120,11 +120,11 @@ export default function SetPasswordPage() {
           </div>
 
           {/* Dicas de Segurança */}
-          <div className="bg-blue-50 border-l-4 border-blue-500 p-4 rounded">
-            <p className="text-blue-700 text-sm font-semibold mb-2">
+          <div className="bg-emerald-50 border-l-4 border-emerald-500 p-4 rounded">
+            <p className="text-emerald-700 text-sm font-semibold mb-2">
               💡 Dicas de Segurança:
             </p>
-            <ul className="text-blue-600 text-xs space-y-1">
+            <ul className="text-emerald-600 text-xs space-y-1">
               <li>• Use no mínimo 6 caracteres</li>
               <li>• Misture letras, números e símbolos</li>
               <li>• Não use senhas óbvias ou pessoais</li>

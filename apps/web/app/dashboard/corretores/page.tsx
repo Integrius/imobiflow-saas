@@ -485,7 +485,7 @@ export default function CorretoresPage() {
               className={`px-4 py-2.5 rounded-lg font-semibold text-sm transition-all duration-200 ${
                 selectedCorretores.length === 0
                   ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                  : 'bg-gradient-to-r from-[#3B82F6] to-[#2563EB] text-white hover:scale-105'
+                  : 'bg-gradient-to-r from-[#059669] to-[#047857] text-white hover:scale-105'
               }`}
               style={{
                 boxShadow: selectedCorretores.length > 0
@@ -552,7 +552,7 @@ export default function CorretoresPage() {
       {/* Tabela */}
       <div className="card-clean shadow-xl overflow-hidden">
         <table className="min-w-full divide-y divide-slate-600">
-          <thead className="bg-gradient-to-r from-[#3B82F6] to-[#3B82F6]">
+          <thead className="bg-gradient-to-r from-[#059669] to-[#059669]">
             <tr>
               <th className="px-4 py-4 text-center">
                 <input
@@ -609,7 +609,7 @@ export default function CorretoresPage() {
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-[#4B5563]">{corretor.email}</td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-[#4B5563]">
-                    <span className="px-2 py-1 bg-[#3B82F6]/20 text-[#3B82F6] rounded-md font-mono text-xs font-bold border border-[#3B82F6]/50">{corretor.creci}</span>
+                    <span className="px-2 py-1 bg-[#059669]/20 text-[#059669] rounded-md font-mono text-xs font-bold border border-[#059669]/50">{corretor.creci}</span>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-[#4B5563] font-medium">{formatPhone(corretor.telefone)}</td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-[#4B5563]">
@@ -624,7 +624,7 @@ export default function CorretoresPage() {
                   <td className="px-6 py-4 whitespace-nowrap text-sm">
                     <button
                       onClick={() => openEditModal(corretor)}
-                      className="text-[#00C48C] hover:text-[#3B82F6] mr-4 font-bold hover:underline transition-all"
+                      className="text-[#00C48C] hover:text-[#059669] mr-4 font-bold hover:underline transition-all"
                     >
                       👁️ Consultar
                     </button>
@@ -662,7 +662,7 @@ export default function CorretoresPage() {
               </div>
               <div className="h-10 w-px bg-[#00C48C]/30"></div>
               <div className="text-center">
-                <div className="text-2xl font-bold text-[#3B82F6]">{corretorImoveis.length}</div>
+                <div className="text-2xl font-bold text-[#059669]">{corretorImoveis.length}</div>
                 <div className="text-xs text-[#4B5563] font-medium">Imóveis</div>
               </div>
             </div>
@@ -721,7 +721,7 @@ export default function CorretoresPage() {
                 required
                 value={formData.nome}
                 onChange={(e) => handleFormChange('nome', e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-600 focus:border-transparent"
               />
             </div>
 
@@ -734,7 +734,7 @@ export default function CorretoresPage() {
                 required
                 value={formData.email}
                 onChange={(e) => handleFormChange('email', e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-600 focus:border-transparent"
               />
             </div>
 
@@ -748,7 +748,7 @@ export default function CorretoresPage() {
                 placeholder="(00) 00000-0000"
                 value={formData.telefone}
                 onChange={(e) => handleFormChange('telefone', e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-600 focus:border-transparent"
               />
             </div>
 
@@ -761,7 +761,7 @@ export default function CorretoresPage() {
                 required
                 value={formData.creci}
                 onChange={(e) => handleFormChange('creci', e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-600 focus:border-transparent"
               />
             </div>
 
@@ -776,7 +776,7 @@ export default function CorretoresPage() {
                 max="100"
                 value={formData.comissao}
                 onChange={(e) => handleFormChange('comissao', e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-600 focus:border-transparent"
               />
             </div>
 
@@ -788,7 +788,7 @@ export default function CorretoresPage() {
                 type="text"
                 value={formData.especialidade}
                 onChange={(e) => handleFormChange('especialidade', e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-600 focus:border-transparent"
                 placeholder="Ex: Imóveis comerciais, Apartamentos de luxo..."
               />
             </div>
@@ -798,14 +798,14 @@ export default function CorretoresPage() {
             <button
               type="button"
               onClick={handleCloseModal}
-              className="px-6 py-2.5 text-[#3B82F6] border-2 border-[#3B82F6] rounded-lg hover:bg-[#3B82F6] hover:text-white font-bold transition-all"
+              className="px-6 py-2.5 text-[#059669] border-2 border-[#059669] rounded-lg hover:bg-[#059669] hover:text-white font-bold transition-all"
             >
               Cancelar
             </button>
             <button
               type="submit"
               disabled={submitting}
-              className="px-6 py-2.5 bg-gradient-to-r from-[#00C48C] to-[#3B82F6] text-white rounded-lg hover:shadow-lg font-bold transition-all disabled:opacity-50"
+              className="px-6 py-2.5 bg-gradient-to-r from-[#00C48C] to-[#059669] text-white rounded-lg hover:shadow-lg font-bold transition-all disabled:opacity-50"
             >
               {submitting ? 'Salvando...' : 'Salvar'}
             </button>
@@ -839,7 +839,7 @@ export default function CorretoresPage() {
                         className="w-24 h-24 object-cover rounded-lg"
                       />
                     ) : (
-                      <div className="w-24 h-24 bg-[#F9FAFB] rounded-lg flex items-center justify-center border-2 border-[#3B82F6]/20">
+                      <div className="w-24 h-24 bg-[#F9FAFB] rounded-lg flex items-center justify-center border-2 border-[#059669]/20">
                         <span className="text-4xl">🏘️</span>
                       </div>
                     )}
@@ -848,7 +848,7 @@ export default function CorretoresPage() {
                     <div className="flex-1">
                       <h4 className="font-bold text-[#0A2540] text-lg">{imovel.titulo}</h4>
                       <div className="flex gap-4 mt-2 text-sm">
-                        <span className="px-2 py-1 bg-[#3B82F6]/20 text-[#3B82F6] rounded-md font-bold">
+                        <span className="px-2 py-1 bg-[#059669]/20 text-[#059669] rounded-md font-bold">
                           {imovel.tipo}
                         </span>
                         <span className={`px-2 py-1 rounded-md font-bold ${
@@ -913,7 +913,7 @@ export default function CorretoresPage() {
                             ? 'bg-[#FF6B6B]/20 text-[#FF006E]'
                             : lead.temperatura === 'MORNO'
                             ? 'bg-[#FFB627]/20 text-[#FFB627]'
-                            : 'bg-[#3B82F6]/20 text-[#3B82F6]'
+                            : 'bg-[#059669]/20 text-[#059669]'
                         }`}>
                           {lead.temperatura === 'QUENTE' ? '🔥 QUENTE' : lead.temperatura === 'MORNO' ? '🌡️ MORNO' : '❄️ FRIO'}
                         </span>
@@ -957,14 +957,14 @@ export default function CorretoresPage() {
       >
         <div className="space-y-4">
           <p className="text-[#0A2540] text-base">
-            Tem certeza que deseja excluir o corretor <strong className="text-[#3B82F6]">{deletingCorretor?.nome}</strong>?
+            Tem certeza que deseja excluir o corretor <strong className="text-[#059669]">{deletingCorretor?.nome}</strong>?
           </p>
           <p className="text-sm text-[#4B5563]">Esta ação não pode ser desfeita.</p>
 
           <div className="flex justify-end gap-3 pt-6 border-t border-gray-200 mt-6">
             <button
               onClick={() => setDeleteModalOpen(false)}
-              className="px-6 py-2.5 text-[#3B82F6] border-2 border-[#3B82F6] rounded-lg hover:bg-[#3B82F6] hover:text-white font-bold transition-all"
+              className="px-6 py-2.5 text-[#059669] border-2 border-[#059669] rounded-lg hover:bg-[#059669] hover:text-white font-bold transition-all"
             >
               Cancelar
             </button>
@@ -996,9 +996,9 @@ export default function CorretoresPage() {
                 <p className="text-xs text-gray-600 font-semibold mb-1">Corretores</p>
                 <p className="text-2xl font-bold text-[#00C48C]">{comissoesData.total_corretores}</p>
               </div>
-              <div className="bg-gradient-to-br from-[#3B82F6]/10 to-[#3B82F6]/5 border-2 border-[#3B82F6]/30 rounded-lg p-4 text-center">
+              <div className="bg-gradient-to-br from-[#059669]/10 to-[#059669]/5 border-2 border-[#059669]/30 rounded-lg p-4 text-center">
                 <p className="text-xs text-gray-600 font-semibold mb-1">Negociações</p>
-                <p className="text-2xl font-bold text-[#3B82F6]">{comissoesData.total_negociacoes}</p>
+                <p className="text-2xl font-bold text-[#059669]">{comissoesData.total_negociacoes}</p>
               </div>
               <div className="bg-gradient-to-br from-[#FFB627]/10 to-[#FFB627]/5 border-2 border-[#FFB627]/30 rounded-lg p-4 text-center">
                 <p className="text-xs text-gray-600 font-semibold mb-1">Total Comissões</p>
@@ -1049,7 +1049,7 @@ export default function CorretoresPage() {
                       {corretor.negociacoes.map((neg: any) => (
                         <div key={neg.id} className="text-xs bg-gray-50 rounded p-2">
                           <div className="flex items-center justify-between mb-1">
-                            <span className="font-mono text-[#3B82F6] font-bold">{neg.codigo}</span>
+                            <span className="font-mono text-[#059669] font-bold">{neg.codigo}</span>
                             <span className="text-gray-500">
                               {new Date(neg.data_fechamento).toLocaleDateString('pt-BR')}
                             </span>

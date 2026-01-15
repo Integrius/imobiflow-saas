@@ -79,7 +79,7 @@ export default function DashboardPage() {
           <div className="card-clean overflow-hidden border-2 border-[#00C48C]/20 hover:shadow-2xl transition-all duration-300 hover:scale-105 group">
             <div className="p-6">
               <div className="flex items-center justify-between mb-4">
-                <div className="p-3 bg-gradient-to-br from-[#00C48C] to-[#3B82F6] rounded-xl shadow-lg">
+                <div className="p-3 bg-gradient-to-br from-[#00C48C] to-[#059669] rounded-xl shadow-lg">
                   <span className="text-3xl">👥</span>
                 </div>
                 <div className="text-right">
@@ -99,18 +99,18 @@ export default function DashboardPage() {
                 </div>
               </div>
             </div>
-            <div className="h-2 bg-gradient-to-r from-[#00C48C] to-[#3B82F6]"></div>
+            <div className="h-2 bg-gradient-to-r from-[#00C48C] to-[#059669]"></div>
           </div>
 
           {/* Card de Imóveis */}
           <div className="card-clean overflow-hidden border-2 border-[#00C48C]/20 hover:shadow-2xl transition-all duration-300 hover:scale-105 group">
             <div className="p-6">
               <div className="flex items-center justify-between mb-4">
-                <div className="p-3 bg-gradient-to-br from-[#3B82F6] to-[#3B82F6] rounded-xl shadow-lg">
+                <div className="p-3 bg-gradient-to-br from-[#059669] to-[#059669] rounded-xl shadow-lg">
                   <img src="/ico-imoveis.png" alt="Imóveis" className="w-8 h-8" />
                 </div>
                 <div className="text-right">
-                  <div className="text-sm font-semibold text-[#3B82F6] uppercase tracking-wider">
+                  <div className="text-sm font-semibold text-[#059669] uppercase tracking-wider">
                     Imóveis
                   </div>
                 </div>
@@ -126,7 +126,7 @@ export default function DashboardPage() {
                 </div>
               </div>
             </div>
-            <div className="h-2 bg-gradient-to-r from-[#3B82F6] to-[#3B82F6]"></div>
+            <div className="h-2 bg-gradient-to-r from-[#059669] to-[#059669]"></div>
           </div>
 
           {/* Card de Negociações */}
@@ -188,7 +188,7 @@ export default function DashboardPage() {
                     iconType="rect"
                   />
                   <Bar dataKey="leads" fill="#00C48C" name="Leads" radius={[8, 8, 0, 0]} />
-                  <Bar dataKey="imoveis" fill="#3B82F6" name="Imóveis" radius={[8, 8, 0, 0]} />
+                  <Bar dataKey="imoveis" fill="#059669" name="Imóveis" radius={[8, 8, 0, 0]} />
                   <Bar dataKey="negociacoes" fill="#FFB627" name="Negociações" radius={[8, 8, 0, 0]} />
                 </BarChart>
               </ResponsiveContainer>
@@ -220,7 +220,7 @@ export default function DashboardPage() {
                     iconType="rect"
                   />
                   <Bar dataKey="leads" fill="#00C48C" name="Leads" radius={[8, 8, 0, 0]} />
-                  <Bar dataKey="imoveis" fill="#3B82F6" name="Imóveis" radius={[8, 8, 0, 0]} />
+                  <Bar dataKey="imoveis" fill="#059669" name="Imóveis" radius={[8, 8, 0, 0]} />
                   <Bar dataKey="negociacoes" fill="#FFB627" name="Negociações" radius={[8, 8, 0, 0]} />
                 </BarChart>
               </ResponsiveContainer>
@@ -252,7 +252,7 @@ export default function DashboardPage() {
                     iconType="rect"
                   />
                   <Bar dataKey="leads" fill="#00C48C" name="Leads" radius={[8, 8, 0, 0]} />
-                  <Bar dataKey="imoveis" fill="#3B82F6" name="Imóveis" radius={[8, 8, 0, 0]} />
+                  <Bar dataKey="imoveis" fill="#059669" name="Imóveis" radius={[8, 8, 0, 0]} />
                   <Bar dataKey="negociacoes" fill="#FFB627" name="Negociações" radius={[8, 8, 0, 0]} />
                 </BarChart>
               </ResponsiveContainer>

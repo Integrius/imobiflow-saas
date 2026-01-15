@@ -298,7 +298,7 @@ export default function LeadsPage() {
       {/* Tabela */}
       <div className="card-clean shadow-xl overflow-hidden">
         <table className="min-w-full divide-y divide-[rgba(169,126,111,0.2)]">
-          <thead className="bg-gradient-to-r from-[#3B82F6] to-[#3B82F6]">
+          <thead className="bg-gradient-to-r from-[#059669] to-[#059669]">
             <tr>
               <th className="px-6 py-4 text-left text-xs font-bold text-white uppercase tracking-wider">Nome</th>
               <th className="px-6 py-4 text-left text-xs font-bold text-white uppercase tracking-wider">Email</th>
@@ -330,7 +330,7 @@ export default function LeadsPage() {
                           ? 'bg-[#FF6B6B]/10 text-[#FF006E] border-[#FF006E]/50'
                           : lead.status === 'MORNO'
                           ? 'bg-[#FFB627]/10 text-[#FFB627] border-[#FFB627]/50'
-                          : 'bg-[#3B82F6]/10 text-[#3B82F6] border-[#3B82F6]/50'
+                          : 'bg-[#059669]/10 text-[#059669] border-[#059669]/50'
                       }`}
                     >
                       {lead.status}
@@ -339,7 +339,7 @@ export default function LeadsPage() {
                   <td className="px-6 py-4 whitespace-nowrap text-sm">
                     <button
                       onClick={() => openEditModal(lead)}
-                      className="text-[#00C48C] hover:text-[#3B82F6] mr-4 font-bold hover:underline transition-all"
+                      className="text-[#00C48C] hover:text-[#059669] mr-4 font-bold hover:underline transition-all"
                     >
                       👁️ Consultar
                     </button>
@@ -379,7 +379,7 @@ export default function LeadsPage() {
                   required
                   value={formData.nome}
                   onChange={(e) => handleFormChange('nome', e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-600 focus:border-transparent"
                 />
               </div>
 
@@ -390,7 +390,7 @@ export default function LeadsPage() {
                   required
                   value={formData.email}
                   onChange={(e) => handleFormChange('email', e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-600 focus:border-transparent"
                 />
               </div>
 
@@ -402,7 +402,7 @@ export default function LeadsPage() {
                   placeholder="(00) 00000-0000"
                   value={formData.telefone}
                   onChange={(e) => handleFormChange('telefone', e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-600 focus:border-transparent"
                 />
               </div>
 
@@ -411,7 +411,7 @@ export default function LeadsPage() {
                 <select
                   value={formData.status}
                   onChange={(e) => handleFormChange('status', e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-600 focus:border-transparent"
                 >
                   <option value="FRIO">Frio</option>
                   <option value="MORNO">Morno</option>
@@ -424,7 +424,7 @@ export default function LeadsPage() {
                 <select
                   value={formData.origem}
                   onChange={(e) => handleFormChange('origem', e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-600 focus:border-transparent"
                 >
                   <option value="SITE">Site</option>
                   <option value="INDICACAO">Indicação</option>
@@ -544,7 +544,7 @@ export default function LeadsPage() {
               value={formData.observacoes}
               onChange={(e) => handleFormChange('observacoes', e.target.value)}
               placeholder="Informações adicionais sobre o lead..."
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent placeholder:text-gray-400"
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-600 focus:border-transparent placeholder:text-gray-400"
             />
           </div>
 
@@ -575,9 +575,9 @@ export default function LeadsPage() {
                   </div>
 
                   {/* Imóveis de Interesse */}
-                  <div className="bg-white p-3 rounded-lg border-2 border-[#3B82F6]/30">
+                  <div className="bg-white p-3 rounded-lg border-2 border-[#059669]/30">
                     <div className="text-xs font-bold text-[#4B5563] mb-1">🏘️ IMÓVEIS</div>
-                    <div className="text-2xl font-bold text-[#3B82F6]">
+                    <div className="text-2xl font-bold text-[#059669]">
                       {editingLead.negociacoes?.length || 0}
                     </div>
                     <div className="text-xs text-[#4B5563]">negociações ativas</div>
@@ -600,14 +600,14 @@ export default function LeadsPage() {
             <button
               type="button"
               onClick={handleCloseModal}
-              className="px-6 py-2.5 text-[#3B82F6] border-2 border-[#3B82F6] rounded-lg hover:bg-[#3B82F6] hover:text-white font-bold transition-all"
+              className="px-6 py-2.5 text-[#059669] border-2 border-[#059669] rounded-lg hover:bg-[#059669] hover:text-white font-bold transition-all"
             >
               Cancelar
             </button>
             <button
               type="submit"
               disabled={submitting}
-              className="px-6 py-2.5 bg-gradient-to-r from-[#00C48C] to-[#3B82F6] text-white rounded-lg hover:shadow-lg font-bold transition-all disabled:opacity-50"
+              className="px-6 py-2.5 bg-gradient-to-r from-[#00C48C] to-[#059669] text-white rounded-lg hover:shadow-lg font-bold transition-all disabled:opacity-50"
             >
               {submitting ? 'Salvando...' : 'Salvar'}
             </button>
@@ -624,14 +624,14 @@ export default function LeadsPage() {
       >
         <div className="space-y-4">
           <p className="text-[#0A2540] text-base">
-            Tem certeza que deseja excluir o lead <strong className="text-[#3B82F6]">{deletingLead?.nome}</strong>?
+            Tem certeza que deseja excluir o lead <strong className="text-[#059669]">{deletingLead?.nome}</strong>?
           </p>
           <p className="text-sm text-[#4B5563]">Esta ação não pode ser desfeita.</p>
 
           <div className="flex justify-end gap-3 pt-6 border-t border-gray-200 mt-6">
             <button
               onClick={() => setDeleteModalOpen(false)}
-              className="px-6 py-2.5 text-[#3B82F6] border-2 border-[#3B82F6] rounded-lg hover:bg-[#3B82F6] hover:text-white font-bold transition-all"
+              className="px-6 py-2.5 text-[#059669] border-2 border-[#059669] rounded-lg hover:bg-[#059669] hover:text-white font-bold transition-all"
             >
               Cancelar
             </button>

@@ -139,9 +139,9 @@ export default function TenantLogsPage() {
             <div className="text-sm text-gray-600">Total de Logs</div>
             <div className="text-2xl font-bold text-gray-900">{stats.total}</div>
           </div>
-          <div className="bg-blue-50 rounded-lg shadow p-4">
-            <div className="text-sm text-blue-600">Últimas 24h</div>
-            <div className="text-2xl font-bold text-blue-900">{stats.ultimas24h}</div>
+          <div className="bg-emerald-50 rounded-lg shadow p-4">
+            <div className="text-sm text-emerald-600">Últimas 24h</div>
+            <div className="text-2xl font-bold text-emerald-900">{stats.ultimas24h}</div>
           </div>
           <div className="bg-green-50 rounded-lg shadow p-4">
             <div className="text-sm text-green-600">Últimos 7 dias</div>
@@ -265,7 +265,7 @@ export default function TenantLogsPage() {
                       {formatDate(log.created_at)}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <span className="px-2 py-1 text-xs font-medium bg-blue-100 text-blue-800 rounded">
+                      <span className="px-2 py-1 text-xs font-medium bg-emerald-100 text-emerald-800 rounded">
                         {TIPOS_ATIVIDADE[log.tipo]}
                       </span>
                     </td>

@@ -157,7 +157,7 @@ export default function LoginPage() {
     <div className="min-h-screen flex bg-white relative overflow-hidden">
       {/* Subtle background decoration - Tech Clean Premium */}
       <div className="absolute top-0 right-0 w-96 h-96 bg-[#00C48C]/5 rounded-full blur-3xl"></div>
-      <div className="absolute bottom-0 left-0 w-80 h-80 bg-[#3B82F6]/5 rounded-full blur-3xl"></div>
+      <div className="absolute bottom-0 left-0 w-80 h-80 bg-[#059669]/5 rounded-full blur-3xl"></div>
 
       {/* Left side - Branding - Tech Clean Premium */}
       <div className="hidden lg:flex lg:w-1/2 px-16 py-12 flex-col justify-between relative z-10 bg-gradient-to-br from-[#F4F6F8] to-white">
@@ -208,7 +208,7 @@ export default function LoginPage() {
             {/* Feature 2 */}
             <div className="bg-white rounded-xl p-4 border border-gray-100 shadow-sm hover:-translate-y-1 transition-all duration-200">
               <div className="flex items-start space-x-3">
-                <div className="w-10 h-10 bg-[#3B82F6] rounded-lg flex items-center justify-center flex-shrink-0">
+                <div className="w-10 h-10 bg-[#059669] rounded-lg flex items-center justify-center flex-shrink-0">
                   <svg className="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
                   </svg>
@@ -254,8 +254,8 @@ export default function LoginPage() {
           {/* Social Proof - Clean */}
           <div className="flex items-center gap-4 pt-4">
             <div className="flex -space-x-2">
-              <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#00C48C] to-[#3B82F6] border-2 border-white"></div>
-              <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#3B82F6] to-[#00C48C] border-2 border-white"></div>
+              <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#00C48C] to-[#059669] border-2 border-white"></div>
+              <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#059669] to-[#00C48C] border-2 border-white"></div>
               <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#0A2540] to-[#00C48C] border-2 border-white"></div>
               <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#00C48C] to-[#0A2540] border-2 border-white"></div>
             </div>

@@ -43,7 +43,7 @@ export default function ToastContainer() {
             ${type === 'success' ? 'bg-[#10B981] border-[#059669] text-white' :
               type === 'error' ? 'bg-[#EF4444] border-[#DC2626] text-white' :
               type === 'warning' ? 'bg-[#F59E0B] border-[#D97706] text-white' :
-              'bg-[#3B82F6] border-[#2563EB] text-white'}
+              'bg-[#059669] border-[#047857] text-white'}
           `}
         >
           <div className="flex items-center gap-3">

@@ -8,7 +8,7 @@
 
     /* Cores Principais */
     --green-tech: #00C48C;         /* Verde Tech (principal) */
-    --blue-neon: #3B82F6;          /* Azul Neon (secundário) */
+    --green-secondary: #059669;   /* Verde Secundário (mais escuro) */
     --blue-deep: #0A2540;          /* Azul Profundo (escuro) */
     --bg-light: #F4F6F8;           /* Background claro */
     --white: #FFFFFF;              /* Branco puro */
@@ -29,7 +29,7 @@
     --success: var(--green-tech);
     --warning: #F59E0B;            /* Amber-500 */
     --error: #EF4444;              /* Red-500 */
-    --info: var(--blue-neon);
+    --info: var(--green-secondary);
 
     /* Backgrounds */
     --bg-primary: var(--white);
@@ -58,7 +58,7 @@
     --shadow-glow-blue: 0 0 20px rgba(59, 130, 246, 0.3);
 
     /* Gradientes */
-    --gradient-primary: linear-gradient(135deg, var(--green-tech) 0%, var(--blue-neon) 100%);
+    --gradient-primary: linear-gradient(135deg, var(--green-tech) 0%, var(--green-secondary) 100%);
     --gradient-hero: linear-gradient(180deg, var(--blue-deep) 0%, #1E3A5F 100%);
     --gradient-bg: linear-gradient(135deg, var(--bg-light) 0%, var(--white) 100%);
   }
@@ -91,7 +91,7 @@
 
   /* Text Gradients */
   .text-gradient {
-    @apply bg-gradient-to-r from-[#00C48C] to-[#3B82F6] text-transparent bg-clip-text;
+    @apply bg-gradient-to-r from-[#00C48C] to-[#059669] text-transparent bg-clip-text;
   }
 
   .text-gradient-green {
@@ -123,7 +123,7 @@
   }
 
   .btn-secondary {
-    @apply px-6 py-3 bg-[#3B82F6] text-white font-semibold rounded-lg
+    @apply px-6 py-3 bg-[#059669] text-white font-semibold rounded-lg
            shadow-md hover:shadow-lg hover:scale-105 transition-all duration-200;
   }
 

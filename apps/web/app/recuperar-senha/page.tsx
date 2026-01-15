@@ -96,7 +96,7 @@ export default function RecuperarSenhaPage() {
       <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-[#0A2540] via-[#1E3A5F] to-[#0A2540] relative overflow-hidden">
         <div className="absolute inset-0 opacity-10">
           <div className="absolute top-20 left-20 w-72 h-72 bg-[#00C48C] rounded-full filter blur-3xl animate-pulse"></div>
-          <div className="absolute bottom-20 right-20 w-96 h-96 bg-[#3B82F6] rounded-full filter blur-3xl animate-pulse delay-1000"></div>
+          <div className="absolute bottom-20 right-20 w-96 h-96 bg-[#059669] rounded-full filter blur-3xl animate-pulse delay-1000"></div>
         </div>
 
         <div className="relative z-10 flex flex-col justify-center px-16 text-white">

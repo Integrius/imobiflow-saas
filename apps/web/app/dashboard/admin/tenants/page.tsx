@@ -189,7 +189,7 @@ export default function AdminTenantsPage() {
 
   const getPlanoBadge = (plano: string) => {
     const colors = {
-      BASICO: 'bg-blue-100 text-blue-800 border-blue-200',
+      BASICO: 'bg-emerald-100 text-emerald-800 border-emerald-200',
       PRO: 'bg-purple-100 text-purple-800 border-purple-200',
       ENTERPRISE: 'bg-indigo-100 text-indigo-800 border-indigo-200',
       CUSTOM: 'bg-pink-100 text-pink-800 border-pink-200'
@@ -264,9 +264,9 @@ export default function AdminTenantsPage() {
             <div className="text-3xl font-bold text-[#2C2C2C]">{stats.total_tenants}</div>
           </div>
 
-          <div className="bg-white rounded-lg shadow-md p-6 border-l-4 border-blue-500">
+          <div className="bg-white rounded-lg shadow-md p-6 border-l-4 border-emerald-500">
             <div className="text-sm text-gray-600 mb-1">Novos (30 dias)</div>
-            <div className="text-3xl font-bold text-blue-600">{stats.novos_ultimos_30_dias}</div>
+            <div className="text-3xl font-bold text-emerald-600">{stats.novos_ultimos_30_dias}</div>
           </div>
 
           <div className="bg-white rounded-lg shadow-md p-6 border-l-4 border-yellow-500">
@@ -453,7 +453,7 @@ export default function AdminTenantsPage() {
                             href={`https://${tenant.subdominio}`}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="text-blue-600 hover:text-blue-800"
+                            className="text-emerald-600 hover:text-emerald-800"
                           >
                             {tenant.subdominio}
                           </a>

@@ -438,16 +438,16 @@ export default function ImoveisPage() {
 
                 <div className="flex flex-wrap gap-2 text-xs text-[#0A2540] mb-4">
                   {imovel.caracteristicas?.area_total && (
-                    <span className="px-2 py-1 bg-[#3B82F6]/20 rounded-md font-bold border border-[#3B82F6]/50">📐 {imovel.caracteristicas.area_total}m²</span>
+                    <span className="px-2 py-1 bg-[#059669]/20 rounded-md font-bold border border-[#059669]/50">📐 {imovel.caracteristicas.area_total}m²</span>
                   )}
                   {imovel.caracteristicas?.quartos && (
-                    <span className="px-2 py-1 bg-[#3B82F6]/20 rounded-md font-bold border border-[#3B82F6]/50">🛏️ {imovel.caracteristicas.quartos} quartos</span>
+                    <span className="px-2 py-1 bg-[#059669]/20 rounded-md font-bold border border-[#059669]/50">🛏️ {imovel.caracteristicas.quartos} quartos</span>
                   )}
                   {imovel.caracteristicas?.banheiros && (
-                    <span className="px-2 py-1 bg-[#3B82F6]/20 rounded-md font-bold border border-[#3B82F6]/50">🚿 {imovel.caracteristicas.banheiros} banheiros</span>
+                    <span className="px-2 py-1 bg-[#059669]/20 rounded-md font-bold border border-[#059669]/50">🚿 {imovel.caracteristicas.banheiros} banheiros</span>
                   )}
                   {imovel.caracteristicas?.vagas_garagem && (
-                    <span className="px-2 py-1 bg-[#3B82F6]/20 rounded-md font-bold border border-[#3B82F6]/50">🚗 {imovel.caracteristicas.vagas_garagem} vagas</span>
+                    <span className="px-2 py-1 bg-[#059669]/20 rounded-md font-bold border border-[#059669]/50">🚗 {imovel.caracteristicas.vagas_garagem} vagas</span>
                   )}
                 </div>
 
@@ -494,7 +494,7 @@ export default function ImoveisPage() {
                 <div className="flex gap-2">
                   <button
                     onClick={() => openEditModal(imovel)}
-                    className="flex-1 px-4 py-2.5 text-sm bg-gradient-to-r from-[#00C48C] to-[#3B82F6] text-white rounded-lg hover:shadow-lg font-bold transition-all"
+                    className="flex-1 px-4 py-2.5 text-sm bg-gradient-to-r from-[#00C48C] to-[#059669] text-white rounded-lg hover:shadow-lg font-bold transition-all"
                   >
                     ✏️ Editar
                   </button>
@@ -532,7 +532,7 @@ export default function ImoveisPage() {
                 required
                 value={formData.titulo}
                 onChange={(e) => handleFormChange('titulo', e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-600 focus:border-transparent"
               />
             </div>
 
@@ -543,7 +543,7 @@ export default function ImoveisPage() {
               <select
                 value={formData.tipo}
                 onChange={(e) => handleFormChange('tipo', e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-600 focus:border-transparent"
               >
                 <option value="APARTAMENTO">Apartamento</option>
                 <option value="CASA">Casa</option>
@@ -560,7 +560,7 @@ export default function ImoveisPage() {
               <select
                 value={formData.status}
                 onChange={(e) => handleFormChange('status', e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-600 focus:border-transparent"
               >
                 <option value="DISPONIVEL">Disponível</option>
                 <option value="RESERVADO">Reservado</option>
@@ -576,7 +576,7 @@ export default function ImoveisPage() {
                 required
                 value={formData.proprietario_id}
                 onChange={(e) => handleFormChange('proprietario_id', e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-600 focus:border-transparent"
               >
                 <option value="">Selecione...</option>
                 {proprietarios.map((prop) => (
@@ -597,7 +597,7 @@ export default function ImoveisPage() {
                 placeholder="0,00"
                 value={formData.valor}
                 onChange={(e) => handleFormChange('valor', e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-600 focus:border-transparent"
               />
             </div>
 
@@ -610,7 +610,7 @@ export default function ImoveisPage() {
                 required
                 value={formData.endereco}
                 onChange={(e) => handleFormChange('endereco', e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-600 focus:border-transparent"
               />
             </div>
 
@@ -623,7 +623,7 @@ export default function ImoveisPage() {
                 required
                 value={formData.cidade}
                 onChange={(e) => handleFormChange('cidade', e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-600 focus:border-transparent"
               />
             </div>
 
@@ -636,7 +636,7 @@ export default function ImoveisPage() {
                 required
                 value={formData.estado}
                 onChange={(e) => handleFormChange('estado', e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-600 focus:border-transparent"
                 placeholder="UF"
                 maxLength={2}
               />
@@ -652,7 +652,7 @@ export default function ImoveisPage() {
                 placeholder="00000-000"
                 value={formData.cep}
                 onChange={(e) => handleFormChange('cep', e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-600 focus:border-transparent"
               />
             </div>
 
@@ -666,7 +666,7 @@ export default function ImoveisPage() {
                 min="0"
                 value={formData.area}
                 onChange={(e) => handleFormChange('area', e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-600 focus:border-transparent"
               />
             </div>
 
@@ -679,7 +679,7 @@ export default function ImoveisPage() {
                 min="0"
                 value={formData.quartos}
                 onChange={(e) => handleFormChange('quartos', e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-600 focus:border-transparent"
               />
             </div>
 
@@ -692,7 +692,7 @@ export default function ImoveisPage() {
                 min="0"
                 value={formData.banheiros}
                 onChange={(e) => handleFormChange('banheiros', e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-600 focus:border-transparent"
               />
             </div>
 
@@ -705,7 +705,7 @@ export default function ImoveisPage() {
                 min="0"
                 value={formData.vagas}
                 onChange={(e) => handleFormChange('vagas', e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-600 focus:border-transparent"
               />
             </div>
 
@@ -717,7 +717,7 @@ export default function ImoveisPage() {
                 rows={3}
                 value={formData.descricao}
                 onChange={(e) => handleFormChange('descricao', e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-600 focus:border-transparent"
               />
             </div>
 
@@ -823,14 +823,14 @@ export default function ImoveisPage() {
             <button
               type="button"
               onClick={handleCloseModal}
-              className="px-6 py-2.5 text-[#3B82F6] border-2 border-[#3B82F6] rounded-lg hover:bg-[#3B82F6] hover:text-white font-bold transition-all"
+              className="px-6 py-2.5 text-[#059669] border-2 border-[#059669] rounded-lg hover:bg-[#059669] hover:text-white font-bold transition-all"
             >
               Cancelar
             </button>
             <button
               type="submit"
               disabled={submitting}
-              className="px-6 py-2.5 bg-gradient-to-r from-[#00C48C] to-[#3B82F6] text-white rounded-lg hover:shadow-lg font-bold transition-all disabled:opacity-50"
+              className="px-6 py-2.5 bg-gradient-to-r from-[#00C48C] to-[#059669] text-white rounded-lg hover:shadow-lg font-bold transition-all disabled:opacity-50"
             >
               {submitting ? 'Salvando...' : 'Salvar'}
             </button>
@@ -847,14 +847,14 @@ export default function ImoveisPage() {
       >
         <div className="space-y-4">
           <p className="text-[#0A2540] text-base">
-            Tem certeza que deseja excluir o imóvel <strong className="text-[#3B82F6]">{deletingImovel?.titulo}</strong>?
+            Tem certeza que deseja excluir o imóvel <strong className="text-[#059669]">{deletingImovel?.titulo}</strong>?
           </p>
           <p className="text-sm text-[#4B5563]">Esta ação não pode ser desfeita.</p>
 
           <div className="flex justify-end gap-3 pt-6 border-t border-gray-200 mt-6">
             <button
               onClick={() => setDeleteModalOpen(false)}
-              className="px-6 py-2.5 text-[#3B82F6] border-2 border-[#3B82F6] rounded-lg hover:bg-[#3B82F6] hover:text-white font-bold transition-all"
+              className="px-6 py-2.5 text-[#059669] border-2 border-[#059669] rounded-lg hover:bg-[#059669] hover:text-white font-bold transition-all"
             >
               Cancelar
             </button>
