@@ -20,7 +20,7 @@ const BASE_DOMAIN = process.env.NEXT_PUBLIC_BASE_DOMAIN || 'integrius.com.br';
 const MARKETPLACE_DOMAIN = 'vivoly.com.br';
 
 // Rotas públicas que não precisam de autenticação
-const PUBLIC_ROUTES = ['/', '/login', '/register', '/recuperar-senha'];
+const PUBLIC_ROUTES = ['/', '/login', '/register', '/recuperar-senha', '/set-password'];
 
 // Rotas que requerem autenticação
 const PROTECTED_ROUTES = [

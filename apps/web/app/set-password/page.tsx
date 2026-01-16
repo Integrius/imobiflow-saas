@@ -13,7 +13,10 @@ export default function SetPasswordPage() {
 
   useEffect(() => {
     // Verificar se usuário está autenticado
-    const token = localStorage.getItem('token');
+    // Token agora está no cookie, não no localStorage
+    const cookies = document.cookie.split(';');
+    const tokenCookie = cookies.find(c => c.trim().startsWith('token='));
+    const token = tokenCookie ? tokenCookie.split('=')[1] : null;
     const userStr = localStorage.getItem('user');
 
     if (!token || !userStr) {
@@ -49,12 +52,11 @@ export default function SetPasswordPage() {
     try {
       const response = await api.post('/auth/set-password', { senha });
 
-      // Atualizar token e usuário
-      localStorage.setItem('token', response.data.token);
+      // Atualizar usuário (sem primeiro_acesso)
       localStorage.setItem('user', JSON.stringify(response.data.user));
 
-      // Atualizar cookie
-      document.cookie = `token=${response.data.token}; path=/; max-age=${7 * 24 * 60 * 60}; SameSite=Lax`;
+      // Atualizar cookie de sessão com novo token
+      document.cookie = `token=${response.data.token}; path=/; SameSite=Lax; Secure`;
 
       // Redirecionar para dashboard
       router.push('/dashboard');
