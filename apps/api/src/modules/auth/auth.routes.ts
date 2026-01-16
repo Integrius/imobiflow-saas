@@ -40,6 +40,11 @@ export async function authRoutes(server: FastifyInstance) {
     preHandler: authMiddleware
   }, controller.definirSenhaPrimeiroAcesso.bind(controller))
 
+  // Rota para alterar senha (usuário logado)
+  server.post('/alterar-senha', {
+    preHandler: authMiddleware
+  }, controller.alterarSenha.bind(controller))
+
   // Rotas de recuperação de senha
   await passwordResetRoutes(server)
 }

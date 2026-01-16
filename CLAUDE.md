@@ -2863,6 +2863,14 @@ jobs:
    - Notificar cliente 7 dias antes da limpeza
    - Opção de extensão de retenção
 
+6. **Sistema de Tratamento de Erros Profissional:** ⚠️ PENDENTE
+   - Substituir mensagens genéricas "Not found" por mensagens amigáveis e contextualizadas
+   - Criar componentes de erro reutilizáveis no frontend (404, 403, 500, etc.)
+   - Implementar fallbacks visuais elegantes para estados de erro
+   - Padronizar respostas de erro no backend com códigos e mensagens claras
+   - Adicionar sugestões de ação ao usuário em cada tipo de erro
+   - Logging estruturado para debug sem expor detalhes sensíveis ao usuário
+
 ---
 
 ## Histórico de Configurações

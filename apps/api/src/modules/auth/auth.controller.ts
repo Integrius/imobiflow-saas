@@ -176,4 +176,39 @@ export class AuthController {
       })
     }
   }
+
+  async alterarSenha(request: FastifyRequest, reply: FastifyReply) {
+    try {
+      const user = (request as any).user
+      const { senha_atual, nova_senha } = request.body as { senha_atual: string; nova_senha: string }
+
+      if (!senha_atual) {
+        return reply.status(400).send({
+          error: 'Senha atual é obrigatória'
+        })
+      }
+
+      if (!nova_senha || nova_senha.length < 6) {
+        return reply.status(400).send({
+          error: 'Nova senha deve ter no mínimo 6 caracteres'
+        })
+      }
+
+      const result = await this.service.alterarSenha(user.id, senha_atual, nova_senha)
+
+      // ✅ Log de alteração de senha
+      await ActivityLogService.logSenhaAlterada(
+        user.tenant_id,
+        user.id,
+        'Alteração pelo usuário',
+        request
+      )
+
+      return reply.status(200).send(result)
+    } catch (error: any) {
+      return reply.status(error.statusCode || 400).send({
+        error: error.message || 'Erro ao alterar senha'
+      })
+    }
+  }
 }

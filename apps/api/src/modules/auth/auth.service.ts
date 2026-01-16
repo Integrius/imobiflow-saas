@@ -449,4 +449,42 @@ Integrius - Gestão Imobiliária Inteligente`.trim()
       token
     }
   }
+
+  async alterarSenha(userId: string, senhaAtual: string, novaSenha: string) {
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId }
+    })
+
+    if (!user) {
+      throw new AppError('Usuário não encontrado', 404)
+    }
+
+    // Verificar se usuário tem senha (não é apenas OAuth)
+    if (!user.senha_hash) {
+      throw new AppError('Sua conta usa login via Google. Não é possível alterar senha.', 400)
+    }
+
+    // Verificar senha atual
+    const passwordMatch = await bcrypt.compare(senhaAtual, user.senha_hash)
+    if (!passwordMatch) {
+      throw new AppError('Senha atual incorreta', 401)
+    }
+
+    // Hash da nova senha
+    const senha_hash = await bcrypt.hash(novaSenha, 10)
+
+    // Atualizar senha
+    await this.prisma.user.update({
+      where: { id: userId },
+      data: {
+        senha_hash,
+        updated_at: new Date()
+      }
+    })
+
+    return {
+      success: true,
+      message: 'Senha alterada com sucesso!'
+    }
+  }
 }

@@ -84,13 +84,14 @@ export default function DashboardLayout({
       icon: '⚙️',
       iconImage: null,
       subItems: [
+        { name: 'Minha Conta', href: '/dashboard/administracao', icon: '👤' },
         { name: 'Logs', href: '/dashboard/logs', icon: '📋' },
         { name: 'Cancelar Assinatura', href: '/dashboard/cancelar-assinatura', icon: '🚫' }
       ]
     }
   ];
 
-  // Navegação para CORRETOR (acesso restrito - sem Corretores e Administração)
+  // Navegação para CORRETOR (acesso restrito - sem Corretores e Administração completa)
   const corretorNavigation: MenuItem[] = [
     { name: 'Dashboard', href: '/dashboard', icon: '📊', iconImage: '/ico-dashboard.png' },
     { name: 'Meu Desempenho', href: '/dashboard/meu-desempenho', icon: '📈', iconImage: null },
@@ -98,6 +99,8 @@ export default function DashboardLayout({
     { name: 'Proprietários', href: '/dashboard/proprietarios', icon: '🏠', iconImage: '/ico-proprietarios.png' },
     { name: 'Imóveis', href: '/dashboard/imoveis', icon: '🏘️', iconImage: '/ico-imoveis.png' },
     { name: 'Negociações', href: '/dashboard/negociacoes', icon: '💼', iconImage: '/ico-negociacoes.png' },
+    // Corretor tem acesso à Minha Conta para alterar senha
+    { name: 'Minha Conta', href: '/dashboard/administracao', icon: '👤', iconImage: null },
   ];
 
   // Selecionar navegação baseada no tipo de usuário
