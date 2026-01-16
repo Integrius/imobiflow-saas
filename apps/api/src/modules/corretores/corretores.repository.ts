@@ -1,6 +1,7 @@
 import { PrismaClient, Corretor, Prisma } from '@prisma/client'
 import { CreateCorretorDTO, UpdateCorretorDTO, ListCorretoresQuery } from './corretores.schema'
 import * as bcrypt from 'bcryptjs'
+import { PasswordGeneratorService } from '../../shared/utils/password-generator.service'
 
 export class CorretoresRepository {
   constructor(private prisma: PrismaClient) {}
@@ -15,10 +16,16 @@ export class CorretoresRepository {
     })
 
     let user = existingUser
+    let senhaTemporaria: string | null = null
 
-    // Se o usuário não existe, criar um novo
+    // Se o usuário não existe, criar um novo com senha temporária
     if (!existingUser) {
-      const hashedPassword = await bcrypt.hash('123456', 10) // Senha padrão
+      // Gerar senha temporária de 6 caracteres
+      senhaTemporaria = PasswordGeneratorService.generate(6)
+      const senhaExpiraEm = PasswordGeneratorService.getExpirationDate()
+
+      // Hash da senha temporária para senha_hash (backup)
+      const hashedPassword = await bcrypt.hash(senhaTemporaria, 10)
 
       user = await this.prisma.user.create({
         data: {
@@ -28,6 +35,11 @@ export class CorretoresRepository {
           senha_hash: hashedPassword,
           tipo: data.tipo || 'CORRETOR',
           ativo: true,
+          // Campos para primeiro acesso com senha temporária
+          primeiro_acesso: true,
+          senha_temporaria: senhaTemporaria,
+          senha_temp_expira_em: senhaExpiraEm,
+          senha_temp_usada: false,
         },
       })
     } else {
@@ -74,6 +86,12 @@ export class CorretoresRepository {
       },
     })
 
+    // Buscar informações do tenant para URL
+    const tenant = await this.prisma.tenant.findUnique({
+      where: { id: tenantId },
+      select: { slug: true, nome: true }
+    })
+
     return {
       id: corretor.id,
       nome: corretor.user.nome,
@@ -82,6 +100,10 @@ export class CorretoresRepository {
       creci: corretor.creci,
       especialidade: corretor.especializacoes[0] || null,
       comissao: Number(corretor.comissao_padrao),
+      // Dados para envio de notificações (apenas quando novo usuário criado)
+      senhaTemporaria,
+      tenantSlug: tenant?.slug,
+      tenantNome: tenant?.nome,
     }
   }
 

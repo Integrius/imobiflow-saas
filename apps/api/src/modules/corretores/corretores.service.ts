@@ -9,7 +9,60 @@ export class CorretoresService {
 
   async create(data: CreateCorretorDTO, tenantId: string) {
     const corretor = await this.corretoresRepository.create(data, tenantId)
-    return corretor
+
+    // Se foi criado novo usuário com senha temporária, enviar notificações
+    if (corretor.senhaTemporaria) {
+      const tenantUrl = `https://${corretor.tenantSlug}.integrius.com.br`
+
+      console.log(`🔵 [CorretoresService] Novo corretor criado: ${corretor.email}`)
+      console.log(`🔑 [CorretoresService] Senha temporária: ${corretor.senhaTemporaria}`)
+      console.log(`🌐 [CorretoresService] Tenant URL: ${tenantUrl}`)
+
+      // Enviar email com senha temporária (ASSÍNCRONO)
+      sendGridService.enviarSenhaTemporariaCorretor({
+        nome: corretor.nome,
+        email: corretor.email,
+        senhaTemporaria: corretor.senhaTemporaria,
+        tenantUrl,
+        nomeTenant: corretor.tenantNome || 'Integrius',
+        horasValidade: 12
+      }).then(() => {
+        console.log(`✅ [CorretoresService] Email enviado com sucesso para ${corretor.email}`)
+      }).catch(error => {
+        console.error(`❌ [CorretoresService] Erro ao enviar email para ${corretor.email}:`, error)
+      })
+
+      // Enviar WhatsApp com senha temporária (ASSÍNCRONO) - apenas se tem telefone
+      if (corretor.telefone) {
+        const telefoneFormatado = corretor.telefone.startsWith('+')
+          ? corretor.telefone
+          : `+55${corretor.telefone.replace(/\D/g, '')}`
+
+        twilioService.enviarSenhaTemporaria({
+          telefone: telefoneFormatado,
+          nome: corretor.nome,
+          email: corretor.email,
+          senhaTemporaria: corretor.senhaTemporaria,
+          tenantUrl: `${corretor.tenantSlug}.integrius.com.br`,
+          nomeTenant: corretor.tenantNome || 'ImobiFlow'
+        }).then(() => {
+          console.log(`✅ [CorretoresService] WhatsApp enviado com sucesso para ${telefoneFormatado}`)
+        }).catch(error => {
+          console.error(`❌ [CorretoresService] Erro ao enviar WhatsApp para ${telefoneFormatado}:`, error)
+        })
+      }
+    }
+
+    // Retornar apenas os dados públicos (sem senha temporária)
+    return {
+      id: corretor.id,
+      nome: corretor.nome,
+      email: corretor.email,
+      telefone: corretor.telefone,
+      creci: corretor.creci,
+      especialidade: corretor.especialidade,
+      comissao: corretor.comissao,
+    }
   }
 
   async findAll(query: ListCorretoresQuery, tenantId: string) {
