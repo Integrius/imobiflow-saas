@@ -392,16 +392,23 @@ export class CorretoresRepository {
 
   async updateUserPassword(userId: string, senhaTemporaria: string) {
     const hashedPassword = await bcrypt.hash(senhaTemporaria, 10)
+    const senhaExpiraEm = PasswordGeneratorService.getExpirationDate()
 
     await this.prisma.user.update({
       where: { id: userId },
       data: {
-        senha_hash: hashedPassword
+        senha_hash: hashedPassword,
+        // Campos necessários para o fluxo de primeiro acesso
+        senha_temporaria: senhaTemporaria,
+        senha_temp_expira_em: senhaExpiraEm,
+        senha_temp_usada: false,
+        primeiro_acesso: true
       }
     })
   }
 
   async resetPrimeiroAcesso(userId: string) {
+    // Método mantido para compatibilidade, mas agora o updateUserPassword já faz tudo
     await this.prisma.user.update({
       where: { id: userId },
       data: {
