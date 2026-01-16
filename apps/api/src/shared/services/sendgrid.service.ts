@@ -41,6 +41,26 @@ export interface SugestoesImoveisEmail {
   totalSugestoes: number;
 }
 
+// Nova interface para sugestões com IA
+export interface SugestoesImoveisEmailV2 {
+  leadNome: string;
+  leadEmail: string;
+  sugestoes: Array<{
+    titulo: string;
+    preco: number;
+    endereco: string;
+    quartos?: number;
+    vagas?: number;
+    area?: number;
+    foto?: string;
+    destaque: string; // Frase personalizada da IA
+    url: string;
+  }>;
+  mensagemPersonalizada: string;
+  tenantNome: string;
+  tenantUrl: string;
+}
+
 class SendGridService {
   private isConfigured: boolean = false;
 
@@ -264,9 +284,10 @@ class SendGridService {
   }
 
   /**
-   * Email com sugestões de imóveis
+   * Email com sugestões de imóveis (versão legada)
+   * @deprecated Use enviarSugestoesImoveis com a interface SugestoesImoveisEmailV2
    */
-  async enviarSugestoesImoveis(data: SugestoesImoveisEmail): Promise<boolean> {
+  async enviarSugestoesImoveisLegacy(data: SugestoesImoveisEmail): Promise<boolean> {
     const { leadNome, leadEmail, imoveis, totalSugestoes } = data;
 
     const primeiroNome = leadNome.split(' ')[0];
@@ -395,6 +416,150 @@ class SendGridService {
       to: leadEmail,
       subject: `${primeiroNome}, encontramos ${totalSugestoes} imóveis para você! 🏡`,
       html
+    });
+  }
+
+  /**
+   * Email com sugestões de imóveis personalizadas pela IA Sofia
+   * (Nova versão com mensagem personalizada e destaques)
+   */
+  async enviarSugestoesImoveis(data: SugestoesImoveisEmailV2): Promise<boolean> {
+    const { leadNome, leadEmail, sugestoes, mensagemPersonalizada, tenantNome, tenantUrl } = data;
+
+    const primeiroNome = leadNome.split(' ')[0];
+
+    const imoveisHtml = sugestoes.map((imovel, index) => `
+      <div style="background: white; border: 2px solid #00C48C; border-radius: 16px; padding: 0; margin: 25px 0; overflow: hidden; box-shadow: 0 4px 15px rgba(0, 196, 140, 0.1);">
+        ${imovel.foto ? `
+        <div style="width: 100%; height: 200px; background-image: url('${imovel.foto}'); background-size: cover; background-position: center; position: relative;">
+          <div style="position: absolute; top: 15px; left: 15px; background: linear-gradient(135deg, #00C48C 0%, #059669 100%); color: white; padding: 6px 14px; border-radius: 20px; font-size: 14px; font-weight: 700;">
+            #${index + 1} Sugestão
+          </div>
+        </div>
+        ` : `
+        <div style="width: 100%; height: 120px; background: linear-gradient(135deg, #F0FDF4 0%, #DCFCE7 100%); display: flex; align-items: center; justify-content: center; position: relative;">
+          <span style="font-size: 48px;">🏠</span>
+          <div style="position: absolute; top: 15px; left: 15px; background: linear-gradient(135deg, #00C48C 0%, #059669 100%); color: white; padding: 6px 14px; border-radius: 20px; font-size: 14px; font-weight: 700;">
+            #${index + 1} Sugestão
+          </div>
+        </div>
+        `}
+
+        <div style="padding: 25px;">
+          <h3 style="margin: 0 0 12px 0; color: #064E3B; font-size: 22px; font-weight: 700;">
+            ${imovel.titulo}
+          </h3>
+
+          <p style="color: #00C48C; font-size: 26px; font-weight: 800; margin: 0 0 15px 0;">
+            ${this.formatCurrency(imovel.preco)}
+          </p>
+
+          <p style="color: #6B7280; margin: 8px 0; font-size: 15px;">
+            📍 ${imovel.endereco}
+          </p>
+
+          <div style="display: flex; gap: 20px; margin: 15px 0; flex-wrap: wrap;">
+            ${imovel.quartos ? `<span style="color: #374151; font-size: 14px;">🛏️ <strong>${imovel.quartos}</strong> quartos</span>` : ''}
+            ${imovel.vagas ? `<span style="color: #374151; font-size: 14px;">🚗 <strong>${imovel.vagas}</strong> vagas</span>` : ''}
+            ${imovel.area ? `<span style="color: #374151; font-size: 14px;">📐 <strong>${imovel.area}</strong>m²</span>` : ''}
+          </div>
+
+          <!-- Destaque personalizado da IA -->
+          <div style="background: linear-gradient(135deg, #F0FDF4 0%, #ECFDF5 100%); border-left: 4px solid #00C48C; padding: 15px 18px; margin: 18px 0; border-radius: 0 12px 12px 0;">
+            <p style="margin: 0; font-size: 15px; color: #064E3B; line-height: 1.5;">
+              💡 <em>${imovel.destaque}</em>
+            </p>
+          </div>
+
+          <a href="${imovel.url}" style="display: inline-block; background: linear-gradient(135deg, #00C48C 0%, #059669 100%); color: white; text-decoration: none; padding: 14px 28px; border-radius: 10px; font-weight: 700; font-size: 15px; margin-top: 10px; box-shadow: 0 4px 12px rgba(0, 196, 140, 0.3);">
+            Ver detalhes →
+          </a>
+        </div>
+      </div>
+    `).join('');
+
+    const html = `
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      line-height: 1.6;
+      color: #1F2937;
+      background-color: #F8FAFC;
+      margin: 0;
+      padding: 0;
+    }
+  </style>
+</head>
+<body>
+  <div style="max-width: 650px; margin: 0 auto; background: #F8FAFC;">
+    <!-- Header -->
+    <div style="background: linear-gradient(135deg, #00C48C 0%, #059669 100%); padding: 50px 30px; text-align: center; border-radius: 0 0 30px 30px;">
+      <h1 style="margin: 0 0 10px 0; font-size: 32px; font-weight: 800; color: white;">
+        🎉 Encontramos imóveis perfeitos!
+      </h1>
+      <p style="margin: 0; font-size: 18px; color: rgba(255,255,255,0.9);">
+        ${sugestoes.length} ${sugestoes.length === 1 ? 'opção selecionada' : 'opções selecionadas'} especialmente para você
+      </p>
+    </div>
+
+    <!-- Content -->
+    <div style="padding: 35px 25px;">
+      <!-- Mensagem personalizada da IA -->
+      <div style="background: white; border-radius: 16px; padding: 25px 30px; margin-bottom: 30px; box-shadow: 0 2px 10px rgba(0,0,0,0.05);">
+        <p style="font-size: 20px; font-weight: 600; color: #064E3B; margin: 0 0 12px 0;">
+          Olá, ${primeiroNome}! 👋
+        </p>
+        <p style="font-size: 16px; color: #4B5563; margin: 0; line-height: 1.7;">
+          ${mensagemPersonalizada}
+        </p>
+      </div>
+
+      <!-- Lista de Imóveis -->
+      ${imoveisHtml}
+
+      <!-- CTA Final -->
+      <div style="background: linear-gradient(135deg, #064E3B 0%, #065F46 100%); border-radius: 16px; padding: 35px; margin: 35px 0; text-align: center;">
+        <p style="margin: 0 0 10px 0; font-size: 22px; font-weight: 700; color: white;">
+          Interessado em algum imóvel?
+        </p>
+        <p style="margin: 0 0 25px 0; font-size: 16px; color: rgba(255,255,255,0.85);">
+          Nossa equipe está pronta para ajudar você a encontrar seu novo lar!
+        </p>
+        <a href="${tenantUrl}" style="display: inline-block; background: white; color: #064E3B; text-decoration: none; padding: 16px 40px; border-radius: 10px; font-weight: 700; font-size: 16px; box-shadow: 0 4px 15px rgba(0,0,0,0.2);">
+          Falar com um corretor
+        </a>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div style="background: #1F2937; padding: 35px; text-align: center; border-radius: 30px 30px 0 0;">
+      <p style="margin: 0 0 5px 0; font-size: 18px; font-weight: 700; color: white;">
+        ${tenantNome}
+      </p>
+      <p style="margin: 0; font-size: 14px; color: rgba(255,255,255,0.6);">
+        Encontrando o imóvel perfeito para você
+      </p>
+      <div style="margin-top: 20px; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.1);">
+        <p style="margin: 0; font-size: 12px; color: rgba(255,255,255,0.4);">
+          Powered by ImobiFlow + IA Sofia
+        </p>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
+    `.trim();
+
+    return this.sendEmail({
+      to: leadEmail,
+      subject: `${primeiroNome}, ${sugestoes.length} ${sugestoes.length === 1 ? 'imóvel perfeito' : 'imóveis perfeitos'} para você! 🏠`,
+      html,
+      fromName: tenantNome
     });
   }
 

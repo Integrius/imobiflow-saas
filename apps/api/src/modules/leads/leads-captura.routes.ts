@@ -8,7 +8,9 @@ import { FastifyInstance } from 'fastify';
 import { TipoNegocio, TipoImovel, Prisma } from '@prisma/client';
 import { ibgeService } from '../../shared/services/ibge.service';
 import { sendGridService } from '../../shared/services/sendgrid.service';
+import { twilioService } from '../../shared/services/twilio.service';
 import { leadQualificationService } from '../../ai/services/lead-qualification.service';
+import { propertyMatchingService, LeadProfile } from '../../ai/services/property-matching.service';
 import { prisma } from '../../shared/database/prisma.service';
 
 interface CapturaLeadBody {
@@ -235,28 +237,131 @@ export async function leadsCapturaRoutes(server: FastifyInstance) {
 
         server.log.info(`✅ Lead capturado: ${lead.nome} (${lead.id})`);
 
-        // Enviar email de boas-vindas (não bloquear response)
-        if (lead.email) {
-          sendGridService.enviarBoasVindasLead({
-            leadNome: lead.nome,
-            leadEmail: lead.email,
-            tipoNegocio: lead.tipo_negocio || undefined,
-            tipoImovel: lead.tipo_imovel_desejado || undefined,
-            localizacao: ibgeService.formatLocalizacao(
-              lead.estado || undefined,
-              lead.municipio || undefined,
-              lead.bairro || undefined
-            )
-          }).catch((error) => {
-            server.log.error('Erro ao enviar email de boas-vindas:', error);
-          });
-        }
+        // Buscar tenant para URLs e informações
+        const tenantInfo = await prisma.tenant.findUnique({
+          where: { id: tenant.id },
+          select: { nome: true, slug: true, telefone: true }
+        });
 
-        // TODO: Disparar eventos assíncronos adicionais:
-        // 1. Sofia analisa e busca imóveis
-        // 2. Enviar email com sugestões de imóveis (após Sofia processar)
-        // 3. (Futuro) Enviar WhatsApp com Dialog360
-        // 4. Quando corretor atribuído: notificar via Telegram (já implementado)
+        // Processar sugestões de imóveis e enviar notificações (assíncrono)
+        setImmediate(async () => {
+          try {
+            // 1. Montar perfil do lead para matching
+            const leadProfile: LeadProfile = {
+              id: lead.id,
+              nome: lead.nome,
+              email: lead.email || undefined,
+              telefone: lead.telefone,
+              tipo_negocio: tipo_negocio,
+              tipo_imovel_desejado: tipo_imovel_desejado,
+              valor_minimo,
+              valor_maximo,
+              estado,
+              municipio,
+              bairro,
+              quartos_min,
+              quartos_max,
+              vagas_min,
+              vagas_max,
+              area_minima,
+              aceita_pets,
+              observacoes
+            };
+
+            // 2. Buscar imóveis compatíveis com IA
+            server.log.info(`🏠 [Captura] Buscando sugestões de imóveis para ${lead.nome}...`);
+            const sugestoes = await propertyMatchingService.findMatchingProperties(
+              tenant.id,
+              leadProfile,
+              5 // máximo 5 sugestões
+            );
+
+            server.log.info(`✅ [Captura] ${sugestoes.total_encontrados} imóveis encontrados, ${sugestoes.sugestoes.length} sugeridos`);
+
+            // 3. Salvar sugestões no lead (para histórico)
+            if (sugestoes.sugestoes.length > 0) {
+              await prisma.lead.update({
+                where: { id: lead.id },
+                data: {
+                  ai_qualificacao: {
+                    ...(lead.ai_qualificacao as any || {}),
+                    sugestoes_enviadas: sugestoes.sugestoes.map(s => ({
+                      imovel_id: s.imovel.id,
+                      score: s.score,
+                      data: new Date().toISOString()
+                    }))
+                  }
+                }
+              });
+            }
+
+            // 4. Enviar email com sugestões (ou boas-vindas se não houver)
+            if (lead.email) {
+              const tenantUrl = `https://${tenantInfo?.slug || 'imobiliaria'}.integrius.com.br`;
+
+              if (sugestoes.sugestoes.length > 0) {
+                // Email com sugestões de imóveis
+                await sendGridService.enviarSugestoesImoveis({
+                  leadNome: lead.nome,
+                  leadEmail: lead.email,
+                  sugestoes: sugestoes.sugestoes.map(s => ({
+                    titulo: s.imovel.titulo,
+                    preco: s.imovel.preco,
+                    endereco: [s.imovel.endereco?.bairro, s.imovel.endereco?.cidade].filter(Boolean).join(', '),
+                    quartos: s.imovel.caracteristicas?.quartos,
+                    vagas: s.imovel.caracteristicas?.vagas,
+                    area: s.imovel.caracteristicas?.area_total,
+                    foto: s.imovel.fotos?.[0],
+                    destaque: s.destaque,
+                    url: `${tenantUrl}/imovel/${s.imovel.id}`
+                  })),
+                  mensagemPersonalizada: sugestoes.mensagem_personalizada,
+                  tenantNome: tenantInfo?.nome || 'Imobiliária',
+                  tenantUrl
+                });
+                server.log.info(`📧 [Captura] Email com ${sugestoes.sugestoes.length} sugestões enviado para ${lead.email}`);
+              } else {
+                // Email de boas-vindas (sem sugestões)
+                await sendGridService.enviarBoasVindasLead({
+                  leadNome: lead.nome,
+                  leadEmail: lead.email,
+                  tipoNegocio: tipo_negocio,
+                  tipoImovel: tipo_imovel_desejado,
+                  localizacao: ibgeService.formatLocalizacao(estado, municipio, bairro)
+                });
+                server.log.info(`📧 [Captura] Email de boas-vindas enviado para ${lead.email}`);
+              }
+            }
+
+            // 5. Enviar WhatsApp com sugestões (se tiver telefone e sugestões)
+            if (lead.telefone && sugestoes.sugestoes.length > 0) {
+              try {
+                const tenantUrl = `https://${tenantInfo?.slug || 'imobiliaria'}.integrius.com.br`;
+                await twilioService.enviarSugestoesImoveis({
+                  telefone: lead.telefone,
+                  nome: lead.nome,
+                  sugestoes: sugestoes.sugestoes.slice(0, 3).map(s => ({
+                    titulo: s.imovel.titulo,
+                    preco: s.imovel.preco,
+                    endereco: [s.imovel.endereco?.bairro, s.imovel.endereco?.cidade].filter(Boolean).join(', '),
+                    quartos: s.imovel.caracteristicas?.quartos,
+                    url: `${tenantUrl}/imovel/${s.imovel.id}`
+                  })),
+                  mensagemPersonalizada: sugestoes.mensagem_personalizada,
+                  tenantNome: tenantInfo?.nome || 'Imobiliária'
+                });
+                server.log.info(`📱 [Captura] WhatsApp com sugestões enviado para ${lead.telefone}`);
+              } catch (whatsappError: any) {
+                server.log.error(`Erro ao enviar WhatsApp com sugestões: ${whatsappError?.message || whatsappError}`);
+              }
+            }
+
+          } catch (asyncError: any) {
+            server.log.error(`Erro ao processar sugestões assíncronas: ${asyncError?.message || asyncError}`);
+          }
+        });
+
+        // Nota: O envio de sugestões acontece de forma assíncrona após a resposta
 
         return {
           success: true,

@@ -133,6 +133,70 @@ Integrius - Gestão Imobiliária Inteligente`.trim();
       message
     });
   }
+
+  /**
+   * Envia sugestões de imóveis personalizadas via WhatsApp
+   *
+   * @param data Dados das sugestões
+   * @returns Promise<boolean>
+   */
+  async enviarSugestoesImoveis(data: {
+    telefone: string;
+    nome: string;
+    sugestoes: Array<{
+      titulo: string;
+      preco: number;
+      endereco: string;
+      quartos?: number;
+      url: string;
+    }>;
+    mensagemPersonalizada: string;
+    tenantNome: string;
+  }): Promise<boolean> {
+    const primeiroNome = data.nome.split(' ')[0];
+
+    // Formatar lista de imóveis
+    const imoveisTexto = data.sugestoes.map((imovel, index) => {
+      const preco = new Intl.NumberFormat('pt-BR', {
+        style: 'currency',
+        currency: 'BRL',
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 0
+      }).format(imovel.preco);
+
+      let texto = `\n*${index + 1}. ${imovel.titulo}*`;
+      texto += `\n   💰 ${preco}`;
+      texto += `\n   📍 ${imovel.endereco}`;
+      if (imovel.quartos) texto += `\n   🛏️ ${imovel.quartos} quartos`;
+      texto += `\n   🔗 ${imovel.url}`;
+
+      return texto;
+    }).join('\n');
+
+    const message = `🏡 *${data.tenantNome}*
+
+Olá, ${primeiroNome}! 👋
+
+🎉 *Encontramos imóveis perfeitos para você!*
+
+${data.mensagemPersonalizada}
+
+📋 *Suas sugestões:*
+${imoveisTexto}
+
+---
+
+💬 Gostou de algum? Responda esta mensagem ou acesse os links para mais detalhes!
+
+Um de nossos corretores entrará em contato em breve.
+
+_Powered by ImobiFlow + IA Sofia_`.trim();
+
+    return this.sendWhatsApp({
+      to: data.telefone,
+      message
+    });
+  }
 }
 
 // Singleton
