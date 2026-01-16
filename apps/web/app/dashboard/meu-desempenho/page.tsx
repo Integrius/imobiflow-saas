@@ -358,7 +358,7 @@ export default function MeuDesempenhoPage() {
                     <YAxis yAxisId="left" hide />
                     <YAxis yAxisId="right" orientation="right" hide />
                     <Tooltip 
-                      formatter={(value: any, name: string) => [
+                      formatter={(value: any, name: any) => [
                         name === 'valor' ? formatCurrency(value) : value,
                         name === 'valor' ? 'Vendas' : 'Leads'
                       ]}
