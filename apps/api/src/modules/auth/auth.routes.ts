@@ -35,6 +35,11 @@ export async function authRoutes(server: FastifyInstance) {
     preHandler: authMiddleware
   }, controller.definirSenhaPrimeiroAcesso.bind(controller))
 
+  // Alias para /primeiro-acesso (usado pelo frontend em /set-password)
+  server.post('/set-password', {
+    preHandler: authMiddleware
+  }, controller.definirSenhaPrimeiroAcesso.bind(controller))
+
   // Rotas de recuperação de senha
   await passwordResetRoutes(server)
 }
