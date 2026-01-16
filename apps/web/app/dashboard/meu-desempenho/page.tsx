@@ -116,27 +116,142 @@ const statusLabels: Record<string, string> = {
   CANCELADO: 'Cancelado',
 };
 
-// Componente visual para Insights da IA
-const SofiaInsight = ({ leadsQuentes }: { leadsQuentes: number }) => (
-  <div className="bg-gradient-to-r from-indigo-50 to-purple-50 border border-indigo-100 rounded-xl p-4 mb-6 flex items-start gap-3">
-    <div className="bg-indigo-600 text-white p-2 rounded-full shrink-0">
-      <span className="text-xl">🤖</span>
+// Interface para Insights
+interface Insight {
+  tipo: 'ALERTA' | 'DICA' | 'INFO' | 'SUCESSO';
+  icone: string;
+  titulo: string;
+  texto: string;
+  acao?: string;
+  prioridade: number;
+  dados?: {
+    count?: number;
+    leads?: { id: string; nome: string; telefone: string; dias_sem_contato?: number }[];
+  };
+}
+
+// Cores e estilos por tipo de insight
+const insightStyles: Record<string, { bg: string; border: string; iconBg: string; iconText: string; titleColor: string; textColor: string }> = {
+  ALERTA: {
+    bg: 'from-red-50 to-orange-50',
+    border: 'border-red-200',
+    iconBg: 'bg-red-500',
+    iconText: 'text-white',
+    titleColor: 'text-red-900',
+    textColor: 'text-red-700'
+  },
+  DICA: {
+    bg: 'from-yellow-50 to-amber-50',
+    border: 'border-yellow-200',
+    iconBg: 'bg-yellow-500',
+    iconText: 'text-white',
+    titleColor: 'text-yellow-900',
+    textColor: 'text-yellow-700'
+  },
+  INFO: {
+    bg: 'from-blue-50 to-indigo-50',
+    border: 'border-blue-200',
+    iconBg: 'bg-blue-500',
+    iconText: 'text-white',
+    titleColor: 'text-blue-900',
+    textColor: 'text-blue-700'
+  },
+  SUCESSO: {
+    bg: 'from-green-50 to-emerald-50',
+    border: 'border-green-200',
+    iconBg: 'bg-green-500',
+    iconText: 'text-white',
+    titleColor: 'text-green-900',
+    textColor: 'text-green-700'
+  }
+};
+
+// Componente para um único Insight da Sofia
+const SofiaInsightCard = ({ insight, onAction }: { insight: Insight; onAction?: (acao: string) => void }) => {
+  const style = insightStyles[insight.tipo] || insightStyles.INFO;
+
+  return (
+    <div className={`bg-gradient-to-r ${style.bg} border ${style.border} rounded-xl p-4 flex items-start gap-3`}>
+      <div className={`${style.iconBg} ${style.iconText} p-2 rounded-full shrink-0`}>
+        <span className="text-xl">{insight.icone}</span>
+      </div>
+      <div className="flex-1 min-w-0">
+        <h3 className={`text-sm font-bold ${style.titleColor}`}>{insight.titulo}</h3>
+        <p className={`text-sm ${style.textColor} mt-1`}>{insight.texto}</p>
+        {insight.dados?.leads && insight.dados.leads.length > 0 && (
+          <div className="mt-2 flex flex-wrap gap-1">
+            {insight.dados.leads.slice(0, 3).map((lead, idx) => (
+              <span key={idx} className="inline-flex items-center px-2 py-0.5 rounded-full text-xs bg-white/70 text-gray-700 border">
+                {lead.nome.split(' ')[0]}
+                {lead.dias_sem_contato && <span className="ml-1 text-red-500">({lead.dias_sem_contato}d)</span>}
+              </span>
+            ))}
+            {insight.dados.leads.length > 3 && (
+              <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs bg-white/70 text-gray-500">
+                +{insight.dados.leads.length - 3}
+              </span>
+            )}
+          </div>
+        )}
+      </div>
+      {insight.acao && onAction && (
+        <button
+          onClick={() => onAction(insight.acao!)}
+          className={`shrink-0 bg-white ${style.textColor} text-xs font-bold px-3 py-2 rounded-lg border ${style.border} hover:bg-gray-50 transition-colors shadow-sm`}
+        >
+          Ver
+        </button>
+      )}
     </div>
-    <div>
-      <h3 className="text-sm font-bold text-indigo-900">Insights da Sofia</h3>
-      <p className="text-sm text-indigo-700 mt-1">
-        Você tem <strong>{leadsQuentes} leads com temperatura ALTA</strong> precisando de atenção. 
-        A taxa de conversão aumenta em 25% se contatados na primeira hora.
-      </p>
+  );
+};
+
+// Widget completo de Insights da Sofia
+const SofiaInsightsWidget = ({ insights, onAction }: { insights: Insight[]; onAction: (acao: string) => void }) => {
+  if (!insights || insights.length === 0) {
+    return (
+      <div className="bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200 rounded-xl p-4 mb-6 flex items-center gap-3">
+        <div className="bg-green-500 text-white p-2 rounded-full shrink-0">
+          <span className="text-xl">🤖</span>
+        </div>
+        <div>
+          <h3 className="text-sm font-bold text-green-900">Sofia está satisfeita! ✨</h3>
+          <p className="text-sm text-green-700 mt-1">
+            Parabéns! Você está em dia com seus leads. Continue assim!
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-3 mb-6">
+      <div className="flex items-center gap-2 mb-2">
+        <span className="text-lg">🤖</span>
+        <h2 className="text-sm font-bold text-gray-700 uppercase tracking-wide">Insights da Sofia</h2>
+        <span className="px-2 py-0.5 bg-indigo-100 text-indigo-800 text-xs font-semibold rounded-full">
+          {insights.length} {insights.length === 1 ? 'alerta' : 'alertas'}
+        </span>
+      </div>
+      {insights.slice(0, 3).map((insight, idx) => (
+        <SofiaInsightCard key={idx} insight={insight} onAction={onAction} />
+      ))}
+      {insights.length > 3 && (
+        <p className="text-xs text-gray-500 text-center">
+          + {insights.length - 3} outros insights...
+        </p>
+      )}
     </div>
-  </div>
-);
+  );
+};
 
 export default function MeuDesempenhoPage() {
   const router = useRouter();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [data, setData] = useState<DashboardData | null>(null);
+  const [insights, setInsights] = useState<Insight[]>([]);
+  const [loadingInsights, setLoadingInsights] = useState(false);
 
   useEffect(() => {
     loadDashboard();
@@ -148,6 +263,9 @@ export default function MeuDesempenhoPage() {
       setError(null);
       const response = await api.get('/corretores/meu-dashboard');
       setData(response.data.data);
+
+      // Carregar insights da Sofia em paralelo
+      loadInsights();
     } catch (err: any) {
       console.error('Erro ao carregar dashboard:', err);
       if (err.response?.status === 403) {
@@ -160,6 +278,29 @@ export default function MeuDesempenhoPage() {
     } finally {
       setLoading(false);
     }
+  };
+
+  const loadInsights = async () => {
+    try {
+      setLoadingInsights(true);
+      const response = await api.get('/insights/meus');
+      setInsights(response.data.insights || []);
+    } catch (err) {
+      console.error('Erro ao carregar insights:', err);
+      setInsights([]);
+    } finally {
+      setLoadingInsights(false);
+    }
+  };
+
+  const handleNavigateToLeads = (filter: string) => {
+    // Redireciona para a página de leads com o filtro aplicado
+    router.push(`/leads?status=${filter}`);
+  };
+
+  const handleNewVisit = () => {
+    // Redireciona para o formulário de novo agendamento
+    router.push('/agenda/novo');
   };
 
   const formatCurrency = (value: number) => {
@@ -205,11 +346,11 @@ export default function MeuDesempenhoPage() {
     ? Math.min(100, (data.vendas.totalMes / data.corretor.metaMensal) * 100)
     : 0;
 
-  // Dados para o Funil de Vendas (Simulado com os dados disponíveis)
+  // Dados para o Funil de Vendas
   const funnelData = [
-    { name: 'Leads Totais', value: data.leads.total, color: '#94a3b8' }, // gray-400
-    { name: 'Em Negociação', value: data.negociacoes.ativas + data.negociacoes.fechadas, color: '#60a5fa' }, // blue-400
-    { name: 'Fechados', value: data.negociacoes.fechadas, color: '#00C48C' }, // green-500
+    { name: 'Leads Totais', value: data.leads.total, color: '#94a3b8' },
+    { name: 'Em Negociação', value: data.negociacoes.ativas + data.negociacoes.fechadas, color: '#60a5fa' },
+    { name: 'Fechados', value: data.negociacoes.fechadas, color: '#00C48C' },
   ];
 
   return (
@@ -229,8 +370,38 @@ export default function MeuDesempenhoPage() {
         </button>
       </div>
 
-      {/* Widget IA Sofia */}
-      {data.leads.quentes > 0 && <SofiaInsight leadsQuentes={data.leads.quentes} />}
+      {/* Widget IA Sofia - Insights Dinâmicos */}
+      {loadingInsights ? (
+        <div className="bg-gradient-to-r from-indigo-50 to-purple-50 border border-indigo-100 rounded-xl p-4 mb-6 flex items-center gap-3">
+          <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-indigo-600"></div>
+          <span className="text-sm text-indigo-700">Sofia está analisando seus leads...</span>
+        </div>
+      ) : (
+        <SofiaInsightsWidget
+          insights={insights}
+          onAction={(acao) => {
+            // Mapear ações para navegação
+            switch (acao) {
+              case 'FILTRAR_QUENTES_ESQUECIDOS':
+              case 'FILTRAR_MORNOS_ESQUECIDOS':
+                handleNavigateToLeads('QUENTE');
+                break;
+              case 'FILTRAR_NOVOS':
+              case 'FILTRAR_ONTEM_SEM_CONTATO':
+                handleNavigateToLeads('');
+                break;
+              case 'VER_AGENDA':
+                router.push('/dashboard/agendamentos');
+                break;
+              case 'VER_NEGOCIACOES':
+                router.push('/dashboard/negociacoes');
+                break;
+              default:
+                router.push('/dashboard/leads');
+            }
+          }}
+        />
+      )}
 
       {/* Cards principais (KPIs) */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -313,9 +484,18 @@ export default function MeuDesempenhoPage() {
       {/* Seção Operacional e Funil */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         
-        {/* Coluna 1: Status dos Leads */}
+        {/* Coluna 1: Status dos Leads (Com Interatividade) */}
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">📊 Status da Carteira</h3>
+          <div className="flex justify-between items-center mb-4">
+            <h3 className="text-lg font-semibold text-gray-900">📊 Status da Carteira</h3>
+            <button 
+              onClick={() => router.push('/leads')}
+              className="text-xs text-blue-600 hover:text-blue-800 font-medium"
+            >
+              Ver todos
+            </button>
+          </div>
+          
           <div className="space-y-4">
             <div className="p-4 bg-gray-50 rounded-lg">
               <div className="flex justify-between items-center mb-2">
@@ -328,16 +508,39 @@ export default function MeuDesempenhoPage() {
             </div>
 
             <div className="space-y-3 pt-2">
-              <div className="flex justify-between items-center p-2 hover:bg-red-50 rounded transition-colors cursor-pointer border-l-4 border-red-500">
-                <span className="text-gray-700">🔥 Quentes (Prioridade)</span>
+              {/* Botão Leads Quentes */}
+              <div 
+                onClick={() => handleNavigateToLeads('QUENTE')}
+                className="group flex justify-between items-center p-2 hover:bg-red-50 rounded transition-all cursor-pointer border-l-4 border-red-500 shadow-sm hover:shadow-md"
+              >
+                <span className="text-gray-700 flex items-center gap-2">
+                  🔥 Quentes (Prioridade)
+                  <span className="opacity-0 group-hover:opacity-100 text-xs text-red-500 font-semibold transition-opacity">Ver →</span>
+                </span>
                 <span className="font-bold text-red-600 text-lg">{data.leads.quentes}</span>
               </div>
-              <div className="flex justify-between items-center p-2 hover:bg-yellow-50 rounded transition-colors cursor-pointer border-l-4 border-yellow-500">
-                <span className="text-gray-700">⚡ Mornos</span>
+
+              {/* Botão Leads Mornos */}
+              <div 
+                onClick={() => handleNavigateToLeads('MORNO')}
+                className="group flex justify-between items-center p-2 hover:bg-yellow-50 rounded transition-all cursor-pointer border-l-4 border-yellow-500 hover:shadow-sm"
+              >
+                <span className="text-gray-700 flex items-center gap-2">
+                  ⚡ Mornos
+                  <span className="opacity-0 group-hover:opacity-100 text-xs text-yellow-600 font-semibold transition-opacity">Ver →</span>
+                </span>
                 <span className="font-bold text-yellow-600 text-lg">{data.leads.mornos}</span>
               </div>
-              <div className="flex justify-between items-center p-2 hover:bg-blue-50 rounded transition-colors cursor-pointer border-l-4 border-blue-500">
-                <span className="text-gray-700">❄️ Frios</span>
+
+              {/* Botão Leads Frios */}
+              <div 
+                onClick={() => handleNavigateToLeads('FRIO')}
+                className="group flex justify-between items-center p-2 hover:bg-blue-50 rounded transition-all cursor-pointer border-l-4 border-blue-500 hover:shadow-sm"
+              >
+                <span className="text-gray-700 flex items-center gap-2">
+                   ❄️ Frios
+                   <span className="opacity-0 group-hover:opacity-100 text-xs text-blue-500 font-semibold transition-opacity">Ver →</span>
+                </span>
                 <span className="font-bold text-blue-600 text-lg">{data.leads.frios}</span>
               </div>
             </div>
@@ -403,14 +606,33 @@ export default function MeuDesempenhoPage() {
         {/* Próximos Agendamentos */}
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
           <div className="flex justify-between items-center mb-4">
-            <h3 className="text-lg font-semibold text-gray-900">📅 Agenda (Próximos)</h3>
+            <div className="flex items-center gap-3">
+              <h3 className="text-lg font-semibold text-gray-900">📅 Agenda (Próximos)</h3>
+              {/* Action Button: Nova Visita */}
+              <button 
+                onClick={handleNewVisit}
+                className="w-8 h-8 flex items-center justify-center rounded-full bg-green-50 text-green-600 hover:bg-green-100 hover:text-green-700 border border-green-200 transition-colors"
+                title="Nova Visita"
+              >
+                <span className="text-xl font-bold leading-none mb-0.5">+</span>
+              </button>
+            </div>
+            
             <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded-full">
               {data.agendamentos.hoje} Visitas Hoje
             </span>
           </div>
           
           {data.proximosAgendamentos.length === 0 ? (
-            <p className="text-gray-500 text-center py-4">Nenhuma visita agendada</p>
+            <div className="flex flex-col items-center justify-center py-6">
+               <p className="text-gray-500 mb-2">Nenhuma visita agendada</p>
+               <button 
+                 onClick={handleNewVisit}
+                 className="text-sm text-green-600 font-medium hover:underline"
+               >
+                 + Agendar visita
+               </button>
+            </div>
           ) : (
             <div className="space-y-3">
               {data.proximosAgendamentos.map((ag) => (

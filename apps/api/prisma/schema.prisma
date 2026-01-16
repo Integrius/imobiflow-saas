@@ -55,19 +55,20 @@ model Tenant {
   updated_at DateTime @updatedAt
 
   // Relacionamentos
-  users         User[]
-  corretores    Corretor[]
-  leads         Lead[]
-  proprietarios Proprietario[]
-  imoveis       Imovel[]
-  negociacoes   Negociacao[]
-  propostas     Proposta[]
-  integracoes   Integracao[]
-  automacoes    Automacao[]
-  assinaturas   Assinatura[]
-  messages      Message[]
-  agendamentos  Agendamento[]
-  activity_logs ActivityLog[]
+  users            User[]
+  corretores       Corretor[]
+  leads            Lead[]
+  proprietarios    Proprietario[]
+  imoveis          Imovel[]
+  negociacoes      Negociacao[]
+  propostas        Proposta[]
+  integracoes      Integracao[]
+  automacoes       Automacao[]
+  assinaturas      Assinatura[]
+  messages         Message[]
+  agendamentos     Agendamento[]
+  activity_logs    ActivityLog[]
+  lead_interactions LeadInteraction[]
 
   @@index([slug])
   @@index([plano])
@@ -359,17 +360,24 @@ model Lead {
   updated_at     DateTime  @updatedAt
   ultimo_contato DateTime?
 
+  // ==========================================
+  // INSIGHT ENGINE - Sofia IA
+  // ==========================================
+  last_interaction_at DateTime? // Data da última interação (otimização para queries de "leads esquecidos")
+
   // Relacionamentos
   negociacoes  Negociacao[]
   propostas    Proposta[]
   messages     Message[] // Mensagens da conversa
   agendamentos Agendamento[]
+  interactions LeadInteraction[] // Histórico de interações
 
   @@index([tenant_id])
   @@index([corretor_id])
   @@index([origem])
   @@index([temperatura])
   @@index([score])
+  @@index([last_interaction_at]) // Índice para queries de leads esquecidos
   @@map("leads")
 }
 
@@ -388,6 +396,65 @@ enum Temperatura {
   QUENTE
   MORNO
   FRIO
+}
+
+// ============================================
+// INTERAÇÕES DE LEADS (Insight Engine - Sofia)
+// ============================================
+
+model LeadInteraction {
+  id String @id @default(uuid())
+
+  // Multi-tenant
+  tenant_id String
+  tenant    Tenant @relation(fields: [tenant_id], references: [id], onDelete: Cascade)
+
+  // Lead relacionado
+  lead_id String
+  lead    Lead   @relation(fields: [lead_id], references: [id], onDelete: Cascade)
+
+  // Tipo da interação
+  tipo      TipoInteracao
+  direcao   DirecaoInteracao // ENTRADA (cliente) ou SAIDA (corretor)
+
+  // Conteúdo
+  conteudo    String? @db.Text // Resumo ou corpo da mensagem
+  sentimento  SentimentoInteracao @default(NEUTRO) // Classificação da IA
+
+  // Metadados opcionais
+  duracao_minutos Int?    // Para ligações
+  corretor_id     String? // Quem registrou (se manual)
+  automatico      Boolean @default(false) // Se foi registrado automaticamente (webhook)
+
+  // Timestamps
+  created_at DateTime @default(now())
+
+  @@index([tenant_id])
+  @@index([lead_id])
+  @@index([tipo])
+  @@index([created_at])
+  @@map("lead_interactions")
+}
+
+enum TipoInteracao {
+  WHATSAPP
+  EMAIL
+  LIGACAO
+  VISITA
+  NOTA // Anotação manual do corretor
+  SMS
+  TELEGRAM
+}
+
+enum DirecaoInteracao {
+  ENTRADA  // Cliente enviou/falou
+  SAIDA    // Corretor enviou/falou
+}
+
+enum SentimentoInteracao {
+  POSITIVO
+  NEUTRO
+  NEGATIVO
 }
 
 // ============================================

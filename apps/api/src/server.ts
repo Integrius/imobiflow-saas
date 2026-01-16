@@ -24,6 +24,7 @@ import { adminRoutes } from './modules/admin/admin.routes'
 import { activityLogsRoutes } from './modules/activity-logs/activity-logs.routes'
 import { comissoesRoutes } from './modules/comissoes/comissoes.routes'
 import { testRoutes } from './modules/test/test.routes'
+import { insightsRoutes } from './modules/insights/insights.routes'
 
 const server = Fastify({
   logger: true
@@ -83,6 +84,7 @@ server.register(usersRoutes, { prefix: '/api/v1/users' }) // Rotas de gerenciame
 server.register(activityLogsRoutes, { prefix: '/api/v1/activity-logs' }) // Rotas de logs de atividades (apenas ADMIN)
 server.register(adminRoutes, { prefix: '/api/v1/admin' }) // Rotas de administração geral (Vivoly)
 server.register(comissoesRoutes, { prefix: '/api/v1/comissoes' }) // Rotas de cálculo de comissões
+server.register(insightsRoutes, { prefix: '/api/v1/insights' }) // Rotas de insights Sofia IA e interações
 server.register(setupRoutes, { prefix: '/api/v1/setup' }) // ⚠️ SETUP INICIAL - Remover em produção!
 server.register(testRoutes, { prefix: '/api/v1/test' }) // 🧪 ROTAS DE TESTE - Debug
 
