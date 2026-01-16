@@ -3,6 +3,20 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { api } from '@/lib/api';
+// Importação dos Gráficos (Recharts)
+import {
+  ComposedChart,
+  Line,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+  ResponsiveContainer,
+  BarChart,
+  Cell
+} from 'recharts';
 
 interface DashboardData {
   corretor: {
@@ -102,6 +116,22 @@ const statusLabels: Record<string, string> = {
   CANCELADO: 'Cancelado',
 };
 
+// Componente visual para Insights da IA
+const SofiaInsight = ({ leadsQuentes }: { leadsQuentes: number }) => (
+  <div className="bg-gradient-to-r from-indigo-50 to-purple-50 border border-indigo-100 rounded-xl p-4 mb-6 flex items-start gap-3">
+    <div className="bg-indigo-600 text-white p-2 rounded-full shrink-0">
+      <span className="text-xl">🤖</span>
+    </div>
+    <div>
+      <h3 className="text-sm font-bold text-indigo-900">Insights da Sofia</h3>
+      <p className="text-sm text-indigo-700 mt-1">
+        Você tem <strong>{leadsQuentes} leads com temperatura ALTA</strong> precisando de atenção. 
+        A taxa de conversão aumenta em 25% se contatados na primeira hora.
+      </p>
+    </div>
+  </div>
+);
+
 export default function MeuDesempenhoPage() {
   const router = useRouter();
   const [loading, setLoading] = useState(true);
@@ -139,16 +169,6 @@ export default function MeuDesempenhoPage() {
     }).format(value);
   };
 
-  const formatDate = (dateStr: string) => {
-    return new Date(dateStr).toLocaleDateString('pt-BR', {
-      day: '2-digit',
-      month: '2-digit',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-    });
-  };
-
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
@@ -180,16 +200,20 @@ export default function MeuDesempenhoPage() {
 
   if (!data) return null;
 
-  // Calcular progresso da meta
+  // Cálculos auxiliares
   const progressoMetaMensal = data.corretor.metaMensal > 0
     ? Math.min(100, (data.vendas.totalMes / data.corretor.metaMensal) * 100)
     : 0;
-  const progressoMetaAnual = data.corretor.metaAnual > 0
-    ? Math.min(100, (data.vendas.totalAno / data.corretor.metaAnual) * 100)
-    : 0;
+
+  // Dados para o Funil de Vendas (Simulado com os dados disponíveis)
+  const funnelData = [
+    { name: 'Leads Totais', value: data.leads.total, color: '#94a3b8' }, // gray-400
+    { name: 'Em Negociação', value: data.negociacoes.ativas + data.negociacoes.fechadas, color: '#60a5fa' }, // blue-400
+    { name: 'Fechados', value: data.negociacoes.fechadas, color: '#00C48C' }, // green-500
+  ];
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 pb-10">
       {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
@@ -205,7 +229,10 @@ export default function MeuDesempenhoPage() {
         </button>
       </div>
 
-      {/* Cards principais */}
+      {/* Widget IA Sofia */}
+      {data.leads.quentes > 0 && <SofiaInsight leadsQuentes={data.leads.quentes} />}
+
+      {/* Cards principais (KPIs) */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         {/* Vendas do Mês */}
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
@@ -234,7 +261,7 @@ export default function MeuDesempenhoPage() {
           )}
         </div>
 
-        {/* Comissões do Mês */}
+        {/* Comissões */}
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
           <div className="flex items-center justify-between">
             <div>
@@ -278,140 +305,148 @@ export default function MeuDesempenhoPage() {
             </div>
           </div>
           <p className="mt-2 text-xs text-gray-500">
-            {data.negociacoes.fechadas} de {data.leads.total} leads
+            {data.negociacoes.fechadas} de {data.leads.total} leads totais
           </p>
         </div>
       </div>
 
-      {/* Segunda linha de cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        {/* Leads */}
+      {/* Seção Operacional e Funil */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        
+        {/* Coluna 1: Status dos Leads */}
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">📊 Meus Leads</h3>
-          <div className="space-y-3">
-            <div className="flex justify-between items-center">
-              <span className="text-gray-600">Total</span>
-              <span className="font-semibold">{data.leads.total}</span>
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">📊 Status da Carteira</h3>
+          <div className="space-y-4">
+            <div className="p-4 bg-gray-50 rounded-lg">
+              <div className="flex justify-between items-center mb-2">
+                <span className="text-gray-600 font-medium">Novos este mês</span>
+                <span className="text-lg font-bold text-blue-600">{data.leads.novosMes}</span>
+              </div>
+              <div className="w-full bg-gray-200 h-1.5 rounded-full">
+                <div className="bg-blue-500 h-1.5 rounded-full" style={{width: '60%'}}></div>
+              </div>
             </div>
-            <div className="flex justify-between items-center">
-              <span className="text-gray-600">Novos este mês</span>
-              <span className="font-semibold text-blue-600">{data.leads.novosMes}</span>
-            </div>
-            <hr />
-            <div className="flex justify-between items-center">
-              <span className="flex items-center gap-2">
-                <span className="w-2 h-2 rounded-full bg-red-500"></span>
-                Quentes
-              </span>
-              <span className="font-semibold text-red-600">{data.leads.quentes}</span>
-            </div>
-            <div className="flex justify-between items-center">
-              <span className="flex items-center gap-2">
-                <span className="w-2 h-2 rounded-full bg-yellow-500"></span>
-                Mornos
-              </span>
-              <span className="font-semibold text-yellow-600">{data.leads.mornos}</span>
-            </div>
-            <div className="flex justify-between items-center">
-              <span className="flex items-center gap-2">
-                <span className="w-2 h-2 rounded-full bg-blue-500"></span>
-                Frios
-              </span>
-              <span className="font-semibold text-blue-600">{data.leads.frios}</span>
+
+            <div className="space-y-3 pt-2">
+              <div className="flex justify-between items-center p-2 hover:bg-red-50 rounded transition-colors cursor-pointer border-l-4 border-red-500">
+                <span className="text-gray-700">🔥 Quentes (Prioridade)</span>
+                <span className="font-bold text-red-600 text-lg">{data.leads.quentes}</span>
+              </div>
+              <div className="flex justify-between items-center p-2 hover:bg-yellow-50 rounded transition-colors cursor-pointer border-l-4 border-yellow-500">
+                <span className="text-gray-700">⚡ Mornos</span>
+                <span className="font-bold text-yellow-600 text-lg">{data.leads.mornos}</span>
+              </div>
+              <div className="flex justify-between items-center p-2 hover:bg-blue-50 rounded transition-colors cursor-pointer border-l-4 border-blue-500">
+                <span className="text-gray-700">❄️ Frios</span>
+                <span className="font-bold text-blue-600 text-lg">{data.leads.frios}</span>
+              </div>
             </div>
           </div>
         </div>
 
-        {/* Agendamentos */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">📅 Agenda</h3>
-          <div className="space-y-3">
-            <div className="flex justify-between items-center">
-              <span className="text-gray-600">Visitas Hoje</span>
-              <span className={`font-semibold ${data.agendamentos.hoje > 0 ? 'text-green-600' : 'text-gray-500'}`}>
-                {data.agendamentos.hoje}
-              </span>
+        {/* Coluna 2 e 3: Gráficos de BI */}
+        <div className="lg:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-6">
+            
+            {/* Gráfico 1: Evolução Financeira */}
+            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">📈 Evolução de Vendas</h3>
+              <div className="h-[250px] w-full">
+                <ResponsiveContainer width="100%" height="100%">
+                  <ComposedChart data={data.evolucaoMensal}>
+                    <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                    <XAxis dataKey="mes" tick={{fontSize: 12}} />
+                    <YAxis yAxisId="left" hide />
+                    <YAxis yAxisId="right" orientation="right" hide />
+                    <Tooltip 
+                      formatter={(value: any, name: string) => [
+                        name === 'valor' ? formatCurrency(value) : value,
+                        name === 'valor' ? 'Vendas' : 'Leads'
+                      ]}
+                      labelStyle={{ color: '#333' }}
+                    />
+                    <Legend />
+                    <Bar yAxisId="left" dataKey="valor" name="Vendas (R$)" fill="#00C48C" radius={[4, 4, 0, 0]} barSize={30} />
+                    <Line yAxisId="right" type="monotone" dataKey="leads" name="Total Leads" stroke="#3b82f6" strokeWidth={2} />
+                  </ComposedChart>
+                </ResponsiveContainer>
+              </div>
             </div>
-            <div className="flex justify-between items-center">
-              <span className="text-gray-600">Esta Semana</span>
-              <span className="font-semibold text-blue-600">{data.agendamentos.semana}</span>
-            </div>
-            <div className="flex justify-between items-center">
-              <span className="text-gray-600">Pendentes</span>
-              <span className="font-semibold text-yellow-600">{data.agendamentos.pendentes}</span>
-            </div>
-          </div>
-        </div>
 
-        {/* Resumo Anual */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">📈 Ano Atual</h3>
-          <div className="space-y-3">
-            <div className="flex justify-between items-center">
-              <span className="text-gray-600">Vendas</span>
-              <span className="font-semibold">{formatCurrency(data.vendas.totalAno)}</span>
+            {/* Gráfico 2: Funil de Vendas Visual */}
+            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">🌪️ Funil de Conversão</h3>
+              <div className="h-[250px] w-full">
+                <ResponsiveContainer width="100%" height="100%">
+                    <BarChart
+                      layout="vertical"
+                      data={funnelData}
+                      margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
+                    >
+                      <CartesianGrid strokeDasharray="3 3" horizontal={true} vertical={false} />
+                      <XAxis type="number" hide />
+                      <YAxis dataKey="name" type="category" width={100} tick={{fontSize: 11}} />
+                      <Tooltip cursor={{fill: 'transparent'}} />
+                      <Bar dataKey="value" barSize={40} radius={[0, 4, 4, 0]}>
+                        {funnelData.map((entry, index) => (
+                          <Cell key={`cell-${index}`} fill={entry.color} />
+                        ))}
+                      </Bar>
+                    </BarChart>
+                </ResponsiveContainer>
+              </div>
             </div>
-            <div className="flex justify-between items-center">
-              <span className="text-gray-600">Comissões</span>
-              <span className="font-semibold text-green-600">{formatCurrency(data.comissoes.totalAno)}</span>
-            </div>
-            <div className="flex justify-between items-center">
-              <span className="text-gray-600">Negócios Fechados</span>
-              <span className="font-semibold">{data.negociacoes.fechadasAno}</span>
-            </div>
-            <div className="flex justify-between items-center">
-              <span className="text-gray-600">Imóveis sob gestão</span>
-              <span className="font-semibold">{data.imoveis.total}</span>
-            </div>
-          </div>
         </div>
       </div>
 
-      {/* Evolução Mensal */}
-      <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-        <h3 className="text-lg font-semibold text-gray-900 mb-4">📊 Evolução nos Últimos 6 Meses</h3>
-        <div className="overflow-x-auto">
-          <table className="min-w-full">
-            <thead>
-              <tr className="border-b border-gray-200">
-                <th className="text-left py-2 px-3 text-sm font-medium text-gray-500">Mês</th>
-                <th className="text-center py-2 px-3 text-sm font-medium text-gray-500">Leads</th>
-                <th className="text-center py-2 px-3 text-sm font-medium text-gray-500">Fechados</th>
-                <th className="text-right py-2 px-3 text-sm font-medium text-gray-500">Valor</th>
-              </tr>
-            </thead>
-            <tbody>
-              {data.evolucaoMensal.map((mes) => (
-                <tr key={mes.mes} className="border-b border-gray-100 hover:bg-gray-50">
-                  <td className="py-2 px-3 text-sm font-medium text-gray-900">{mes.mes}</td>
-                  <td className="text-center py-2 px-3 text-sm text-gray-600">{mes.leads}</td>
-                  <td className="text-center py-2 px-3">
-                    <span className={`inline-flex px-2 py-0.5 text-xs font-medium rounded-full ${
-                      mes.fechados > 0 ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-600'
-                    }`}>
-                      {mes.fechados}
-                    </span>
-                  </td>
-                  <td className="text-right py-2 px-3 text-sm font-medium text-gray-900">
-                    {formatCurrency(mes.valor)}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-      {/* Tabelas lado a lado */}
+      {/* Tabelas Inferiores */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Próximos Agendamentos */}
+        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+          <div className="flex justify-between items-center mb-4">
+            <h3 className="text-lg font-semibold text-gray-900">📅 Agenda (Próximos)</h3>
+            <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded-full">
+              {data.agendamentos.hoje} Visitas Hoje
+            </span>
+          </div>
+          
+          {data.proximosAgendamentos.length === 0 ? (
+            <p className="text-gray-500 text-center py-4">Nenhuma visita agendada</p>
+          ) : (
+            <div className="space-y-3">
+              {data.proximosAgendamentos.map((ag) => (
+                <div key={ag.id} className="p-3 bg-gray-50 rounded-lg border-l-4 border-[#00C48C]">
+                  <div className="flex justify-between items-start">
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-medium text-gray-900 truncate">{ag.leadNome}</p>
+                      <p className="text-xs text-gray-500">{ag.imovelTitulo}</p>
+                      <p className="text-xs text-gray-400 mt-1">📞 {ag.leadTelefone}</p>
+                    </div>
+                    <div className="text-right ml-4">
+                      <p className="text-sm font-bold text-gray-800">
+                        {new Date(ag.dataVisita).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}
+                      </p>
+                      <p className="text-xs text-gray-500">
+                        {new Date(ag.dataVisita).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' })}
+                      </p>
+                      <span className="inline-flex px-2 py-0.5 mt-1 text-[10px] font-medium rounded-full bg-blue-100 text-blue-800 uppercase tracking-wide">
+                        {ag.tipoVisita}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+
         {/* Últimas Negociações */}
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">📋 Últimas Negociações</h3>
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">📋 Últimas Movimentações</h3>
           {data.ultimasNegociacoes.length === 0 ? (
             <p className="text-gray-500 text-center py-4">Nenhuma negociação encontrada</p>
           ) : (
             <div className="space-y-3">
-              {data.ultimasNegociacoes.map((neg) => (
+              {data.ultimasNegociacoes.slice(0, 5).map((neg) => (
                 <div key={neg.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-medium text-gray-900 truncate">{neg.leadNome}</p>
@@ -423,48 +458,9 @@ export default function MeuDesempenhoPage() {
                     } ${statusColors[neg.status]?.text || 'text-gray-800'}`}>
                       {statusLabels[neg.status] || neg.status}
                     </span>
-                    <p className="text-xs text-gray-500 mt-1">
+                    <p className="text-xs text-gray-600 mt-1 font-medium">
                       {formatCurrency(neg.valorProposta)}
                     </p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-
-        {/* Próximos Agendamentos */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">📅 Próximas Visitas</h3>
-          {data.proximosAgendamentos.length === 0 ? (
-            <p className="text-gray-500 text-center py-4">Nenhuma visita agendada</p>
-          ) : (
-            <div className="space-y-3">
-              {data.proximosAgendamentos.map((ag) => (
-                <div key={ag.id} className="p-3 bg-gray-50 rounded-lg">
-                  <div className="flex justify-between items-start">
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium text-gray-900 truncate">{ag.leadNome}</p>
-                      <p className="text-xs text-gray-500">{ag.imovelTitulo}</p>
-                      <p className="text-xs text-gray-400 mt-1">📞 {ag.leadTelefone}</p>
-                    </div>
-                    <div className="text-right ml-4">
-                      <p className="text-sm font-medium text-[#00C48C]">
-                        {new Date(ag.dataVisita).toLocaleDateString('pt-BR', {
-                          day: '2-digit',
-                          month: '2-digit',
-                        })}
-                      </p>
-                      <p className="text-xs text-gray-500">
-                        {new Date(ag.dataVisita).toLocaleTimeString('pt-BR', {
-                          hour: '2-digit',
-                          minute: '2-digit',
-                        })}
-                      </p>
-                      <span className="inline-flex px-2 py-0.5 mt-1 text-xs font-medium rounded-full bg-blue-100 text-blue-800">
-                        {ag.tipoVisita === 'PRESENCIAL' ? '🏠 Presencial' : '💻 Virtual'}
-                      </span>
-                    </div>
                   </div>
                 </div>
               ))}
