@@ -214,4 +214,25 @@ export class CorretoresService {
       message: `Credenciais reenviadas para ${corretores.length} corretor(es)`
     }
   }
+
+  /**
+   * Busca métricas de dashboard para um corretor específico
+   */
+  async getCorretorDashboard(corretorId: string, tenantId: string) {
+    return await this.corretoresRepository.getCorretorDashboard(corretorId, tenantId)
+  }
+
+  /**
+   * Busca métricas de dashboard para o corretor logado
+   */
+  async getMeuDashboard(userId: string, tenantId: string) {
+    // Buscar o corretor vinculado ao usuário
+    const corretorId = await this.corretoresRepository.findCorretorIdByUserId(userId, tenantId)
+
+    if (!corretorId) {
+      throw new AppError('Corretor não encontrado para este usuário', 404, 'CORRETOR_NOT_FOUND')
+    }
+
+    return await this.corretoresRepository.getCorretorDashboard(corretorId, tenantId)
+  }
 }

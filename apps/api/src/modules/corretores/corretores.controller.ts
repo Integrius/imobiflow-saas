@@ -75,4 +75,33 @@ export class CorretoresController {
     )
     return reply.send(result)
   }
+
+  /**
+   * GET /corretores/:id/dashboard
+   * Busca métricas de dashboard para um corretor específico
+   * Acesso: ADMIN ou GESTOR podem ver qualquer corretor
+   */
+  async getCorretorDashboard(request: FastifyRequest, reply: FastifyReply) {
+    const tenantId = (request as any).tenantId || 'default-tenant-id'
+    const { id } = request.params as { id: string }
+    const result = await this.corretoresService.getCorretorDashboard(id, tenantId)
+    return reply.send({ success: true, data: result })
+  }
+
+  /**
+   * GET /corretores/meu-dashboard
+   * Busca métricas de dashboard para o corretor logado
+   * Acesso: CORRETOR vê apenas o próprio dashboard
+   */
+  async getMeuDashboard(request: FastifyRequest, reply: FastifyReply) {
+    const tenantId = (request as any).tenantId || 'default-tenant-id'
+    const userId = (request as any).user?.id
+
+    if (!userId) {
+      return reply.status(401).send({ error: 'Usuário não autenticado' })
+    }
+
+    const result = await this.corretoresService.getMeuDashboard(userId, tenantId)
+    return reply.send({ success: true, data: result })
+  }
 }

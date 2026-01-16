@@ -416,4 +416,370 @@ export class CorretoresRepository {
       }
     })
   }
+
+  /**
+   * Busca métricas de dashboard para um corretor específico
+   */
+  async getCorretorDashboard(corretorId: string, tenantId: string) {
+    // Buscar corretor com informações do usuário
+    const corretor = await this.prisma.corretor.findFirst({
+      where: {
+        id: corretorId,
+        tenant_id: tenantId
+      },
+      include: {
+        user: {
+          select: {
+            id: true,
+            nome: true,
+            email: true
+          }
+        }
+      }
+    })
+
+    if (!corretor) {
+      throw new Error('Corretor não encontrado')
+    }
+
+    // Datas para filtros
+    const hoje = new Date()
+    const inicioMes = new Date(hoje.getFullYear(), hoje.getMonth(), 1)
+    const inicioAno = new Date(hoje.getFullYear(), 0, 1)
+
+    // Buscar estatísticas de leads
+    const [
+      totalLeads,
+      leadsNovosMes,
+      leadsQuentes,
+      leadsMornos,
+      leadsFrios
+    ] = await Promise.all([
+      this.prisma.lead.count({
+        where: { corretor_id: corretorId, tenant_id: tenantId }
+      }),
+      this.prisma.lead.count({
+        where: {
+          corretor_id: corretorId,
+          tenant_id: tenantId,
+          created_at: { gte: inicioMes }
+        }
+      }),
+      this.prisma.lead.count({
+        where: { corretor_id: corretorId, tenant_id: tenantId, temperatura: 'QUENTE' }
+      }),
+      this.prisma.lead.count({
+        where: { corretor_id: corretorId, tenant_id: tenantId, temperatura: 'MORNO' }
+      }),
+      this.prisma.lead.count({
+        where: { corretor_id: corretorId, tenant_id: tenantId, temperatura: 'FRIO' }
+      })
+    ])
+
+    // Buscar estatísticas de negociações
+    const [
+      totalNegociacoes,
+      negociacoesAtivas,
+      negociacoesFechadas,
+      negociacoesFechadasMes,
+      negociacoesFechadasAno,
+      negociacoesPerdidas
+    ] = await Promise.all([
+      this.prisma.negociacao.count({
+        where: { corretor_id: corretorId, tenant_id: tenantId }
+      }),
+      this.prisma.negociacao.count({
+        where: {
+          corretor_id: corretorId,
+          tenant_id: tenantId,
+          status: { notIn: ['FECHADO', 'PERDIDO', 'CANCELADO'] }
+        }
+      }),
+      this.prisma.negociacao.count({
+        where: { corretor_id: corretorId, tenant_id: tenantId, status: 'FECHADO' }
+      }),
+      this.prisma.negociacao.count({
+        where: {
+          corretor_id: corretorId,
+          tenant_id: tenantId,
+          status: 'FECHADO',
+          data_fechamento: { gte: inicioMes }
+        }
+      }),
+      this.prisma.negociacao.count({
+        where: {
+          corretor_id: corretorId,
+          tenant_id: tenantId,
+          status: 'FECHADO',
+          data_fechamento: { gte: inicioAno }
+        }
+      }),
+      this.prisma.negociacao.count({
+        where: { corretor_id: corretorId, tenant_id: tenantId, status: 'PERDIDO' }
+      })
+    ])
+
+    // Calcular valor total de vendas (negociações fechadas)
+    const vendasFechadas = await this.prisma.negociacao.aggregate({
+      where: {
+        corretor_id: corretorId,
+        tenant_id: tenantId,
+        status: 'FECHADO'
+      },
+      _sum: {
+        valor_final: true
+      }
+    })
+
+    const vendasFechadasMes = await this.prisma.negociacao.aggregate({
+      where: {
+        corretor_id: corretorId,
+        tenant_id: tenantId,
+        status: 'FECHADO',
+        data_fechamento: { gte: inicioMes }
+      },
+      _sum: {
+        valor_final: true
+      }
+    })
+
+    const vendasFechadasAno = await this.prisma.negociacao.aggregate({
+      where: {
+        corretor_id: corretorId,
+        tenant_id: tenantId,
+        status: 'FECHADO',
+        data_fechamento: { gte: inicioAno }
+      },
+      _sum: {
+        valor_final: true
+      }
+    })
+
+    // Calcular comissões
+    const comissoesMes = await this.prisma.negociacao.aggregate({
+      where: {
+        corretor_id: corretorId,
+        tenant_id: tenantId,
+        status: 'FECHADO',
+        data_fechamento: { gte: inicioMes }
+      },
+      _sum: {
+        valor_comissao: true
+      }
+    })
+
+    const comissoesAno = await this.prisma.negociacao.aggregate({
+      where: {
+        corretor_id: corretorId,
+        tenant_id: tenantId,
+        status: 'FECHADO',
+        data_fechamento: { gte: inicioAno }
+      },
+      _sum: {
+        valor_comissao: true
+      }
+    })
+
+    // Buscar agendamentos
+    const [
+      agendamentosPendentes,
+      agendamentosHoje,
+      agendamentosSemana
+    ] = await Promise.all([
+      this.prisma.agendamento.count({
+        where: {
+          corretor_id: corretorId,
+          tenant_id: tenantId,
+          status: 'PENDENTE',
+          data_visita: { gte: hoje }
+        }
+      }),
+      this.prisma.agendamento.count({
+        where: {
+          corretor_id: corretorId,
+          tenant_id: tenantId,
+          data_visita: {
+            gte: new Date(hoje.setHours(0, 0, 0, 0)),
+            lt: new Date(hoje.setHours(23, 59, 59, 999))
+          }
+        }
+      }),
+      this.prisma.agendamento.count({
+        where: {
+          corretor_id: corretorId,
+          tenant_id: tenantId,
+          data_visita: {
+            gte: new Date(),
+            lt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
+          }
+        }
+      })
+    ])
+
+    // Buscar imóveis sob responsabilidade
+    const totalImoveis = await this.prisma.imovel.count({
+      where: {
+        corretor_responsavel_id: corretorId,
+        tenant_id: tenantId
+      }
+    })
+
+    // Calcular taxa de conversão
+    const taxaConversao = totalLeads > 0
+      ? ((negociacoesFechadas / totalLeads) * 100).toFixed(1)
+      : '0.0'
+
+    // Buscar últimas negociações
+    const ultimasNegociacoes = await this.prisma.negociacao.findMany({
+      where: {
+        corretor_id: corretorId,
+        tenant_id: tenantId
+      },
+      orderBy: { updated_at: 'desc' },
+      take: 5,
+      include: {
+        lead: { select: { nome: true } },
+        imovel: { select: { titulo: true, codigo: true } }
+      }
+    })
+
+    // Buscar próximos agendamentos
+    const proximosAgendamentos = await this.prisma.agendamento.findMany({
+      where: {
+        corretor_id: corretorId,
+        tenant_id: tenantId,
+        data_visita: { gte: new Date() }
+      },
+      orderBy: { data_visita: 'asc' },
+      take: 5,
+      include: {
+        lead: { select: { nome: true, telefone: true } },
+        imovel: { select: { titulo: true, codigo: true } }
+      }
+    })
+
+    // Buscar evolução mensal (últimos 6 meses)
+    const evolucaoMensal = []
+    for (let i = 5; i >= 0; i--) {
+      const mes = new Date(hoje.getFullYear(), hoje.getMonth() - i, 1)
+      const proximoMes = new Date(hoje.getFullYear(), hoje.getMonth() - i + 1, 1)
+
+      const [leads, fechados, valor] = await Promise.all([
+        this.prisma.lead.count({
+          where: {
+            corretor_id: corretorId,
+            tenant_id: tenantId,
+            created_at: { gte: mes, lt: proximoMes }
+          }
+        }),
+        this.prisma.negociacao.count({
+          where: {
+            corretor_id: corretorId,
+            tenant_id: tenantId,
+            status: 'FECHADO',
+            data_fechamento: { gte: mes, lt: proximoMes }
+          }
+        }),
+        this.prisma.negociacao.aggregate({
+          where: {
+            corretor_id: corretorId,
+            tenant_id: tenantId,
+            status: 'FECHADO',
+            data_fechamento: { gte: mes, lt: proximoMes }
+          },
+          _sum: { valor_final: true }
+        })
+      ])
+
+      evolucaoMensal.push({
+        mes: mes.toLocaleDateString('pt-BR', { month: 'short', year: '2-digit' }),
+        leads,
+        fechados,
+        valor: Number(valor._sum.valor_final || 0)
+      })
+    }
+
+    return {
+      corretor: {
+        id: corretor.id,
+        nome: corretor.user.nome,
+        email: corretor.user.email,
+        creci: corretor.creci,
+        telefone: corretor.telefone,
+        metaMensal: Number(corretor.meta_mensal || 0),
+        metaAnual: Number(corretor.meta_anual || 0),
+        comissaoPadrao: Number(corretor.comissao_padrao)
+      },
+      leads: {
+        total: totalLeads,
+        novosMes: leadsNovosMes,
+        quentes: leadsQuentes,
+        mornos: leadsMornos,
+        frios: leadsFrios
+      },
+      negociacoes: {
+        total: totalNegociacoes,
+        ativas: negociacoesAtivas,
+        fechadas: negociacoesFechadas,
+        fechadasMes: negociacoesFechadasMes,
+        fechadasAno: negociacoesFechadasAno,
+        perdidas: negociacoesPerdidas
+      },
+      vendas: {
+        totalGeral: Number(vendasFechadas._sum.valor_final || 0),
+        totalMes: Number(vendasFechadasMes._sum.valor_final || 0),
+        totalAno: Number(vendasFechadasAno._sum.valor_final || 0)
+      },
+      comissoes: {
+        totalMes: Number(comissoesMes._sum.valor_comissao || 0),
+        totalAno: Number(comissoesAno._sum.valor_comissao || 0)
+      },
+      agendamentos: {
+        pendentes: agendamentosPendentes,
+        hoje: agendamentosHoje,
+        semana: agendamentosSemana
+      },
+      imoveis: {
+        total: totalImoveis
+      },
+      metricas: {
+        taxaConversao: parseFloat(taxaConversao)
+      },
+      ultimasNegociacoes: ultimasNegociacoes.map(n => ({
+        id: n.id,
+        codigo: n.codigo,
+        leadNome: n.lead.nome,
+        imovelTitulo: n.imovel.titulo,
+        imovelCodigo: n.imovel.codigo,
+        status: n.status,
+        valorProposta: Number(n.valor_proposta || 0),
+        updatedAt: n.updated_at
+      })),
+      proximosAgendamentos: proximosAgendamentos.map(a => ({
+        id: a.id,
+        leadNome: a.lead.nome,
+        leadTelefone: a.lead.telefone,
+        imovelTitulo: a.imovel.titulo,
+        imovelCodigo: a.imovel.codigo,
+        dataVisita: a.data_visita,
+        tipoVisita: a.tipo_visita,
+        status: a.status
+      })),
+      evolucaoMensal
+    }
+  }
+
+  /**
+   * Busca o ID do corretor vinculado a um usuário
+   */
+  async findCorretorIdByUserId(userId: string, tenantId: string): Promise<string | null> {
+    const corretor = await this.prisma.corretor.findFirst({
+      where: {
+        user_id: userId,
+        tenant_id: tenantId
+      },
+      select: { id: true }
+    })
+    return corretor?.id || null
+  }
 }

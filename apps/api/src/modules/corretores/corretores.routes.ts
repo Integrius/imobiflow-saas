@@ -14,6 +14,23 @@ export async function corretoresRoutes(server: FastifyInstance) {
   server.addHook('preHandler', authMiddleware)
   server.addHook('preHandler', tenantMiddleware)
 
+  /**
+   * GET /corretores/meu-dashboard
+   * Dashboard do corretor logado - acesso CORRETOR e ADMIN
+   * IMPORTANTE: Esta rota deve vir ANTES de /:id para não conflitar
+   */
+  server.get('/meu-dashboard', async (request, reply) => {
+    const user = (request as any).user
+    // Apenas CORRETOR e ADMIN podem acessar
+    if (!user || !['CORRETOR', 'ADMIN'].includes(user.tipo)) {
+      return reply.status(403).send({
+        error: 'Acesso negado',
+        message: 'Apenas corretores e administradores podem acessar o dashboard'
+      })
+    }
+    return controller.getMeuDashboard(request, reply)
+  })
+
   server.post('/', async (request, reply) => {
     return controller.create(request, reply)
   })
@@ -30,10 +47,21 @@ export async function corretoresRoutes(server: FastifyInstance) {
     return controller.getImoveis(request, reply)
   })
 
-  // TODO: Implement performance endpoint
-  // server.get('/:id/performance', async (request, reply) => {
-  //   return controller.getPerformance(request, reply)
-  // })
+  /**
+   * GET /corretores/:id/dashboard
+   * Dashboard de um corretor específico - acesso ADMIN apenas
+   */
+  server.get('/:id/dashboard', async (request, reply) => {
+    const user = (request as any).user
+    // Apenas ADMIN pode ver dashboard de qualquer corretor
+    if (!user || user.tipo !== 'ADMIN') {
+      return reply.status(403).send({
+        error: 'Acesso negado',
+        message: 'Apenas administradores podem acessar o dashboard de outros corretores'
+      })
+    }
+    return controller.getCorretorDashboard(request, reply)
+  })
 
   server.put('/:id', async (request, reply) => {
     return controller.update(request, reply)
