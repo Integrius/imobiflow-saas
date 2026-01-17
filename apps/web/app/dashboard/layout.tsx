@@ -7,6 +7,7 @@ import Image from 'next/image';
 import { logout, getToken } from '@/lib/auth';
 import ToastContainer from '@/components/ToastContainer';
 import TrialWarning from '@/components/TrialWarning';
+import NotificationBell from '@/components/NotificationBell';
 
 // Tipos para navegação
 interface SubMenuItem {
@@ -155,6 +156,9 @@ export default function DashboardLayout({
             <div className="flex items-center gap-4">
               {/* Aviso de Trial no Header */}
               <TrialWarning />
+
+              {/* Sino de Notificações */}
+              <NotificationBell />
 
               <span className="text-sm text-white/90">
                 Olá, {user?.nome || 'Usuário'}

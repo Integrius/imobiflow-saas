@@ -3072,6 +3072,81 @@ Implementada integração completa com WhatsApp Business via Twilio.
 
 ---
 
+#### Sistema de Notificações In-App ✅
+
+Implementado sistema completo de notificações em tempo real para alertar usuários sobre eventos importantes.
+
+**Funcionalidades:**
+
+1. **Tipos de Notificação**
+   - INFO - Informações gerais
+   - SUCCESS - Ações bem-sucedidas
+   - WARNING - Alertas e avisos
+   - ERROR - Erros e problemas
+   - LEAD - Novos leads, alterações de temperatura
+   - NEGOCIACAO - Negociações fechadas, propostas
+   - AGENDAMENTO - Visitas agendadas, lembretes
+   - PROPOSTA - Novas propostas recebidas
+   - META - Metas atingidas
+   - SISTEMA - Mensagens do sistema
+
+2. **Componente de Sino (Frontend)**
+   - Badge com contagem de não lidas
+   - Dropdown com lista de notificações
+   - Marcar como lida ao clicar
+   - Marcar todas como lidas
+   - Atualização automática a cada 30 segundos
+   - Link para ação relacionada (ex: abrir lead)
+
+3. **Integração Automática**
+   - Notificação ao atribuir lead para corretor
+   - Notificação ao agendar visita
+   - Preparado para mais integrações
+
+**Endpoints da API** (`/api/v1/notifications/`):
+- `GET /` - Listar notificações do usuário
+- `GET /unread-count` - Contar não lidas
+- `PATCH /:id/read` - Marcar como lida
+- `PATCH /read-all` - Marcar todas como lidas
+- `DELETE /:id` - Deletar notificação
+
+**Modelo de Dados:**
+```prisma
+model Notification {
+  id          String @id @default(uuid())
+  tenant_id   String
+  user_id     String
+  title       String
+  message     String @db.Text
+  type        NotificationType @default(INFO)
+  entity_type String?  // Lead, Imovel, Agendamento...
+  entity_id   String?  // ID da entidade relacionada
+  action_url  String?  // URL para ação
+  is_read     Boolean @default(false)
+  read_at     DateTime?
+  created_at  DateTime @default(now())
+}
+
+enum NotificationType {
+  INFO, SUCCESS, WARNING, ERROR, LEAD,
+  NEGOCIACAO, AGENDAMENTO, PROPOSTA, META, SISTEMA
+}
+```
+
+**Arquivos Criados:**
+- `/apps/api/src/modules/notifications/notifications.service.ts` - Serviço com métodos de notificação
+- `/apps/api/src/modules/notifications/notifications.routes.ts` - Endpoints da API
+- `/apps/web/components/NotificationBell.tsx` - Componente de sino
+
+**Arquivos Modificados:**
+- `/apps/api/prisma/schema.prisma` - Modelo Notification adicionado
+- `/apps/api/src/server.ts` - Registro das rotas
+- `/apps/web/app/dashboard/layout.tsx` - NotificationBell no header
+- `/apps/api/src/modules/leads/leads.service.ts` - Integração com notificações
+- `/apps/api/src/modules/agendamentos/agendamentos.routes.ts` - Integração com notificações
+
+---
+
 #### Sistema de Metas para Corretores ✅
 
 Implementado sistema completo de metas mensais para corretores com acompanhamento de progresso.

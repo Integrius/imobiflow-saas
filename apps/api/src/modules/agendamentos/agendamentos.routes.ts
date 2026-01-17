@@ -8,6 +8,7 @@ import { FastifyInstance } from 'fastify';
 import { prisma } from '../../shared/database/prisma';
 import { telegramService } from '../../shared/services/telegram.service';
 import { sendGridService } from '../../shared/services/sendgrid.service';
+import { notificationsService } from '../notifications/notifications.service';
 
 interface CreateAgendamentoBody {
   lead_id: string;
@@ -180,6 +181,16 @@ export async function agendamentosRoutes(server: FastifyInstance) {
 
         // Enviar notificações (não bloquear response)
         Promise.all([
+          // Notificação in-app para o corretor
+          corretor.user_id ? notificationsService.notifyVisitScheduled(
+            lead.tenant_id,
+            corretor.user_id,
+            lead.nome,
+            imovel.titulo,
+            dataVisitaDate,
+            agendamento.id
+          ) : Promise.resolve(),
+
           // Email para o lead
           lead.email ? sendGridService.enviarConfirmacaoAgendamento({
             leadNome: lead.nome,

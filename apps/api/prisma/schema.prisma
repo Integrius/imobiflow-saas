@@ -71,6 +71,7 @@ model Tenant {
   lead_interactions LeadInteraction[]
   metas            Meta[]
   whatsapp_config  WhatsAppConfig?
+  notifications    Notification[]
 
   @@index([slug])
   @@index([plano])
@@ -183,6 +184,7 @@ model User {
   // Relacionamentos
   corretor      Corretor?
   activity_logs ActivityLog[]
+  notifications Notification[]
 
   @@unique([tenant_id, email])
   @@index([tenant_id])
@@ -1177,4 +1179,56 @@ model WhatsAppConfig {
 
   @@index([tenant_id])
   @@map("whatsapp_configs")
+}
+
+// ============================================
+// NOTIFICAÇÕES IN-APP
+// ============================================
+
+model Notification {
+  id String @id @default(uuid())
+
+  // Multi-tenant
+  tenant_id String
+  tenant    Tenant @relation(fields: [tenant_id], references: [id], onDelete: Cascade)
+
+  // Destinatário
+  user_id String
+  user    User @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  // Conteúdo
+  title   String
+  message String @db.Text
+  type    NotificationType @default(INFO)
+
+  // Referência opcional a uma entidade
+  entity_type String? // Ex: "Lead", "Negociacao", "Agendamento"
+  entity_id   String? // ID da entidade relacionada
+  action_url  String? // URL para onde a notificação deve direcionar
+
+  // Status
+  is_read   Boolean @default(false)
+  read_at   DateTime?
+
+  // Timestamps
+  created_at DateTime @default(now())
+
+  @@index([tenant_id])
+  @@index([user_id])
+  @@index([is_read])
+  @@index([created_at])
+  @@map("notifications")
+}
+
+enum NotificationType {
+  INFO       // Informação geral
+  SUCCESS    // Ação bem-sucedida
+  WARNING    // Alerta/aviso
+  ERROR      // Erro
+  LEAD       // Relacionado a lead
+  NEGOCIACAO // Relacionado a negociação
+  AGENDAMENTO // Relacionado a agendamento
+  PROPOSTA   // Relacionado a proposta
+  META       // Relacionado a metas
+  SISTEMA    // Mensagem do sistema
 }
