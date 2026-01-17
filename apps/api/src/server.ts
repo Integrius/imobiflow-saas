@@ -27,6 +27,7 @@ import { testRoutes } from './modules/test/test.routes'
 import { insightsRoutes } from './modules/insights/insights.routes'
 import { temperaturaAutoRoutes } from './modules/admin/temperatura-auto.routes'
 import { dashboardGerencialRoutes } from './modules/dashboard/dashboard-gerencial.routes'
+import { metasRoutes } from './modules/metas/metas.routes'
 
 const server = Fastify({
   logger: true
@@ -89,6 +90,7 @@ server.register(adminRoutes, { prefix: '/api/v1/admin' }) // Rotas de administra
 server.register(comissoesRoutes, { prefix: '/api/v1/comissoes' }) // Rotas de cálculo de comissões
 server.register(insightsRoutes, { prefix: '/api/v1/insights' }) // Rotas de insights Sofia IA e interações
 server.register(temperaturaAutoRoutes, { prefix: '/api/v1/temperatura-auto' }) // Rotas de atualização automática de temperatura
+server.register(metasRoutes, { prefix: '/api/v1/metas' }) // Rotas de metas de corretores
 server.register(setupRoutes, { prefix: '/api/v1/setup' }) // ⚠️ SETUP INICIAL - Remover em produção!
 server.register(testRoutes, { prefix: '/api/v1/test' }) // 🧪 ROTAS DE TESTE - Debug
 

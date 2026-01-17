@@ -69,6 +69,7 @@ model Tenant {
   agendamentos     Agendamento[]
   activity_logs    ActivityLog[]
   lead_interactions LeadInteraction[]
+  metas            Meta[]
 
   @@index([slug])
   @@index([plano])
@@ -267,6 +268,7 @@ model Corretor {
   propostas           Proposta[]
   imoveis_responsavel Imovel[]
   agendamentos        Agendamento[]
+  metas               Meta[]
 
   @@unique([tenant_id, creci])
   @@index([tenant_id])
@@ -991,6 +993,67 @@ enum Intent {
   NEGOCIACAO // Quer negociar/fazer proposta
   RECLAMACAO // Está reclamando
   OUTRO // Outros
+}
+
+// ============================================
+// METAS DE CORRETORES
+// ============================================
+
+model Meta {
+  id String @id @default(uuid())
+
+  // Multi-tenant
+  tenant_id String
+  tenant    Tenant @relation(fields: [tenant_id], references: [id], onDelete: Cascade)
+
+  // Corretor alvo da meta
+  corretor_id String
+  corretor    Corretor @relation(fields: [corretor_id], references: [id], onDelete: Cascade)
+
+  // Período da meta
+  mes Int // 1-12
+  ano Int // Ex: 2026
+
+  // Metas numéricas
+  meta_leads        Int?     // Quantidade de leads a captar
+  meta_visitas      Int?     // Quantidade de visitas a realizar
+  meta_propostas    Int?     // Quantidade de propostas a receber
+  meta_fechamentos  Int?     // Quantidade de negócios a fechar
+  meta_valor        Decimal? @db.Decimal(12, 2) // Valor total em vendas/alugueis
+
+  // Progresso atual (atualizado automaticamente ou via job)
+  progresso_leads       Int     @default(0)
+  progresso_visitas     Int     @default(0)
+  progresso_propostas   Int     @default(0)
+  progresso_fechamentos Int     @default(0)
+  progresso_valor       Decimal @default(0) @db.Decimal(12, 2)
+
+  // Status da meta
+  status StatusMeta @default(EM_ANDAMENTO)
+
+  // Observações/notas
+  observacoes String? @db.Text
+
+  // Criado por (ADMIN/GESTOR)
+  criado_por_id String?
+
+  // Timestamps
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  @@unique([tenant_id, corretor_id, mes, ano]) // Uma meta por corretor por mês
+  @@index([tenant_id])
+  @@index([corretor_id])
+  @@index([mes, ano])
+  @@index([status])
+  @@map("metas")
+}
+
+enum StatusMeta {
+  EM_ANDAMENTO  // Meta ainda em período válido
+  ATINGIDA      // Meta atingida (100%+)
+  NAO_ATINGIDA  // Período encerrado sem atingir
+  CANCELADA     // Meta cancelada
 }
 
 // ============================================

@@ -2875,6 +2875,90 @@ jobs:
 
 ## Histórico de Configurações
 
+### 2026-01-17
+
+#### Sistema de Metas para Corretores ✅
+
+Implementado sistema completo de metas mensais para corretores com acompanhamento de progresso.
+
+**Funcionalidades:**
+
+1. **Definição de Metas (ADMIN/GESTOR)**
+   - Meta de leads a captar
+   - Meta de visitas a realizar
+   - Meta de propostas a receber
+   - Meta de fechamentos
+   - Meta de valor em vendas/aluguéis
+   - Criação individual ou em lote para todos os corretores
+
+2. **Acompanhamento de Progresso**
+   - Cálculo automático baseado em dados reais
+   - Barras de progresso por métrica
+   - Percentual geral ponderado (fechamentos e valor têm peso maior)
+   - Status: EM_ANDAMENTO, ATINGIDA, NAO_ATINGIDA, CANCELADA
+
+3. **Dashboard de Metas (ADMIN/GESTOR)**
+   - Cards de estatísticas: corretores com meta, metas atingidas, média de progresso
+   - Tabela completa com progresso de todos os corretores
+   - Filtros por mês/ano
+   - Edição e exclusão de metas
+   - Botão "Atualizar Progresso" para recalcular
+
+4. **Widget de Metas (Corretor)**
+   - Exibido no dashboard principal
+   - Mostra meta do mês atual
+   - Barras de progresso coloridas por desempenho
+   - Mensagens motivacionais baseadas no progresso
+
+**Endpoints da API** (`/api/v1/metas/`):
+- `GET /` - Listar metas (ADMIN/GESTOR)
+- `GET /resumo` - Resumo mensal (ADMIN/GESTOR)
+- `GET /minha-meta` - Meta atual do corretor (CORRETOR)
+- `GET /:id` - Buscar meta por ID (ADMIN/GESTOR)
+- `POST /` - Criar meta individual (ADMIN/GESTOR)
+- `POST /lote` - Criar metas em lote (ADMIN/GESTOR)
+- `PATCH /:id` - Atualizar meta (ADMIN/GESTOR)
+- `DELETE /:id` - Deletar meta (ADMIN/GESTOR)
+- `POST /:id/atualizar-progresso` - Recalcular progresso (ADMIN/GESTOR)
+- `POST /atualizar-progresso-mensal` - Recalcular todas as metas do mês (ADMIN/GESTOR)
+
+**Modelo de Dados:**
+```prisma
+model Meta {
+  id String @id @default(uuid())
+  tenant_id String
+  corretor_id String
+  mes Int // 1-12
+  ano Int
+  meta_leads Int?
+  meta_visitas Int?
+  meta_propostas Int?
+  meta_fechamentos Int?
+  meta_valor Decimal?
+  progresso_leads Int @default(0)
+  progresso_visitas Int @default(0)
+  progresso_propostas Int @default(0)
+  progresso_fechamentos Int @default(0)
+  progresso_valor Decimal @default(0)
+  status StatusMeta @default(EM_ANDAMENTO)
+  @@unique([tenant_id, corretor_id, mes, ano])
+}
+```
+
+**Arquivos Criados:**
+- `/apps/api/src/modules/metas/metas.service.ts` - Lógica de negócio
+- `/apps/api/src/modules/metas/metas.routes.ts` - Endpoints da API
+- `/apps/web/app/dashboard/metas/page.tsx` - Página de gestão de metas
+- `/apps/web/components/MetaWidget.tsx` - Widget para dashboard
+
+**Arquivos Modificados:**
+- `/apps/api/prisma/schema.prisma` - Modelo Meta adicionado
+- `/apps/api/src/server.ts` - Registro das rotas
+- `/apps/web/app/dashboard/layout.tsx` - Menu "Metas" adicionado
+- `/apps/web/app/dashboard/page.tsx` - Widget de metas integrado
+
+---
+
 ### 2026-01-16
 
 #### Dashboard Gerencial para ADMIN/GESTOR ✅
@@ -3684,11 +3768,21 @@ Conforme Art. 39 da LGPD: *"O operador deverá realizar o tratamento segundo as 
 
 ---
 
-**Última atualização**: 16 de janeiro de 2026
-**Versão**: 1.9.0
+**Última atualização**: 17 de janeiro de 2026
+**Versão**: 1.10.0
 **Status**: Em produção ✅
 
-**Novidades da versão 1.9.0** (16 de janeiro de 2026):
+**Novidades da versão 1.10.0** (17 de janeiro de 2026):
+- ✅ **Sistema de Metas para Corretores**
+- ✅ Definição de metas mensais (leads, visitas, propostas, fechamentos, valor)
+- ✅ Criação individual ou em lote para todos os corretores
+- ✅ Cálculo automático de progresso baseado em dados reais
+- ✅ Dashboard de gestão de metas para ADMIN/GESTOR
+- ✅ Widget de metas no dashboard principal (para corretores)
+- ✅ Barras de progresso coloridas por desempenho
+- ✅ Status automático: EM_ANDAMENTO, ATINGIDA, NAO_ATINGIDA
+
+**Versão 1.9.0** (16 de janeiro de 2026):
 - ✅ **Dashboard Gerencial para ADMIN/GESTOR**
 - ✅ Ranking de corretores com pontuação calculada
 - ✅ Métricas consolidadas do time

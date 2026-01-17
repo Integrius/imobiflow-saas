@@ -73,7 +73,8 @@ export default function DashboardLayout({
   const adminNavigation: MenuItem[] = [
     { name: 'Dashboard', href: '/dashboard', icon: '📊', iconImage: '/ico-dashboard.png' },
     { name: 'Gerencial', href: '/dashboard/gerencial', icon: '📈', iconImage: null },
-    { name: 'Meu Desempenho', href: '/dashboard/meu-desempenho', icon: '🎯', iconImage: null },
+    { name: 'Metas', href: '/dashboard/metas', icon: '🎯', iconImage: null },
+    { name: 'Meu Desempenho', href: '/dashboard/meu-desempenho', icon: '🏆', iconImage: null },
     { name: 'Leads', href: '/dashboard/leads', icon: '👥', iconImage: '/ico-Leads.png' },
     { name: 'Corretores', href: '/dashboard/corretores', icon: '🏢', iconImage: '/ico-corretores.png' },
     { name: 'Proprietários', href: '/dashboard/proprietarios', icon: '🏠', iconImage: '/ico-proprietarios.png' },

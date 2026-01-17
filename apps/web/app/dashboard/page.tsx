@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { api } from '@/lib/api';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import MetaWidget from '@/components/MetaWidget';
 
 interface DashboardData {
   leads: { total: number; quentes: number };
@@ -160,6 +161,15 @@ export default function DashboardPage() {
           </div>
         </div>
       )}
+
+      {/* Widget de Metas do Corretor */}
+      <div className="mt-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div className="lg:col-span-1">
+            <MetaWidget />
+          </div>
+        </div>
+      </div>
 
       {/* Gráficos Históricos */}
       {chartData && (
