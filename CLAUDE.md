@@ -2875,6 +2875,140 @@ jobs:
 
 ## Histórico de Configurações
 
+### 2026-01-16
+
+#### Dashboard Gerencial para ADMIN/GESTOR ✅
+
+Implementado dashboard completo com visão consolidada do desempenho do time de corretores.
+
+**Funcionalidades:**
+
+1. **Métricas Consolidadas do Time**
+   - Total de corretores (ativos/inativos)
+   - Total de leads e novos nos últimos 30 dias
+   - Valor total fechado
+   - Taxa de conversão geral
+   - Média por corretor (leads, negociações, valor)
+
+2. **Ranking de Corretores**
+   - Posição baseada em pontuação calculada
+   - Métricas detalhadas por corretor:
+     - Leads por temperatura (quentes, mornos, frios)
+     - Negociações (total, fechadas, em andamento)
+     - Taxa de conversão individual
+     - Valor total e médio fechado
+     - Visitas (realizadas/total)
+   - Tempo médio de primeiro contato e fechamento
+   - Pontuação com pesos: Fechamentos (40%), Conversão (20%), Leads Quentes (15%), Visitas (15%), Atividade (10%)
+
+3. **Tops Corretores**
+   - Top 5 por fechamentos
+   - Top 5 por valor fechado
+
+4. **Comparativo Mensal**
+   - Últimos 3 meses
+   - Leads, Negociações, Fechamentos e Valor por período
+   - Gráfico de barras comparativo
+
+5. **Distribuição de Temperatura**
+   - Gráfico de pizza com leads quentes, mornos e frios
+   - Percentuais e quantidades
+
+6. **Alertas Gerenciais**
+   - 🔥 Leads quentes sem contato há 3+ dias
+   - ⚠️ Corretores inativos há 7+ dias
+   - ⏸️ Negociações paradas há 15+ dias
+   - 📅 Visitas agendadas para hoje
+
+**Endpoints da API** (`/api/v1/dashboard-gerencial/`):
+- `GET /` - Dashboard completo
+- `GET /metricas` - Métricas consolidadas
+- `GET /ranking` - Ranking de corretores
+- `GET /comparativo` - Comparativo mensal
+- `GET /top/:metrica` - Top corretores (fechamentos, leads, valor, conversao)
+- `GET /temperatura` - Distribuição por temperatura
+- `GET /alertas` - Alertas gerenciais
+
+**Arquivos Criados:**
+- `/apps/api/src/modules/dashboard/dashboard-gerencial.service.ts`
+- `/apps/api/src/modules/dashboard/dashboard-gerencial.routes.ts`
+- `/apps/web/app/dashboard/gerencial/page.tsx`
+
+**Arquivos Modificados:**
+- `/apps/api/src/server.ts` - Registro das rotas
+- `/apps/web/app/dashboard/layout.tsx` - Menu "Gerencial" adicionado
+
+**Acesso:** Apenas ADMIN ou GESTOR do tenant
+
+---
+
+#### Sistema de Atualização Automática de Temperatura de Leads ✅
+
+Implementado sistema inteligente que monitora e atualiza automaticamente a temperatura dos leads com base no tempo sem contato.
+
+**Regras de Degradação:**
+- 🔥 **QUENTE → ⚡ MORNO**: Lead sem contato há 5+ dias
+- ⚡ **MORNO → ❄️ FRIO**: Lead sem contato há 10+ dias
+
+**Componentes Implementados:**
+
+1. **Serviço de Temperatura Automática**
+   - Arquivo: `/apps/api/src/shared/services/temperatura-auto.service.ts`
+   - Classe `TemperaturaAutoService` com singleton exportado
+   - Métodos:
+     - `executarParaTodosOsTenants()` - Processa todos os tenants ativos
+     - `executarParaTenant(tenantId)` - Processa um tenant específico
+     - `getEstatisticas(tenantId)` - Retorna métricas de temperatura
+   - Integração com Telegram para notificar corretores
+   - Registro automático na timeline do lead
+
+2. **Endpoints da API** (`/api/v1/temperatura-auto/`)
+   - Arquivo: `/apps/api/src/modules/admin/temperatura-auto.routes.ts`
+   - `GET /estatisticas` - Métricas de leads por temperatura
+   - `POST /executar` - Executar atualização para o tenant
+   - `POST /executar-preview` - Dry-run (sem alterações)
+   - `GET /config` - Configuração atual do sistema
+   - Acesso: ADMIN ou GESTOR do tenant
+
+3. **Job para Execução Diária**
+   - Arquivo: `/apps/api/src/shared/jobs/temperatura-auto-job.ts`
+   - Execução: `npx tsx src/shared/jobs/temperatura-auto-job.ts`
+   - Sugerido: Cron diário às 8h da manhã
+   - Processa todos os tenants ATIVO ou TRIAL
+
+**Funcionalidades:**
+- ✅ Detecção automática de leads para rebaixamento
+- ✅ Atualização em lote com logging detalhado
+- ✅ Notificação Telegram para corretor quando temperatura cai
+- ✅ Registro na timeline do lead (tipo: TEMPERATURA_ALTERADA_AUTO)
+- ✅ Preview/dry-run antes de executar
+- ✅ Estatísticas de leads por temperatura
+- ✅ Multi-tenant (executa por tenant ou todos)
+
+**Exemplo de Notificação Telegram:**
+```
+⚠️ ALERTA: Lead Esfriando!
+
+👤 Cliente: João Silva
+📱 Telefone: (11) 98765-4321
+
+🌡️ Temperatura: 🔥 QUENTE → ⚡ MORNO
+
+⏰ Motivo: Sem contato há 6 dias
+
+💡 Dica da Sofia: Entre em contato o quanto antes para não perder este lead!
+```
+
+**Arquivos Criados:**
+- `/apps/api/src/shared/services/temperatura-auto.service.ts`
+- `/apps/api/src/modules/admin/temperatura-auto.routes.ts`
+- `/apps/api/src/shared/jobs/temperatura-auto-job.ts`
+
+**Arquivos Modificados:**
+- `/apps/api/src/server.ts` - Registro das rotas de temperatura-auto
+
+---
+
 ### 2026-01-15
 
 #### Adequação LGPD - Isolamento de Dados do Operador ✅
@@ -3550,11 +3684,29 @@ Conforme Art. 39 da LGPD: *"O operador deverá realizar o tratamento segundo as 
 
 ---
 
-**Última atualização**: 15 de janeiro de 2026
-**Versão**: 1.7.0
+**Última atualização**: 16 de janeiro de 2026
+**Versão**: 1.9.0
 **Status**: Em produção ✅
 
-**Novidades da versão 1.7.0** (15 de janeiro de 2026):
+**Novidades da versão 1.9.0** (16 de janeiro de 2026):
+- ✅ **Dashboard Gerencial para ADMIN/GESTOR**
+- ✅ Ranking de corretores com pontuação calculada
+- ✅ Métricas consolidadas do time
+- ✅ Comparativo mensal (últimos 3 meses)
+- ✅ Tops: fechamentos e valor fechado
+- ✅ Alertas gerenciais (leads quentes sem contato, corretores inativos, etc.)
+- ✅ Gráficos de distribuição de temperatura e comparativo
+
+**Versão 1.8.0** (16 de janeiro de 2026):
+- ✅ **Sistema de Atualização Automática de Temperatura de Leads**
+- ✅ Regras de degradação: QUENTE→MORNO (5 dias), MORNO→FRIO (10 dias)
+- ✅ Notificação Telegram para corretor quando lead esfria
+- ✅ Endpoints de execução manual e preview (dry-run)
+- ✅ Job para execução diária via cron
+- ✅ Registro na timeline do lead (TEMPERATURA_ALTERADA_AUTO)
+- ✅ Estatísticas de leads por temperatura
+
+**Versão 1.7.0** (15 de janeiro de 2026):
 - ✅ **LGPD Compliance:** Adequação completa ao Art. 39 da Lei 13.709/2018
 - ✅ Operador (Vivoly) não tem mais acesso a logs de atividades de outros tenants
 - ✅ Contagens de leads/negociações removidas do painel admin para outros tenants
