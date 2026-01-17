@@ -2873,9 +2873,204 @@ jobs:
 
 ---
 
+## Integração WhatsApp (Twilio)
+
+O ImobiFlow possui integração completa com WhatsApp Business via Twilio para receber e enviar mensagens automaticamente.
+
+### Arquitetura
+
+A integração usa o **Twilio WhatsApp Business API** para:
+- Receber mensagens de clientes via webhook
+- Criar leads automaticamente de novos contatos
+- Responder automaticamente com a IA Sofia
+- Notificar corretores via Telegram sobre novos leads
+- Enviar mensagens manualmente para leads
+
+### Modelo de Dados
+
+#### WhatsAppConfig
+
+```prisma
+model WhatsAppConfig {
+  id String @id @default(uuid())
+  tenant_id String @unique
+  tenant    Tenant @relation(...)
+
+  // Credenciais Twilio
+  twilio_account_sid  String?
+  twilio_auth_token   String? // Criptografado
+  twilio_phone_number String? // Ex: +5511999999999
+
+  // Configurações de comportamento
+  auto_response_enabled Boolean @default(true) // Respostas automáticas
+  welcome_message       String? // Mensagem de boas-vindas personalizada
+  business_hours_start  String? // Ex: "08:00"
+  business_hours_end    String? // Ex: "18:00"
+  out_of_hours_message  String? // Mensagem fora do horário
+
+  // Atribuição automática
+  auto_assign_corretor Boolean @default(false)
+  default_corretor_id  String?
+
+  // Status
+  is_active      Boolean @default(false)
+  last_message_at DateTime?
+  webhook_verified Boolean @default(false)
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+}
+```
+
+#### Campos Adicionados ao Message
+
+```prisma
+model Message {
+  // ... campos existentes ...
+
+  // Twilio/External integration
+  external_id   String? // MessageSid do Twilio
+  external_from String? // Número de origem (whatsapp:+5511...)
+  external_to   String? // Número de destino
+  media_url     String? // URL de mídia anexada
+  media_type    String? // Tipo da mídia (image/jpeg, etc)
+  profile_name  String? // Nome do perfil WhatsApp do remetente
+}
+```
+
+### Endpoints da API
+
+#### Webhooks (Públicos - chamados pelo Twilio)
+
+| Método | Endpoint | Descrição |
+|--------|----------|-----------|
+| POST | `/api/v1/whatsapp/webhook` | Recebe mensagens do Twilio |
+| POST | `/api/v1/whatsapp/webhook/status` | Recebe status de entrega |
+
+#### Endpoints Autenticados (ADMIN/GESTOR)
+
+| Método | Endpoint | Descrição |
+|--------|----------|-----------|
+| GET | `/api/v1/whatsapp/config` | Buscar configuração |
+| PUT | `/api/v1/whatsapp/config` | Salvar configuração |
+| POST | `/api/v1/whatsapp/test` | Testar conexão com Twilio |
+| POST | `/api/v1/whatsapp/send` | Enviar mensagem para lead |
+| GET | `/api/v1/whatsapp/messages/:leadId` | Histórico de mensagens |
+| GET | `/api/v1/whatsapp/stats` | Estatísticas de mensagens |
+
+### Fluxo de Recebimento de Mensagem
+
+```
+1. Cliente envia mensagem para número WhatsApp Business
+   ↓
+2. Twilio encaminha para webhook: POST /api/v1/whatsapp/webhook
+   ↓
+3. Sistema identifica tenant pelo número de destino
+   ↓
+4. Busca lead existente pelo telefone
+   ↓
+5A. Se novo contato:
+   - Cria lead automaticamente (origem: WHATSAPP)
+   - Atribui corretor padrão (se configurado)
+   - Notifica corretor via Telegram
+   - Envia mensagem de boas-vindas
+   ↓
+5B. Se lead existente:
+   - Salva mensagem no histórico
+   - Gera resposta da IA Sofia
+   ↓
+6. Verifica horário comercial
+   ↓
+7. Envia resposta automática (se habilitado)
+   ↓
+8. Atualiza last_message_at na configuração
+```
+
+### Configuração no Twilio
+
+1. **Criar conta Twilio** e habilitar WhatsApp Business
+2. **Configurar Sandbox** ou número aprovado
+3. **Configurar Webhooks** no Console Twilio:
+   - **When a message comes in**: `https://sua-api.com/api/v1/whatsapp/webhook` (POST)
+   - **Status callback URL**: `https://sua-api.com/api/v1/whatsapp/webhook/status` (POST)
+4. **Obter credenciais**:
+   - Account SID
+   - Auth Token
+   - Número WhatsApp Business
+
+### Variáveis de Ambiente
+
+```env
+# Opcionais (configuradas por tenant no dashboard)
+TWILIO_ACCOUNT_SID="ACxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+TWILIO_AUTH_TOKEN="xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+TWILIO_WHATSAPP_NUMBER="+5511999999999"
+```
+
+### Página de Configuração (Frontend)
+
+**URL**: `/dashboard/whatsapp`
+
+**Funcionalidades**:
+- Configurar credenciais Twilio
+- Testar conexão
+- Habilitar/desabilitar integração
+- Configurar respostas automáticas
+- Definir horário comercial
+- Personalizar mensagens
+- Definir corretor padrão para novos leads
+- Visualizar estatísticas de mensagens
+
+### Arquivos do Sistema
+
+**Backend:**
+- `/apps/api/src/shared/services/twilio-whatsapp.service.ts` - Serviço Twilio
+- `/apps/api/src/modules/whatsapp/whatsapp.service.ts` - Lógica de negócio
+- `/apps/api/src/modules/whatsapp/whatsapp.routes.ts` - Endpoints da API
+- `/apps/api/prisma/schema.prisma` - Modelo WhatsAppConfig
+
+**Frontend:**
+- `/apps/web/app/dashboard/whatsapp/page.tsx` - Página de configuração
+
+### Segurança
+
+- Auth Token nunca é retornado completo nas respostas (apenas "***configurado***")
+- Webhooks são públicos mas validam número de destino
+- Mensagens só podem ser enviadas por ADMIN/GESTOR autenticados
+- Isolamento por tenant garantido em todas as operações
+
+---
+
 ## Histórico de Configurações
 
 ### 2026-01-17
+
+#### Integração WhatsApp via Twilio ✅
+
+Implementada integração completa com WhatsApp Business via Twilio.
+
+**Funcionalidades:**
+- Webhook para receber mensagens do Twilio
+- Criação automática de leads de novos contatos
+- Respostas automáticas da IA Sofia
+- Notificação de corretor via Telegram
+- Configuração de horário comercial
+- Mensagens personalizadas de boas-vindas
+- Estatísticas de mensagens
+- Página de configuração no dashboard
+
+**Arquivos Criados:**
+- `/apps/api/src/shared/services/twilio-whatsapp.service.ts`
+- `/apps/api/src/modules/whatsapp/whatsapp.service.ts`
+- `/apps/api/src/modules/whatsapp/whatsapp.routes.ts`
+- `/apps/web/app/dashboard/whatsapp/page.tsx`
+
+**Arquivos Modificados:**
+- `/apps/api/prisma/schema.prisma` - Modelo WhatsAppConfig e campos no Message
+- `/apps/api/src/server.ts` - Registro das rotas (whatsAppRoutes)
+- `/apps/web/app/dashboard/layout.tsx` - Menu WhatsApp adicionado
+
+---
 
 #### Sistema de Metas para Corretores ✅
 
@@ -3769,10 +3964,21 @@ Conforme Art. 39 da LGPD: *"O operador deverá realizar o tratamento segundo as 
 ---
 
 **Última atualização**: 17 de janeiro de 2026
-**Versão**: 1.10.0
+**Versão**: 1.11.0
 **Status**: Em produção ✅
 
-**Novidades da versão 1.10.0** (17 de janeiro de 2026):
+**Novidades da versão 1.11.0** (17 de janeiro de 2026):
+- ✅ **Integração WhatsApp via Twilio**
+- ✅ Webhook para receber mensagens do Twilio WhatsApp Business
+- ✅ Criação automática de leads de novos contatos WhatsApp
+- ✅ Respostas automáticas da IA Sofia via WhatsApp
+- ✅ Notificação de corretor via Telegram sobre novos leads
+- ✅ Configuração de horário comercial com mensagem fora de expediente
+- ✅ Mensagens personalizadas de boas-vindas
+- ✅ Página de configuração completa no dashboard (/dashboard/whatsapp)
+- ✅ Estatísticas de mensagens (enviadas, recebidas, leads criados)
+
+**Versão 1.10.0** (17 de janeiro de 2026):
 - ✅ **Sistema de Metas para Corretores**
 - ✅ Definição de metas mensais (leads, visitas, propostas, fechamentos, valor)
 - ✅ Criação individual ou em lote para todos os corretores

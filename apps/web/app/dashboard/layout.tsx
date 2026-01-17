@@ -80,6 +80,7 @@ export default function DashboardLayout({
     { name: 'Proprietários', href: '/dashboard/proprietarios', icon: '🏠', iconImage: '/ico-proprietarios.png' },
     { name: 'Imóveis', href: '/dashboard/imoveis', icon: '🏘️', iconImage: '/ico-imoveis.png' },
     { name: 'Negociações', href: '/dashboard/negociacoes', icon: '💼', iconImage: '/ico-negociacoes.png' },
+    { name: 'WhatsApp', href: '/dashboard/whatsapp', icon: '📱', iconImage: null },
     // Menu Administração para tenants normais
     {
       name: 'Administração',

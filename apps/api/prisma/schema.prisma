@@ -70,6 +70,7 @@ model Tenant {
   activity_logs    ActivityLog[]
   lead_interactions LeadInteraction[]
   metas            Meta[]
+  whatsapp_config  WhatsAppConfig?
 
   @@index([slug])
   @@index([plano])
@@ -484,6 +485,14 @@ model Message {
   // Status de entrega
   status MessageStatus @default(SENT)
 
+  // Twilio/External integration
+  external_id   String? // MessageSid do Twilio ou ID externo
+  external_from String? // Número de origem (whatsapp:+5511...)
+  external_to   String? // Número de destino
+  media_url     String? // URL de mídia anexada
+  media_type    String? // Tipo da mídia (image/jpeg, etc)
+  profile_name  String? // Nome do perfil WhatsApp do remetente
+
   // Análise IA (opcional)
   ai_analysis     Json? // Armazena análise completa da IA
   ai_score_impact Int? // Impacto no score (-10 a +10)
@@ -497,6 +506,7 @@ model Message {
   @@index([lead_id])
   @@index([created_at])
   @@index([platform])
+  @@index([external_id])
   @@map("messages")
 }
 
@@ -1127,4 +1137,44 @@ enum TipoAtividade {
   // Outros
   CONFIGURACAO_ALTERADA
   ACESSO_NEGADO
+}
+
+// ============================================
+// CONFIGURAÇÃO WHATSAPP (TWILIO)
+// ============================================
+
+model WhatsAppConfig {
+  id String @id @default(uuid())
+
+  // Multi-tenant
+  tenant_id String @unique
+  tenant    Tenant @relation(fields: [tenant_id], references: [id], onDelete: Cascade)
+
+  // Credenciais Twilio
+  twilio_account_sid  String?
+  twilio_auth_token   String? // Criptografado
+  twilio_phone_number String? // Número do WhatsApp Business (ex: +5511999999999)
+
+  // Configurações de comportamento
+  auto_response_enabled Boolean @default(true) // Respostas automáticas da Sofia
+  welcome_message       String? @db.Text // Mensagem de boas-vindas personalizada
+  business_hours_start  String? // Ex: "08:00"
+  business_hours_end    String? // Ex: "18:00"
+  out_of_hours_message  String? @db.Text // Mensagem fora do horário
+
+  // Atribuição automática de leads
+  auto_assign_corretor Boolean @default(false) // Atribuir corretor automaticamente
+  default_corretor_id  String? // Corretor padrão para novos leads
+
+  // Status
+  is_active      Boolean @default(false) // Se a integração está ativa
+  last_message_at DateTime? // Última mensagem recebida
+  webhook_verified Boolean @default(false) // Se o webhook foi verificado
+
+  // Timestamps
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  @@index([tenant_id])
+  @@map("whatsapp_configs")
 }
