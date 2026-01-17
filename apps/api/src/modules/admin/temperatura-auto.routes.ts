@@ -48,7 +48,7 @@ export async function temperaturaAutoRoutes(server: FastifyInstance) {
     },
     async (request, reply) => {
       try {
-        const tenantId = request.user.tenant_id
+        const tenantId = request.user!.tenant_id
 
         const estatisticas = await temperaturaAutoService.getEstatisticas(tenantId)
 
@@ -97,7 +97,7 @@ export async function temperaturaAutoRoutes(server: FastifyInstance) {
     },
     async (request, reply) => {
       try {
-        const tenantId = request.user.tenant_id
+        const tenantId = request.user!.tenant_id
 
         // Buscar nome do tenant para log
         const tenant = await prisma.tenant.findUnique({
@@ -149,7 +149,7 @@ export async function temperaturaAutoRoutes(server: FastifyInstance) {
     },
     async (request, reply) => {
       try {
-        const tenantId = request.user.tenant_id
+        const tenantId = request.user!.tenant_id
 
         const estatisticas = await temperaturaAutoService.getEstatisticas(tenantId)
 

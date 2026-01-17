@@ -11,7 +11,8 @@
  * - Tempo médio de resposta e fechamento
  */
 
-import { PrismaClient } from '@prisma/client'
+import { PrismaClient, Temperatura } from '@prisma/client'
+import { Decimal } from '@prisma/client/runtime/library'
 
 interface CorretorPerformance {
   id: string
@@ -34,8 +35,8 @@ interface CorretorPerformance {
     visitasRealizadas: number
   }
   tempoMedio: {
-    primeiroContato: number | null // Em horas
-    fechamento: number | null // Em dias
+    primeiroContato: number | null
+    fechamento: number | null
   }
   ultimaAtividade: Date | null
   ranking: {
@@ -66,6 +67,42 @@ interface ComparativoPeriodo {
   negociacoes: number
   fechamentos: number
   valorFechado: number
+}
+
+// Tipos auxiliares para as queries do Prisma
+interface LeadData {
+  id: string
+  temperatura: Temperatura
+  created_at: Date
+  last_interaction_at: Date | null
+}
+
+interface NegociacaoData {
+  id: string
+  status: string
+  valor_proposta: Decimal | null
+  valor_final: Decimal | null
+  created_at: Date
+  updated_at: Date
+}
+
+interface AgendamentoData {
+  id: string
+  status: string
+  realizado: boolean
+}
+
+interface CorretorComRelacoes {
+  id: string
+  creci: string
+  user: {
+    nome: string
+    email: string
+    ultimo_login: Date | null
+  }
+  leads: LeadData[]
+  negociacoes: NegociacaoData[]
+  agendamentos: AgendamentoData[]
 }
 
 export class DashboardGerencialService {
@@ -174,7 +211,6 @@ export class DashboardGerencialService {
           select: {
             nome: true,
             email: true,
-            foto_url: true,
             ultimo_login: true
           }
         },
@@ -204,27 +240,27 @@ export class DashboardGerencialService {
           }
         }
       }
-    })
+    }) as unknown as CorretorComRelacoes[]
 
-    const corretoresComMetricas = corretores.map(corretor => {
+    const corretoresComMetricas = corretores.map((corretor) => {
       const leads = corretor.leads
       const negociacoes = corretor.negociacoes
       const agendamentos = corretor.agendamentos
 
       // Contagens de leads por temperatura
-      const leadsQuentes = leads.filter(l => l.temperatura === 'QUENTE').length
-      const leadsMornos = leads.filter(l => l.temperatura === 'MORNO').length
-      const leadsFrios = leads.filter(l => l.temperatura === 'FRIO').length
+      const leadsQuentes = leads.filter((l) => l.temperatura === 'QUENTE').length
+      const leadsMornos = leads.filter((l) => l.temperatura === 'MORNO').length
+      const leadsFrios = leads.filter((l) => l.temperatura === 'FRIO').length
 
       // Contagens de negociações
-      const negociacoesFechadas = negociacoes.filter(n => n.status === 'FECHADO')
-      const negociacoesEmAndamento = negociacoes.filter(n =>
+      const negociacoesFechadas = negociacoes.filter((n) => n.status === 'FECHADO')
+      const negociacoesEmAndamento = negociacoes.filter((n) =>
         !['FECHADO', 'CANCELADO', 'PERDIDO'].includes(n.status)
       ).length
 
       // Valores
       const valorTotalFechado = negociacoesFechadas.reduce(
-        (acc, n) => acc + (n.valor_final?.toNumber() || n.valor_proposta?.toNumber() || 0),
+        (acc: number, n) => acc + (n.valor_final?.toNumber() || n.valor_proposta?.toNumber() || 0),
         0
       )
       const valorMedioFechado = negociacoesFechadas.length > 0
@@ -238,14 +274,14 @@ export class DashboardGerencialService {
 
       // Visitas
       const totalVisitas = agendamentos.length
-      const visitasRealizadas = agendamentos.filter(a => a.realizado).length
+      const visitasRealizadas = agendamentos.filter((a) => a.realizado).length
 
       // Tempo médio de primeiro contato (baseado em last_interaction_at)
-      const leadsComInteracao = leads.filter(l => l.last_interaction_at)
+      const leadsComInteracao = leads.filter((l) => l.last_interaction_at)
       let tempoMedioPrimeiroContato: number | null = null
       if (leadsComInteracao.length > 0) {
-        const somaHoras = leadsComInteracao.reduce((acc, l) => {
-          const diff = l.last_interaction_at!.getTime() - l.created_at.getTime()
+        const somaHoras = leadsComInteracao.reduce((acc: number, l) => {
+          const diff = new Date(l.last_interaction_at!).getTime() - new Date(l.created_at).getTime()
           return acc + (diff / (1000 * 60 * 60)) // Converte para horas
         }, 0)
         tempoMedioPrimeiroContato = parseFloat((somaHoras / leadsComInteracao.length).toFixed(1))
@@ -254,8 +290,8 @@ export class DashboardGerencialService {
       // Tempo médio de fechamento
       let tempoMedioFechamento: number | null = null
       if (negociacoesFechadas.length > 0) {
-        const somaDias = negociacoesFechadas.reduce((acc, n) => {
-          const diff = n.updated_at.getTime() - n.created_at.getTime()
+        const somaDias = negociacoesFechadas.reduce((acc: number, n) => {
+          const diff = new Date(n.updated_at).getTime() - new Date(n.created_at).getTime()
           return acc + (diff / (1000 * 60 * 60 * 24)) // Converte para dias
         }, 0)
         tempoMedioFechamento = parseFloat((somaDias / negociacoesFechadas.length).toFixed(1))
@@ -263,10 +299,10 @@ export class DashboardGerencialService {
 
       // Última atividade
       const ultimaAtividadeLead = leads.length > 0
-        ? Math.max(...leads.map(l => l.last_interaction_at?.getTime() || l.created_at.getTime()))
+        ? Math.max(...leads.map((l) => new Date(l.last_interaction_at || l.created_at).getTime()))
         : 0
       const ultimaAtividadeNegociacao = negociacoes.length > 0
-        ? Math.max(...negociacoes.map(n => n.updated_at.getTime()))
+        ? Math.max(...negociacoes.map((n) => new Date(n.updated_at).getTime()))
         : 0
       const ultimaAtividade = Math.max(ultimaAtividadeLead, ultimaAtividadeNegociacao)
 
@@ -284,7 +320,7 @@ export class DashboardGerencialService {
         nome: corretor.user.nome,
         email: corretor.user.email,
         creci: corretor.creci,
-        foto_url: corretor.user.foto_url || undefined,
+        foto_url: undefined,
         metricas: {
           totalLeads: leads.length,
           leadsQuentes,
@@ -443,7 +479,6 @@ export class DashboardGerencialService {
   async getAlertasGerenciais(tenantId: string) {
     const now = new Date()
     const seteDiasAtras = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000)
-    const trintaDiasAtras = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000)
 
     const [
       leadsQuentesSemContato,

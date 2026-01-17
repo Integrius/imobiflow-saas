@@ -45,7 +45,7 @@ export async function dashboardGerencialRoutes(server: FastifyInstance) {
     },
     async (request, reply) => {
       try {
-        const tenantId = request.user.tenant_id
+        const tenantId = request.user!.tenant_id
         const dados = await service.getDashboardCompleto(tenantId)
 
         return reply.send({
@@ -74,7 +74,7 @@ export async function dashboardGerencialRoutes(server: FastifyInstance) {
     },
     async (request, reply) => {
       try {
-        const tenantId = request.user.tenant_id
+        const tenantId = request.user!.tenant_id
         const metricas = await service.getMetricasTime(tenantId)
 
         return reply.send({
@@ -103,7 +103,7 @@ export async function dashboardGerencialRoutes(server: FastifyInstance) {
     },
     async (request, reply) => {
       try {
-        const tenantId = request.user.tenant_id
+        const tenantId = request.user!.tenant_id
         const ranking = await service.getRankingCorretores(tenantId)
 
         return reply.send({
@@ -133,7 +133,7 @@ export async function dashboardGerencialRoutes(server: FastifyInstance) {
     },
     async (request, reply) => {
       try {
-        const tenantId = request.user.tenant_id
+        const tenantId = request.user!.tenant_id
         const comparativo = await service.getComparativoPeriodos(tenantId)
 
         return reply.send({
@@ -163,7 +163,7 @@ export async function dashboardGerencialRoutes(server: FastifyInstance) {
     },
     async (request, reply) => {
       try {
-        const tenantId = request.user.tenant_id
+        const tenantId = request.user!.tenant_id
         const { metrica } = request.params as { metrica: 'fechamentos' | 'leads' | 'valor' | 'conversao' }
         const query = request.query as { limit?: string }
         const limit = query.limit ? parseInt(query.limit) : 5
@@ -205,7 +205,7 @@ export async function dashboardGerencialRoutes(server: FastifyInstance) {
     },
     async (request, reply) => {
       try {
-        const tenantId = request.user.tenant_id
+        const tenantId = request.user!.tenant_id
         const distribuicao = await service.getDistribuicaoTemperaturaTime(tenantId)
 
         return reply.send({
@@ -234,7 +234,7 @@ export async function dashboardGerencialRoutes(server: FastifyInstance) {
     },
     async (request, reply) => {
       try {
-        const tenantId = request.user.tenant_id
+        const tenantId = request.user!.tenant_id
         const alertas = await service.getAlertasGerenciais(tenantId)
 
         return reply.send({

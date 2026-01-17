@@ -480,7 +480,8 @@ export default function DashboardGerencialPage() {
                       borderRadius: '8px',
                       fontWeight: 'bold'
                     }}
-                    formatter={(value: number, name: string) => {
+                    formatter={(value, name) => {
+                      if (typeof value !== 'number') return value;
                       if (name === 'Valor Fechado') return formatCurrency(value);
                       return value;
                     }}
