@@ -25,6 +25,7 @@ O domínio `integrius.com.br` está apontando para um deployment ANTIGO.
 - **Senha**: `corretor123`
 
 ---
+##   Notas
 
 ## 🔧 Configuração Atual
 
