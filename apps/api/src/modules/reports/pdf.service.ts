@@ -319,10 +319,10 @@ class PDFReportService {
         where: { tenant_id: tenantId, data_visita: { gte: startDate, lte: endDate } }
       }),
       prisma.corretor.findMany({
-        where: { tenant_id: tenantId, ativo: true },
+        where: { tenant_id: tenantId },
         include: { user: { select: { nome: true } } }
       }),
-      prisma.imovel.count({ where: { tenant_id: tenantId, ativo: true } })
+      prisma.imovel.count({ where: { tenant_id: tenantId } })
     ])
 
     // Métricas gerais
@@ -339,6 +339,37 @@ class PDFReportService {
       corretoresAtivos: corretores.length,
       imoveisAtivos: imoveis
     }
+
+    // Buscar performance por corretor (ANTES de criar o PDF)
+    const corretorPerformance = await Promise.all(
+      corretores.map(async (c) => {
+        const fechamentos = await prisma.negociacao.count({
+          where: {
+            tenant_id: tenantId,
+            corretor_id: c.id,
+            status: 'FECHADO',
+            created_at: { gte: startDate, lte: endDate }
+          }
+        })
+        const valor = await prisma.negociacao.aggregate({
+          where: {
+            tenant_id: tenantId,
+            corretor_id: c.id,
+            status: 'FECHADO',
+            created_at: { gte: startDate, lte: endDate }
+          },
+          _sum: { valor_final: true }
+        })
+        return {
+          nome: c.user.nome,
+          fechamentos,
+          valor: Number(valor._sum.valor_final) || 0
+        }
+      })
+    )
+
+    // Ordenar por fechamentos
+    const ranking = corretorPerformance.sort((a, b) => b.fechamentos - a.fechamentos)
 
     // Criar PDF
     return new Promise((resolve, reject) => {
@@ -378,37 +409,6 @@ class PDFReportService {
       doc.moveDown(3)
       doc.fillColor(COLORS.text).fontSize(14).text('Ranking de Corretores', { underline: true })
       doc.moveDown()
-
-      // Buscar performance por corretor
-      const corretorPerformance = await Promise.all(
-        corretores.map(async (c) => {
-          const fechamentos = await prisma.negociacao.count({
-            where: {
-              tenant_id: tenantId,
-              corretor_id: c.id,
-              status: 'FECHADO',
-              created_at: { gte: startDate, lte: endDate }
-            }
-          })
-          const valor = await prisma.negociacao.aggregate({
-            where: {
-              tenant_id: tenantId,
-              corretor_id: c.id,
-              status: 'FECHADO',
-              created_at: { gte: startDate, lte: endDate }
-            },
-            _sum: { valor_final: true }
-          })
-          return {
-            nome: c.user.nome,
-            fechamentos,
-            valor: Number(valor._sum.valor_final) || 0
-          }
-        })
-      )
-
-      // Ordenar por fechamentos
-      const ranking = corretorPerformance.sort((a, b) => b.fechamentos - a.fechamentos)
 
       const tableTop = doc.y
       const headers = ['#', 'Corretor', 'Fechamentos', 'Valor']

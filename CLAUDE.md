@@ -3072,6 +3072,65 @@ Implementada integração completa com WhatsApp Business via Twilio.
 
 ---
 
+#### Geração de Relatórios em PDF ✅
+
+Implementado sistema completo de geração de relatórios em PDF com design profissional.
+
+**Tipos de Relatórios:**
+
+1. **Relatório de Leads** (`/api/v1/reports/leads`)
+   - Lista completa de leads com filtros
+   - Estatísticas: total, quentes, mornos, frios
+   - Tabela com nome, telefone, temperatura, score, corretor
+   - Filtros: período, corretor
+
+2. **Relatório de Desempenho do Corretor** (`/api/v1/reports/corretor`)
+   - Métricas do mês: leads, fechamentos, visitas, conversão
+   - Valor total fechado no período
+   - Detalhamento por temperatura de leads
+   - Progresso em relação à meta (se existir)
+
+3. **Relatório Mensal do Tenant** (`/api/v1/reports/tenant`)
+   - Visão consolidada do mês
+   - Cards: novos leads, fechamentos, corretores, imóveis
+   - Valor total fechado
+   - Ranking de corretores por fechamentos
+
+**Endpoints da API** (`/api/v1/reports/`):
+- `GET /leads` - Relatório de leads (ADMIN/GESTOR)
+- `GET /corretor` - Relatório do corretor (todos podem baixar o próprio)
+- `GET /tenant` - Relatório mensal geral (ADMIN/GESTOR)
+
+**Design do PDF:**
+- Cores do tema ImobiFlow (verde escuro #064E3B, verde claro #8FD14F)
+- Header com gradiente e logo
+- Cards de estatísticas com barras coloridas
+- Tabelas formatadas com zebra-striping
+- Footer com data de geração e paginação
+
+**Componente Frontend:**
+- `ReportDownloadButton` - Botão reutilizável para download
+- Spinner durante geração
+- Download automático do arquivo
+- Integrado nas páginas: Leads, Gerencial, Meu Desempenho
+
+**Arquivos Criados:**
+- `/apps/api/src/modules/reports/pdf.service.ts` - Serviço de geração PDFKit
+- `/apps/api/src/modules/reports/reports.routes.ts` - Endpoints da API
+- `/apps/web/components/ReportDownloadButton.tsx` - Componente de download
+
+**Arquivos Modificados:**
+- `/apps/api/src/server.ts` - Registro das rotas
+- `/apps/web/app/dashboard/leads/page.tsx` - Botão "Exportar PDF"
+- `/apps/web/app/dashboard/gerencial/page.tsx` - Botão "Relatório Mensal PDF"
+- `/apps/web/app/dashboard/meu-desempenho/page.tsx` - Botão "Exportar PDF"
+
+**Dependências:**
+- `pdfkit@0.17.2` - Biblioteca de geração de PDF
+- `@types/pdfkit@0.17.4` - Tipagens TypeScript
+
+---
+
 #### Sistema de Notificações In-App ✅
 
 Implementado sistema completo de notificações em tempo real para alertar usuários sobre eventos importantes.

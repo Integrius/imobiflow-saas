@@ -6,6 +6,7 @@ import { toast } from '@/lib/toast';
 import Modal from '@/components/Modal';
 import RegistrarAtividade from '@/components/RegistrarAtividade';
 import { formatPhone, unformatNumbers } from '@/lib/formatters';
+import ReportDownloadButton from '@/components/ReportDownloadButton';
 
 interface Lead {
   id: string;
@@ -277,12 +278,19 @@ export default function LeadsPage() {
             <span className="text-[#00C48C] text-lg font-bold">{leads.length}</span> leads cadastrados
           </p>
         </div>
-        <button
-          onClick={openCreateModal}
-          className="btn-primary"
-        >
-          + Novo Lead
-        </button>
+        <div className="flex gap-3">
+          <ReportDownloadButton
+            reportType="leads"
+            label="Exportar PDF"
+            className="bg-gradient-to-r from-[#A97E6F] to-[#8B6F5C] hover:from-[#8B6F5C] hover:to-[#A97E6F]"
+          />
+          <button
+            onClick={openCreateModal}
+            className="btn-primary"
+          >
+            + Novo Lead
+          </button>
+        </div>
       </div>
 
       {/* Busca */}

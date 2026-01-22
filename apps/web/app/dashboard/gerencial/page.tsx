@@ -6,6 +6,7 @@ import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer,
   PieChart, Pie, Cell
 } from 'recharts';
+import ReportDownloadButton from '@/components/ReportDownloadButton';
 
 interface MetricasTime {
   totalCorretores: number;
@@ -164,9 +165,16 @@ export default function DashboardGerencialPage() {
   return (
     <div className="space-y-8">
       {/* Header */}
-      <div className="mb-8">
-        <h2 className="text-4xl font-bold text-[#064E3B] tracking-tight">Dashboard Gerencial</h2>
-        <p className="text-[#4B5563] mt-2 text-lg">Visão consolidada do desempenho do time</p>
+      <div className="mb-8 flex justify-between items-start">
+        <div>
+          <h2 className="text-4xl font-bold text-[#064E3B] tracking-tight">Dashboard Gerencial</h2>
+          <p className="text-[#4B5563] mt-2 text-lg">Visão consolidada do desempenho do time</p>
+        </div>
+        <ReportDownloadButton
+          reportType="tenant"
+          params={{ mes: new Date().getMonth() + 1, ano: new Date().getFullYear() }}
+          label="Relatório Mensal PDF"
+        />
       </div>
 
       {/* Alertas */}

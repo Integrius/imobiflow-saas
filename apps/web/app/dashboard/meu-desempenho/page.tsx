@@ -17,6 +17,7 @@ import {
   BarChart,
   Cell
 } from 'recharts';
+import ReportDownloadButton from '@/components/ReportDownloadButton';
 
 interface DashboardData {
   corretor: {
@@ -361,13 +362,24 @@ export default function MeuDesempenhoPage() {
           <h1 className="text-2xl font-bold text-gray-900">Meu Desempenho</h1>
           <p className="text-gray-600">{data.corretor.nome} • CRECI: {data.corretor.creci}</p>
         </div>
-        <button
-          onClick={loadDashboard}
-          className="px-4 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors flex items-center gap-2"
-        >
-          <span>🔄</span>
-          Atualizar
-        </button>
+        <div className="flex gap-3">
+          <ReportDownloadButton
+            reportType="corretor"
+            params={{
+              corretor_id: data.corretor.id,
+              mes: new Date().getMonth() + 1,
+              ano: new Date().getFullYear()
+            }}
+            label="Exportar PDF"
+          />
+          <button
+            onClick={loadDashboard}
+            className="px-4 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors flex items-center gap-2"
+          >
+            <span>🔄</span>
+            Atualizar
+          </button>
+        </div>
       </div>
 
       {/* Widget IA Sofia - Insights Dinâmicos */}
