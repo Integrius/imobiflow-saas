@@ -30,6 +30,7 @@ import { dashboardGerencialRoutes } from './modules/dashboard/dashboard-gerencia
 import { metasRoutes } from './modules/metas/metas.routes'
 import { notificationsRoutes } from './modules/notifications/notifications.routes'
 import { reportsRoutes } from './modules/reports/reports.routes'
+import { tarefasRoutes } from './modules/tarefas/tarefas.routes'
 
 const server = Fastify({
   logger: true
@@ -95,6 +96,7 @@ server.register(temperaturaAutoRoutes, { prefix: '/api/v1/temperatura-auto' }) /
 server.register(metasRoutes, { prefix: '/api/v1/metas' }) // Rotas de metas de corretores
 server.register(notificationsRoutes, { prefix: '/api/v1/notifications' }) // Rotas de notificações in-app
 server.register(reportsRoutes, { prefix: '/api/v1/reports' }) // Rotas de relatórios em PDF
+server.register(tarefasRoutes, { prefix: '/api/v1/tarefas' }) // Rotas de tarefas/follow-ups
 server.register(setupRoutes, { prefix: '/api/v1/setup' }) // ⚠️ SETUP INICIAL - Remover em produção!
 server.register(testRoutes, { prefix: '/api/v1/test' }) // 🧪 ROTAS DE TESTE - Debug
 

@@ -72,6 +72,7 @@ model Tenant {
   metas            Meta[]
   whatsapp_config  WhatsAppConfig?
   notifications    Notification[]
+  tarefas          Tarefa[]
 
   @@index([slug])
   @@index([plano])
@@ -185,6 +186,7 @@ model User {
   corretor      Corretor?
   activity_logs ActivityLog[]
   notifications Notification[]
+  tarefas       Tarefa[]
 
   @@unique([tenant_id, email])
   @@index([tenant_id])
@@ -272,6 +274,7 @@ model Corretor {
   imoveis_responsavel Imovel[]
   agendamentos        Agendamento[]
   metas               Meta[]
+  tarefas             Tarefa[]
 
   @@unique([tenant_id, creci])
   @@index([tenant_id])
@@ -376,6 +379,7 @@ model Lead {
   messages     Message[] // Mensagens da conversa
   agendamentos Agendamento[]
   interactions LeadInteraction[] // Histórico de interações
+  tarefas      Tarefa[] // Tarefas/follow-ups relacionados ao lead
 
   @@index([tenant_id])
   @@index([corretor_id])
@@ -1231,4 +1235,100 @@ enum NotificationType {
   PROPOSTA   // Relacionado a proposta
   META       // Relacionado a metas
   SISTEMA    // Mensagem do sistema
+  TAREFA     // Relacionado a tarefa
+}
+
+// ============================================
+// TAREFAS / FOLLOW-UPS
+// ============================================
+
+model Tarefa {
+  id String @id @default(uuid())
+
+  // Multi-tenant
+  tenant_id String
+  tenant    Tenant @relation(fields: [tenant_id], references: [id], onDelete: Cascade)
+
+  // Responsável pela tarefa
+  user_id String
+  user    User @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  // Lead relacionado (opcional)
+  lead_id String?
+  lead    Lead? @relation(fields: [lead_id], references: [id], onDelete: SetNull)
+
+  // Corretor relacionado (opcional - para tarefas atribuídas a corretores específicos)
+  corretor_id String?
+  corretor    Corretor? @relation(fields: [corretor_id], references: [id], onDelete: SetNull)
+
+  // Conteúdo da tarefa
+  titulo    String
+  descricao String? @db.Text
+
+  // Classificação
+  tipo      TipoTarefa @default(FOLLOW_UP)
+  prioridade PrioridadeTarefa @default(MEDIA)
+  status    StatusTarefa @default(PENDENTE)
+
+  // Datas
+  data_vencimento DateTime? // Data limite para conclusão
+  data_lembrete   DateTime? // Data para enviar lembrete
+  data_conclusao  DateTime? // Data em que foi concluída
+
+  // Controle de lembretes
+  lembrete_enviado Boolean @default(false)
+
+  // Recorrência (opcional)
+  recorrente       Boolean @default(false)
+  tipo_recorrencia TipoRecorrencia?
+  proxima_recorrencia DateTime?
+
+  // Observações de conclusão
+  observacao_conclusao String? @db.Text
+
+  // Timestamps
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  @@index([tenant_id])
+  @@index([user_id])
+  @@index([lead_id])
+  @@index([corretor_id])
+  @@index([status])
+  @@index([data_vencimento])
+  @@index([data_lembrete])
+  @@map("tarefas")
+}
+
+enum TipoTarefa {
+  FOLLOW_UP    // Acompanhamento de lead
+  LIGACAO      // Ligar para cliente
+  EMAIL        // Enviar email
+  WHATSAPP     // Enviar WhatsApp
+  VISITA       // Agendar/realizar visita
+  DOCUMENTO    // Preparar/enviar documento
+  REUNIAO      // Reunião interna ou com cliente
+  OUTRO        // Outros
+}
+
+enum PrioridadeTarefa {
+  BAIXA
+  MEDIA
+  ALTA
+  URGENTE
+}
+
+enum StatusTarefa {
+  PENDENTE    // Aguardando início
+  EM_ANDAMENTO // Em execução
+  CONCLUIDA   // Finalizada com sucesso
+  CANCELADA   // Cancelada
+  ATRASADA    // Passou da data de vencimento
+}
+
+enum TipoRecorrencia {
+  DIARIA
+  SEMANAL
+  QUINZENAL
+  MENSAL
 }

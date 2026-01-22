@@ -81,6 +81,7 @@ export default function DashboardLayout({
     { name: 'Proprietários', href: '/dashboard/proprietarios', icon: '🏠', iconImage: '/ico-proprietarios.png' },
     { name: 'Imóveis', href: '/dashboard/imoveis', icon: '🏘️', iconImage: '/ico-imoveis.png' },
     { name: 'Negociações', href: '/dashboard/negociacoes', icon: '💼', iconImage: '/ico-negociacoes.png' },
+    { name: 'Tarefas', href: '/dashboard/tarefas', icon: '📋', iconImage: null },
     { name: 'WhatsApp', href: '/dashboard/whatsapp', icon: '📱', iconImage: null },
     // Menu Administração para tenants normais
     {
@@ -103,6 +104,7 @@ export default function DashboardLayout({
     { name: 'Proprietários', href: '/dashboard/proprietarios', icon: '🏠', iconImage: '/ico-proprietarios.png' },
     { name: 'Imóveis', href: '/dashboard/imoveis', icon: '🏘️', iconImage: '/ico-imoveis.png' },
     { name: 'Negociações', href: '/dashboard/negociacoes', icon: '💼', iconImage: '/ico-negociacoes.png' },
+    { name: 'Tarefas', href: '/dashboard/tarefas', icon: '📋', iconImage: null },
     // Corretor tem acesso à Minha Conta para alterar senha
     { name: 'Minha Conta', href: '/dashboard/administracao', icon: '👤', iconImage: null },
   ];

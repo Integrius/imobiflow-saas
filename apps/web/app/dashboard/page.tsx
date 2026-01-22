@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { api } from '@/lib/api';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import MetaWidget from '@/components/MetaWidget';
+import TarefasWidget from '@/components/TarefasWidget';
 
 interface DashboardData {
   leads: { total: number; quentes: number };
@@ -162,12 +163,11 @@ export default function DashboardPage() {
         </div>
       )}
 
-      {/* Widget de Metas do Corretor */}
+      {/* Widgets de Metas e Tarefas */}
       <div className="mt-8">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <div className="lg:col-span-1">
-            <MetaWidget />
-          </div>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <MetaWidget />
+          <TarefasWidget />
         </div>
       </div>
 

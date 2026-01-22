@@ -3206,6 +3206,108 @@ enum NotificationType {
 
 ---
 
+#### Sistema de Tarefas/Follow-ups ✅
+
+Implementado sistema completo de tarefas para organização de follow-ups e atividades dos corretores.
+
+**Funcionalidades:**
+
+1. **Tipos de Tarefa**
+   - FOLLOW_UP - Acompanhamento de lead
+   - LIGACAO - Ligar para cliente
+   - EMAIL - Enviar email
+   - WHATSAPP - Enviar WhatsApp
+   - VISITA - Agendar/realizar visita
+   - DOCUMENTO - Preparar/enviar documento
+   - REUNIAO - Reunião interna ou com cliente
+   - OUTRO - Outros tipos
+
+2. **Prioridades**
+   - BAIXA - Cinza
+   - MEDIA - Azul
+   - ALTA - Laranja
+   - URGENTE - Vermelho
+
+3. **Status**
+   - PENDENTE - Aguardando início
+   - EM_ANDAMENTO - Em execução
+   - CONCLUIDA - Finalizada com sucesso
+   - CANCELADA - Cancelada
+   - ATRASADA - Passou da data de vencimento
+
+4. **Tarefas Recorrentes**
+   - Diária
+   - Semanal
+   - Quinzenal
+   - Mensal
+   - Ao concluir tarefa recorrente, próxima é criada automaticamente
+
+5. **Sistema de Lembretes**
+   - Definir data de lembrete
+   - Notificação in-app enviada automaticamente
+   - Job para processamento de lembretes
+
+6. **Widget no Dashboard**
+   - Mostra tarefas pendentes
+   - Quantidade de atrasadas em destaque
+   - Concluir tarefa direto do widget
+   - Link para página completa
+
+**Endpoints da API** (`/api/v1/tarefas/`):
+- `GET /` - Listar tarefas com filtros
+- `GET /pendentes` - Tarefas pendentes do usuário (widget)
+- `GET /hoje` - Tarefas vencendo hoje
+- `GET /atrasadas` - Tarefas atrasadas
+- `GET /stats` - Estatísticas de tarefas
+- `GET /:id` - Buscar tarefa por ID
+- `POST /` - Criar nova tarefa
+- `PATCH /:id` - Atualizar tarefa
+- `POST /:id/concluir` - Concluir tarefa
+- `POST /:id/cancelar` - Cancelar tarefa
+- `DELETE /:id` - Deletar tarefa
+
+**Modelo de Dados:**
+```prisma
+model Tarefa {
+  id String @id @default(uuid())
+  tenant_id String
+  user_id String
+  lead_id String?
+  corretor_id String?
+  titulo String
+  descricao String?
+  tipo TipoTarefa @default(FOLLOW_UP)
+  prioridade PrioridadeTarefa @default(MEDIA)
+  status StatusTarefa @default(PENDENTE)
+  data_vencimento DateTime?
+  data_lembrete DateTime?
+  data_conclusao DateTime?
+  lembrete_enviado Boolean @default(false)
+  recorrente Boolean @default(false)
+  tipo_recorrencia TipoRecorrencia?
+  observacao_conclusao String?
+  @@index([tenant_id])
+  @@index([user_id])
+  @@index([status])
+  @@index([data_vencimento])
+}
+```
+
+**Arquivos Criados:**
+- `/apps/api/src/modules/tarefas/tarefas.service.ts` - Lógica de negócio
+- `/apps/api/src/modules/tarefas/tarefas.routes.ts` - Endpoints da API
+- `/apps/web/app/dashboard/tarefas/page.tsx` - Página de gestão de tarefas
+- `/apps/web/components/TarefasWidget.tsx` - Widget para dashboard
+- `/apps/api/src/shared/jobs/tarefas-lembrete-job.ts` - Job de lembretes
+
+**Arquivos Modificados:**
+- `/apps/api/prisma/schema.prisma` - Modelo Tarefa e enums adicionados
+- `/apps/api/src/server.ts` - Registro das rotas
+- `/apps/web/app/dashboard/layout.tsx` - Menu "Tarefas" adicionado
+- `/apps/web/app/dashboard/page.tsx` - Widget de tarefas integrado
+
+---
+
 #### Sistema de Metas para Corretores ✅
 
 Implementado sistema completo de metas mensais para corretores com acompanhamento de progresso.
@@ -4097,11 +4199,23 @@ Conforme Art. 39 da LGPD: *"O operador deverá realizar o tratamento segundo as 
 
 ---
 
-**Última atualização**: 17 de janeiro de 2026
-**Versão**: 1.11.0
+**Última atualização**: 22 de janeiro de 2026
+**Versão**: 1.12.0
 **Status**: Em produção ✅
 
-**Novidades da versão 1.11.0** (17 de janeiro de 2026):
+**Novidades da versão 1.12.0** (22 de janeiro de 2026):
+- ✅ **Sistema de Tarefas/Follow-ups**
+- ✅ Modelo Tarefa completo com tipos, prioridades e status
+- ✅ Suporte a tarefas recorrentes (diária, semanal, quinzenal, mensal)
+- ✅ Associação com leads para follow-up organizado
+- ✅ Sistema de lembretes com notificações in-app
+- ✅ Página completa de gestão de tarefas (/dashboard/tarefas)
+- ✅ Widget de tarefas no dashboard principal
+- ✅ Filtros por status, tipo e prioridade
+- ✅ Estatísticas de tarefas (pendentes, atrasadas, taxa de conclusão)
+- ✅ Job para processamento de lembretes automáticos
+
+**Versão 1.11.0** (17 de janeiro de 2026):
 - ✅ **Integração WhatsApp via Twilio**
 - ✅ Webhook para receber mensagens do Twilio WhatsApp Business
 - ✅ Criação automática de leads de novos contatos WhatsApp
