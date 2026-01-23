@@ -7,6 +7,7 @@ import Modal from '@/components/Modal';
 import RegistrarAtividade from '@/components/RegistrarAtividade';
 import { formatPhone, unformatNumbers } from '@/lib/formatters';
 import ReportDownloadButton from '@/components/ReportDownloadButton';
+import Link from 'next/link';
 
 interface Lead {
   id: string;
@@ -284,6 +285,15 @@ export default function LeadsPage() {
             label="Exportar PDF"
             className="bg-gradient-to-r from-[#A97E6F] to-[#8B6F5C] hover:from-[#8B6F5C] hover:to-[#A97E6F]"
           />
+          <Link
+            href="/dashboard/leads/importar"
+            className="px-4 py-2 border border-[#059669] text-[#059669] rounded-lg hover:bg-[#059669]/10 transition-colors flex items-center gap-2"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+            </svg>
+            Importar CSV
+          </Link>
           <button
             onClick={openCreateModal}
             className="btn-primary"

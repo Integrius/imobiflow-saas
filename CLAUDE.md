@@ -3115,6 +3115,122 @@ Implementadas melhorias significativas no dashboard individual do corretor com r
 
 ---
 
+#### Importação de Leads via CSV (#7) ✅
+
+Implementado sistema completo de importação de leads em massa através de arquivos CSV com mapeamento automático de campos.
+
+**Endpoints da API** (`/api/v1/leads/import/`):
+- `GET /template` - Download do template CSV
+- `POST /analyze` - Análise prévia do arquivo (preview)
+- `POST /` - Importação dos leads
+- `GET /fields` - Lista campos disponíveis para mapeamento
+
+**Funcionalidades:**
+
+1. **Mapeamento Automático de Campos**
+   - Aliases inteligentes para detectar colunas (ex: "telefone", "tel", "phone", "celular")
+   - Suporte a variações de nomenclatura em português e inglês
+   - Mapeamento manual disponível para ajustes
+
+2. **Normalização de Valores**
+   - Enums mapeados automaticamente (ex: "quente" → "QUENTE", "hot" → "QUENTE")
+   - Telefones normalizados (remove caracteres não numéricos)
+   - Valores monetários com suporte a vírgula e ponto
+
+3. **Detecção de Duplicados**
+   - Verifica por telefone normalizado (últimos 9 dígitos)
+   - Opção para ignorar ou atualizar existentes
+   - Relatório detalhado de duplicados
+
+4. **Atribuição de Corretor**
+   - Por email no CSV (coluna corretor_email)
+   - Corretor padrão configurável
+   - Sem atribuição (manter em aberto)
+
+5. **Template CSV**
+   - Download com todas as colunas disponíveis
+   - Exemplo de preenchimento
+   - Encoding UTF-8 com BOM (compatível com Excel)
+
+**Campos Suportados:**
+- Obrigatórios: nome, telefone
+- Opcionais: email, cpf, origem, temperatura, tipo_negocio, tipo_imovel
+- Localização: estado, municipio, bairro
+- Preferências: valor_minimo, valor_maximo, quartos_min/max, vagas_min/max, area_minima
+- Outros: aceita_pets, observacoes, corretor_email
+
+**Aliases de Campos:**
+```typescript
+const FIELD_ALIASES = {
+  nome: ['nome', 'name', 'nome_completo', 'cliente', 'lead'],
+  telefone: ['telefone', 'tel', 'phone', 'celular', 'whatsapp', 'contato'],
+  email: ['email', 'e-mail', 'e_mail', 'correio'],
+  origem: ['origem', 'source', 'fonte', 'canal'],
+  // ... mais aliases
+}
+```
+
+**Mapeamento de Enums:**
+```typescript
+const ORIGEM_MAPPING = {
+  'site': 'SITE', 'portal': 'PORTAL', 'whatsapp': 'WHATSAPP',
+  'facebook': 'REDES_SOCIAIS', 'instagram': 'REDES_SOCIAIS',
+  'indicacao': 'INDICACAO', 'indicação': 'INDICACAO',
+  // ... mais mapeamentos
+}
+
+const TEMPERATURA_MAPPING = {
+  'quente': 'QUENTE', 'hot': 'QUENTE',
+  'morno': 'MORNO', 'warm': 'MORNO',
+  'frio': 'FRIO', 'cold': 'FRIO'
+}
+```
+
+**Resultado da Importação:**
+```typescript
+{
+  total: number,      // Total de linhas processadas
+  sucesso: number,    // Leads criados com sucesso
+  erros: number,      // Linhas com erro
+  duplicados: number, // Leads ignorados por duplicidade
+  detalhes: [{
+    linha: number,
+    status: 'sucesso' | 'erro' | 'duplicado',
+    nome?: string,
+    telefone?: string,
+    erro?: string
+  }]
+}
+```
+
+**Frontend - Página de Importação:**
+- URL: `/dashboard/leads/importar`
+- Wizard em 4 etapas: Upload → Mapeamento → Importando → Resultado
+- Área de drag-and-drop para arquivo
+- Preview das primeiras 5 linhas
+- Configuração de delimitador (;, ,, tab)
+- Opções de importação:
+  - Origem/Temperatura padrão
+  - Corretor padrão
+  - Ignorar duplicados / Atualizar existentes
+- Relatório detalhado com status por linha
+- Botão "Importar CSV" na página de leads
+
+**Arquivos Criados:**
+- `/apps/api/src/shared/services/csv-import.service.ts` - Serviço de importação
+- `/apps/api/src/modules/leads/leads-import.routes.ts` - Rotas da API
+- `/apps/web/app/dashboard/leads/importar/page.tsx` - Página de importação
+
+**Arquivos Modificados:**
+- `/apps/api/src/server.ts` - Registro das rotas de importação
+- `/apps/web/app/dashboard/leads/page.tsx` - Botão "Importar CSV"
+
+**Dependências:**
+- `csv-parse` - Parser de CSV
+- `fastify-multer` - Upload de arquivos
+
+---
+
 ### 2026-01-17
 
 #### Integração WhatsApp via Twilio ✅
@@ -4272,10 +4388,22 @@ Conforme Art. 39 da LGPD: *"O operador deverá realizar o tratamento segundo as 
 ---
 
 **Última atualização**: 23 de janeiro de 2026
-**Versão**: 1.13.0
+**Versão**: 1.14.0
 **Status**: Em produção ✅
 
-**Novidades da versão 1.13.0** (23 de janeiro de 2026):
+**Novidades da versão 1.14.0** (23 de janeiro de 2026):
+- ✅ **Importação de Leads via CSV (#7)**
+- ✅ Wizard completo de importação em 4 etapas
+- ✅ Mapeamento automático de campos com aliases inteligentes
+- ✅ Normalização de enums (origem, temperatura, tipo_negocio, tipo_imovel)
+- ✅ Detecção de duplicados por telefone
+- ✅ Atribuição de corretor por email ou padrão
+- ✅ Template CSV para download
+- ✅ Preview das primeiras 5 linhas antes de importar
+- ✅ Relatório detalhado com status por linha
+- ✅ Suporte a delimitadores: ponto-vírgula, vírgula, tab
+
+**Versão 1.13.0** (23 de janeiro de 2026):
 - ✅ **Dashboard Individual do Corretor Aprimorado (#6)**
 - ✅ Sistema de ranking comparativo com a equipe
 - ✅ Posição em 4 categorias: Fechamentos, Valor, Leads, Conversão

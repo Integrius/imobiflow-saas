@@ -15,6 +15,7 @@ import { aiRoutes } from './modules/ai/ai.routes'
 import { whatsAppRoutes } from './modules/whatsapp/whatsapp.routes'
 import { localidadesRoutes } from './modules/localidades/localidades.routes'
 import { leadsCapturaRoutes } from './modules/leads/leads-captura.routes'
+import { leadsImportRoutes } from './modules/leads/leads-import.routes'
 import { telegramRoutes } from './modules/telegram/telegram.routes'
 import { agendamentosRoutes } from './modules/agendamentos/agendamentos.routes'
 import { usersRoutes } from './modules/users/users.routes'
@@ -75,6 +76,7 @@ server.register(tenantRoutes, { prefix: '/api/v1/tenants' })
 server.register(dataExportRoutes, { prefix: '/api/v1' }) // Rotas de exportação de dados
 server.register(leadsRoutes, { prefix: '/api/v1/leads' })
 server.register(leadsCapturaRoutes, { prefix: '/api/v1/leads' }) // Rotas públicas de captura
+server.register(leadsImportRoutes, { prefix: '/api/v1/leads/import' }) // Rotas de importação de leads via CSV
 server.register(corretoresRoutes, { prefix: '/api/v1/corretores' })
 server.register(proprietariosRoutes, { prefix: '/api/v1/proprietarios' })
 server.register(imoveisRoutes, { prefix: '/api/v1/imoveis' })
