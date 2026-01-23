@@ -3,31 +3,8 @@ import { authMiddleware } from '../../shared/middlewares/auth.middleware'
 import { tenantMiddleware } from '../../shared/middlewares/tenant.middleware'
 import { CsvImportService } from '../../shared/services/csv-import.service'
 import { z } from 'zod'
-import multer from 'fastify-multer'
-
-// Configurar multer para upload em memória
-const storage = multer.memoryStorage()
-const upload = multer({
-  storage,
-  limits: {
-    fileSize: 5 * 1024 * 1024 // 5MB max
-  },
-  fileFilter: (_req, file, cb) => {
-    // Aceitar apenas CSV
-    if (file.mimetype === 'text/csv' ||
-        file.mimetype === 'application/vnd.ms-excel' ||
-        file.originalname.endsWith('.csv')) {
-      cb(null, true)
-    } else {
-      cb(new Error('Apenas arquivos CSV são permitidos') as any, false)
-    }
-  }
-})
 
 export async function leadsImportRoutes(server: FastifyInstance) {
-  // Registrar multer
-  server.register(multer.contentParser)
-
   // Middleware de autenticação e tenant
   server.addHook('preHandler', authMiddleware)
   server.addHook('preHandler', tenantMiddleware)
@@ -49,9 +26,7 @@ export async function leadsImportRoutes(server: FastifyInstance) {
    * POST /api/v1/leads/import/analyze
    * Analisa CSV e retorna preview
    */
-  server.post('/analyze', {
-    preHandler: upload.single('file')
-  }, async (request: FastifyRequest, reply: FastifyReply) => {
+  server.post('/analyze', async (request: FastifyRequest, reply: FastifyReply) => {
     const user = (request as any).user
     if (!user || !['ADMIN', 'GESTOR'].includes(user.tipo)) {
       return reply.status(403).send({
@@ -60,17 +35,42 @@ export async function leadsImportRoutes(server: FastifyInstance) {
       })
     }
 
-    const file = (request as any).file
-    if (!file) {
-      return reply.status(400).send({
-        error: 'Arquivo não enviado',
-        message: 'Por favor, envie um arquivo CSV'
-      })
-    }
-
     try {
-      const delimiter = (request.query as any).delimiter || ';'
-      const analysis = await CsvImportService.analyzeCSV(file.buffer, delimiter)
+      const data = await request.file()
+      if (!data) {
+        return reply.status(400).send({
+          error: 'Arquivo não enviado',
+          message: 'Por favor, envie um arquivo CSV'
+        })
+      }
+
+      // Verificar tipo de arquivo
+      const filename = data.filename.toLowerCase()
+      const mimetype = data.mimetype
+      if (!filename.endsWith('.csv') && mimetype !== 'text/csv' && mimetype !== 'application/vnd.ms-excel') {
+        return reply.status(400).send({
+          error: 'Tipo de arquivo inválido',
+          message: 'Apenas arquivos CSV são permitidos'
+        })
+      }
+
+      // Ler o buffer do arquivo
+      const buffer = await data.toBuffer()
+
+      // Verificar tamanho (5MB max)
+      if (buffer.length > 5 * 1024 * 1024) {
+        return reply.status(400).send({
+          error: 'Arquivo muito grande',
+          message: 'O arquivo deve ter no máximo 5MB'
+        })
+      }
+
+      const querySchema = z.object({
+        delimiter: z.string().optional().default(';')
+      })
+      const query = querySchema.parse(request.query)
+
+      const analysis = await CsvImportService.analyzeCSV(buffer, query.delimiter)
 
       return reply.send({
         success: true,
@@ -88,9 +88,7 @@ export async function leadsImportRoutes(server: FastifyInstance) {
    * POST /api/v1/leads/import
    * Importa leads do CSV
    */
-  server.post('/', {
-    preHandler: upload.single('file')
-  }, async (request: FastifyRequest, reply: FastifyReply) => {
+  server.post('/', async (request: FastifyRequest, reply: FastifyReply) => {
     const user = (request as any).user
     const tenantId = (request as any).tenantId
 
@@ -101,48 +99,79 @@ export async function leadsImportRoutes(server: FastifyInstance) {
       })
     }
 
-    const file = (request as any).file
-    if (!file) {
-      return reply.status(400).send({
-        error: 'Arquivo não enviado',
-        message: 'Por favor, envie um arquivo CSV'
-      })
-    }
-
-    // Validar body
-    const bodySchema = z.object({
-      delimiter: z.string().optional().default(';'),
-      fieldMapping: z.record(z.string()).optional(),
-      defaultOrigem: z.enum(['SITE', 'PORTAL', 'WHATSAPP', 'TELEFONE', 'INDICACAO', 'REDES_SOCIAIS', 'EVENTO', 'OUTRO']).optional(),
-      defaultTemperatura: z.enum(['QUENTE', 'MORNO', 'FRIO']).optional(),
-      defaultCorretorId: z.string().uuid().optional(),
-      skipDuplicates: z.boolean().optional().default(true),
-      updateExisting: z.boolean().optional().default(false)
-    })
-
-    let options: z.infer<typeof bodySchema>
     try {
-      // Body pode vir como string JSON no FormData
-      const bodyData = typeof request.body === 'string'
-        ? JSON.parse(request.body)
-        : request.body || {}
-      options = bodySchema.parse(bodyData)
-    } catch (error: any) {
-      return reply.status(400).send({
-        error: 'Parâmetros inválidos',
-        message: error.message
-      })
-    }
+      const data = await request.file()
+      if (!data) {
+        return reply.status(400).send({
+          error: 'Arquivo não enviado',
+          message: 'Por favor, envie um arquivo CSV'
+        })
+      }
 
-    try {
-      const result = await CsvImportService.importLeads(file.buffer, tenantId, {
-        delimiter: options.delimiter,
-        fieldMapping: options.fieldMapping,
-        defaultOrigem: options.defaultOrigem as any,
-        defaultTemperatura: options.defaultTemperatura as any,
-        defaultCorretorId: options.defaultCorretorId,
-        skipDuplicates: options.skipDuplicates,
-        updateExisting: options.updateExisting
+      // Verificar tipo de arquivo
+      const filename = data.filename.toLowerCase()
+      const mimetype = data.mimetype
+      if (!filename.endsWith('.csv') && mimetype !== 'text/csv' && mimetype !== 'application/vnd.ms-excel') {
+        return reply.status(400).send({
+          error: 'Tipo de arquivo inválido',
+          message: 'Apenas arquivos CSV são permitidos'
+        })
+      }
+
+      // Ler o buffer do arquivo
+      const buffer = await data.toBuffer()
+
+      // Verificar tamanho (5MB max)
+      if (buffer.length > 5 * 1024 * 1024) {
+        return reply.status(400).send({
+          error: 'Arquivo muito grande',
+          message: 'O arquivo deve ter no máximo 5MB'
+        })
+      }
+
+      // Obter campos do formulário multipart
+      const fields = data.fields
+
+      // Extrair valores dos campos
+      const getFieldValue = (fieldName: string): string | undefined => {
+        const field = fields[fieldName]
+        if (!field) return undefined
+        if (Array.isArray(field)) {
+          const firstField = field[0]
+          return firstField && 'value' in firstField ? String(firstField.value) : undefined
+        }
+        return 'value' in field ? String(field.value) : undefined
+      }
+
+      // Validar e processar opções
+      const delimiter = getFieldValue('delimiter') || ';'
+      const fieldMappingStr = getFieldValue('fieldMapping')
+      const defaultOrigem = getFieldValue('defaultOrigem') || 'OUTRO'
+      const defaultTemperatura = getFieldValue('defaultTemperatura') || 'FRIO'
+      const defaultCorretorId = getFieldValue('defaultCorretorId')
+      const skipDuplicatesStr = getFieldValue('skipDuplicates')
+      const updateExistingStr = getFieldValue('updateExisting')
+
+      let fieldMapping: Record<string, string> | undefined
+      if (fieldMappingStr) {
+        try {
+          fieldMapping = JSON.parse(fieldMappingStr)
+        } catch {
+          fieldMapping = undefined
+        }
+      }
+
+      const skipDuplicates = skipDuplicatesStr !== 'false'
+      const updateExisting = updateExistingStr === 'true'
+
+      const result = await CsvImportService.importLeads(buffer, tenantId, {
+        delimiter,
+        fieldMapping,
+        defaultOrigem: defaultOrigem as any,
+        defaultTemperatura: defaultTemperatura as any,
+        defaultCorretorId,
+        skipDuplicates,
+        updateExisting
       })
 
       return reply.send({
