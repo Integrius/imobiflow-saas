@@ -3043,6 +3043,78 @@ TWILIO_WHATSAPP_NUMBER="+5511999999999"
 
 ## Histórico de Configurações
 
+### 2026-01-23
+
+#### Dashboard Individual do Corretor Aprimorado (#6) ✅
+
+Implementadas melhorias significativas no dashboard individual do corretor com ranking, comparativos e métricas detalhadas.
+
+**Novos Endpoints da API** (`/api/v1/corretores/`):
+- `GET /meu-ranking` - Ranking do corretor comparado com a equipe
+- `GET /minhas-metricas` - Métricas detalhadas do corretor
+
+**Funcionalidades de Ranking:**
+- Posição do corretor em 4 categorias: Fechamentos, Valor, Leads, Conversão
+- Comparativo com média da equipe (barras de progresso)
+- Top 3 corretores do mês (fechamentos e valor)
+- Comparativo com mês anterior (evolução)
+- Total de corretores ativos no tenant
+
+**Métricas Detalhadas:**
+- Leads sem contato há mais de 3 dias (alerta visual)
+- Tempo médio de fechamento (em dias)
+- Tempo médio de primeiro contato (em horas)
+- Taxa de realização de visitas (agendadas vs realizadas)
+- Leads por origem (SITE, WHATSAPP, TELEGRAM, etc.)
+- Propostas recebidas no mês
+- Tarefas pendentes e atrasadas
+
+**Dados do Ranking:**
+```typescript
+{
+  posicao: { fechamentos, valor, leads, conversao },
+  totalCorretores: number,
+  meuDesempenho: { fechamentosMes, valorMes, leadsMes, visitasMes, taxaConversao },
+  mediaEquipe: { fechamentos, valor, leads, conversao },
+  comparativoMesAnterior: { fechamentos, valor, leads },
+  top3: {
+    fechamentos: [{ nome, valor }],
+    valor: [{ nome, valor }]
+  }
+}
+```
+
+**Dados das Métricas:**
+```typescript
+{
+  leadsSemContato: [{ id, nome, telefone, temperatura, diasSemContato }],
+  tempoMedioFechamento: number, // dias
+  tempoMedioPrimeiroContato: number, // horas
+  visitas: { agendadas, realizadas, taxaRealizacao },
+  leadsPorOrigem: [{ origem, quantidade }],
+  propostasMes: number,
+  tarefas: { pendentes, atrasadas }
+}
+```
+
+**Frontend - Novas Seções:**
+1. **Seção de Ranking** - Cards com posição em cada categoria
+2. **Comparativo com Equipe** - Barras de progresso mostrando desempenho vs média
+3. **Top 3 do Mês** - Ranking dos melhores corretores
+4. **Comparativo Mês Anterior** - Evolução de métricas
+5. **Leads Sem Contato** - Lista de leads que precisam de atenção
+6. **Métricas de Tempo** - Tempo médio de fechamento e primeiro contato
+7. **Atividades Pendentes** - Tarefas e propostas
+
+**Arquivos Modificados:**
+- `/apps/api/src/modules/corretores/corretores.repository.ts` - Métodos getCorretorRanking e getCorretorMetricasDetalhadas
+- `/apps/api/src/modules/corretores/corretores.service.ts` - getMeuRanking e getMinhasMetricas
+- `/apps/api/src/modules/corretores/corretores.controller.ts` - Handlers dos novos endpoints
+- `/apps/api/src/modules/corretores/corretores.routes.ts` - Rotas /meu-ranking e /minhas-metricas
+- `/apps/web/app/dashboard/meu-desempenho/page.tsx` - Componentes de ranking e métricas
+
+---
+
 ### 2026-01-17
 
 #### Integração WhatsApp via Twilio ✅
@@ -4199,11 +4271,24 @@ Conforme Art. 39 da LGPD: *"O operador deverá realizar o tratamento segundo as 
 
 ---
 
-**Última atualização**: 22 de janeiro de 2026
-**Versão**: 1.12.0
+**Última atualização**: 23 de janeiro de 2026
+**Versão**: 1.13.0
 **Status**: Em produção ✅
 
-**Novidades da versão 1.12.0** (22 de janeiro de 2026):
+**Novidades da versão 1.13.0** (23 de janeiro de 2026):
+- ✅ **Dashboard Individual do Corretor Aprimorado (#6)**
+- ✅ Sistema de ranking comparativo com a equipe
+- ✅ Posição em 4 categorias: Fechamentos, Valor, Leads, Conversão
+- ✅ Comparativo com média da equipe (barras de progresso)
+- ✅ Top 3 corretores do mês
+- ✅ Comparativo com mês anterior (evolução)
+- ✅ Métricas detalhadas: tempo médio de fechamento, primeiro contato
+- ✅ Alerta visual de leads sem contato há mais de 3 dias
+- ✅ Taxa de realização de visitas
+- ✅ Leads por origem e propostas do mês
+- ✅ Integração com sistema de tarefas pendentes
+
+**Versão 1.12.0** (22 de janeiro de 2026):
 - ✅ **Sistema de Tarefas/Follow-ups**
 - ✅ Modelo Tarefa completo com tipos, prioridades e status
 - ✅ Suporte a tarefas recorrentes (diária, semanal, quinzenal, mensal)

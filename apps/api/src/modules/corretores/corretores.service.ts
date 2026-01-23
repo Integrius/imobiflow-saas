@@ -235,4 +235,30 @@ export class CorretoresService {
 
     return await this.corretoresRepository.getCorretorDashboard(corretorId, tenantId)
   }
+
+  /**
+   * Busca ranking do corretor comparado com a equipe
+   */
+  async getMeuRanking(userId: string, tenantId: string) {
+    const corretorId = await this.corretoresRepository.findCorretorIdByUserId(userId, tenantId)
+
+    if (!corretorId) {
+      throw new AppError('Corretor não encontrado para este usuário', 404, 'CORRETOR_NOT_FOUND')
+    }
+
+    return await this.corretoresRepository.getCorretorRanking(corretorId, tenantId)
+  }
+
+  /**
+   * Busca métricas detalhadas do corretor
+   */
+  async getMinhasMetricas(userId: string, tenantId: string) {
+    const corretorId = await this.corretoresRepository.findCorretorIdByUserId(userId, tenantId)
+
+    if (!corretorId) {
+      throw new AppError('Corretor não encontrado para este usuário', 404, 'CORRETOR_NOT_FOUND')
+    }
+
+    return await this.corretoresRepository.getCorretorMetricasDetalhadas(corretorId, tenantId)
+  }
 }

@@ -93,6 +93,64 @@ interface DashboardData {
   }>;
 }
 
+interface RankingData {
+  posicao: {
+    fechamentos: number;
+    valor: number;
+    leads: number;
+    conversao: number;
+  };
+  totalCorretores: number;
+  meuDesempenho: {
+    id: string;
+    nome: string;
+    fechamentosMes: number;
+    valorMes: number;
+    leadsMes: number;
+    visitasMes: number;
+    taxaConversao: number;
+  } | null;
+  mediaEquipe: {
+    fechamentos: number;
+    valor: number;
+    leads: number;
+    conversao: number;
+  };
+  comparativoMesAnterior: {
+    fechamentos: number;
+    valor: number;
+    leads: number;
+  };
+  top3: {
+    fechamentos: Array<{ nome: string; valor: number }>;
+    valor: Array<{ nome: string; valor: number }>;
+  };
+}
+
+interface MetricasData {
+  leadsSemContato: Array<{
+    id: string;
+    nome: string;
+    telefone: string;
+    temperatura: string;
+    diasSemContato: number;
+  }>;
+  tempoMedioFechamento: number;
+  tempoMedioPrimeiroContato: number;
+  funilDetalhado: Array<{ status: string; quantidade: number }>;
+  visitas: {
+    agendadas: number;
+    realizadas: number;
+    taxaRealizacao: number;
+  };
+  leadsPorOrigem: Array<{ origem: string; quantidade: number }>;
+  propostasMes: number;
+  tarefas: {
+    pendentes: number;
+    atrasadas: number;
+  };
+}
+
 const statusColors: Record<string, { bg: string; text: string }> = {
   CONTATO: { bg: 'bg-gray-100', text: 'text-gray-800' },
   VISITA_AGENDADA: { bg: 'bg-blue-100', text: 'text-blue-800' },
@@ -253,6 +311,10 @@ export default function MeuDesempenhoPage() {
   const [data, setData] = useState<DashboardData | null>(null);
   const [insights, setInsights] = useState<Insight[]>([]);
   const [loadingInsights, setLoadingInsights] = useState(false);
+  const [ranking, setRanking] = useState<RankingData | null>(null);
+  const [metricas, setMetricas] = useState<MetricasData | null>(null);
+  const [loadingRanking, setLoadingRanking] = useState(false);
+  const [loadingMetricas, setLoadingMetricas] = useState(false);
 
   useEffect(() => {
     loadDashboard();
@@ -265,8 +327,10 @@ export default function MeuDesempenhoPage() {
       const response = await api.get('/corretores/meu-dashboard');
       setData(response.data.data);
 
-      // Carregar insights da Sofia em paralelo
+      // Carregar insights da Sofia, ranking e métricas em paralelo
       loadInsights();
+      loadRanking();
+      loadMetricas();
     } catch (err: any) {
       console.error('Erro ao carregar dashboard:', err);
       if (err.response?.status === 403) {
@@ -278,6 +342,32 @@ export default function MeuDesempenhoPage() {
       }
     } finally {
       setLoading(false);
+    }
+  };
+
+  const loadRanking = async () => {
+    try {
+      setLoadingRanking(true);
+      const response = await api.get('/corretores/meu-ranking');
+      setRanking(response.data.data);
+    } catch (err) {
+      console.error('Erro ao carregar ranking:', err);
+      setRanking(null);
+    } finally {
+      setLoadingRanking(false);
+    }
+  };
+
+  const loadMetricas = async () => {
+    try {
+      setLoadingMetricas(true);
+      const response = await api.get('/corretores/minhas-metricas');
+      setMetricas(response.data.data);
+    } catch (err) {
+      console.error('Erro ao carregar métricas:', err);
+      setMetricas(null);
+    } finally {
+      setLoadingMetricas(false);
     }
   };
 
@@ -612,6 +702,324 @@ export default function MeuDesempenhoPage() {
             </div>
         </div>
       </div>
+
+      {/* Seção de Ranking e Comparativo */}
+      {ranking && (
+        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+          <div className="flex items-center justify-between mb-6">
+            <h3 className="text-lg font-semibold text-gray-900">🏆 Seu Ranking na Equipe</h3>
+            <span className="text-sm text-gray-500">{ranking.totalCorretores} corretores ativos</span>
+          </div>
+
+          {/* Posições nos Rankings */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+            <div className="bg-gradient-to-br from-yellow-50 to-amber-50 rounded-xl p-4 border border-yellow-200">
+              <div className="text-3xl font-bold text-yellow-600">
+                {ranking.posicao.fechamentos}º
+              </div>
+              <p className="text-xs text-yellow-700 font-medium">Fechamentos</p>
+              <p className="text-xs text-gray-500 mt-1">
+                {ranking.meuDesempenho?.fechamentosMes || 0} este mês
+              </p>
+            </div>
+
+            <div className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-xl p-4 border border-green-200">
+              <div className="text-3xl font-bold text-green-600">
+                {ranking.posicao.valor}º
+              </div>
+              <p className="text-xs text-green-700 font-medium">Valor Fechado</p>
+              <p className="text-xs text-gray-500 mt-1">
+                {formatCurrency(ranking.meuDesempenho?.valorMes || 0)}
+              </p>
+            </div>
+
+            <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl p-4 border border-blue-200">
+              <div className="text-3xl font-bold text-blue-600">
+                {ranking.posicao.leads}º
+              </div>
+              <p className="text-xs text-blue-700 font-medium">Leads Captados</p>
+              <p className="text-xs text-gray-500 mt-1">
+                {ranking.meuDesempenho?.leadsMes || 0} este mês
+              </p>
+            </div>
+
+            <div className="bg-gradient-to-br from-purple-50 to-violet-50 rounded-xl p-4 border border-purple-200">
+              <div className="text-3xl font-bold text-purple-600">
+                {ranking.posicao.conversao}º
+              </div>
+              <p className="text-xs text-purple-700 font-medium">Taxa Conversão</p>
+              <p className="text-xs text-gray-500 mt-1">
+                {ranking.meuDesempenho?.taxaConversao.toFixed(1)}%
+              </p>
+            </div>
+          </div>
+
+          {/* Comparativo com Média da Equipe */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <h4 className="text-sm font-semibold text-gray-700 mb-3">📊 Você vs Média da Equipe</h4>
+              <div className="space-y-3">
+                <div>
+                  <div className="flex justify-between text-xs mb-1">
+                    <span className="text-gray-600">Fechamentos</span>
+                    <span className="font-medium">
+                      {ranking.meuDesempenho?.fechamentosMes || 0} / {ranking.mediaEquipe.fechamentos} (média)
+                    </span>
+                  </div>
+                  <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
+                    <div
+                      className={`h-full rounded-full transition-all ${
+                        (ranking.meuDesempenho?.fechamentosMes || 0) >= ranking.mediaEquipe.fechamentos
+                          ? 'bg-green-500' : 'bg-yellow-500'
+                      }`}
+                      style={{
+                        width: `${Math.min(100, ranking.mediaEquipe.fechamentos > 0
+                          ? ((ranking.meuDesempenho?.fechamentosMes || 0) / ranking.mediaEquipe.fechamentos) * 100
+                          : 0)}%`
+                      }}
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <div className="flex justify-between text-xs mb-1">
+                    <span className="text-gray-600">Leads Captados</span>
+                    <span className="font-medium">
+                      {ranking.meuDesempenho?.leadsMes || 0} / {ranking.mediaEquipe.leads} (média)
+                    </span>
+                  </div>
+                  <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
+                    <div
+                      className={`h-full rounded-full transition-all ${
+                        (ranking.meuDesempenho?.leadsMes || 0) >= ranking.mediaEquipe.leads
+                          ? 'bg-green-500' : 'bg-yellow-500'
+                      }`}
+                      style={{
+                        width: `${Math.min(100, ranking.mediaEquipe.leads > 0
+                          ? ((ranking.meuDesempenho?.leadsMes || 0) / ranking.mediaEquipe.leads) * 100
+                          : 0)}%`
+                      }}
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <div className="flex justify-between text-xs mb-1">
+                    <span className="text-gray-600">Taxa de Conversão</span>
+                    <span className="font-medium">
+                      {ranking.meuDesempenho?.taxaConversao.toFixed(1)}% / {ranking.mediaEquipe.conversao}% (média)
+                    </span>
+                  </div>
+                  <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
+                    <div
+                      className={`h-full rounded-full transition-all ${
+                        (ranking.meuDesempenho?.taxaConversao || 0) >= ranking.mediaEquipe.conversao
+                          ? 'bg-green-500' : 'bg-yellow-500'
+                      }`}
+                      style={{
+                        width: `${Math.min(100, ranking.mediaEquipe.conversao > 0
+                          ? ((ranking.meuDesempenho?.taxaConversao || 0) / ranking.mediaEquipe.conversao) * 100
+                          : 0)}%`
+                      }}
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Top 3 e Comparativo Mês Anterior */}
+            <div>
+              <h4 className="text-sm font-semibold text-gray-700 mb-3">🥇 Top 3 Fechamentos do Mês</h4>
+              <div className="space-y-2 mb-4">
+                {ranking.top3.fechamentos.map((corretor, idx) => (
+                  <div key={idx} className="flex items-center justify-between p-2 bg-gray-50 rounded-lg">
+                    <div className="flex items-center gap-2">
+                      <span className={`text-lg ${idx === 0 ? '🥇' : idx === 1 ? '🥈' : '🥉'}`}>
+                        {idx === 0 ? '🥇' : idx === 1 ? '🥈' : '🥉'}
+                      </span>
+                      <span className="text-sm font-medium text-gray-700">{corretor.nome}</span>
+                    </div>
+                    <span className="text-sm font-bold text-gray-900">{corretor.valor}</span>
+                  </div>
+                ))}
+              </div>
+
+              <h4 className="text-sm font-semibold text-gray-700 mb-3">📅 Comparativo Mês Anterior</h4>
+              <div className="grid grid-cols-3 gap-2">
+                <div className="text-center p-2 bg-gray-50 rounded-lg">
+                  <p className="text-lg font-bold text-gray-900">{ranking.comparativoMesAnterior.fechamentos}</p>
+                  <p className="text-[10px] text-gray-500">Fechamentos</p>
+                  {ranking.meuDesempenho && (
+                    <span className={`text-[10px] font-medium ${
+                      (ranking.meuDesempenho.fechamentosMes || 0) >= ranking.comparativoMesAnterior.fechamentos
+                        ? 'text-green-600' : 'text-red-600'
+                    }`}>
+                      {(ranking.meuDesempenho.fechamentosMes || 0) >= ranking.comparativoMesAnterior.fechamentos ? '↑' : '↓'}
+                    </span>
+                  )}
+                </div>
+                <div className="text-center p-2 bg-gray-50 rounded-lg">
+                  <p className="text-lg font-bold text-gray-900">{ranking.comparativoMesAnterior.leads}</p>
+                  <p className="text-[10px] text-gray-500">Leads</p>
+                  {ranking.meuDesempenho && (
+                    <span className={`text-[10px] font-medium ${
+                      (ranking.meuDesempenho.leadsMes || 0) >= ranking.comparativoMesAnterior.leads
+                        ? 'text-green-600' : 'text-red-600'
+                    }`}>
+                      {(ranking.meuDesempenho.leadsMes || 0) >= ranking.comparativoMesAnterior.leads ? '↑' : '↓'}
+                    </span>
+                  )}
+                </div>
+                <div className="text-center p-2 bg-gray-50 rounded-lg">
+                  <p className="text-sm font-bold text-gray-900">{formatCurrency(ranking.comparativoMesAnterior.valor).replace('R$', '').trim()}</p>
+                  <p className="text-[10px] text-gray-500">Valor</p>
+                  {ranking.meuDesempenho && (
+                    <span className={`text-[10px] font-medium ${
+                      (ranking.meuDesempenho.valorMes || 0) >= ranking.comparativoMesAnterior.valor
+                        ? 'text-green-600' : 'text-red-600'
+                    }`}>
+                      {(ranking.meuDesempenho.valorMes || 0) >= ranking.comparativoMesAnterior.valor ? '↑' : '↓'}
+                    </span>
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Seção de Métricas Detalhadas */}
+      {metricas && (
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {/* Leads Sem Contato - Alerta */}
+          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-semibold text-gray-900">⚠️ Leads Sem Contato</h3>
+              <span className={`text-xs px-2 py-1 rounded-full ${
+                metricas.leadsSemContato.length > 5
+                  ? 'bg-red-100 text-red-800'
+                  : metricas.leadsSemContato.length > 0
+                    ? 'bg-yellow-100 text-yellow-800'
+                    : 'bg-green-100 text-green-800'
+              }`}>
+                {metricas.leadsSemContato.length} leads
+              </span>
+            </div>
+
+            {metricas.leadsSemContato.length === 0 ? (
+              <div className="text-center py-4">
+                <span className="text-4xl">✅</span>
+                <p className="text-sm text-gray-500 mt-2">Todos os leads estão em dia!</p>
+              </div>
+            ) : (
+              <div className="space-y-2 max-h-[200px] overflow-y-auto">
+                {metricas.leadsSemContato.slice(0, 5).map((lead) => (
+                  <div
+                    key={lead.id}
+                    className={`p-2 rounded-lg cursor-pointer hover:bg-gray-100 transition-colors ${
+                      lead.temperatura === 'QUENTE' ? 'bg-red-50 border-l-4 border-red-500' : 'bg-yellow-50 border-l-4 border-yellow-500'
+                    }`}
+                    onClick={() => router.push(`/dashboard/leads?id=${lead.id}`)}
+                  >
+                    <div className="flex justify-between items-start">
+                      <div>
+                        <p className="text-sm font-medium text-gray-900">{lead.nome}</p>
+                        <p className="text-xs text-gray-500">{lead.telefone}</p>
+                      </div>
+                      <span className="text-xs font-bold text-red-600">
+                        {lead.diasSemContato}d
+                      </span>
+                    </div>
+                  </div>
+                ))}
+                {metricas.leadsSemContato.length > 5 && (
+                  <button
+                    onClick={() => router.push('/dashboard/leads')}
+                    className="w-full text-center text-xs text-blue-600 hover:underline py-2"
+                  >
+                    Ver todos ({metricas.leadsSemContato.length})
+                  </button>
+                )}
+              </div>
+            )}
+          </div>
+
+          {/* Métricas de Tempo */}
+          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">⏱️ Métricas de Tempo</h3>
+
+            <div className="space-y-4">
+              <div className="p-4 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg">
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-gray-600">Tempo Médio de Fechamento</span>
+                  <span className="text-2xl font-bold text-blue-600">{metricas.tempoMedioFechamento}d</span>
+                </div>
+                <p className="text-xs text-gray-500 mt-1">Dias entre criação e fechamento</p>
+              </div>
+
+              <div className="p-4 bg-gradient-to-r from-green-50 to-emerald-50 rounded-lg">
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-gray-600">Tempo Médio 1º Contato</span>
+                  <span className="text-2xl font-bold text-green-600">{metricas.tempoMedioPrimeiroContato}h</span>
+                </div>
+                <p className="text-xs text-gray-500 mt-1">Horas entre lead e primeiro contato</p>
+              </div>
+
+              <div className="p-4 bg-gradient-to-r from-purple-50 to-violet-50 rounded-lg">
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-gray-600">Taxa de Visitas Realizadas</span>
+                  <span className="text-2xl font-bold text-purple-600">{metricas.visitas.taxaRealizacao}%</span>
+                </div>
+                <p className="text-xs text-gray-500 mt-1">
+                  {metricas.visitas.realizadas} de {metricas.visitas.agendadas} visitas
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* Tarefas e Propostas */}
+          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">📋 Atividades Pendentes</h3>
+
+            <div className="space-y-4">
+              <div
+                className="p-4 bg-gradient-to-r from-orange-50 to-amber-50 rounded-lg cursor-pointer hover:shadow-md transition-shadow"
+                onClick={() => router.push('/dashboard/tarefas')}
+              >
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-gray-600">Tarefas Pendentes</span>
+                  <span className="text-2xl font-bold text-orange-600">{metricas.tarefas.pendentes}</span>
+                </div>
+                {metricas.tarefas.atrasadas > 0 && (
+                  <p className="text-xs text-red-600 font-medium mt-1">
+                    ⚠️ {metricas.tarefas.atrasadas} atrasada{metricas.tarefas.atrasadas > 1 ? 's' : ''}
+                  </p>
+                )}
+              </div>
+
+              <div className="p-4 bg-gradient-to-r from-cyan-50 to-sky-50 rounded-lg">
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-gray-600">Propostas este Mês</span>
+                  <span className="text-2xl font-bold text-cyan-600">{metricas.propostasMes}</span>
+                </div>
+              </div>
+
+              {/* Leads por Origem */}
+              <div className="pt-2">
+                <p className="text-xs font-semibold text-gray-500 uppercase mb-2">Leads por Origem</p>
+                <div className="space-y-1">
+                  {metricas.leadsPorOrigem.slice(0, 4).map((origem) => (
+                    <div key={origem.origem} className="flex items-center justify-between text-xs">
+                      <span className="text-gray-600">{origem.origem}</span>
+                      <span className="font-medium text-gray-900">{origem.quantidade}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Tabelas Inferiores */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">

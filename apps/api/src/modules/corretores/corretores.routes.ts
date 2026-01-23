@@ -31,6 +31,36 @@ export async function corretoresRoutes(server: FastifyInstance) {
     return controller.getMeuDashboard(request, reply)
   })
 
+  /**
+   * GET /corretores/meu-ranking
+   * Ranking do corretor comparado com a equipe
+   */
+  server.get('/meu-ranking', async (request, reply) => {
+    const user = (request as any).user
+    if (!user || !['CORRETOR', 'ADMIN'].includes(user.tipo)) {
+      return reply.status(403).send({
+        error: 'Acesso negado',
+        message: 'Apenas corretores e administradores podem acessar o ranking'
+      })
+    }
+    return controller.getMeuRanking(request, reply)
+  })
+
+  /**
+   * GET /corretores/minhas-metricas
+   * Métricas detalhadas do corretor (leads sem contato, tempos médios, etc.)
+   */
+  server.get('/minhas-metricas', async (request, reply) => {
+    const user = (request as any).user
+    if (!user || !['CORRETOR', 'ADMIN'].includes(user.tipo)) {
+      return reply.status(403).send({
+        error: 'Acesso negado',
+        message: 'Apenas corretores e administradores podem acessar as métricas'
+      })
+    }
+    return controller.getMinhasMetricas(request, reply)
+  })
+
   server.post('/', async (request, reply) => {
     return controller.create(request, reply)
   })

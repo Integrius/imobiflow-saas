@@ -782,4 +782,368 @@ export class CorretoresRepository {
     })
     return corretor?.id || null
   }
+
+  /**
+   * Busca ranking do corretor comparado com a equipe
+   */
+  async getCorretorRanking(corretorId: string, tenantId: string) {
+    const hoje = new Date()
+    const inicioMes = new Date(hoje.getFullYear(), hoje.getMonth(), 1)
+    const inicioMesAnterior = new Date(hoje.getFullYear(), hoje.getMonth() - 1, 1)
+    const fimMesAnterior = new Date(hoje.getFullYear(), hoje.getMonth(), 0, 23, 59, 59)
+
+    // Buscar todos os corretores do tenant com métricas
+    const corretores = await this.prisma.corretor.findMany({
+      where: {
+        tenant_id: tenantId,
+        user: { ativo: true }
+      },
+      include: {
+        user: { select: { nome: true } }
+      }
+    })
+
+    // Calcular métricas para cada corretor
+    const corretoresComMetricas = await Promise.all(
+      corretores.map(async (corretor) => {
+        // Fechamentos do mês
+        const fechamentosMes = await this.prisma.negociacao.count({
+          where: {
+            corretor_id: corretor.id,
+            tenant_id: tenantId,
+            status: 'FECHADO',
+            data_fechamento: { gte: inicioMes }
+          }
+        })
+
+        // Valor fechado no mês
+        const valorMes = await this.prisma.negociacao.aggregate({
+          where: {
+            corretor_id: corretor.id,
+            tenant_id: tenantId,
+            status: 'FECHADO',
+            data_fechamento: { gte: inicioMes }
+          },
+          _sum: { valor_final: true }
+        })
+
+        // Leads captados no mês
+        const leadsMes = await this.prisma.lead.count({
+          where: {
+            corretor_id: corretor.id,
+            tenant_id: tenantId,
+            created_at: { gte: inicioMes }
+          }
+        })
+
+        // Visitas realizadas no mês
+        const visitasMes = await this.prisma.agendamento.count({
+          where: {
+            corretor_id: corretor.id,
+            tenant_id: tenantId,
+            status: 'REALIZADO',
+            data_visita: { gte: inicioMes }
+          }
+        })
+
+        // Total de leads para taxa de conversão
+        const totalLeads = await this.prisma.lead.count({
+          where: { corretor_id: corretor.id, tenant_id: tenantId }
+        })
+
+        const totalFechamentos = await this.prisma.negociacao.count({
+          where: { corretor_id: corretor.id, tenant_id: tenantId, status: 'FECHADO' }
+        })
+
+        const taxaConversao = totalLeads > 0 ? (totalFechamentos / totalLeads) * 100 : 0
+
+        return {
+          id: corretor.id,
+          nome: corretor.user.nome,
+          fechamentosMes,
+          valorMes: Number(valorMes._sum.valor_final || 0),
+          leadsMes,
+          visitasMes,
+          taxaConversao
+        }
+      })
+    )
+
+    // Ordenar por fechamentos (principal), depois por valor
+    const rankingFechamentos = [...corretoresComMetricas].sort((a, b) => {
+      if (b.fechamentosMes !== a.fechamentosMes) return b.fechamentosMes - a.fechamentosMes
+      return b.valorMes - a.valorMes
+    })
+
+    const rankingValor = [...corretoresComMetricas].sort((a, b) => b.valorMes - a.valorMes)
+    const rankingLeads = [...corretoresComMetricas].sort((a, b) => b.leadsMes - a.leadsMes)
+    const rankingConversao = [...corretoresComMetricas].sort((a, b) => b.taxaConversao - a.taxaConversao)
+
+    // Encontrar posição do corretor atual
+    const posicaoFechamentos = rankingFechamentos.findIndex(c => c.id === corretorId) + 1
+    const posicaoValor = rankingValor.findIndex(c => c.id === corretorId) + 1
+    const posicaoLeads = rankingLeads.findIndex(c => c.id === corretorId) + 1
+    const posicaoConversao = rankingConversao.findIndex(c => c.id === corretorId) + 1
+
+    // Dados do corretor atual
+    const corretorAtual = corretoresComMetricas.find(c => c.id === corretorId)
+
+    // Médias da equipe
+    const totalCorretores = corretoresComMetricas.length
+    const mediaFechamentos = totalCorretores > 0
+      ? corretoresComMetricas.reduce((acc, c) => acc + c.fechamentosMes, 0) / totalCorretores
+      : 0
+    const mediaValor = totalCorretores > 0
+      ? corretoresComMetricas.reduce((acc, c) => acc + c.valorMes, 0) / totalCorretores
+      : 0
+    const mediaLeads = totalCorretores > 0
+      ? corretoresComMetricas.reduce((acc, c) => acc + c.leadsMes, 0) / totalCorretores
+      : 0
+    const mediaConversao = totalCorretores > 0
+      ? corretoresComMetricas.reduce((acc, c) => acc + c.taxaConversao, 0) / totalCorretores
+      : 0
+
+    // Buscar métricas do mês anterior para comparativo
+    const fechamentosMesAnterior = await this.prisma.negociacao.count({
+      where: {
+        corretor_id: corretorId,
+        tenant_id: tenantId,
+        status: 'FECHADO',
+        data_fechamento: { gte: inicioMesAnterior, lte: fimMesAnterior }
+      }
+    })
+
+    const valorMesAnterior = await this.prisma.negociacao.aggregate({
+      where: {
+        corretor_id: corretorId,
+        tenant_id: tenantId,
+        status: 'FECHADO',
+        data_fechamento: { gte: inicioMesAnterior, lte: fimMesAnterior }
+      },
+      _sum: { valor_final: true }
+    })
+
+    const leadsMesAnterior = await this.prisma.lead.count({
+      where: {
+        corretor_id: corretorId,
+        tenant_id: tenantId,
+        created_at: { gte: inicioMesAnterior, lt: inicioMes }
+      }
+    })
+
+    return {
+      posicao: {
+        fechamentos: posicaoFechamentos,
+        valor: posicaoValor,
+        leads: posicaoLeads,
+        conversao: posicaoConversao
+      },
+      totalCorretores,
+      meuDesempenho: corretorAtual,
+      mediaEquipe: {
+        fechamentos: Math.round(mediaFechamentos * 10) / 10,
+        valor: Math.round(mediaValor),
+        leads: Math.round(mediaLeads * 10) / 10,
+        conversao: Math.round(mediaConversao * 10) / 10
+      },
+      comparativoMesAnterior: {
+        fechamentos: fechamentosMesAnterior,
+        valor: Number(valorMesAnterior._sum.valor_final || 0),
+        leads: leadsMesAnterior
+      },
+      top3: {
+        fechamentos: rankingFechamentos.slice(0, 3).map(c => ({
+          nome: c.nome.split(' ')[0], // Apenas primeiro nome
+          valor: c.fechamentosMes
+        })),
+        valor: rankingValor.slice(0, 3).map(c => ({
+          nome: c.nome.split(' ')[0],
+          valor: c.valorMes
+        }))
+      }
+    }
+  }
+
+  /**
+   * Busca métricas detalhadas do corretor
+   */
+  async getCorretorMetricasDetalhadas(corretorId: string, tenantId: string) {
+    const hoje = new Date()
+    const inicioMes = new Date(hoje.getFullYear(), hoje.getMonth(), 1)
+
+    // Leads sem contato há mais de 3 dias
+    const tresDiasAtras = new Date(Date.now() - 3 * 24 * 60 * 60 * 1000)
+    const leadsSemContato = await this.prisma.lead.findMany({
+      where: {
+        corretor_id: corretorId,
+        tenant_id: tenantId,
+        temperatura: { in: ['QUENTE', 'MORNO'] },
+        OR: [
+          { ultimo_contato: null },
+          { ultimo_contato: { lt: tresDiasAtras } }
+        ]
+      },
+      select: {
+        id: true,
+        nome: true,
+        telefone: true,
+        temperatura: true,
+        ultimo_contato: true,
+        created_at: true
+      },
+      orderBy: { temperatura: 'asc' }, // QUENTE primeiro
+      take: 10
+    })
+
+    // Tempo médio de fechamento (dias desde criação até fechamento)
+    const negociacoesFechadas = await this.prisma.negociacao.findMany({
+      where: {
+        corretor_id: corretorId,
+        tenant_id: tenantId,
+        status: 'FECHADO',
+        data_fechamento: { not: null }
+      },
+      select: {
+        created_at: true,
+        data_fechamento: true
+      }
+    })
+
+    let tempoMedioFechamento = 0
+    if (negociacoesFechadas.length > 0) {
+      const totalDias = negociacoesFechadas.reduce((acc, neg) => {
+        const criacao = new Date(neg.created_at).getTime()
+        const fechamento = new Date(neg.data_fechamento!).getTime()
+        return acc + (fechamento - criacao) / (1000 * 60 * 60 * 24)
+      }, 0)
+      tempoMedioFechamento = Math.round(totalDias / negociacoesFechadas.length)
+    }
+
+    // Tempo médio de primeiro contato (tempo entre criação do lead e primeiro contato registrado)
+    // Usando ultimo_contato como proxy para primeiro contato (quando é o único)
+    const leadsComContato = await this.prisma.lead.findMany({
+      where: {
+        corretor_id: corretorId,
+        tenant_id: tenantId,
+        ultimo_contato: { not: null }
+      },
+      select: {
+        created_at: true,
+        ultimo_contato: true
+      }
+    })
+
+    let tempoMedioPrimeiroContato = 0
+    if (leadsComContato.length > 0) {
+      const totalHoras = leadsComContato.reduce((acc, lead) => {
+        const criacao = new Date(lead.created_at).getTime()
+        const contato = new Date(lead.ultimo_contato!).getTime()
+        // Só considerar se o contato foi depois da criação (evitar dados inconsistentes)
+        if (contato > criacao) {
+          return acc + (contato - criacao) / (1000 * 60 * 60)
+        }
+        return acc
+      }, 0)
+      tempoMedioPrimeiroContato = Math.round(totalHoras / leadsComContato.length)
+    }
+
+    // Negociações por status (funil detalhado)
+    const negociacoesPorStatus = await this.prisma.negociacao.groupBy({
+      by: ['status'],
+      where: {
+        corretor_id: corretorId,
+        tenant_id: tenantId
+      },
+      _count: { id: true }
+    })
+
+    // Visitas realizadas vs agendadas no mês
+    const visitasAgendadasMes = await this.prisma.agendamento.count({
+      where: {
+        corretor_id: corretorId,
+        tenant_id: tenantId,
+        data_visita: { gte: inicioMes }
+      }
+    })
+
+    const visitasRealizadasMes = await this.prisma.agendamento.count({
+      where: {
+        corretor_id: corretorId,
+        tenant_id: tenantId,
+        status: 'REALIZADO',
+        data_visita: { gte: inicioMes }
+      }
+    })
+
+    // Leads por origem
+    const leadsPorOrigem = await this.prisma.lead.groupBy({
+      by: ['origem'],
+      where: {
+        corretor_id: corretorId,
+        tenant_id: tenantId
+      },
+      _count: { id: true }
+    })
+
+    // Propostas recebidas no mês
+    const propostasMes = await this.prisma.proposta.count({
+      where: {
+        corretor_id: corretorId,
+        tenant_id: tenantId,
+        created_at: { gte: inicioMes }
+      }
+    })
+
+    // Tarefas pendentes
+    const tarefasPendentes = await this.prisma.tarefa.count({
+      where: {
+        corretor_id: corretorId,
+        tenant_id: tenantId,
+        status: { in: ['PENDENTE', 'EM_ANDAMENTO'] }
+      }
+    })
+
+    const tarefasAtrasadas = await this.prisma.tarefa.count({
+      where: {
+        corretor_id: corretorId,
+        tenant_id: tenantId,
+        status: { in: ['PENDENTE', 'EM_ANDAMENTO'] },
+        data_vencimento: { lt: hoje }
+      }
+    })
+
+    return {
+      leadsSemContato: leadsSemContato.map(lead => ({
+        id: lead.id,
+        nome: lead.nome,
+        telefone: lead.telefone,
+        temperatura: lead.temperatura,
+        diasSemContato: lead.ultimo_contato
+          ? Math.floor((Date.now() - new Date(lead.ultimo_contato).getTime()) / (1000 * 60 * 60 * 24))
+          : Math.floor((Date.now() - new Date(lead.created_at).getTime()) / (1000 * 60 * 60 * 24))
+      })),
+      tempoMedioFechamento, // em dias
+      tempoMedioPrimeiroContato, // em horas
+      funilDetalhado: negociacoesPorStatus.map(s => ({
+        status: s.status,
+        quantidade: s._count.id
+      })),
+      visitas: {
+        agendadas: visitasAgendadasMes,
+        realizadas: visitasRealizadasMes,
+        taxaRealizacao: visitasAgendadasMes > 0
+          ? Math.round((visitasRealizadasMes / visitasAgendadasMes) * 100)
+          : 0
+      },
+      leadsPorOrigem: leadsPorOrigem.map(o => ({
+        origem: o.origem,
+        quantidade: o._count.id
+      })),
+      propostasMes,
+      tarefas: {
+        pendentes: tarefasPendentes,
+        atrasadas: tarefasAtrasadas
+      }
+    }
+  }
 }

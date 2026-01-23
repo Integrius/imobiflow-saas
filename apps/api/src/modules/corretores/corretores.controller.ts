@@ -104,4 +104,38 @@ export class CorretoresController {
     const result = await this.corretoresService.getMeuDashboard(userId, tenantId)
     return reply.send({ success: true, data: result })
   }
+
+  /**
+   * GET /corretores/meu-ranking
+   * Busca ranking do corretor comparado com a equipe
+   * Acesso: CORRETOR vê apenas o próprio ranking
+   */
+  async getMeuRanking(request: FastifyRequest, reply: FastifyReply) {
+    const tenantId = (request as any).tenantId || 'default-tenant-id'
+    const userId = (request as any).user?.id
+
+    if (!userId) {
+      return reply.status(401).send({ error: 'Usuário não autenticado' })
+    }
+
+    const result = await this.corretoresService.getMeuRanking(userId, tenantId)
+    return reply.send({ success: true, data: result })
+  }
+
+  /**
+   * GET /corretores/minhas-metricas
+   * Busca métricas detalhadas do corretor
+   * Acesso: CORRETOR vê apenas suas próprias métricas
+   */
+  async getMinhasMetricas(request: FastifyRequest, reply: FastifyReply) {
+    const tenantId = (request as any).tenantId || 'default-tenant-id'
+    const userId = (request as any).user?.id
+
+    if (!userId) {
+      return reply.status(401).send({ error: 'Usuário não autenticado' })
+    }
+
+    const result = await this.corretoresService.getMinhasMetricas(userId, tenantId)
+    return reply.send({ success: true, data: result })
+  }
 }
