@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { GoogleOAuthWrapper } from "@/components/GoogleOAuthWrapper";
+import CookieBannerWrapper from "@/components/CookieBannerWrapper";
 
 export const metadata: Metadata = {
   title: "Vivoly - Gestão Imobiliária Inteligente",
@@ -22,6 +23,7 @@ export default function RootLayout({
       <body>
         <GoogleOAuthWrapper>
           {children}
+          <CookieBannerWrapper />
         </GoogleOAuthWrapper>
       </body>
     </html>
