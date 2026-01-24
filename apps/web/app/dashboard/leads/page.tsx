@@ -46,11 +46,11 @@ interface LeadForm {
   telefone: string;
   status: string;
   origem: string;
-  perfil: 'PROPRIETARIO' | 'INTERESSADO'; // Proprietário (fornecedor) ou Interessado (comprador)
+  perfil: 'PROPRIETARIO' | 'INTERESSADO';
   interesse: {
     tipo_imovel: string[];
-    finalidade: 'VENDA' | 'LOCACAO'; // Vender/Alugar ou Comprar/Alugar
-    forma_pagamento: string[]; // À vista, Financiamento, Carta de Crédito, etc
+    finalidade: 'VENDA' | 'LOCACAO';
+    forma_pagamento: string[];
   };
   observacoes: string;
 }
@@ -112,7 +112,6 @@ export default function LeadsPage() {
   };
 
   const handleFormChange = (field: string, value: any) => {
-    // Aplica formatação automática para telefone
     if (field === 'telefone') {
       value = formatPhone(value);
     }
@@ -143,17 +142,12 @@ export default function LeadsPage() {
   const loadLeadDetails = async (leadId: string) => {
     setLoadingDetails(true);
     try {
-      // Buscar lead completo com relacionamentos
       const leadResponse = await api.get(`/leads/${leadId}`);
       const fullLead = leadResponse.data;
-
-      // Atualizar editingLead com dados completos
       setEditingLead(fullLead);
 
-      // Buscar total de propostas do lead
       const propostasResponse = await api.get(`/propostas/lead/${leadId}`);
       const propostas = Array.isArray(propostasResponse.data) ? propostasResponse.data : [];
-
       setLeadDetails({ totalPropostas: propostas.length });
     } catch (error: any) {
       console.error('Erro ao carregar detalhes do lead:', error);
@@ -206,8 +200,6 @@ export default function LeadsPage() {
     setOriginalFormData({ ...formDataToSet });
     setHasUnsavedChanges(false);
     setModalOpen(true);
-
-    // Carregar detalhes completos do lead
     loadLeadDetails(lead.id);
   };
 
@@ -216,7 +208,6 @@ export default function LeadsPage() {
     setSubmitting(true);
 
     try {
-      // Remove formatação do telefone antes de enviar
       const payload = {
         ...formData,
         telefone: unformatNumbers(formData.telefone),
@@ -263,175 +254,295 @@ export default function LeadsPage() {
       lead.telefone.includes(searchTerm)
   );
 
+  // Contadores por status
+  const leadsQuentes = leads.filter(l => l.status === 'QUENTE').length;
+  const leadsMornos = leads.filter(l => l.status === 'MORNO').length;
+  const leadsFrios = leads.filter(l => l.status === 'FRIO').length;
+
   if (loading) {
     return (
       <div className="flex justify-center items-center min-h-[400px]">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#00C48C]"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600"></div>
       </div>
     );
   }
 
   return (
-    <div>
-      <div className="flex justify-between items-center mb-8">
-        <div>
-          <h2 className="text-4xl font-bold text-[#064E3B] tracking-tight">Leads</h2>
-          <p className="text-sm text-[#4B5563] mt-2 font-medium">
-            <span className="text-[#00C48C] text-lg font-bold">{leads.length}</span> leads cadastrados
-          </p>
+    <div className="space-y-6">
+      {/* Header */}
+      <div className="flex justify-between items-center">
+        <h1 className="text-xl font-bold text-gray-800">Leads</h1>
+        <button
+          onClick={openCreateModal}
+          className="bg-green-600 text-white px-4 py-2 rounded-lg text-sm font-medium flex gap-2 hover:bg-green-700 transition-colors"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+          </svg>
+          Novo Lead
+        </button>
+      </div>
+
+      {/* KPIs - Cards minimalistas */}
+      <div className="grid grid-cols-4 gap-4">
+        <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-100">
+          <span className="text-xs font-semibold text-gray-500 uppercase">Total</span>
+          <div className="text-2xl font-bold text-gray-900 mt-1">{leads.length}</div>
         </div>
-        <div className="flex gap-3">
-          <ReportDownloadButton
-            reportType="leads"
-            label="Exportar PDF"
-            className="bg-gradient-to-r from-[#A97E6F] to-[#8B6F5C] hover:from-[#8B6F5C] hover:to-[#A97E6F]"
-          />
-          <Link
-            href="/dashboard/leads/importar"
-            className="px-4 py-2 border border-[#059669] text-[#059669] rounded-lg hover:bg-[#059669]/10 transition-colors flex items-center gap-2"
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
-            </svg>
-            Importar CSV
-          </Link>
-          <button
-            onClick={openCreateModal}
-            className="btn-primary"
-          >
-            + Novo Lead
-          </button>
+        <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-100">
+          <span className="text-xs font-semibold text-red-500 uppercase">Quentes</span>
+          <div className="text-2xl font-bold text-red-600 mt-1">{leadsQuentes}</div>
+        </div>
+        <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-100">
+          <span className="text-xs font-semibold text-amber-500 uppercase">Mornos</span>
+          <div className="text-2xl font-bold text-amber-600 mt-1">{leadsMornos}</div>
+        </div>
+        <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-100">
+          <span className="text-xs font-semibold text-blue-500 uppercase">Frios</span>
+          <div className="text-2xl font-bold text-blue-600 mt-1">{leadsFrios}</div>
         </div>
       </div>
 
-      {/* Busca */}
-      <div className="mb-6">
-        <input
-          type="text"
-          placeholder="🔍 Buscar por nome, email ou telefone..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          className="input-modern"
-        />
-      </div>
+      {/* Layout Assimétrico: Coluna Principal (70%) + Sidebar (30%) */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
-      {/* Tabela */}
-      <div className="card-clean shadow-xl overflow-hidden">
-        <table className="min-w-full divide-y divide-[rgba(169,126,111,0.2)]">
-          <thead className="bg-gradient-to-r from-[#059669] to-[#059669]">
-            <tr>
-              <th className="px-6 py-4 text-left text-xs font-bold text-white uppercase tracking-wider">Nome</th>
-              <th className="px-6 py-4 text-left text-xs font-bold text-white uppercase tracking-wider">Email</th>
-              <th className="px-6 py-4 text-left text-xs font-bold text-white uppercase tracking-wider">Telefone</th>
-              <th className="px-6 py-4 text-left text-xs font-bold text-white uppercase tracking-wider">Status</th>
-              <th className="px-6 py-4 text-left text-xs font-bold text-white uppercase tracking-wider">Ações</th>
-            </tr>
-          </thead>
-          <tbody className="bg-white divide-y divide-[rgba(169,126,111,0.1)]">
-            {filteredLeads.length === 0 ? (
-              <tr>
-                <td colSpan={5} className="px-6 py-12 text-center text-[#4B5563]">
-                  <div className="text-lg font-medium">{searchTerm ? 'Nenhum lead encontrado' : 'Nenhum lead cadastrado'}</div>
-                  <p className="text-sm text-[#4B5563] mt-2">Clique em &ldquo;+ Novo Lead&rdquo; para adicionar</p>
-                </td>
-              </tr>
-            ) : (
-              filteredLeads.map((lead, index) => (
-                <tr key={lead.id} className={`hover:bg-[#F9FAFB] transition-colors ${index % 2 === 0 ? 'bg-white' : 'bg-[#F4F6F8]'}`}>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-bold text-[#064E3B]">
-                    {lead.nome}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-[#4B5563]">{lead.email}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-[#4B5563] font-medium">{formatPhone(lead.telefone)}</td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <span
-                      className={`px-3 py-1.5 text-xs font-bold rounded-full border-2 ${
-                        lead.status === 'QUENTE'
-                          ? 'bg-[#FF6B6B]/10 text-[#FF006E] border-[#FF006E]/50'
-                          : lead.status === 'MORNO'
-                          ? 'bg-[#FFB627]/10 text-[#FFB627] border-[#FFB627]/50'
-                          : 'bg-[#059669]/10 text-[#059669] border-[#059669]/50'
-                      }`}
-                    >
-                      {lead.status}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm">
-                    <button
-                      onClick={() => openEditModal(lead)}
-                      className="text-[#00C48C] hover:text-[#059669] mr-4 font-bold hover:underline transition-all"
-                    >
-                      👁️ Consultar
-                    </button>
-                    <button
-                      onClick={() => {
-                        setDeletingLead(lead);
-                        setDeleteModalOpen(true);
-                      }}
-                      className="text-[#FF6B6B] hover:text-[#FF006E] font-bold hover:underline transition-all"
-                    >
-                      🗑️ Excluir
-                    </button>
-                  </td>
+        {/* Coluna Principal - Tabela de Leads */}
+        <div className="lg:col-span-2 space-y-4">
+          {/* Barra de busca e ações */}
+          <div className="flex gap-3">
+            <div className="flex-1 relative">
+              <svg xmlns="http://www.w3.org/2000/svg" className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              </svg>
+              <input
+                type="text"
+                placeholder="Buscar por nome, email ou telefone..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-green-500 focus:border-transparent"
+              />
+            </div>
+            <Link
+              href="/dashboard/leads/importar"
+              className="px-4 py-2 border border-gray-200 text-gray-600 rounded-lg hover:bg-gray-50 transition-colors flex items-center gap-2 text-sm"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+              </svg>
+              Importar
+            </Link>
+            <ReportDownloadButton
+              reportType="leads"
+              label="PDF"
+              className="bg-gray-100 hover:bg-gray-200 text-gray-700"
+            />
+          </div>
+
+          {/* Tabela */}
+          <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+            <table className="min-w-full divide-y divide-gray-100">
+              <thead className="bg-gray-50">
+                <tr>
+                  <th className="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Nome</th>
+                  <th className="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Contato</th>
+                  <th className="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Status</th>
+                  <th className="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Ações</th>
                 </tr>
-              ))
-            )}
-          </tbody>
-        </table>
+              </thead>
+              <tbody className="bg-white divide-y divide-gray-50">
+                {filteredLeads.length === 0 ? (
+                  <tr>
+                    <td colSpan={4} className="px-6 py-12 text-center text-gray-500">
+                      <div className="text-lg font-medium">{searchTerm ? 'Nenhum lead encontrado' : 'Nenhum lead cadastrado'}</div>
+                      <p className="text-sm mt-1">Clique em &quot;Novo Lead&quot; para adicionar</p>
+                    </td>
+                  </tr>
+                ) : (
+                  filteredLeads.map((lead) => (
+                    <tr key={lead.id} className="hover:bg-gray-50 transition-colors">
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="text-sm font-medium text-gray-900">{lead.nome}</div>
+                        <div className="text-xs text-gray-500">{lead.origem || 'Site'}</div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="text-sm text-gray-900">{lead.email}</div>
+                        <div className="text-xs text-gray-500">{formatPhone(lead.telefone)}</div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <span
+                          className={`px-2.5 py-1 text-xs font-semibold rounded-full ${
+                            lead.status === 'QUENTE'
+                              ? 'bg-red-100 text-red-700'
+                              : lead.status === 'MORNO'
+                              ? 'bg-amber-100 text-amber-700'
+                              : 'bg-blue-100 text-blue-700'
+                          }`}
+                        >
+                          {lead.status}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm">
+                        <button
+                          onClick={() => openEditModal(lead)}
+                          className="text-green-600 hover:text-green-800 font-medium mr-3"
+                        >
+                          Ver
+                        </button>
+                        <button
+                          onClick={() => {
+                            setDeletingLead(lead);
+                            setDeleteModalOpen(true);
+                          }}
+                          className="text-red-500 hover:text-red-700 font-medium"
+                        >
+                          Excluir
+                        </button>
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        {/* Sidebar - Sofia Insights e Ações */}
+        <div className="space-y-6">
+          {/* Widget Sofia */}
+          <div className="bg-gradient-to-br from-indigo-600 to-purple-700 rounded-xl p-1 shadow-lg text-white">
+            <div className="bg-white/10 backdrop-blur-md rounded-lg p-5 border border-white/20">
+              <div className="flex items-center gap-3 mb-3">
+                <div className="w-8 h-8 rounded-full bg-white flex items-center justify-center">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
+                  </svg>
+                </div>
+                <h3 className="font-bold text-md">Sofia Insights</h3>
+              </div>
+              {leadsQuentes > 0 ? (
+                <p className="text-sm opacity-90 mb-3">
+                  &quot;Você tem {leadsQuentes} lead{leadsQuentes > 1 ? 's' : ''} quente{leadsQuentes > 1 ? 's' : ''} aguardando contato. Priorize-os!&quot;
+                </p>
+              ) : leadsMornos > 0 ? (
+                <p className="text-sm opacity-90 mb-3">
+                  &quot;{leadsMornos} lead{leadsMornos > 1 ? 's' : ''} morno{leadsMornos > 1 ? 's' : ''} pode{leadsMornos > 1 ? 'm' : ''} esfriar. Faça um follow-up.&quot;
+                </p>
+              ) : (
+                <p className="text-sm opacity-90 mb-3">
+                  &quot;Sua base está organizada. Continue captando novos leads!&quot;
+                </p>
+              )}
+              <button
+                onClick={openCreateModal}
+                className="w-full py-1.5 bg-white text-indigo-600 font-bold text-xs rounded hover:bg-indigo-50 transition-colors"
+              >
+                Adicionar Lead
+              </button>
+            </div>
+          </div>
+
+          {/* Ações Rápidas */}
+          <div className="bg-white p-5 rounded-xl shadow-sm border border-gray-100">
+            <h3 className="font-bold text-gray-800 text-sm mb-3">Ações Rápidas</h3>
+            <div className="space-y-2">
+              <Link
+                href="/dashboard/leads/importar"
+                className="flex items-center gap-3 px-3 py-2 text-sm text-gray-600 hover:bg-gray-50 rounded-lg transition-colors"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+                </svg>
+                Importar CSV
+              </Link>
+              <button
+                onClick={openCreateModal}
+                className="flex items-center gap-3 px-3 py-2 text-sm text-gray-600 hover:bg-gray-50 rounded-lg transition-colors w-full text-left"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
+                </svg>
+                Cadastrar Manualmente
+              </button>
+            </div>
+          </div>
+
+          {/* Resumo por Origem */}
+          <div className="bg-white p-5 rounded-xl shadow-sm border border-gray-100">
+            <h3 className="font-bold text-gray-800 text-sm mb-3">Por Origem</h3>
+            <div className="space-y-2 text-sm">
+              {['SITE', 'WHATSAPP', 'INDICACAO', 'REDES_SOCIAIS', 'TELEFONE'].map(origem => {
+                const count = leads.filter(l => l.origem === origem).length;
+                if (count === 0) return null;
+                return (
+                  <div key={origem} className="flex justify-between items-center">
+                    <span className="text-gray-600">{origem.replace('_', ' ')}</span>
+                    <span className="font-semibold text-gray-900">{count}</span>
+                  </div>
+                );
+              })}
+              {leads.filter(l => !l.origem).length > 0 && (
+                <div className="flex justify-between items-center">
+                  <span className="text-gray-600">Não definido</span>
+                  <span className="font-semibold text-gray-900">{leads.filter(l => !l.origem).length}</span>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
       </div>
 
       {/* Modal de Cadastro/Edição */}
       <Modal
         isOpen={modalOpen}
         onClose={handleCloseModal}
-        title={editingLead ? 'Consultar Lead' : 'Novo Lead'}
+        title={editingLead ? 'Detalhes do Lead' : 'Novo Lead'}
         size="lg"
       >
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* Dados Básicos */}
           <div className="space-y-4">
-            <h4 className="text-md font-bold text-[#064E3B] border-b border-gray-200 pb-2">Dados Básicos</h4>
+            <h4 className="text-sm font-bold text-gray-800 border-b border-gray-100 pb-2">Dados Básicos</h4>
             <div className="grid grid-cols-2 gap-4">
               <div className="col-span-2">
-                <label className="block text-sm font-bold text-[#064E3B] mb-2">Nome *</label>
+                <label className="block text-xs font-semibold text-gray-500 uppercase mb-1">Nome *</label>
                 <input
                   type="text"
                   required
                   value={formData.nome}
                   onChange={(e) => handleFormChange('nome', e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-600 focus:border-transparent"
+                  className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-green-500 focus:border-transparent"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-bold text-[#064E3B] mb-2">Email *</label>
+                <label className="block text-xs font-semibold text-gray-500 uppercase mb-1">Email *</label>
                 <input
                   type="email"
                   required
                   value={formData.email}
                   onChange={(e) => handleFormChange('email', e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-600 focus:border-transparent"
+                  className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-green-500 focus:border-transparent"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-bold text-[#064E3B] mb-2">Telefone *</label>
+                <label className="block text-xs font-semibold text-gray-500 uppercase mb-1">Telefone *</label>
                 <input
                   type="tel"
                   required
                   placeholder="(00) 00000-0000"
                   value={formData.telefone}
                   onChange={(e) => handleFormChange('telefone', e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-600 focus:border-transparent"
+                  className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-green-500 focus:border-transparent"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-bold text-[#064E3B] mb-2">Status</label>
+                <label className="block text-xs font-semibold text-gray-500 uppercase mb-1">Status</label>
                 <select
                   value={formData.status}
                   onChange={(e) => handleFormChange('status', e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-600 focus:border-transparent"
+                  className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-green-500 focus:border-transparent"
                 >
                   <option value="FRIO">Frio</option>
                   <option value="MORNO">Morno</option>
@@ -440,11 +551,11 @@ export default function LeadsPage() {
               </div>
 
               <div>
-                <label className="block text-sm font-bold text-[#064E3B] mb-2">Origem</label>
+                <label className="block text-xs font-semibold text-gray-500 uppercase mb-1">Origem</label>
                 <select
                   value={formData.origem}
                   onChange={(e) => handleFormChange('origem', e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-600 focus:border-transparent"
+                  className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-green-500 focus:border-transparent"
                 >
                   <option value="SITE">Site</option>
                   <option value="INDICACAO">Indicação</option>
@@ -458,15 +569,15 @@ export default function LeadsPage() {
 
           {/* Perfil do Cliente */}
           <div className="space-y-4">
-            <h4 className="text-md font-bold text-[#064E3B] border-b border-gray-200 pb-2">Perfil do Cliente</h4>
+            <h4 className="text-sm font-bold text-gray-800 border-b border-gray-100 pb-2">Perfil do Cliente</h4>
             <div className="grid grid-cols-2 gap-4">
               <div className="col-span-2">
-                <label className="block text-sm font-bold text-[#064E3B] mb-2">O cliente é: *</label>
+                <label className="block text-xs font-semibold text-gray-500 uppercase mb-2">Tipo *</label>
                 <div className="grid grid-cols-2 gap-3">
-                  <label className={`flex items-center p-3 border-2 rounded-lg cursor-pointer transition-all ${
+                  <label className={`flex items-center p-3 border rounded-lg cursor-pointer transition-all ${
                     formData.perfil === 'PROPRIETARIO'
-                      ? 'bg-[#F0FDF4] border-[#00C48C] text-[#064E3B]'
-                      : 'bg-white border-gray-200 text-[#064E3B] hover:border-[#00C48C]/50'
+                      ? 'bg-green-50 border-green-500 text-green-800'
+                      : 'bg-white border-gray-200 text-gray-600 hover:border-green-300'
                   }`}>
                     <input
                       type="radio"
@@ -474,14 +585,14 @@ export default function LeadsPage() {
                       value="PROPRIETARIO"
                       checked={formData.perfil === 'PROPRIETARIO'}
                       onChange={(e) => handleFormChange('perfil', e.target.value as any)}
-                      className="mr-2"
+                      className="mr-2 text-green-600"
                     />
-                    <span className="font-medium">🏠 Proprietário (quer vender/alugar)</span>
+                    <span className="text-sm font-medium">Proprietário</span>
                   </label>
-                  <label className={`flex items-center p-3 border-2 rounded-lg cursor-pointer transition-all ${
+                  <label className={`flex items-center p-3 border rounded-lg cursor-pointer transition-all ${
                     formData.perfil === 'INTERESSADO'
-                      ? 'bg-[#F0FDF4] border-[#00C48C] text-[#064E3B]'
-                      : 'bg-white border-gray-200 text-[#064E3B] hover:border-[#00C48C]/50'
+                      ? 'bg-green-50 border-green-500 text-green-800'
+                      : 'bg-white border-gray-200 text-gray-600 hover:border-green-300'
                   }`}>
                     <input
                       type="radio"
@@ -489,20 +600,20 @@ export default function LeadsPage() {
                       value="INTERESSADO"
                       checked={formData.perfil === 'INTERESSADO'}
                       onChange={(e) => handleFormChange('perfil', e.target.value as any)}
-                      className="mr-2"
+                      className="mr-2 text-green-600"
                     />
-                    <span className="font-medium">👤 Interessado (quer comprar/alugar)</span>
+                    <span className="text-sm font-medium">Interessado</span>
                   </label>
                 </div>
               </div>
 
               <div className="col-span-2">
-                <label className="block text-sm font-bold text-[#064E3B] mb-2">Finalidade: *</label>
+                <label className="block text-xs font-semibold text-gray-500 uppercase mb-2">Finalidade *</label>
                 <div className="grid grid-cols-2 gap-3">
-                  <label className={`flex items-center p-3 border-2 rounded-lg cursor-pointer transition-all ${
+                  <label className={`flex items-center p-3 border rounded-lg cursor-pointer transition-all ${
                     formData.interesse.finalidade === 'VENDA'
-                      ? 'bg-[#F0FDF4] border-[#00C48C] text-[#064E3B]'
-                      : 'bg-white border-gray-200 text-[#064E3B] hover:border-[#00C48C]/50'
+                      ? 'bg-green-50 border-green-500 text-green-800'
+                      : 'bg-white border-gray-200 text-gray-600 hover:border-green-300'
                   }`}>
                     <input
                       type="radio"
@@ -510,14 +621,14 @@ export default function LeadsPage() {
                       value="VENDA"
                       checked={formData.interesse.finalidade === 'VENDA'}
                       onChange={(e) => handleFormChange('interesse.finalidade', e.target.value as any)}
-                      className="mr-2"
+                      className="mr-2 text-green-600"
                     />
-                    <span className="font-medium">💰 {formData.perfil === 'PROPRIETARIO' ? 'Vender' : 'Comprar'}</span>
+                    <span className="text-sm font-medium">{formData.perfil === 'PROPRIETARIO' ? 'Vender' : 'Comprar'}</span>
                   </label>
-                  <label className={`flex items-center p-3 border-2 rounded-lg cursor-pointer transition-all ${
+                  <label className={`flex items-center p-3 border rounded-lg cursor-pointer transition-all ${
                     formData.interesse.finalidade === 'LOCACAO'
-                      ? 'bg-[#F0FDF4] border-[#00C48C] text-[#064E3B]'
-                      : 'bg-white border-gray-200 text-[#064E3B] hover:border-[#00C48C]/50'
+                      ? 'bg-green-50 border-green-500 text-green-800'
+                      : 'bg-white border-gray-200 text-gray-600 hover:border-green-300'
                   }`}>
                     <input
                       type="radio"
@@ -525,18 +636,18 @@ export default function LeadsPage() {
                       value="LOCACAO"
                       checked={formData.interesse.finalidade === 'LOCACAO'}
                       onChange={(e) => handleFormChange('interesse.finalidade', e.target.value as any)}
-                      className="mr-2"
+                      className="mr-2 text-green-600"
                     />
-                    <span className="font-medium">🔑 Alugar</span>
+                    <span className="text-sm font-medium">Alugar</span>
                   </label>
                 </div>
               </div>
 
               <div className="col-span-2">
-                <label className="block text-sm font-bold text-[#064E3B] mb-2">Formas de Pagamento Aceitas/Desejadas:</label>
+                <label className="block text-xs font-semibold text-gray-500 uppercase mb-2">Formas de Pagamento</label>
                 <div className="grid grid-cols-2 gap-2">
                   {['À Vista', 'Financiamento Bancário', 'Carta de Crédito', 'Consórcio', 'Permuta'].map((forma) => (
-                    <label key={forma} className="flex items-center p-2 bg-white border border-gray-200 rounded-lg hover:border-[#00C48C]/50 cursor-pointer transition-all">
+                    <label key={forma} className="flex items-center p-2 bg-white border border-gray-200 rounded-lg hover:border-green-300 cursor-pointer transition-all">
                       <input
                         type="checkbox"
                         checked={formData.interesse.forma_pagamento.includes(forma)}
@@ -546,9 +657,9 @@ export default function LeadsPage() {
                             : formData.interesse.forma_pagamento.filter(f => f !== forma);
                           handleFormChange('interesse.forma_pagamento', novasFormas);
                         }}
-                        className="mr-2"
+                        className="mr-2 text-green-600"
                       />
-                      <span className="text-sm text-[#064E3B] font-medium">{forma}</span>
+                      <span className="text-sm text-gray-600">{forma}</span>
                     </label>
                   ))}
                 </div>
@@ -558,13 +669,13 @@ export default function LeadsPage() {
 
           {/* Observações */}
           <div className="space-y-4">
-            <h4 className="text-md font-bold text-[#064E3B] border-b border-gray-200 pb-2">Observações</h4>
+            <h4 className="text-sm font-bold text-gray-800 border-b border-gray-100 pb-2">Observações</h4>
             <textarea
               rows={3}
               value={formData.observacoes}
               onChange={(e) => handleFormChange('observacoes', e.target.value)}
               placeholder="Informações adicionais sobre o lead..."
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-600 focus:border-transparent placeholder:text-gray-400"
+              className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-green-500 focus:border-transparent placeholder:text-gray-400"
             />
           </div>
 
@@ -572,16 +683,19 @@ export default function LeadsPage() {
           {editingLead && (
             <>
               {/* Ações Rápidas */}
-              <div className="bg-gradient-to-r from-[#FFB627]/10 to-[#FF6B6B]/10 p-4 rounded-lg border-2 border-[#FFB627]/30">
-                <h4 className="text-md font-bold text-[#064E3B] border-b border-[#FFB627]/30 pb-2 mb-3 flex items-center gap-2">
-                  ⚡ Ações Rápidas
+              <div className="bg-gradient-to-br from-indigo-50 to-purple-50 p-4 rounded-xl border border-indigo-100">
+                <h4 className="text-sm font-bold text-gray-800 mb-3 flex items-center gap-2">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                  </svg>
+                  Ações Rápidas
                 </h4>
                 <div className="flex gap-3 flex-wrap">
                   <RegistrarAtividade
                     leadId={editingLead.id}
                     leadNome={editingLead.nome}
                     onSuccess={() => {
-                      toast.success('Atividade registrada! Lead atualizado.');
+                      toast.success('Atividade registrada!');
                       loadLeads();
                     }}
                   />
@@ -589,62 +703,54 @@ export default function LeadsPage() {
                     href={`https://wa.me/55${editingLead.telefone.replace(/\D/g, '')}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-white bg-gradient-to-r from-[#25D366] to-[#128C7E] rounded-lg hover:shadow-md transition-all hover:scale-105"
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-white bg-green-500 rounded-lg hover:bg-green-600 transition-colors"
                   >
-                    <span>💬</span>
-                    <span>Abrir WhatsApp</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+                    </svg>
+                    WhatsApp
                   </a>
                 </div>
               </div>
 
               {/* Vinculações */}
-              <div className="space-y-4 bg-gradient-to-r from-[#F0FDF4] to-[#EFF6FF] p-4 rounded-lg border-2 border-[#00C48C]/30">
-                <h4 className="text-md font-bold text-[#064E3B] border-b border-[#00C48C]/30 pb-2 flex items-center gap-2">
-                  🔗 Vinculações
-                </h4>
+              <div className="bg-gray-50 p-4 rounded-xl border border-gray-100">
+                <h4 className="text-sm font-bold text-gray-800 mb-3">Informações</h4>
 
                 {loadingDetails ? (
                   <div className="flex justify-center py-4">
-                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#00C48C]"></div>
+                    <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-green-600"></div>
                   </div>
                 ) : (
-                  <div className="grid grid-cols-3 gap-4">
-                    {/* Corretor Responsável */}
-                    <div className="bg-white p-3 rounded-lg border-2 border-[#A97E6F]/30">
-                      <div className="text-xs font-bold text-[#4B5563] mb-1">👤 CORRETOR</div>
+                  <div className="grid grid-cols-3 gap-3">
+                    <div className="bg-white p-3 rounded-lg border border-gray-100">
+                      <div className="text-xs font-semibold text-gray-500 uppercase mb-1">Corretor</div>
                       {editingLead.corretor ? (
-                        <div>
-                          <div className="text-sm font-bold text-[#064E3B]">{editingLead.corretor.user.nome}</div>
-                          <div className="text-xs text-[#4B5563]">{editingLead.corretor.user.email}</div>
-                        </div>
+                        <div className="text-sm font-medium text-gray-900">{editingLead.corretor.user.nome}</div>
                       ) : (
-                        <div className="text-sm text-[#9CA3AF]">Não atribuído</div>
+                        <div className="text-sm text-gray-400">Não atribuído</div>
                       )}
                     </div>
 
-                    {/* Imóveis de Interesse */}
-                    <div className="bg-white p-3 rounded-lg border-2 border-[#059669]/30">
-                      <div className="text-xs font-bold text-[#4B5563] mb-1">🏘️ IMÓVEIS</div>
-                      <div className="text-2xl font-bold text-[#059669]">
+                    <div className="bg-white p-3 rounded-lg border border-gray-100">
+                      <div className="text-xs font-semibold text-gray-500 uppercase mb-1">Negociações</div>
+                      <div className="text-xl font-bold text-green-600">
                         {editingLead.negociacoes?.length || 0}
                       </div>
-                      <div className="text-xs text-[#4B5563]">negociações ativas</div>
                     </div>
 
-                    {/* Total de Propostas */}
-                    <div className="bg-white p-3 rounded-lg border-2 border-[#00C48C]/30">
-                      <div className="text-xs font-bold text-[#4B5563] mb-1">📋 PROPOSTAS</div>
-                      <div className="text-2xl font-bold text-[#00C48C]">
+                    <div className="bg-white p-3 rounded-lg border border-gray-100">
+                      <div className="text-xs font-semibold text-gray-500 uppercase mb-1">Propostas</div>
+                      <div className="text-xl font-bold text-green-600">
                         {leadDetails.totalPropostas}
                       </div>
-                      <div className="text-xs text-[#4B5563]">propostas feitas</div>
                     </div>
                   </div>
                 )}
               </div>
 
               {/* Timeline de Interações */}
-              <div className="bg-white p-4 rounded-lg border-2 border-gray-200">
+              <div className="bg-white p-4 rounded-xl border border-gray-100">
                 <TimelineInteracoes
                   leadId={editingLead.id}
                   leadNome={editingLead.nome}
@@ -658,18 +764,18 @@ export default function LeadsPage() {
             </>
           )}
 
-          <div className="flex justify-end gap-3 pt-6 border-t border-gray-200 mt-6">
+          <div className="flex justify-end gap-3 pt-4 border-t border-gray-100">
             <button
               type="button"
               onClick={handleCloseModal}
-              className="px-6 py-2.5 text-[#059669] border-2 border-[#059669] rounded-lg hover:bg-[#059669] hover:text-white font-bold transition-all"
+              className="px-4 py-2 text-sm font-medium text-gray-600 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
             >
               Cancelar
             </button>
             <button
               type="submit"
               disabled={submitting}
-              className="px-6 py-2.5 bg-gradient-to-r from-[#00C48C] to-[#059669] text-white rounded-lg hover:shadow-lg font-bold transition-all disabled:opacity-50"
+              className="px-4 py-2 text-sm font-medium text-white bg-green-600 rounded-lg hover:bg-green-700 transition-colors disabled:opacity-50"
             >
               {submitting ? 'Salvando...' : 'Salvar'}
             </button>
@@ -685,22 +791,22 @@ export default function LeadsPage() {
         size="sm"
       >
         <div className="space-y-4">
-          <p className="text-[#064E3B] text-base">
-            Tem certeza que deseja excluir o lead <strong className="text-[#059669]">{deletingLead?.nome}</strong>?
+          <p className="text-gray-600 text-sm">
+            Tem certeza que deseja excluir o lead <strong className="text-gray-900">{deletingLead?.nome}</strong>?
           </p>
-          <p className="text-sm text-[#4B5563]">Esta ação não pode ser desfeita.</p>
+          <p className="text-xs text-gray-500">Esta ação não pode ser desfeita.</p>
 
-          <div className="flex justify-end gap-3 pt-6 border-t border-gray-200 mt-6">
+          <div className="flex justify-end gap-3 pt-4 border-t border-gray-100">
             <button
               onClick={() => setDeleteModalOpen(false)}
-              className="px-6 py-2.5 text-[#059669] border-2 border-[#059669] rounded-lg hover:bg-[#059669] hover:text-white font-bold transition-all"
+              className="px-4 py-2 text-sm font-medium text-gray-600 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
             >
               Cancelar
             </button>
             <button
               onClick={handleDelete}
               disabled={submitting}
-              className="px-6 py-2.5 bg-[#FF6B6B] text-white rounded-lg hover:bg-[#FF006E] font-bold transition-all disabled:opacity-50"
+              className="px-4 py-2 text-sm font-medium text-white bg-red-500 rounded-lg hover:bg-red-600 transition-colors disabled:opacity-50"
             >
               {submitting ? 'Excluindo...' : 'Excluir'}
             </button>
