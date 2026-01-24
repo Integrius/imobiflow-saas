@@ -3043,6 +3043,53 @@ TWILIO_WHATSAPP_NUMBER="+5511999999999"
 
 ## Histórico de Configurações
 
+### 2026-01-24
+
+#### Histórico/Timeline de Interações (#8) ✅
+
+Implementado sistema visual de timeline para exibir histórico completo de interações com leads.
+
+**Componente Frontend** (`/apps/web/components/TimelineInteracoes.tsx`):
+- Timeline visual cronológica com linha de conexão
+- Cards expandíveis para cada interação
+- Filtros por tipo de interação (WhatsApp, Ligação, Visita, Email, Nota, etc.)
+- Indicadores visuais de direção (entrada/saída)
+- Indicadores de sentimento (positivo, neutro, negativo)
+- Formatação relativa de datas ("Há 5 min", "Há 2 dias", etc.)
+- Estatísticas agregadas no rodapé
+- Botão de atualização manual
+- Estado vazio com orientação ao usuário
+
+**Funcionalidades:**
+- Exibe até 50 interações por padrão (configurável)
+- Filtragem dinâmica por tipo de interação
+- Detalhes expandidos ao clicar (duração, corretor, data completa)
+- Badge "Auto" para interações registradas automaticamente
+- Cores distintas por tipo de canal (WhatsApp verde, Email vermelho, etc.)
+- Responsivo e com animações suaves
+
+**Tipos de Interação Suportados:**
+- 💬 WhatsApp
+- 📧 Email
+- 📞 Ligação (com duração em minutos)
+- 🏠 Visita
+- 📝 Anotação
+- 📱 SMS
+- ✈️ Telegram
+
+**Integração:**
+- Componente integrado no modal de detalhes do lead
+- Aparece na seção após "Vinculações"
+- Usa endpoint existente: `GET /api/v1/insights/interacoes/lead/:id`
+
+**Arquivos Criados:**
+- `/apps/web/components/TimelineInteracoes.tsx` - Componente de timeline
+
+**Arquivos Modificados:**
+- `/apps/web/app/dashboard/leads/page.tsx` - Integração da timeline no modal
+
+---
+
 ### 2026-01-23
 
 #### Dashboard Individual do Corretor Aprimorado (#6) ✅
@@ -4387,11 +4434,21 @@ Conforme Art. 39 da LGPD: *"O operador deverá realizar o tratamento segundo as 
 
 ---
 
-**Última atualização**: 23 de janeiro de 2026
-**Versão**: 1.14.0
+**Última atualização**: 24 de janeiro de 2026
+**Versão**: 1.15.0
 **Status**: Em produção ✅
 
-**Novidades da versão 1.14.0** (23 de janeiro de 2026):
+**Novidades da versão 1.15.0** (24 de janeiro de 2026):
+- ✅ **Histórico/Timeline de Interações (#8)**
+- ✅ Componente visual de timeline cronológica
+- ✅ Cards expandíveis com detalhes completos
+- ✅ Filtros por tipo de interação (WhatsApp, Ligação, Visita, etc.)
+- ✅ Indicadores de direção (entrada/saída) e sentimento
+- ✅ Formatação relativa de datas ("Há 5 min", "Há 2 dias")
+- ✅ Estatísticas agregadas no rodapé
+- ✅ Integração no modal de detalhes do lead
+
+**Versão 1.14.0** (23 de janeiro de 2026):
 - ✅ **Importação de Leads via CSV (#7)**
 - ✅ Wizard completo de importação em 4 etapas
 - ✅ Mapeamento automático de campos com aliases inteligentes

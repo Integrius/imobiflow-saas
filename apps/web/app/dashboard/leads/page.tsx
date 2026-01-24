@@ -5,6 +5,7 @@ import { api } from '@/lib/api';
 import { toast } from '@/lib/toast';
 import Modal from '@/components/Modal';
 import RegistrarAtividade from '@/components/RegistrarAtividade';
+import TimelineInteracoes from '@/components/TimelineInteracoes';
 import { formatPhone, unformatNumbers } from '@/lib/formatters';
 import ReportDownloadButton from '@/components/ReportDownloadButton';
 import Link from 'next/link';
@@ -640,6 +641,19 @@ export default function LeadsPage() {
                     </div>
                   </div>
                 )}
+              </div>
+
+              {/* Timeline de Interações */}
+              <div className="bg-white p-4 rounded-lg border-2 border-gray-200">
+                <TimelineInteracoes
+                  leadId={editingLead.id}
+                  leadNome={editingLead.nome}
+                  maxItems={20}
+                  showHeader={true}
+                  onInteracaoAdded={() => {
+                    loadLeads();
+                  }}
+                />
               </div>
             </>
           )}
