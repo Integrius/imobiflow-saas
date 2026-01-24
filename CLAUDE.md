@@ -70,6 +70,105 @@ Conectar leads (pessoas procurando imóveis) com corretores e imobiliárias de f
 
 ---
 
+## Frontend Guidelines (Vivoly Design System)
+
+### Source of Truth
+**SEMPRE consulte o arquivo `frontend-spec.md`** na raiz do projeto para obter a estrutura HTML, classes Tailwind e componentes visuais corretos.
+
+### Framework e Estilização
+- **Tailwind CSS é obrigatório**. Não use CSS puro ou estilo inline se houver uma classe Tailwind disponível.
+- Componentes devem seguir os padrões definidos no design system.
+
+### Cores da Marca
+
+#### Principal (Verde Vivoly)
+```
+text-vivoly-600, bg-vivoly-600
+text-vivoly-800, bg-vivoly-800 (texto escuro)
+bg-vivoly-50 (backgrounds sutis)
+```
+
+**Configuração Tailwind:**
+```javascript
+vivoly: {
+  50: '#f0fdf4',
+  100: '#dcfce7',
+  500: '#22c55e',
+  600: '#16a34a',
+  800: '#166534',
+  900: '#14532d',
+}
+```
+
+#### IA/Sofia (Roxo/Índigo)
+```
+text-sofia, bg-sofia
+bg-gradient-to-br from-indigo-600 to-purple-700
+```
+
+**Configuração Tailwind:**
+```javascript
+sofia: {
+  light: '#e0e7ff',
+  DEFAULT: '#4f46e5',
+}
+```
+
+### Layout Padrão
+
+#### Sidebar
+- Organizada por grupos: **Comercial**, **Cadastros**, **Gestão**
+- Largura fixa: `w-64`
+- Item ativo: `bg-vivoly-50 text-vivoly-800`
+- Item inativo: `text-gray-600 hover:bg-gray-50`
+
+#### Dashboard
+- **Layout assimétrico**:
+  - Coluna Esquerda (70%): Dados principais, KPIs, gráficos
+  - Coluna Direita (30%): Widget Sofia (IA) e Ações rápidas
+- Grid: `grid-cols-1 lg:grid-cols-3` com `lg:col-span-2` para coluna principal
+
+### Componentes Chave
+
+#### Widget Sofia (IA)
+- **Destaque visual obrigatório** com gradiente roxo
+- Deve sugerir uma **ação direta** ao usuário
+- Animação pulsante: `sofia-active` (definida em CSS)
+- Estrutura:
+```html
+<div class="bg-gradient-to-br from-indigo-600 to-purple-700 rounded-xl p-1 shadow-lg text-white">
+  <div class="bg-white/10 backdrop-blur-md rounded-lg p-5 border border-white/20">
+    <!-- Ícone + Título "Sofia Insights" -->
+    <!-- Mensagem/Insight -->
+    <!-- Botão de Ação -->
+  </div>
+</div>
+```
+
+#### KPIs/Cards de Estatísticas
+- Cards pequenos e minimalistas
+- Posicionados no topo do dashboard
+- Estrutura:
+```html
+<div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100">
+  <span class="text-xs font-semibold text-gray-500 uppercase">Label</span>
+  <div class="text-2xl font-bold text-gray-900 mt-1">Valor</div>
+</div>
+```
+
+#### Botões
+- Primário: `bg-vivoly-600 text-white px-4 py-2 rounded-lg text-sm font-medium`
+- Com ícone: usar gap-2 entre ícone e texto
+
+### Comandos Úteis para Refatoração
+
+Ao refatorar páginas ou componentes, use:
+> "Aplique o layout do @frontend-spec.md nesta página."
+
+Isso garante que o Claude sempre respeite o design system definido.
+
+---
+
 ## Estrutura do Monorepo
 
 ```
