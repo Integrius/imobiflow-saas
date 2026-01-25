@@ -364,7 +364,7 @@ export default function ImoveisPage() {
       <div className="flex justify-between items-center gap-4 mb-6">
         <div>
           <h2 className="text-4xl font-bold text-[#064E3B] tracking-tight">Imóveis</h2>
-          <p className="text-sm text-[#4B5563] mt-2 font-medium">
+          <p className="text-sm text-[#374151] mt-2 font-semibold">
             <span className="text-[#00C48C] text-lg font-bold">{imoveis.length}</span> imóveis cadastrados
           </p>
         </div>
@@ -433,8 +433,8 @@ export default function ImoveisPage() {
                   </h3>
                   <p className="text-xs font-semibold text-[#00C48C] uppercase tracking-wider bg-[#00C48C]/20 px-2 py-1 rounded-md inline-block border border-[#00C48C]/50">{imovel.tipo}</p>
                 </div>
-                <p className="text-sm text-[#4B5563] mb-1 font-medium">📍 {imovel.endereco?.logradouro}, {imovel.endereco?.numero}</p>
-                <p className="text-xs text-[#4B5563] mb-4">{imovel.endereco?.cidade} - {imovel.endereco?.estado}</p>
+                <p className="text-sm text-[#374151] mb-1 font-semibold">📍 {imovel.endereco?.logradouro}, {imovel.endereco?.numero}</p>
+                <p className="text-xs text-[#4B5563] font-medium mb-4">{imovel.endereco?.cidade} - {imovel.endereco?.estado}</p>
 
                 <div className="flex flex-wrap gap-2 text-xs text-[#064E3B] mb-4">
                   {imovel.caracteristicas?.area_total && (
@@ -462,7 +462,7 @@ export default function ImoveisPage() {
                   {/* Proprietário */}
                   <div className="text-sm">
                     <span className="font-bold text-[#064E3B]">Proprietário:</span>{' '}
-                    <span className="text-[#4B5563]">{imovel.proprietario?.nome || 'Não informado'}</span>
+                    <span className="text-[#374151] font-medium">{imovel.proprietario?.nome || 'Não informado'}</span>
                   </div>
 
                   {/* Corretor Responsável */}
@@ -788,31 +788,31 @@ export default function ImoveisPage() {
                 <div className="grid grid-cols-3 gap-4">
                   {/* Proprietário */}
                   <div className="bg-white p-3 rounded-lg border-2 border-[#FFB627]/30">
-                    <div className="text-xs font-bold text-[#4B5563] mb-1">🏠 PROPRIETÁRIO</div>
+                    <div className="text-xs font-bold text-[#374151] mb-1">🏠 PROPRIETÁRIO</div>
                     {editingImovel.proprietario ? (
                       <div className="text-sm font-bold text-[#064E3B]">{editingImovel.proprietario.nome}</div>
                     ) : (
-                      <div className="text-sm text-[#9CA3AF]">Não informado</div>
+                      <div className="text-sm text-[#6B7280] font-medium">Não informado</div>
                     )}
                   </div>
 
                   {/* Corretor Responsável */}
                   <div className="bg-white p-3 rounded-lg border-2 border-[#A97E6F]/30">
-                    <div className="text-xs font-bold text-[#4B5563] mb-1">👤 CORRETOR</div>
+                    <div className="text-xs font-bold text-[#374151] mb-1">👤 CORRETOR</div>
                     {editingImovel.corretor_responsavel ? (
                       <div className="text-sm font-bold text-[#064E3B]">{editingImovel.corretor_responsavel.user.nome}</div>
                     ) : (
-                      <div className="text-sm text-[#9CA3AF]">Não atribuído</div>
+                      <div className="text-sm text-[#6B7280] font-medium">Não atribuído</div>
                     )}
                   </div>
 
                   {/* Total de Propostas */}
                   <div className="bg-white p-3 rounded-lg border-2 border-[#00C48C]/30">
-                    <div className="text-xs font-bold text-[#4B5563] mb-1">📋 PROPOSTAS</div>
-                    <div className="text-2xl font-bold text-[#00C48C]">
+                    <div className="text-xs font-bold text-[#374151] mb-1">📋 PROPOSTAS</div>
+                    <div className="text-3xl font-bold text-[#00C48C]">
                       {totalPropostas}
                     </div>
-                    <div className="text-xs text-[#4B5563]">propostas recebidas</div>
+                    <div className="text-xs text-[#4B5563] font-medium">propostas recebidas</div>
                   </div>
                 </div>
               )}
@@ -846,10 +846,10 @@ export default function ImoveisPage() {
         size="sm"
       >
         <div className="space-y-4">
-          <p className="text-[#064E3B] text-base">
+          <p className="text-[#064E3B] text-base font-medium">
             Tem certeza que deseja excluir o imóvel <strong className="text-[#059669]">{deletingImovel?.titulo}</strong>?
           </p>
-          <p className="text-sm text-[#4B5563]">Esta ação não pode ser desfeita.</p>
+          <p className="text-sm text-[#4B5563] font-medium">Esta ação não pode ser desfeita.</p>
 
           <div className="flex justify-end gap-3 pt-6 border-t border-gray-200 mt-6">
             <button

@@ -279,14 +279,14 @@ export default function TarefasPage() {
       <div className="flex justify-between items-center">
         <div>
           <h1 className="text-2xl font-bold text-[#2C2C2C]">Tarefas</h1>
-          <p className="text-[#8B7F76]">Gerencie suas tarefas e follow-ups</p>
+          <p className="text-[#6B7280] font-medium">Gerencie suas tarefas e follow-ups</p>
         </div>
         <button
           onClick={() => {
             resetForm()
             setShowModal(true)
           }}
-          className="px-4 py-2 bg-gradient-to-r from-[#8FD14F] to-[#7AB93F] text-white rounded-lg hover:opacity-90 transition-opacity flex items-center gap-2"
+          className="px-4 py-2.5 bg-gradient-to-r from-[#8FD14F] to-[#7AB93F] text-white rounded-lg font-bold hover:opacity-90 transition-opacity flex items-center gap-2"
         >
           <span>+</span>
           <span>Nova Tarefa</span>
@@ -297,32 +297,32 @@ export default function TarefasPage() {
       {stats && (
         <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-4">
           <div className="bg-white rounded-lg p-4 shadow-sm border border-gray-100">
-            <div className="text-2xl font-bold text-[#2C2C2C]">{stats.total}</div>
-            <div className="text-sm text-[#8B7F76]">Total</div>
+            <div className="text-3xl font-bold text-[#2C2C2C]">{stats.total}</div>
+            <div className="text-sm text-[#6B7280] font-medium">Total</div>
           </div>
           <div className="bg-white rounded-lg p-4 shadow-sm border border-yellow-200">
-            <div className="text-2xl font-bold text-yellow-600">{stats.pendentes}</div>
-            <div className="text-sm text-[#8B7F76]">Pendentes</div>
+            <div className="text-3xl font-bold text-yellow-600">{stats.pendentes}</div>
+            <div className="text-sm text-[#6B7280] font-medium">Pendentes</div>
           </div>
           <div className="bg-white rounded-lg p-4 shadow-sm border border-blue-200">
-            <div className="text-2xl font-bold text-blue-600">{stats.emAndamento}</div>
-            <div className="text-sm text-[#8B7F76]">Em Andamento</div>
+            <div className="text-3xl font-bold text-blue-600">{stats.emAndamento}</div>
+            <div className="text-sm text-[#6B7280] font-medium">Em Andamento</div>
           </div>
           <div className="bg-white rounded-lg p-4 shadow-sm border border-green-200">
-            <div className="text-2xl font-bold text-green-600">{stats.concluidas}</div>
-            <div className="text-sm text-[#8B7F76]">Concluídas</div>
+            <div className="text-3xl font-bold text-green-600">{stats.concluidas}</div>
+            <div className="text-sm text-[#6B7280] font-medium">Concluídas</div>
           </div>
           <div className="bg-white rounded-lg p-4 shadow-sm border border-red-200">
-            <div className="text-2xl font-bold text-red-600">{stats.atrasadas}</div>
-            <div className="text-sm text-[#8B7F76]">Atrasadas</div>
+            <div className="text-3xl font-bold text-red-600">{stats.atrasadas}</div>
+            <div className="text-sm text-[#6B7280] font-medium">Atrasadas</div>
           </div>
           <div className="bg-white rounded-lg p-4 shadow-sm border border-gray-200">
-            <div className="text-2xl font-bold text-gray-500">{stats.canceladas}</div>
-            <div className="text-sm text-[#8B7F76]">Canceladas</div>
+            <div className="text-3xl font-bold text-gray-500">{stats.canceladas}</div>
+            <div className="text-sm text-[#6B7280] font-medium">Canceladas</div>
           </div>
           <div className="bg-white rounded-lg p-4 shadow-sm border border-[#8FD14F]/30">
-            <div className="text-2xl font-bold text-[#8FD14F]">{stats.taxaConclusao}%</div>
-            <div className="text-sm text-[#8B7F76]">Taxa Conclusão</div>
+            <div className="text-3xl font-bold text-[#8FD14F]">{stats.taxaConclusao}%</div>
+            <div className="text-sm text-[#6B7280] font-medium">Taxa Conclusão</div>
           </div>
         </div>
       )}
@@ -331,7 +331,7 @@ export default function TarefasPage() {
       <div className="bg-white rounded-lg p-4 shadow-sm border border-gray-100">
         <div className="flex flex-wrap gap-4">
           <div>
-            <label className="block text-sm font-medium text-[#8B7F76] mb-1">Status</label>
+            <label className="block text-sm font-semibold text-[#6B7280] mb-1">Status</label>
             <select
               value={filtroStatus}
               onChange={(e) => setFiltroStatus(e.target.value)}
@@ -344,7 +344,7 @@ export default function TarefasPage() {
             </select>
           </div>
           <div>
-            <label className="block text-sm font-medium text-[#8B7F76] mb-1">Tipo</label>
+            <label className="block text-sm font-semibold text-[#6B7280] mb-1">Tipo</label>
             <select
               value={filtroTipo}
               onChange={(e) => setFiltroTipo(e.target.value)}
@@ -357,7 +357,7 @@ export default function TarefasPage() {
             </select>
           </div>
           <div>
-            <label className="block text-sm font-medium text-[#8B7F76] mb-1">Prioridade</label>
+            <label className="block text-sm font-semibold text-[#6B7280] mb-1">Prioridade</label>
             <select
               value={filtroPrioridade}
               onChange={(e) => setFiltroPrioridade(e.target.value)}
@@ -375,9 +375,9 @@ export default function TarefasPage() {
       {/* Lista de Tarefas */}
       <div className="bg-white rounded-lg shadow-sm border border-gray-100 overflow-hidden">
         {tarefas.length === 0 ? (
-          <div className="p-8 text-center text-[#8B7F76]">
+          <div className="p-8 text-center text-[#6B7280]">
             <div className="text-4xl mb-2">📋</div>
-            <p>Nenhuma tarefa encontrada</p>
+            <p className="font-medium">Nenhuma tarefa encontrada</p>
             <button
               onClick={() => {
                 resetForm()
@@ -402,7 +402,7 @@ export default function TarefasPage() {
                     <span className="text-2xl">{getTipoIcon(tarefa.tipo)}</span>
                     <div className="flex-1">
                       <div className="flex items-center gap-2 flex-wrap">
-                        <h3 className={`font-medium ${
+                        <h3 className={`font-semibold ${
                           tarefa.status === 'CONCLUIDA' ? 'line-through text-gray-400' : 'text-[#2C2C2C]'
                         }`}>
                           {tarefa.titulo}
@@ -420,9 +420,9 @@ export default function TarefasPage() {
                         )}
                       </div>
                       {tarefa.descricao && (
-                        <p className="text-sm text-[#8B7F76] mt-1">{tarefa.descricao}</p>
+                        <p className="text-sm text-[#6B7280] mt-1">{tarefa.descricao}</p>
                       )}
-                      <div className="flex items-center gap-4 mt-2 text-sm text-[#8B7F76]">
+                      <div className="flex items-center gap-4 mt-2 text-sm text-[#6B7280] font-medium">
                         {tarefa.lead && (
                           <span className="flex items-center gap-1">
                             <span>👤</span>
@@ -430,7 +430,7 @@ export default function TarefasPage() {
                           </span>
                         )}
                         {tarefa.data_vencimento && (
-                          <span className={`flex items-center gap-1 ${isVencida(tarefa) ? 'text-red-500 font-medium' : ''}`}>
+                          <span className={`flex items-center gap-1 ${isVencida(tarefa) ? 'text-red-500 font-semibold' : ''}`}>
                             <span>📅</span>
                             <span>{formatDate(tarefa.data_vencimento)}</span>
                             {isVencida(tarefa) && <span>(Vencida!)</span>}
@@ -499,7 +499,7 @@ export default function TarefasPage() {
             </div>
             <form onSubmit={handleSubmit} className="p-6 space-y-4">
               <div>
-                <label className="block text-sm font-medium text-[#2C2C2C] mb-1">
+                <label className="block text-sm font-bold text-[#2C2C2C] mb-1">
                   Título *
                 </label>
                 <input
@@ -513,7 +513,7 @@ export default function TarefasPage() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-[#2C2C2C] mb-1">
+                <label className="block text-sm font-bold text-[#2C2C2C] mb-1">
                   Descrição
                 </label>
                 <textarea
@@ -527,7 +527,7 @@ export default function TarefasPage() {
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-[#2C2C2C] mb-1">
+                  <label className="block text-sm font-bold text-[#2C2C2C] mb-1">
                     Tipo
                   </label>
                   <select
@@ -542,7 +542,7 @@ export default function TarefasPage() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-[#2C2C2C] mb-1">
+                  <label className="block text-sm font-bold text-[#2C2C2C] mb-1">
                     Prioridade
                   </label>
                   <select
@@ -558,7 +558,7 @@ export default function TarefasPage() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-[#2C2C2C] mb-1">
+                <label className="block text-sm font-bold text-[#2C2C2C] mb-1">
                   Lead Relacionado
                 </label>
                 <select
@@ -575,7 +575,7 @@ export default function TarefasPage() {
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-[#2C2C2C] mb-1">
+                  <label className="block text-sm font-bold text-[#2C2C2C] mb-1">
                     Data de Vencimento
                   </label>
                   <input
@@ -587,7 +587,7 @@ export default function TarefasPage() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-[#2C2C2C] mb-1">
+                  <label className="block text-sm font-bold text-[#2C2C2C] mb-1">
                     Lembrete
                   </label>
                   <input
@@ -607,12 +607,12 @@ export default function TarefasPage() {
                     onChange={(e) => setFormData({ ...formData, recorrente: e.target.checked })}
                     className="w-4 h-4 text-[#8FD14F] border-gray-300 rounded focus:ring-[#8FD14F]"
                   />
-                  <span className="text-sm font-medium text-[#2C2C2C]">Tarefa Recorrente</span>
+                  <span className="text-sm font-bold text-[#2C2C2C]">Tarefa Recorrente</span>
                 </label>
 
                 {formData.recorrente && (
                   <div className="mt-3">
-                    <label className="block text-sm font-medium text-[#2C2C2C] mb-1">
+                    <label className="block text-sm font-bold text-[#2C2C2C] mb-1">
                       Frequência
                     </label>
                     <select
@@ -636,13 +636,13 @@ export default function TarefasPage() {
                     setShowModal(false)
                     resetForm()
                   }}
-                  className="px-4 py-2 border border-gray-200 text-[#8B7F76] rounded-lg hover:bg-gray-50 transition-colors"
+                  className="px-4 py-2.5 border border-gray-200 text-[#6B7280] font-medium rounded-lg hover:bg-gray-50 transition-colors"
                 >
                   Cancelar
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 bg-gradient-to-r from-[#8FD14F] to-[#7AB93F] text-white rounded-lg hover:opacity-90 transition-opacity"
+                  className="px-4 py-2.5 bg-gradient-to-r from-[#8FD14F] to-[#7AB93F] text-white rounded-lg font-bold hover:opacity-90 transition-opacity"
                 >
                   {editingTarefa ? 'Salvar' : 'Criar Tarefa'}
                 </button>
@@ -658,11 +658,11 @@ export default function TarefasPage() {
           <div className="bg-white rounded-xl max-w-md w-full">
             <div className="p-6 border-b border-gray-100">
               <h2 className="text-xl font-bold text-[#2C2C2C]">Concluir Tarefa</h2>
-              <p className="text-sm text-[#8B7F76] mt-1">{concluindoTarefa.titulo}</p>
+              <p className="text-sm text-[#6B7280] font-medium mt-1">{concluindoTarefa.titulo}</p>
             </div>
             <div className="p-6 space-y-4">
               <div>
-                <label className="block text-sm font-medium text-[#2C2C2C] mb-1">
+                <label className="block text-sm font-bold text-[#2C2C2C] mb-1">
                   Observações da Conclusão (opcional)
                 </label>
                 <textarea
@@ -682,13 +682,13 @@ export default function TarefasPage() {
                     setConcluindoTarefa(null)
                     setObservacaoConclusao('')
                   }}
-                  className="px-4 py-2 border border-gray-200 text-[#8B7F76] rounded-lg hover:bg-gray-50 transition-colors"
+                  className="px-4 py-2.5 border border-gray-200 text-[#6B7280] font-medium rounded-lg hover:bg-gray-50 transition-colors"
                 >
                   Cancelar
                 </button>
                 <button
                   onClick={handleConcluir}
-                  className="px-4 py-2 bg-gradient-to-r from-green-500 to-green-600 text-white rounded-lg hover:opacity-90 transition-opacity flex items-center gap-2"
+                  className="px-4 py-2.5 bg-gradient-to-r from-green-500 to-green-600 text-white rounded-lg font-bold hover:opacity-90 transition-opacity flex items-center gap-2"
                 >
                   <span>✓</span>
                   <span>Concluir Tarefa</span>

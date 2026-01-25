@@ -625,18 +625,18 @@ export default function CorretoresPage() {
                       {corretor.tipo === 'ADMIN' ? '👑 Admin' : corretor.tipo === 'GESTOR' ? '📋 Gestor' : '🏠 Corretor'}
                     </span>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-[#4B5563]">{corretor.email}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-[#4B5563]">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-[#374151] font-medium">{corretor.email}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-[#374151]">
                     <span className="px-2 py-1 bg-[#059669]/20 text-[#059669] rounded-md font-mono text-xs font-bold border border-[#059669]/50">{corretor.creci}</span>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-[#4B5563] font-medium">{formatPhone(corretor.telefone)}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-[#4B5563]">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-[#374151] font-semibold">{formatPhone(corretor.telefone)}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-[#374151]">
                     {corretor.comissao ? (
                       <span className="px-3 py-1 bg-[#00C48C]/20 text-[#00C48C] rounded-full font-bold text-xs border-2 border-[#00C48C]/50">
                         {corretor.comissao}%
                       </span>
                     ) : (
-                      <span className="text-[#4B5563]">-</span>
+                      <span className="text-[#6B7280] font-medium">-</span>
                     )}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm">
@@ -1032,16 +1032,16 @@ export default function CorretoresPage() {
             {/* Resumo Geral */}
             <div className="grid grid-cols-3 gap-4">
               <div className="bg-gradient-to-br from-[#00C48C]/10 to-[#00C48C]/5 border-2 border-[#00C48C]/30 rounded-lg p-4 text-center">
-                <p className="text-xs text-gray-600 font-semibold mb-1">Corretores</p>
-                <p className="text-2xl font-bold text-[#00C48C]">{comissoesData.total_corretores}</p>
+                <p className="text-xs text-gray-700 font-bold mb-1">Corretores</p>
+                <p className="text-3xl font-bold text-[#00C48C]">{comissoesData.total_corretores}</p>
               </div>
               <div className="bg-gradient-to-br from-[#059669]/10 to-[#059669]/5 border-2 border-[#059669]/30 rounded-lg p-4 text-center">
-                <p className="text-xs text-gray-600 font-semibold mb-1">Negociações</p>
-                <p className="text-2xl font-bold text-[#059669]">{comissoesData.total_negociacoes}</p>
+                <p className="text-xs text-gray-700 font-bold mb-1">Negociações</p>
+                <p className="text-3xl font-bold text-[#059669]">{comissoesData.total_negociacoes}</p>
               </div>
               <div className="bg-gradient-to-br from-[#FFB627]/10 to-[#FFB627]/5 border-2 border-[#FFB627]/30 rounded-lg p-4 text-center">
-                <p className="text-xs text-gray-600 font-semibold mb-1">Total Comissões</p>
-                <p className="text-2xl font-bold text-[#FFB627]">
+                <p className="text-xs text-gray-700 font-bold mb-1">Total Comissões</p>
+                <p className="text-3xl font-bold text-[#FFB627]">
                   R$ {comissoesData.comissoes.reduce((sum: number, c: any) => sum + c.total_comissao, 0).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                 </p>
               </div>
@@ -1068,13 +1068,13 @@ export default function CorretoresPage() {
                   {/* Stats do Corretor */}
                   <div className="grid grid-cols-2 gap-3 mb-3">
                     <div className="bg-gray-50 rounded p-2 text-center">
-                      <p className="text-xs text-gray-600">Total em Vendas</p>
+                      <p className="text-xs text-gray-700 font-semibold">Total em Vendas</p>
                       <p className="text-sm font-bold text-gray-900">
                         R$ {corretor.total_vendas.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                       </p>
                     </div>
                     <div className="bg-gray-50 rounded p-2 text-center">
-                      <p className="text-xs text-gray-600">Negociações Fechadas</p>
+                      <p className="text-xs text-gray-700 font-semibold">Negociações Fechadas</p>
                       <p className="text-sm font-bold text-gray-900">{corretor.negociacoes.length}</p>
                     </div>
                   </div>

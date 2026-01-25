@@ -181,7 +181,7 @@ export default function AdminTenantsPage() {
     };
 
     return (
-      <span className={`px-2 py-1 text-xs font-semibold rounded border ${colors[status as keyof typeof colors] || 'bg-gray-100'}`}>
+      <span className={`px-2 py-1 text-xs font-bold rounded border ${colors[status as keyof typeof colors] || 'bg-gray-100'}`}>
         {status}
       </span>
     );
@@ -196,7 +196,7 @@ export default function AdminTenantsPage() {
     };
 
     return (
-      <span className={`px-2 py-1 text-xs font-semibold rounded border ${colors[plano as keyof typeof colors] || 'bg-gray-100'}`}>
+      <span className={`px-2 py-1 text-xs font-bold rounded border ${colors[plano as keyof typeof colors] || 'bg-gray-100'}`}>
         {plano}
       </span>
     );
@@ -244,13 +244,13 @@ export default function AdminTenantsPage() {
           <h1 className="text-3xl font-bold text-[#2C2C2C]">
             🏢 Administração de Tenants
           </h1>
-          <p className="text-gray-600 mt-1">
+          <p className="text-gray-700 mt-1 font-medium">
             Gerenciamento centralizado de todas as imobiliárias cadastradas
           </p>
         </div>
         <button
           onClick={loadData}
-          className="px-4 py-2 bg-[#8FD14F] text-white rounded-lg hover:bg-[#7FB344] transition-colors font-medium"
+          className="px-4 py-2.5 bg-[#8FD14F] text-white rounded-lg hover:bg-[#7FB344] transition-colors font-bold"
         >
           🔄 Atualizar
         </button>
@@ -260,22 +260,22 @@ export default function AdminTenantsPage() {
       {stats && (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           <div className="bg-white rounded-lg shadow-md p-6 border-l-4 border-[#8FD14F]">
-            <div className="text-sm text-gray-600 mb-1">Total de Tenants</div>
+            <div className="text-sm font-semibold text-gray-700 mb-1">Total de Tenants</div>
             <div className="text-3xl font-bold text-[#2C2C2C]">{stats.total_tenants}</div>
           </div>
 
           <div className="bg-white rounded-lg shadow-md p-6 border-l-4 border-emerald-500">
-            <div className="text-sm text-gray-600 mb-1">Novos (30 dias)</div>
+            <div className="text-sm font-semibold text-gray-700 mb-1">Novos (30 dias)</div>
             <div className="text-3xl font-bold text-emerald-600">{stats.novos_ultimos_30_dias}</div>
           </div>
 
           <div className="bg-white rounded-lg shadow-md p-6 border-l-4 border-yellow-500">
-            <div className="text-sm text-gray-600 mb-1">Trials Expirando (5 dias)</div>
+            <div className="text-sm font-semibold text-gray-700 mb-1">Trials Expirando (5 dias)</div>
             <div className="text-3xl font-bold text-yellow-600">{stats.trials_expirando_5_dias}</div>
           </div>
 
           <div className="bg-white rounded-lg shadow-md p-6 border-l-4 border-green-500">
-            <div className="text-sm text-gray-600 mb-1">Tenants Ativos</div>
+            <div className="text-sm font-semibold text-gray-700 mb-1">Tenants Ativos</div>
             <div className="text-3xl font-bold text-green-600">{stats.por_status.ATIVO || 0}</div>
           </div>
         </div>
@@ -286,13 +286,13 @@ export default function AdminTenantsPage() {
         <div className="bg-gradient-to-r from-[#8FD14F]/10 to-[#8FD14F]/5 border-2 border-[#8FD14F]/30 rounded-lg p-4">
           <div className="flex flex-wrap items-center gap-4">
             <div className="flex items-center gap-2">
-              <span className="font-semibold text-[#2C2C2C]">
+              <span className="font-bold text-[#2C2C2C]">
                 {selectedTenants.size} tenant(s) selecionado(s)
               </span>
             </div>
 
             <div className="flex items-center gap-2">
-              <label className="text-sm font-medium text-gray-700">
+              <label className="text-sm font-semibold text-gray-700">
                 Alterar status para:
               </label>
               <select
@@ -312,7 +312,7 @@ export default function AdminTenantsPage() {
             <button
               onClick={handleBulkStatusUpdate}
               disabled={!bulkStatus || updatingBulk}
-              className="px-4 py-2 bg-[#8FD14F] text-white rounded-lg hover:bg-[#7FB344] transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+              className="px-4 py-2.5 bg-[#8FD14F] text-white rounded-lg hover:bg-[#7FB344] transition-colors font-bold disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
             >
               {updatingBulk ? (
                 <>
@@ -326,7 +326,7 @@ export default function AdminTenantsPage() {
 
             <button
               onClick={() => setSelectedTenants(new Set())}
-              className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors font-medium"
+              className="px-4 py-2.5 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors font-bold"
             >
               Limpar Seleção
             </button>
@@ -339,7 +339,7 @@ export default function AdminTenantsPage() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           {/* Busca */}
           <div className="md:col-span-2">
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-semibold text-gray-700 mb-2">
               🔍 Buscar
             </label>
             <input
@@ -353,7 +353,7 @@ export default function AdminTenantsPage() {
 
           {/* Filtro Status */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-semibold text-gray-700 mb-2">
               Status
             </label>
             <select
@@ -372,7 +372,7 @@ export default function AdminTenantsPage() {
 
           {/* Filtro Plano */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-semibold text-gray-700 mb-2">
               Plano
             </label>
             <select
@@ -400,7 +400,7 @@ export default function AdminTenantsPage() {
           <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-gray-50">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
                   <input
                     type="checkbox"
                     checked={selectedTenants.size === tenantsFiltrados.length && tenantsFiltrados.length > 0}
@@ -408,22 +408,22 @@ export default function AdminTenantsPage() {
                     className="w-4 h-4 text-[#8FD14F] border-gray-300 rounded focus:ring-[#8FD14F]"
                   />
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
                   Tenant
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
                   Admin
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
                   Status / Plano
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
                   Trial
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
                   Uso
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
                   Cadastro
                 </th>
               </tr>

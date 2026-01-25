@@ -147,7 +147,7 @@ export default function AdministracaoPage() {
         <h1 className="text-2xl font-bold text-[#2C2C2C]">
           ⚙️ Administração
         </h1>
-        <p className="text-gray-600 mt-1">
+        <p className="text-gray-700 mt-1 font-medium">
           Gerencie sua conta e configurações
         </p>
       </div>
@@ -161,7 +161,7 @@ export default function AdministracaoPage() {
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
-                className={`flex items-center gap-2 px-6 py-4 text-sm font-medium border-b-2 transition-colors ${
+                className={`flex items-center gap-2 px-6 py-4 text-sm font-semibold border-b-2 transition-colors ${
                   activeTab === tab.id
                     ? 'border-[#00C48C] text-[#00C48C]'
                     : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
@@ -191,11 +191,11 @@ export default function AdministracaoPage() {
           {/* Aba: Minha Conta */}
           {activeTab === 'conta' && (
             <div className="space-y-6">
-              <h2 className="text-lg font-semibold text-[#2C2C2C]">Dados da Conta</h2>
+              <h2 className="text-lg font-bold text-[#2C2C2C]">Dados da Conta</h2>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-semibold text-gray-700 mb-1">
                     Nome
                   </label>
                   <div className="px-4 py-3 bg-gray-50 border border-gray-200 rounded-lg text-gray-700">
@@ -204,7 +204,7 @@ export default function AdministracaoPage() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-semibold text-gray-700 mb-1">
                     Email
                   </label>
                   <div className="px-4 py-3 bg-gray-50 border border-gray-200 rounded-lg text-gray-700">
@@ -213,7 +213,7 @@ export default function AdministracaoPage() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-semibold text-gray-700 mb-1">
                     Tipo de Usuário
                   </label>
                   <div className="px-4 py-3 bg-gray-50 border border-gray-200 rounded-lg">
@@ -233,7 +233,7 @@ export default function AdministracaoPage() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-semibold text-gray-700 mb-1">
                     ID do Usuário
                   </label>
                   <div className="px-4 py-3 bg-gray-50 border border-gray-200 rounded-lg text-gray-500 text-sm font-mono">
@@ -253,11 +253,11 @@ export default function AdministracaoPage() {
           {/* Aba: Segurança */}
           {activeTab === 'seguranca' && (
             <div className="space-y-6">
-              <h2 className="text-lg font-semibold text-[#2C2C2C]">Alterar Senha</h2>
+              <h2 className="text-lg font-bold text-[#2C2C2C]">Alterar Senha</h2>
 
               <form onSubmit={handleAlterarSenha} className="max-w-md space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-semibold text-gray-700 mb-1">
                     Senha Atual *
                   </label>
                   <input
@@ -270,7 +270,7 @@ export default function AdministracaoPage() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-semibold text-gray-700 mb-1">
                     Nova Senha *
                   </label>
                   <input
@@ -283,7 +283,7 @@ export default function AdministracaoPage() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-semibold text-gray-700 mb-1">
                     Confirmar Nova Senha *
                   </label>
                   <input
@@ -298,7 +298,7 @@ export default function AdministracaoPage() {
                 <button
                   type="submit"
                   disabled={alterandoSenha}
-                  className="w-full px-6 py-3 bg-gradient-to-r from-[#00C48C] to-[#059669] text-white font-semibold rounded-lg hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="w-full px-6 py-3 bg-gradient-to-r from-[#00C48C] to-[#059669] text-white font-bold rounded-lg hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {alterandoSenha ? (
                     <span className="flex items-center justify-center gap-2">
@@ -315,7 +315,7 @@ export default function AdministracaoPage() {
               </form>
 
               <div className="pt-4 border-t border-gray-200">
-                <h3 className="text-sm font-medium text-gray-700 mb-2">Dicas de Segurança:</h3>
+                <h3 className="text-sm font-semibold text-gray-700 mb-2">Dicas de Segurança:</h3>
                 <ul className="text-sm text-gray-500 space-y-1">
                   <li>• Use uma senha com pelo menos 6 caracteres</li>
                   <li>• Combine letras maiúsculas, minúsculas e números</li>
@@ -330,7 +330,7 @@ export default function AdministracaoPage() {
           {activeTab === 'logs' && canViewLogs && (
             <div className="space-y-6">
               <div className="flex items-center justify-between">
-                <h2 className="text-lg font-semibold text-[#2C2C2C]">Logs de Atividade</h2>
+                <h2 className="text-lg font-bold text-[#2C2C2C]">Logs de Atividade</h2>
                 <button
                   onClick={loadLogs}
                   disabled={loadingLogs}
@@ -354,19 +354,19 @@ export default function AdministracaoPage() {
                   <table className="min-w-full divide-y divide-gray-200">
                     <thead className="bg-gray-50">
                       <tr>
-                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
                           Data/Hora
                         </th>
-                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
                           Usuário
                         </th>
-                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
                           Ação
                         </th>
-                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
                           Descrição
                         </th>
-                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
                           IP
                         </th>
                       </tr>

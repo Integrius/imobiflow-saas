@@ -315,7 +315,7 @@ export default function ProprietariosPage() {
       <div className="flex justify-between items-center mb-8">
         <div>
           <h2 className="text-4xl font-bold text-[#064E3B] tracking-tight">Proprietários</h2>
-          <p className="text-sm text-[#4B5563] mt-2 font-medium">
+          <p className="text-sm text-[#374151] mt-2 font-semibold">
             <span className="text-[#00C48C] text-lg font-bold">{proprietarios.length}</span> proprietários cadastrados
           </p>
         </div>
@@ -368,11 +368,11 @@ export default function ProprietariosPage() {
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-bold text-[#064E3B]">
                     {proprietario.nome}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-[#4B5563]">{proprietario.contato?.email || '-'}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-[#4B5563]">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-[#374151] font-medium">{proprietario.contato?.email || '-'}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-[#374151] font-medium">
                     <span className="px-2 py-1 bg-slate-600 text-slate-200 rounded-md font-mono text-xs font-bold border border-slate-500">{proprietario.cpf_cnpj}</span>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-[#4B5563]">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-[#374151] font-medium">
                     <span className={`px-3 py-1.5 text-xs font-bold rounded-full border-2 ${
                       proprietario.tipo_pessoa === 'FISICA'
                         ? 'bg-[#059669]/20 text-[#059669] border-[#059669]/50'
@@ -381,7 +381,7 @@ export default function ProprietariosPage() {
                       {proprietario.tipo_pessoa === 'FISICA' ? '👤 Pessoa Física' : '🏢 Pessoa Jurídica'}
                     </span>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-[#4B5563] font-medium">{formatPhone(proprietario.contato?.telefone_principal || '')}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-[#374151] font-semibold">{formatPhone(proprietario.contato?.telefone_principal || '')}</td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm">
                     <button
                       onClick={() => openEditModal(proprietario)}
@@ -423,7 +423,7 @@ export default function ProprietariosPage() {
             ) : (
               <div className="flex items-center gap-4 justify-center">
                 <div className="text-center">
-                  <div className="text-xs text-[#4B5563] font-medium mb-1">👤 CORRETOR</div>
+                  <div className="text-xs text-[#374151] font-semibold mb-1">👤 CORRETOR</div>
                   {editingProprietario.corretor ? (
                     <div className="text-sm font-bold text-[#A97E6F]">{editingProprietario.corretor.user.nome}</div>
                   ) : (
@@ -432,13 +432,13 @@ export default function ProprietariosPage() {
                 </div>
                 <div className="h-10 w-px bg-[#00C48C]/30"></div>
                 <div className="text-center">
-                  <div className="text-2xl font-bold text-[#059669]">{proprietarioImoveis.length}</div>
-                  <div className="text-xs text-[#4B5563] font-medium">Imóveis</div>
+                  <div className="text-3xl font-bold text-[#059669]">{proprietarioImoveis.length}</div>
+                  <div className="text-xs text-[#374151] font-semibold">Imóveis</div>
                 </div>
                 <div className="h-10 w-px bg-[#00C48C]/30"></div>
                 <div className="text-center">
-                  <div className="text-2xl font-bold text-[#00C48C]">{totalPropostas}</div>
-                  <div className="text-xs text-[#4B5563] font-medium">Propostas</div>
+                  <div className="text-3xl font-bold text-[#00C48C]">{totalPropostas}</div>
+                  <div className="text-xs text-[#374151] font-semibold">Propostas</div>
                 </div>
               </div>
             )}
@@ -629,7 +629,7 @@ export default function ProprietariosPage() {
                         R$ {imovel.preco.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
                       </p>
                       {imovel.endereco && (
-                        <p className="text-[#4B5563] text-sm mt-1">
+                        <p className="text-[#374151] text-sm font-medium mt-1">
                           📍 {imovel.endereco.cidade}, {imovel.endereco.estado}
                         </p>
                       )}
@@ -653,7 +653,7 @@ export default function ProprietariosPage() {
           <p className="text-[#064E3B] text-base">
             Tem certeza que deseja excluir o proprietário <strong className="text-[#059669]">{deletingProprietario?.nome}</strong>?
           </p>
-          <p className="text-sm text-[#4B5563]">Esta ação não pode ser desfeita.</p>
+          <p className="text-sm text-[#374151] font-medium">Esta ação não pode ser desfeita.</p>
 
           <div className="flex justify-end gap-3 pt-6 border-t border-gray-200 mt-6">
             <button

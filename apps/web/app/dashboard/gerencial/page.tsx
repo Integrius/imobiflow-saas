@@ -168,7 +168,7 @@ export default function DashboardGerencialPage() {
       <div className="mb-8 flex justify-between items-start">
         <div>
           <h2 className="text-4xl font-bold text-[#064E3B] tracking-tight">Dashboard Gerencial</h2>
-          <p className="text-[#4B5563] mt-2 text-lg">Visão consolidada do desempenho do time</p>
+          <p className="text-[#374151] mt-2 text-lg font-medium">Visão consolidada do desempenho do time</p>
         </div>
         <ReportDownloadButton
           reportType="tenant"
@@ -214,8 +214,8 @@ export default function DashboardGerencialPage() {
             <span className="text-xs font-bold text-[#00C48C] uppercase">Corretores</span>
           </div>
           <div className="text-3xl font-bold text-[#064E3B]">{data.metricas.totalCorretores}</div>
-          <p className="text-sm text-[#4B5563] mt-1">
-            <span className="text-[#00C48C] font-semibold">{data.metricas.corretoresAtivos}</span> ativos
+          <p className="text-sm text-[#374151] font-medium mt-1">
+            <span className="text-[#00C48C] font-bold">{data.metricas.corretoresAtivos}</span> ativos
           </p>
         </div>
 
@@ -228,8 +228,8 @@ export default function DashboardGerencialPage() {
             <span className="text-xs font-bold text-[#059669] uppercase">Leads</span>
           </div>
           <div className="text-3xl font-bold text-[#064E3B]">{data.metricas.totalLeads}</div>
-          <p className="text-sm text-[#4B5563] mt-1">
-            <span className="text-[#00C48C] font-semibold">+{data.metricas.leadsNovos30Dias}</span> nos últimos 30 dias
+          <p className="text-sm text-[#374151] font-medium mt-1">
+            <span className="text-[#00C48C] font-bold">+{data.metricas.leadsNovos30Dias}</span> nos últimos 30 dias
           </p>
         </div>
 
@@ -242,7 +242,7 @@ export default function DashboardGerencialPage() {
             <span className="text-xs font-bold text-[#FFB627] uppercase">Valor Total</span>
           </div>
           <div className="text-2xl font-bold text-[#064E3B]">{formatCurrency(data.metricas.valorTotalFechado)}</div>
-          <p className="text-sm text-[#4B5563] mt-1">em negócios fechados</p>
+          <p className="text-sm text-[#374151] font-medium mt-1">em negócios fechados</p>
         </div>
 
         {/* Taxa de Conversão */}
@@ -254,8 +254,8 @@ export default function DashboardGerencialPage() {
             <span className="text-xs font-bold text-[#8B5CF6] uppercase">Conversão</span>
           </div>
           <div className="text-3xl font-bold text-[#064E3B]">{data.metricas.taxaConversaoGeral}%</div>
-          <p className="text-sm text-[#4B5563] mt-1">
-            <span className="text-[#00C48C] font-semibold">{data.metricas.negociacoesFechadas30Dias}</span> fechamentos (30d)
+          <p className="text-sm text-[#374151] font-medium mt-1">
+            <span className="text-[#00C48C] font-bold">{data.metricas.negociacoesFechadas30Dias}</span> fechamentos (30d)
           </p>
         </div>
       </div>
@@ -315,7 +315,7 @@ export default function DashboardGerencialPage() {
                   className="w-3 h-3 rounded-full mx-auto mb-1"
                   style={{ backgroundColor: CORES_TEMPERATURA[d.temperatura as keyof typeof CORES_TEMPERATURA] }}
                 />
-                <p className="text-xs font-semibold text-[#4B5563]">{d.temperatura}</p>
+                <p className="text-xs font-bold text-[#374151]">{d.temperatura}</p>
                 <p className="text-sm font-bold">{d.quantidade} ({d.percentual}%)</p>
               </div>
             ))}
@@ -334,11 +334,11 @@ export default function DashboardGerencialPage() {
                   {corretor.posicao}
                 </div>
                 <div className="flex-1">
-                  <p className="font-semibold text-[#064E3B]">{corretor.nome}</p>
+                  <p className="font-bold text-[#064E3B]">{corretor.nome}</p>
                 </div>
                 <div className="text-right">
                   <span className="font-bold text-[#00C48C]">{corretor.valor}</span>
-                  <p className="text-xs text-[#4B5563]">fechamentos</p>
+                  <p className="text-xs text-[#374151] font-medium">fechamentos</p>
                 </div>
               </div>
             ))}
@@ -357,7 +357,7 @@ export default function DashboardGerencialPage() {
                   {corretor.posicao}
                 </div>
                 <div className="flex-1">
-                  <p className="font-semibold text-[#064E3B]">{corretor.nome}</p>
+                  <p className="font-bold text-[#064E3B]">{corretor.nome}</p>
                 </div>
                 <div className="text-right">
                   <span className="font-bold text-[#FFB627]">{formatCurrency(corretor.valor)}</span>
@@ -373,20 +373,20 @@ export default function DashboardGerencialPage() {
         <div className="flex border-b">
           <button
             onClick={() => setTabAtiva('ranking')}
-            className={`flex-1 py-4 px-6 font-semibold transition-colors ${
+            className={`flex-1 py-4 px-6 font-bold transition-colors ${
               tabAtiva === 'ranking'
                 ? 'bg-[#00C48C] text-white'
-                : 'bg-gray-50 text-[#4B5563] hover:bg-gray-100'
+                : 'bg-gray-50 text-[#374151] hover:bg-gray-100'
             }`}
           >
             📊 Ranking de Corretores
           </button>
           <button
             onClick={() => setTabAtiva('comparativo')}
-            className={`flex-1 py-4 px-6 font-semibold transition-colors ${
+            className={`flex-1 py-4 px-6 font-bold transition-colors ${
               tabAtiva === 'comparativo'
                 ? 'bg-[#00C48C] text-white'
-                : 'bg-gray-50 text-[#4B5563] hover:bg-gray-100'
+                : 'bg-gray-50 text-[#374151] hover:bg-gray-100'
             }`}
           >
             📈 Comparativo Mensal
@@ -398,16 +398,16 @@ export default function DashboardGerencialPage() {
             <div className="overflow-x-auto">
               <table className="w-full">
                 <thead>
-                  <tr className="text-left text-sm text-[#4B5563] border-b">
-                    <th className="pb-3 font-semibold">#</th>
-                    <th className="pb-3 font-semibold">Corretor</th>
-                    <th className="pb-3 font-semibold text-center">Leads</th>
-                    <th className="pb-3 font-semibold text-center">Negociações</th>
-                    <th className="pb-3 font-semibold text-center">Fechamentos</th>
-                    <th className="pb-3 font-semibold text-center">Conversão</th>
-                    <th className="pb-3 font-semibold text-right">Valor Total</th>
-                    <th className="pb-3 font-semibold text-center">Visitas</th>
-                    <th className="pb-3 font-semibold text-center">Pontuação</th>
+                  <tr className="text-left text-sm text-[#374151] border-b">
+                    <th className="pb-3 font-bold">#</th>
+                    <th className="pb-3 font-bold">Corretor</th>
+                    <th className="pb-3 font-bold text-center">Leads</th>
+                    <th className="pb-3 font-bold text-center">Negociações</th>
+                    <th className="pb-3 font-bold text-center">Fechamentos</th>
+                    <th className="pb-3 font-bold text-center">Conversão</th>
+                    <th className="pb-3 font-bold text-right">Valor Total</th>
+                    <th className="pb-3 font-bold text-center">Visitas</th>
+                    <th className="pb-3 font-bold text-center">Pontuação</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -424,8 +424,8 @@ export default function DashboardGerencialPage() {
                       </td>
                       <td className="py-4">
                         <div>
-                          <p className="font-semibold text-[#064E3B]">{corretor.nome}</p>
-                          <p className="text-xs text-[#4B5563]">CRECI: {corretor.creci}</p>
+                          <p className="font-bold text-[#064E3B]">{corretor.nome}</p>
+                          <p className="text-xs text-[#374151] font-medium">CRECI: {corretor.creci}</p>
                         </div>
                       </td>
                       <td className="py-4 text-center">
@@ -440,7 +440,7 @@ export default function DashboardGerencialPage() {
                       </td>
                       <td className="py-4 text-center">
                         <span className="font-bold">{corretor.metricas.totalNegociacoes}</span>
-                        <p className="text-xs text-[#4B5563]">{corretor.metricas.negociacoesEmAndamento} em andamento</p>
+                        <p className="text-xs text-[#374151] font-medium">{corretor.metricas.negociacoesEmAndamento} em andamento</p>
                       </td>
                       <td className="py-4 text-center">
                         <span className="font-bold text-[#00C48C]">{corretor.metricas.negociacoesFechadas}</span>
@@ -455,11 +455,11 @@ export default function DashboardGerencialPage() {
                       </td>
                       <td className="py-4 text-right">
                         <span className="font-bold text-[#FFB627]">{formatCurrency(corretor.metricas.valorTotalFechado)}</span>
-                        <p className="text-xs text-[#4B5563]">média: {formatCurrency(corretor.metricas.valorMedioFechado)}</p>
+                        <p className="text-xs text-[#374151] font-medium">média: {formatCurrency(corretor.metricas.valorMedioFechado)}</p>
                       </td>
                       <td className="py-4 text-center">
                         <span className="font-bold">{corretor.metricas.visitasRealizadas}</span>
-                        <span className="text-[#4B5563]">/{corretor.metricas.totalVisitas}</span>
+                        <span className="text-[#374151] font-medium">/{corretor.metricas.totalVisitas}</span>
                       </td>
                       <td className="py-4 text-center">
                         <div className="inline-flex items-center gap-1 px-3 py-1 bg-gradient-to-r from-[#00C48C] to-[#059669] text-white rounded-full font-bold">
@@ -508,19 +508,19 @@ export default function DashboardGerencialPage() {
                     <h4 className="font-bold text-[#064E3B] mb-3">{periodo.periodo}</h4>
                     <div className="space-y-2 text-sm">
                       <div className="flex justify-between">
-                        <span className="text-[#4B5563]">Leads:</span>
+                        <span className="text-[#374151] font-medium">Leads:</span>
                         <span className="font-bold">{periodo.leads}</span>
                       </div>
                       <div className="flex justify-between">
-                        <span className="text-[#4B5563]">Negociações:</span>
+                        <span className="text-[#374151] font-medium">Negociações:</span>
                         <span className="font-bold">{periodo.negociacoes}</span>
                       </div>
                       <div className="flex justify-between">
-                        <span className="text-[#4B5563]">Fechamentos:</span>
+                        <span className="text-[#374151] font-medium">Fechamentos:</span>
                         <span className="font-bold text-[#00C48C]">{periodo.fechamentos}</span>
                       </div>
                       <div className="flex justify-between pt-2 border-t">
-                        <span className="text-[#4B5563]">Valor:</span>
+                        <span className="text-[#374151] font-medium">Valor:</span>
                         <span className="font-bold text-[#FFB627]">{formatCurrency(periodo.valorFechado)}</span>
                       </div>
                     </div>

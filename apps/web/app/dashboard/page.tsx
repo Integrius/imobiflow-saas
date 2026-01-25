@@ -157,10 +157,10 @@ export default function DashboardPage() {
     <div className="space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
-        <h1 className="text-xl font-bold text-gray-800">Visão Geral</h1>
+        <h1 className="text-2xl font-bold text-gray-900">Visão Geral</h1>
         <Link
           href="/dashboard/leads?new=true"
-          className="bg-green-600 text-white px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-2 hover:bg-green-700 transition-colors"
+          className="bg-green-600 text-white px-4 py-2.5 rounded-lg text-sm font-semibold flex items-center gap-2 hover:bg-green-700 transition-colors"
         >
           <span>+</span>
           <span>Novo Lead</span>
@@ -178,17 +178,17 @@ export default function DashboardPage() {
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               {/* Leads Total */}
               <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-100">
-                <span className="text-xs font-semibold text-gray-500 uppercase">Leads</span>
-                <div className="text-2xl font-bold text-gray-900 mt-1">{data.leads.total}</div>
+                <span className="text-xs font-bold text-gray-600 uppercase">Leads</span>
+                <div className="text-3xl font-bold text-gray-900 mt-1">{data.leads.total}</div>
                 <div className="flex items-center gap-1 mt-2">
-                  <span className="text-xs text-red-500 font-medium">🔥 {data.leads.quentes}</span>
+                  <span className="text-xs text-red-500 font-semibold">🔥 {data.leads.quentes}</span>
                 </div>
               </div>
 
               {/* Conversão */}
               <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-100">
-                <span className="text-xs font-semibold text-gray-500 uppercase">Conversão</span>
-                <div className="text-2xl font-bold text-gray-900 mt-1">{data.negociacoes.taxaConversao}%</div>
+                <span className="text-xs font-bold text-gray-600 uppercase">Conversão</span>
+                <div className="text-3xl font-bold text-gray-900 mt-1">{data.negociacoes.taxaConversao}%</div>
                 <div className="w-full bg-gray-200 rounded-full h-1.5 mt-2">
                   <div
                     className="bg-green-500 h-1.5 rounded-full"
@@ -199,19 +199,19 @@ export default function DashboardPage() {
 
               {/* Imóveis */}
               <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-100">
-                <span className="text-xs font-semibold text-gray-500 uppercase">Imóveis</span>
-                <div className="text-2xl font-bold text-gray-900 mt-1">{data.imoveis.total}</div>
+                <span className="text-xs font-bold text-gray-600 uppercase">Imóveis</span>
+                <div className="text-3xl font-bold text-gray-900 mt-1">{data.imoveis.total}</div>
                 <div className="flex items-center gap-1 mt-2">
-                  <span className="text-xs text-green-600 font-medium">✓ {data.imoveis.disponiveis} disp.</span>
+                  <span className="text-xs text-green-600 font-semibold">✓ {data.imoveis.disponiveis} disp.</span>
                 </div>
               </div>
 
               {/* Negociações */}
               <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-100">
-                <span className="text-xs font-semibold text-gray-500 uppercase">Negociações</span>
-                <div className="text-2xl font-bold text-gray-900 mt-1">{data.negociacoes.total}</div>
+                <span className="text-xs font-bold text-gray-600 uppercase">Negociações</span>
+                <div className="text-3xl font-bold text-gray-900 mt-1">{data.negociacoes.total}</div>
                 <div className="flex items-center gap-1 mt-2">
-                  <span className="text-xs text-green-600 font-medium">✓ {data.negociacoes.fechadas} fechadas</span>
+                  <span className="text-xs text-green-600 font-semibold">✓ {data.negociacoes.fechadas} fechadas</span>
                 </div>
               </div>
             </div>
@@ -221,16 +221,16 @@ export default function DashboardPage() {
           {chartData && (
             <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
               <div className="flex items-center justify-between mb-4">
-                <h3 className="text-lg font-bold text-gray-800">Performance</h3>
+                <h3 className="text-lg font-bold text-gray-900">Performance</h3>
                 <div className="flex gap-1">
                   {(['3', '6', '12'] as const).map((period) => (
                     <button
                       key={period}
                       onClick={() => setChartPeriod(period)}
-                      className={`px-3 py-1 text-xs font-medium rounded-lg transition-colors ${
+                      className={`px-3 py-1 text-xs font-semibold rounded-lg transition-colors ${
                         chartPeriod === period
                           ? 'bg-green-600 text-white'
-                          : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                          : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                       }`}
                     >
                       {period}M
@@ -264,28 +264,28 @@ export default function DashboardPage() {
             {/* Leads por Temperatura */}
             {data && (
               <div className="bg-white p-5 rounded-xl shadow-sm border border-gray-100">
-                <h3 className="font-bold text-gray-800 text-sm mb-4">Leads por Temperatura</h3>
+                <h3 className="font-bold text-gray-900 text-sm mb-4">Leads por Temperatura</h3>
                 <div className="space-y-3">
                   <div className="flex items-center justify-between">
-                    <span className="text-sm text-gray-600 flex items-center gap-2">
+                    <span className="text-sm text-gray-700 font-medium flex items-center gap-2">
                       <span className="w-3 h-3 rounded-full bg-red-500"></span>
                       Quentes
                     </span>
-                    <span className="font-bold text-gray-800">{data.leads.quentes}</span>
+                    <span className="font-bold text-gray-900">{data.leads.quentes}</span>
                   </div>
                   <div className="flex items-center justify-between">
-                    <span className="text-sm text-gray-600 flex items-center gap-2">
+                    <span className="text-sm text-gray-700 font-medium flex items-center gap-2">
                       <span className="w-3 h-3 rounded-full bg-yellow-500"></span>
                       Mornos
                     </span>
-                    <span className="font-bold text-gray-800">{data.leads.mornos || 0}</span>
+                    <span className="font-bold text-gray-900">{data.leads.mornos || 0}</span>
                   </div>
                   <div className="flex items-center justify-between">
-                    <span className="text-sm text-gray-600 flex items-center gap-2">
+                    <span className="text-sm text-gray-700 font-medium flex items-center gap-2">
                       <span className="w-3 h-3 rounded-full bg-blue-500"></span>
                       Frios
                     </span>
-                    <span className="font-bold text-gray-800">{data.leads.frios || 0}</span>
+                    <span className="font-bold text-gray-900">{data.leads.frios || 0}</span>
                   </div>
                 </div>
               </div>
@@ -294,10 +294,10 @@ export default function DashboardPage() {
             {/* Meta do Mês */}
             {meta && (
               <div className="bg-white p-5 rounded-xl shadow-sm border border-gray-100">
-                <h3 className="font-bold text-gray-800 text-sm mb-4">Meta do Mês</h3>
+                <h3 className="font-bold text-gray-900 text-sm mb-4">Meta do Mês</h3>
                 <div className="space-y-3">
                   <div className="flex items-center justify-between">
-                    <span className="text-sm text-gray-600">Progresso Geral</span>
+                    <span className="text-sm text-gray-700 font-medium">Progresso Geral</span>
                     <span className="font-bold text-green-600">{calcularProgressoMeta()}%</span>
                   </div>
                   <div className="w-full bg-gray-200 rounded-full h-2">
@@ -311,20 +311,20 @@ export default function DashboardPage() {
                   </div>
                   {meta.meta_leads && (
                     <div className="flex items-center justify-between text-xs">
-                      <span className="text-gray-500">Leads</span>
-                      <span className="text-gray-700">{meta.progresso_leads}/{meta.meta_leads}</span>
+                      <span className="text-gray-600 font-medium">Leads</span>
+                      <span className="text-gray-800 font-semibold">{meta.progresso_leads}/{meta.meta_leads}</span>
                     </div>
                   )}
                   {meta.meta_fechamentos && (
                     <div className="flex items-center justify-between text-xs">
-                      <span className="text-gray-500">Fechamentos</span>
-                      <span className="text-gray-700">{meta.progresso_fechamentos}/{meta.meta_fechamentos}</span>
+                      <span className="text-gray-600 font-medium">Fechamentos</span>
+                      <span className="text-gray-800 font-semibold">{meta.progresso_fechamentos}/{meta.meta_fechamentos}</span>
                     </div>
                   )}
                 </div>
                 <Link
                   href="/dashboard/meu-desempenho"
-                  className="mt-4 block w-full text-center py-2 text-xs font-medium text-green-600 bg-green-50 rounded-lg hover:bg-green-100 transition-colors"
+                  className="mt-4 block w-full text-center py-2.5 text-xs font-semibold text-green-600 bg-green-50 rounded-lg hover:bg-green-100 transition-colors"
                 >
                   Ver Detalhes
                 </Link>
@@ -366,10 +366,10 @@ export default function DashboardPage() {
           {/* Tarefas de Hoje */}
           <div className="bg-white p-5 rounded-xl shadow-sm border border-gray-100">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="font-bold text-gray-800 text-sm">Agenda Hoje</h3>
+              <h3 className="font-bold text-gray-900 text-sm">Agenda Hoje</h3>
               <Link
                 href="/dashboard/tarefas"
-                className="text-xs text-green-600 hover:text-green-700 font-medium"
+                className="text-xs text-green-600 hover:text-green-700 font-semibold"
               >
                 Ver todas
               </Link>
@@ -388,9 +388,9 @@ export default function DashboardPage() {
                       'bg-gray-400'
                     }`}></span>
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm text-gray-800 font-medium truncate">{tarefa.titulo}</p>
+                      <p className="text-sm text-gray-900 font-semibold truncate">{tarefa.titulo}</p>
                       {tarefa.lead && (
-                        <p className="text-xs text-gray-500 truncate">{tarefa.lead.nome}</p>
+                        <p className="text-xs text-gray-600 font-medium truncate">{tarefa.lead.nome}</p>
                       )}
                     </div>
                   </div>
@@ -398,10 +398,10 @@ export default function DashboardPage() {
               </div>
             ) : (
               <div className="text-center py-4">
-                <p className="text-sm text-gray-500">Nenhuma tarefa pendente</p>
+                <p className="text-sm text-gray-600 font-medium">Nenhuma tarefa pendente</p>
                 <Link
                   href="/dashboard/tarefas?new=true"
-                  className="mt-2 inline-block text-xs text-green-600 hover:text-green-700 font-medium"
+                  className="mt-2 inline-block text-xs text-green-600 hover:text-green-700 font-semibold"
                 >
                   + Criar tarefa
                 </Link>
@@ -411,35 +411,35 @@ export default function DashboardPage() {
 
           {/* Ações Rápidas */}
           <div className="bg-white p-5 rounded-xl shadow-sm border border-gray-100">
-            <h3 className="font-bold text-gray-800 text-sm mb-4">Ações Rápidas</h3>
+            <h3 className="font-bold text-gray-900 text-sm mb-4">Ações Rápidas</h3>
             <div className="space-y-2">
               <Link
                 href="/dashboard/leads?new=true"
                 className="flex items-center gap-3 p-3 rounded-lg bg-green-50 text-green-700 hover:bg-green-100 transition-colors"
               >
                 <span>👥</span>
-                <span className="text-sm font-medium">Novo Lead</span>
+                <span className="text-sm font-semibold">Novo Lead</span>
               </Link>
               <Link
                 href="/dashboard/imoveis?new=true"
-                className="flex items-center gap-3 p-3 rounded-lg bg-gray-50 text-gray-700 hover:bg-gray-100 transition-colors"
+                className="flex items-center gap-3 p-3 rounded-lg bg-gray-50 text-gray-800 hover:bg-gray-100 transition-colors"
               >
                 <span>🏠</span>
-                <span className="text-sm font-medium">Novo Imóvel</span>
+                <span className="text-sm font-semibold">Novo Imóvel</span>
               </Link>
               <Link
                 href="/dashboard/negociacoes"
-                className="flex items-center gap-3 p-3 rounded-lg bg-gray-50 text-gray-700 hover:bg-gray-100 transition-colors"
+                className="flex items-center gap-3 p-3 rounded-lg bg-gray-50 text-gray-800 hover:bg-gray-100 transition-colors"
               >
                 <span>💼</span>
-                <span className="text-sm font-medium">Ver Negociações</span>
+                <span className="text-sm font-semibold">Ver Negociações</span>
               </Link>
               <Link
                 href="/dashboard/tarefas?new=true"
-                className="flex items-center gap-3 p-3 rounded-lg bg-gray-50 text-gray-700 hover:bg-gray-100 transition-colors"
+                className="flex items-center gap-3 p-3 rounded-lg bg-gray-50 text-gray-800 hover:bg-gray-100 transition-colors"
               >
                 <span>📋</span>
-                <span className="text-sm font-medium">Nova Tarefa</span>
+                <span className="text-sm font-semibold">Nova Tarefa</span>
               </Link>
             </div>
           </div>
@@ -447,18 +447,18 @@ export default function DashboardPage() {
           {/* Indicadores de Atenção */}
           {data && (data.leads.quentes > 0 || (meta && calcularProgressoMeta() < 50)) && (
             <div className="bg-amber-50 border border-amber-200 p-4 rounded-xl">
-              <h3 className="font-bold text-amber-800 text-sm mb-3 flex items-center gap-2">
+              <h3 className="font-bold text-amber-900 text-sm mb-3 flex items-center gap-2">
                 <span>⚠️</span>
                 Atenção
               </h3>
               <div className="space-y-2">
                 {data.leads.quentes > 0 && (
-                  <p className="text-xs text-amber-700">
+                  <p className="text-xs text-amber-800 font-medium">
                     {data.leads.quentes} lead{data.leads.quentes > 1 ? 's' : ''} quente{data.leads.quentes > 1 ? 's' : ''} aguardando contato
                   </p>
                 )}
                 {meta && calcularProgressoMeta() < 50 && (
-                  <p className="text-xs text-amber-700">
+                  <p className="text-xs text-amber-800 font-medium">
                     Meta do mês abaixo de 50%
                   </p>
                 )}

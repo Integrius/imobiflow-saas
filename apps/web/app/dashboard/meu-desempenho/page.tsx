@@ -417,7 +417,7 @@ export default function MeuDesempenhoPage() {
       <div className="flex items-center justify-center min-h-[400px]">
         <div className="text-center max-w-md">
           <div className="text-6xl mb-4">⚠️</div>
-          <h2 className="text-xl font-semibold text-gray-800 mb-2">Erro ao carregar</h2>
+          <h2 className="text-xl font-bold text-gray-800 mb-2">Erro ao carregar</h2>
           <p className="text-gray-600 mb-4">{error}</p>
           <button
             onClick={loadDashboard}
@@ -450,7 +450,7 @@ export default function MeuDesempenhoPage() {
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Meu Desempenho</h1>
-          <p className="text-gray-600">{data.corretor.nome} • CRECI: {data.corretor.creci}</p>
+          <p className="text-gray-700 font-medium">{data.corretor.nome} • CRECI: {data.corretor.creci}</p>
         </div>
         <div className="flex gap-3">
           <ReportDownloadButton
@@ -511,8 +511,8 @@ export default function MeuDesempenhoPage() {
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-gray-500">Vendas do Mês</p>
-              <p className="text-2xl font-bold text-gray-900">{formatCurrency(data.vendas.totalMes)}</p>
+              <p className="text-sm font-semibold text-gray-600">Vendas do Mês</p>
+              <p className="text-3xl font-bold text-gray-900">{formatCurrency(data.vendas.totalMes)}</p>
             </div>
             <div className="p-3 bg-green-100 rounded-full">
               <span className="text-2xl">💰</span>
@@ -538,8 +538,8 @@ export default function MeuDesempenhoPage() {
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-gray-500">Comissões do Mês</p>
-              <p className="text-2xl font-bold text-gray-900">{formatCurrency(data.comissoes.totalMes)}</p>
+              <p className="text-sm font-semibold text-gray-600">Comissões do Mês</p>
+              <p className="text-3xl font-bold text-gray-900">{formatCurrency(data.comissoes.totalMes)}</p>
             </div>
             <div className="p-3 bg-blue-100 rounded-full">
               <span className="text-2xl">💎</span>
@@ -554,8 +554,8 @@ export default function MeuDesempenhoPage() {
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-gray-500">Negociações Ativas</p>
-              <p className="text-2xl font-bold text-gray-900">{data.negociacoes.ativas}</p>
+              <p className="text-sm font-semibold text-gray-600">Negociações Ativas</p>
+              <p className="text-3xl font-bold text-gray-900">{data.negociacoes.ativas}</p>
             </div>
             <div className="p-3 bg-purple-100 rounded-full">
               <span className="text-2xl">📋</span>
@@ -570,8 +570,8 @@ export default function MeuDesempenhoPage() {
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-gray-500">Taxa de Conversão</p>
-              <p className="text-2xl font-bold text-gray-900">{data.metricas.taxaConversao}%</p>
+              <p className="text-sm font-semibold text-gray-600">Taxa de Conversão</p>
+              <p className="text-3xl font-bold text-gray-900">{data.metricas.taxaConversao}%</p>
             </div>
             <div className="p-3 bg-yellow-100 rounded-full">
               <span className="text-2xl">🎯</span>
@@ -589,7 +589,7 @@ export default function MeuDesempenhoPage() {
         {/* Coluna 1: Status dos Leads (Com Interatividade) */}
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
           <div className="flex justify-between items-center mb-4">
-            <h3 className="text-lg font-semibold text-gray-900">📊 Status da Carteira</h3>
+            <h3 className="text-lg font-bold text-gray-900">📊 Status da Carteira</h3>
             <button 
               onClick={() => router.push('/leads')}
               className="text-xs text-blue-600 hover:text-blue-800 font-medium"
@@ -654,7 +654,7 @@ export default function MeuDesempenhoPage() {
             
             {/* Gráfico 1: Evolução Financeira */}
             <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">📈 Evolução de Vendas</h3>
+              <h3 className="text-lg font-bold text-gray-900 mb-4">📈 Evolução de Vendas</h3>
               <div className="h-[250px] w-full">
                 <ResponsiveContainer width="100%" height="100%">
                   <ComposedChart data={data.evolucaoMensal}>
@@ -679,7 +679,7 @@ export default function MeuDesempenhoPage() {
 
             {/* Gráfico 2: Funil de Vendas Visual */}
             <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">🌪️ Funil de Conversão</h3>
+              <h3 className="text-lg font-bold text-gray-900 mb-4">🌪️ Funil de Conversão</h3>
               <div className="h-[250px] w-full">
                 <ResponsiveContainer width="100%" height="100%">
                     <BarChart
@@ -707,7 +707,7 @@ export default function MeuDesempenhoPage() {
       {ranking && (
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
           <div className="flex items-center justify-between mb-6">
-            <h3 className="text-lg font-semibold text-gray-900">🏆 Seu Ranking na Equipe</h3>
+            <h3 className="text-lg font-bold text-gray-900">🏆 Seu Ranking na Equipe</h3>
             <span className="text-sm text-gray-500">{ranking.totalCorretores} corretores ativos</span>
           </div>
 
@@ -757,7 +757,7 @@ export default function MeuDesempenhoPage() {
           {/* Comparativo com Média da Equipe */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
-              <h4 className="text-sm font-semibold text-gray-700 mb-3">📊 Você vs Média da Equipe</h4>
+              <h4 className="text-sm font-bold text-gray-700 mb-3">📊 Você vs Média da Equipe</h4>
               <div className="space-y-3">
                 <div>
                   <div className="flex justify-between text-xs mb-1">
@@ -829,7 +829,7 @@ export default function MeuDesempenhoPage() {
 
             {/* Top 3 e Comparativo Mês Anterior */}
             <div>
-              <h4 className="text-sm font-semibold text-gray-700 mb-3">🥇 Top 3 Fechamentos do Mês</h4>
+              <h4 className="text-sm font-bold text-gray-700 mb-3">🥇 Top 3 Fechamentos do Mês</h4>
               <div className="space-y-2 mb-4">
                 {ranking.top3.fechamentos.map((corretor, idx) => (
                   <div key={idx} className="flex items-center justify-between p-2 bg-gray-50 rounded-lg">
@@ -844,7 +844,7 @@ export default function MeuDesempenhoPage() {
                 ))}
               </div>
 
-              <h4 className="text-sm font-semibold text-gray-700 mb-3">📅 Comparativo Mês Anterior</h4>
+              <h4 className="text-sm font-bold text-gray-700 mb-3">📅 Comparativo Mês Anterior</h4>
               <div className="grid grid-cols-3 gap-2">
                 <div className="text-center p-2 bg-gray-50 rounded-lg">
                   <p className="text-lg font-bold text-gray-900">{ranking.comparativoMesAnterior.fechamentos}</p>
@@ -894,7 +894,7 @@ export default function MeuDesempenhoPage() {
           {/* Leads Sem Contato - Alerta */}
           <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold text-gray-900">⚠️ Leads Sem Contato</h3>
+              <h3 className="text-lg font-bold text-gray-900">⚠️ Leads Sem Contato</h3>
               <span className={`text-xs px-2 py-1 rounded-full ${
                 metricas.leadsSemContato.length > 5
                   ? 'bg-red-100 text-red-800'
@@ -946,7 +946,7 @@ export default function MeuDesempenhoPage() {
 
           {/* Métricas de Tempo */}
           <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">⏱️ Métricas de Tempo</h3>
+            <h3 className="text-lg font-bold text-gray-900 mb-4">⏱️ Métricas de Tempo</h3>
 
             <div className="space-y-4">
               <div className="p-4 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg">
@@ -979,7 +979,7 @@ export default function MeuDesempenhoPage() {
 
           {/* Tarefas e Propostas */}
           <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">📋 Atividades Pendentes</h3>
+            <h3 className="text-lg font-bold text-gray-900 mb-4">📋 Atividades Pendentes</h3>
 
             <div className="space-y-4">
               <div
@@ -1006,7 +1006,7 @@ export default function MeuDesempenhoPage() {
 
               {/* Leads por Origem */}
               <div className="pt-2">
-                <p className="text-xs font-semibold text-gray-500 uppercase mb-2">Leads por Origem</p>
+                <p className="text-xs font-bold text-gray-600 uppercase mb-2">Leads por Origem</p>
                 <div className="space-y-1">
                   {metricas.leadsPorOrigem.slice(0, 4).map((origem) => (
                     <div key={origem.origem} className="flex items-center justify-between text-xs">
@@ -1027,7 +1027,7 @@ export default function MeuDesempenhoPage() {
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
           <div className="flex justify-between items-center mb-4">
             <div className="flex items-center gap-3">
-              <h3 className="text-lg font-semibold text-gray-900">📅 Agenda (Próximos)</h3>
+              <h3 className="text-lg font-bold text-gray-900">📅 Agenda (Próximos)</h3>
               {/* Action Button: Nova Visita */}
               <button 
                 onClick={handleNewVisit}
@@ -1083,7 +1083,7 @@ export default function MeuDesempenhoPage() {
 
         {/* Últimas Negociações */}
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">📋 Últimas Movimentações</h3>
+          <h3 className="text-lg font-bold text-gray-900 mb-4">📋 Últimas Movimentações</h3>
           {data.ultimasNegociacoes.length === 0 ? (
             <p className="text-gray-500 text-center py-4">Nenhuma negociação encontrada</p>
           ) : (

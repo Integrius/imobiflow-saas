@@ -178,7 +178,7 @@ export default function DashboardLayout({
         key={item.name}
         href={item.href!}
         onClick={() => isMobile && setSidebarOpen(false)}
-        className={`flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-lg transition-all duration-200 ${
+        className={`flex items-center gap-3 px-3 py-2 text-sm font-semibold rounded-lg transition-all duration-200 ${
           isActive
             ? 'bg-green-50 text-green-800'
             : 'text-gray-600 hover:bg-gray-50 hover:text-green-700'
@@ -312,14 +312,14 @@ export default function DashboardLayout({
             <NotificationBell />
 
             {/* User Info */}
-            <span className="text-sm text-gray-600 hidden sm:block">
-              Olá, <span className="font-medium text-gray-800">{user?.nome || 'Usuário'}</span>
+            <span className="text-sm text-gray-700 hidden sm:block">
+              Olá, <span className="font-semibold text-gray-800">{user?.nome || 'Usuário'}</span>
             </span>
 
             {/* Logout */}
             <button
               onClick={logout}
-              className="text-sm text-red-500 hover:text-red-600 font-medium"
+              className="text-sm text-red-500 hover:text-red-600 font-semibold"
             >
               Sair
             </button>

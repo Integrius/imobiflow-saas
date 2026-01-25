@@ -246,10 +246,10 @@ export default function MetasPage() {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
         <div className="text-center">
-          <p className="text-[#FF6B6B] mb-4 font-semibold">{error}</p>
+          <p className="text-[#FF6B6B] mb-4 font-bold">{error}</p>
           <button
             onClick={() => window.location.reload()}
-            className="px-4 py-2 bg-[#00C48C] text-white rounded-lg font-semibold hover:bg-[#059669] transition-colors"
+            className="px-4 py-2.5 bg-[#00C48C] text-white rounded-lg font-bold hover:bg-[#059669] transition-colors"
           >
             Tentar Novamente
           </button>
@@ -264,7 +264,7 @@ export default function MetasPage() {
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
           <h2 className="text-4xl font-bold text-[#064E3B] tracking-tight">Metas de Corretores</h2>
-          <p className="text-[#4B5563] mt-2 text-lg">Defina e acompanhe metas mensais do time</p>
+          <p className="text-[#374151] mt-2 text-lg font-medium">Defina e acompanhe metas mensais do time</p>
         </div>
 
         <div className="flex items-center gap-4">
@@ -291,7 +291,7 @@ export default function MetasPage() {
 
           <button
             onClick={handleAtualizarProgresso}
-            className="px-4 py-2 bg-[#059669] text-white rounded-lg font-semibold hover:bg-[#047857] transition-colors"
+            className="px-4 py-2.5 bg-[#059669] text-white rounded-lg font-bold hover:bg-[#047857] transition-colors"
           >
             🔄 Atualizar
           </button>
@@ -307,7 +307,7 @@ export default function MetasPage() {
               <span className="text-xs font-bold text-[#00C48C] uppercase">Corretores</span>
             </div>
             <div className="text-3xl font-bold text-[#064E3B]">{resumo.estatisticas.totalCorretoresComMeta}</div>
-            <p className="text-sm text-[#4B5563]">com metas definidas</p>
+            <p className="text-sm text-[#374151] font-medium">com metas definidas</p>
           </div>
 
           <div className="bg-white rounded-xl p-6 shadow-lg border-2 border-[#059669]/20">
@@ -316,7 +316,7 @@ export default function MetasPage() {
               <span className="text-xs font-bold text-[#059669] uppercase">Atingidas</span>
             </div>
             <div className="text-3xl font-bold text-[#064E3B]">{resumo.estatisticas.metasAtingidas}</div>
-            <p className="text-sm text-[#4B5563]">{resumo.estatisticas.percentualAtingimento}% do total</p>
+            <p className="text-sm text-[#374151] font-medium">{resumo.estatisticas.percentualAtingimento}% do total</p>
           </div>
 
           <div className="bg-white rounded-xl p-6 shadow-lg border-2 border-[#FFB627]/20">
@@ -325,7 +325,7 @@ export default function MetasPage() {
               <span className="text-xs font-bold text-[#FFB627] uppercase">Média</span>
             </div>
             <div className="text-3xl font-bold text-[#064E3B]">{resumo.estatisticas.mediaProgresso}%</div>
-            <p className="text-sm text-[#4B5563]">progresso médio</p>
+            <p className="text-sm text-[#374151] font-medium">progresso médio</p>
           </div>
 
           <div className="bg-white rounded-xl p-6 shadow-lg border-2 border-[#8B5CF6]/20">
@@ -334,7 +334,7 @@ export default function MetasPage() {
               <span className="text-xs font-bold text-[#8B5CF6] uppercase">Período</span>
             </div>
             <div className="text-2xl font-bold text-[#064E3B]">{MESES[mesAno.mes - 1]}</div>
-            <p className="text-sm text-[#4B5563]">{mesAno.ano}</p>
+            <p className="text-sm text-[#374151] font-medium">{mesAno.ano}</p>
           </div>
         </div>
       )}
@@ -343,13 +343,13 @@ export default function MetasPage() {
       <div className="flex gap-4">
         <button
           onClick={() => openCreateModal('individual')}
-          className="px-6 py-3 bg-gradient-to-r from-[#00C48C] to-[#059669] text-white rounded-lg font-semibold hover:shadow-lg transition-all"
+          className="px-6 py-3 bg-gradient-to-r from-[#00C48C] to-[#059669] text-white rounded-lg font-bold hover:shadow-lg transition-all"
         >
           ➕ Nova Meta Individual
         </button>
         <button
           onClick={() => openCreateModal('lote')}
-          className="px-6 py-3 bg-gradient-to-r from-[#8B5CF6] to-[#7C3AED] text-white rounded-lg font-semibold hover:shadow-lg transition-all"
+          className="px-6 py-3 bg-gradient-to-r from-[#8B5CF6] to-[#7C3AED] text-white rounded-lg font-bold hover:shadow-lg transition-all"
         >
           📦 Criar Metas em Lote
         </button>
@@ -375,7 +375,7 @@ export default function MetasPage() {
             <tbody>
               {resumo?.todas.length === 0 && (
                 <tr>
-                  <td colSpan={9} className="px-6 py-8 text-center text-[#4B5563]">
+                  <td colSpan={9} className="px-6 py-8 text-center text-[#374151] font-medium">
                     Nenhuma meta definida para este período
                   </td>
                 </tr>
@@ -384,15 +384,15 @@ export default function MetasPage() {
                 <tr key={meta.id} className="border-t hover:bg-gray-50 transition-colors">
                   <td className="px-6 py-4">
                     <div>
-                      <p className="font-semibold text-[#064E3B]">{meta.corretor.user.nome}</p>
-                      <p className="text-xs text-[#4B5563]">CRECI: {meta.corretor.creci}</p>
+                      <p className="font-bold text-[#064E3B]">{meta.corretor.user.nome}</p>
+                      <p className="text-xs text-[#374151] font-medium">CRECI: {meta.corretor.creci}</p>
                     </div>
                   </td>
 
                   {/* Leads */}
                   <td className="px-6 py-4">
                     <div className="text-center">
-                      <p className="font-semibold">{meta.progresso_leads}/{meta.meta_leads || '-'}</p>
+                      <p className="font-bold">{meta.progresso_leads}/{meta.meta_leads || '-'}</p>
                       {meta.meta_leads && (
                         <div className="w-full bg-gray-200 rounded-full h-2 mt-1">
                           <div
@@ -407,7 +407,7 @@ export default function MetasPage() {
                   {/* Visitas */}
                   <td className="px-6 py-4">
                     <div className="text-center">
-                      <p className="font-semibold">{meta.progresso_visitas}/{meta.meta_visitas || '-'}</p>
+                      <p className="font-bold">{meta.progresso_visitas}/{meta.meta_visitas || '-'}</p>
                       {meta.meta_visitas && (
                         <div className="w-full bg-gray-200 rounded-full h-2 mt-1">
                           <div
@@ -422,7 +422,7 @@ export default function MetasPage() {
                   {/* Propostas */}
                   <td className="px-6 py-4">
                     <div className="text-center">
-                      <p className="font-semibold">{meta.progresso_propostas}/{meta.meta_propostas || '-'}</p>
+                      <p className="font-bold">{meta.progresso_propostas}/{meta.meta_propostas || '-'}</p>
                       {meta.meta_propostas && (
                         <div className="w-full bg-gray-200 rounded-full h-2 mt-1">
                           <div
@@ -437,7 +437,7 @@ export default function MetasPage() {
                   {/* Fechamentos */}
                   <td className="px-6 py-4">
                     <div className="text-center">
-                      <p className="font-semibold">{meta.progresso_fechamentos}/{meta.meta_fechamentos || '-'}</p>
+                      <p className="font-bold">{meta.progresso_fechamentos}/{meta.meta_fechamentos || '-'}</p>
                       {meta.meta_fechamentos && (
                         <div className="w-full bg-gray-200 rounded-full h-2 mt-1">
                           <div
@@ -452,10 +452,10 @@ export default function MetasPage() {
                   {/* Valor */}
                   <td className="px-6 py-4">
                     <div className="text-center">
-                      <p className="font-semibold text-sm">
+                      <p className="font-bold text-sm">
                         {formatCurrency(meta.progresso_valor)}
                       </p>
-                      <p className="text-xs text-[#4B5563]">
+                      <p className="text-xs text-[#374151] font-medium">
                         / {meta.meta_valor ? formatCurrency(meta.meta_valor) : '-'}
                       </p>
                       {meta.meta_valor && (
@@ -531,7 +531,7 @@ export default function MetasPage() {
               {/* Seletor de Corretor (apenas para individual) */}
               {modalMode === 'individual' && !selectedMeta && (
                 <div>
-                  <label className="block text-sm font-semibold text-[#064E3B] mb-1">Corretor</label>
+                  <label className="block text-sm font-bold text-[#064E3B] mb-1">Corretor</label>
                   <select
                     value={formData.corretor_id}
                     onChange={(e) => setFormData({ ...formData, corretor_id: e.target.value })}
@@ -558,7 +558,7 @@ export default function MetasPage() {
               {/* Grid de Metas */}
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-semibold text-[#064E3B] mb-1">Meta de Leads</label>
+                  <label className="block text-sm font-bold text-[#064E3B] mb-1">Meta de Leads</label>
                   <input
                     type="number"
                     value={formData.meta_leads}
@@ -569,7 +569,7 @@ export default function MetasPage() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-semibold text-[#064E3B] mb-1">Meta de Visitas</label>
+                  <label className="block text-sm font-bold text-[#064E3B] mb-1">Meta de Visitas</label>
                   <input
                     type="number"
                     value={formData.meta_visitas}
@@ -580,7 +580,7 @@ export default function MetasPage() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-semibold text-[#064E3B] mb-1">Meta de Propostas</label>
+                  <label className="block text-sm font-bold text-[#064E3B] mb-1">Meta de Propostas</label>
                   <input
                     type="number"
                     value={formData.meta_propostas}
@@ -591,7 +591,7 @@ export default function MetasPage() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-semibold text-[#064E3B] mb-1">Meta de Fechamentos</label>
+                  <label className="block text-sm font-bold text-[#064E3B] mb-1">Meta de Fechamentos</label>
                   <input
                     type="number"
                     value={formData.meta_fechamentos}
@@ -602,7 +602,7 @@ export default function MetasPage() {
                 </div>
 
                 <div className="col-span-2">
-                  <label className="block text-sm font-semibold text-[#064E3B] mb-1">Meta de Valor (R$)</label>
+                  <label className="block text-sm font-bold text-[#064E3B] mb-1">Meta de Valor (R$)</label>
                   <input
                     type="number"
                     value={formData.meta_valor}
@@ -617,14 +617,14 @@ export default function MetasPage() {
             <div className="flex justify-end gap-4 mt-6">
               <button
                 onClick={() => setShowModal(false)}
-                className="px-4 py-2 text-[#4B5563] hover:bg-gray-100 rounded-lg transition-colors"
+                className="px-4 py-2.5 text-[#374151] font-medium hover:bg-gray-100 rounded-lg transition-colors"
               >
                 Cancelar
               </button>
               <button
                 onClick={handleSave}
                 disabled={saving}
-                className="px-6 py-2 bg-gradient-to-r from-[#00C48C] to-[#059669] text-white rounded-lg font-semibold hover:shadow-lg transition-all disabled:opacity-50"
+                className="px-6 py-2.5 bg-gradient-to-r from-[#00C48C] to-[#059669] text-white rounded-lg font-bold hover:shadow-lg transition-all disabled:opacity-50"
               >
                 {saving ? 'Salvando...' : 'Salvar'}
               </button>

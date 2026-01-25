@@ -409,7 +409,7 @@ export default function NegociacoesPage() {
       <div className="flex justify-between items-center mb-8">
         <div>
           <h2 className="text-4xl font-bold text-[#064E3B] tracking-tight">Negociações</h2>
-          <p className="text-sm text-[#4B5563] mt-2 font-medium">
+          <p className="text-sm text-[#374151] mt-2 font-semibold">
             <span className="text-[#00C48C] text-lg font-bold">{negociacoes.length}</span> negociações cadastradas
           </p>
         </div>
@@ -463,13 +463,13 @@ export default function NegociacoesPage() {
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-bold text-[#064E3B]">
                     <span className="px-2 py-1 bg-[#059669]/20 text-[#059669] rounded-md font-mono text-xs border border-[#059669]/50">{negociacao.codigo}</span>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-[#4B5563] font-medium">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-[#374151] font-semibold">
                     👤 {negociacao.lead?.nome || 'N/A'}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-[#4B5563] font-medium">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-[#374151] font-semibold">
                     🏠 {negociacao.imovel?.titulo || 'N/A'}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-[#4B5563]">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-[#374151] font-medium">
                     {negociacao.corretor?.nome || '-'}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-100 font-bold">
@@ -531,7 +531,7 @@ export default function NegociacoesPage() {
               <div className="grid grid-cols-3 gap-4">
                 {/* Proprietário */}
                 <div className="bg-white p-3 rounded-lg border-2 border-[#FFB627]/30">
-                  <div className="text-xs font-bold text-[#4B5563] mb-1">🏠 PROPRIETÁRIO</div>
+                  <div className="text-xs font-bold text-[#374151] mb-1">🏠 PROPRIETÁRIO</div>
                   {selectedImovelDetails.proprietario ? (
                     <div className="text-sm font-bold text-[#064E3B]">{selectedImovelDetails.proprietario.nome}</div>
                   ) : (
@@ -541,7 +541,7 @@ export default function NegociacoesPage() {
 
                 {/* Corretor */}
                 <div className="bg-white p-3 rounded-lg border-2 border-[#A97E6F]/30">
-                  <div className="text-xs font-bold text-[#4B5563] mb-1">👤 CORRETOR</div>
+                  <div className="text-xs font-bold text-[#374151] mb-1">👤 CORRETOR</div>
                   {selectedImovelDetails.corretor_responsavel ? (
                     <div className="text-sm font-bold text-[#064E3B]">{selectedImovelDetails.corretor_responsavel.user.nome}</div>
                   ) : (
@@ -551,11 +551,11 @@ export default function NegociacoesPage() {
 
                 {/* Total de Propostas */}
                 <div className="bg-white p-3 rounded-lg border-2 border-[#00C48C]/30">
-                  <div className="text-xs font-bold text-[#4B5563] mb-1">📋 PROPOSTAS</div>
-                  <div className="text-2xl font-bold text-[#00C48C]">
+                  <div className="text-xs font-bold text-[#374151] mb-1">📋 PROPOSTAS</div>
+                  <div className="text-3xl font-bold text-[#00C48C]">
                     {totalPropostas}
                   </div>
-                  <div className="text-xs text-[#4B5563]">no imóvel</div>
+                  <div className="text-xs text-[#374151] font-medium">no imóvel</div>
                 </div>
               </div>
             )}
@@ -723,17 +723,17 @@ export default function NegociacoesPage() {
               </label>
               {bestOffer ? (
                 <>
-                  <div className="text-2xl font-bold text-[#00C48C]">
+                  <div className="text-3xl font-bold text-[#00C48C]">
                     R$ {formatCurrencyForEdit(bestOffer.valor)}
                   </div>
                   {bestOffer.lead && (
-                    <p className="text-xs text-[#4B5563] mt-1">
+                    <p className="text-xs text-[#374151] font-medium mt-1">
                       Oferta de: {bestOffer.lead.nome}
                     </p>
                   )}
                 </>
               ) : (
-                <p className="text-sm text-[#4B5563] italic">
+                <p className="text-sm text-[#374151] font-medium italic">
                   Ainda sem interessados
                 </p>
               )}
@@ -838,10 +838,10 @@ export default function NegociacoesPage() {
         size="sm"
       >
         <div className="space-y-4">
-          <p className="text-gray-700">
+          <p className="text-gray-700 font-medium">
             Tem certeza que deseja excluir a negociação <strong>{deletingNegociacao?.codigo}</strong>?
           </p>
-          <p className="text-sm text-[#4B5563]">Esta ação não pode ser desfeita.</p>
+          <p className="text-sm text-[#374151] font-medium">Esta ação não pode ser desfeita.</p>
 
           <div className="flex justify-end gap-3 pt-4 border-t">
             <button

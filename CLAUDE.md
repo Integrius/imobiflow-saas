@@ -151,14 +151,78 @@ sofia: {
 - Estrutura:
 ```html
 <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100">
-  <span class="text-xs font-semibold text-gray-500 uppercase">Label</span>
-  <div class="text-2xl font-bold text-gray-900 mt-1">Valor</div>
+  <span class="text-xs font-bold text-gray-600 uppercase">Label</span>
+  <div class="text-3xl font-bold text-gray-900 mt-1">Valor</div>
 </div>
 ```
 
 #### Botões
-- Primário: `bg-vivoly-600 text-white px-4 py-2 rounded-lg text-sm font-medium`
+- Primário: `bg-vivoly-600 text-white px-4 py-2.5 rounded-lg text-sm font-bold`
 - Com ícone: usar gap-2 entre ícone e texto
+
+### Tipografia (Padrão Vivoly Design System)
+
+O sistema de tipografia segue um padrão consistente de pesos de fonte para garantir hierarquia visual adequada em todas as páginas.
+
+#### Regras de Font Weight
+
+| Elemento | Classe Tailwind | Exemplo de Uso |
+|----------|----------------|----------------|
+| Títulos de página (h1) | `font-bold` | Headers principais |
+| Subtítulos de página | `font-medium` + `text-gray-700` | Descrições abaixo do título |
+| Títulos de seção (h2, h3) | `font-bold` | Cards, modais, seções |
+| Labels de formulário | `font-semibold` | Inputs, selects |
+| Labels de filtro | `font-semibold` | Dropdowns de filtro |
+| Textos em botões | `font-bold` | Botões primários e secundários |
+| Badges/Tags | `font-bold` | Status, categorias |
+| Headers de tabela | `font-semibold` + `text-gray-600` | Cabeçalhos de colunas |
+| Tabs/Navegação | `font-semibold` | Abas de navegação |
+| KPI Labels | `font-semibold` + `text-gray-700` | Descrição do KPI |
+| KPI Values | `font-bold` + `text-3xl` | Valores numéricos |
+
+#### Cores de Texto Padrão
+
+| Contexto | Classe Tailwind |
+|----------|----------------|
+| Texto principal | `text-gray-900` ou `text-[#2C2C2C]` |
+| Texto secundário | `text-gray-700` |
+| Labels e descrições | `text-gray-600` ou `text-gray-700` |
+| Texto muted/hint | `text-gray-500` |
+| Headers de tabela | `text-gray-600` |
+
+#### Padrão de Botões
+
+```html
+<!-- Botão Primário -->
+<button class="px-4 py-2.5 bg-[#8FD14F] text-white rounded-lg font-bold">
+  Ação Principal
+</button>
+
+<!-- Botão Secundário -->
+<button class="px-4 py-2.5 bg-gray-200 text-gray-700 rounded-lg font-bold">
+  Ação Secundária
+</button>
+```
+
+#### Exemplo de Card KPI
+
+```html
+<div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100">
+  <span class="text-xs font-semibold text-gray-700 uppercase">Total de Leads</span>
+  <div class="text-3xl font-bold text-[#2C2C2C] mt-1">1,234</div>
+</div>
+```
+
+#### Exemplo de Formulário
+
+```html
+<div>
+  <label class="block text-sm font-semibold text-gray-700 mb-1">
+    Nome do Campo *
+  </label>
+  <input class="w-full px-4 py-3 border border-gray-300 rounded-lg" />
+</div>
+```
 
 ### Comandos Úteis para Refatoração
 
@@ -3142,6 +3206,49 @@ TWILIO_WHATSAPP_NUMBER="+5511999999999"
 
 ## Histórico de Configurações
 
+### 2026-01-25
+
+#### Padronização de Tipografia (Vivoly Design System) ✅
+
+Aplicado padrão consistente de tipografia em todas as páginas do dashboard para melhorar a hierarquia visual e legibilidade.
+
+**Padrão de Font Weights:**
+- `font-medium` → `font-semibold` (labels, navegação)
+- `font-semibold` → `font-bold` (títulos de seção, botões, badges)
+
+**Padrão de Cores de Texto:**
+- `text-gray-500` → `text-gray-600` (texto secundário)
+- `text-gray-600` → `text-gray-700` (labels, descrições)
+- `text-[#4B5563]` → `text-[#374151]` (maior contraste)
+
+**Padrão de KPIs:**
+- Valores: `text-2xl` → `text-3xl` (maior destaque)
+- Labels: `font-semibold text-gray-700`
+
+**Padrão de Botões:**
+- Padding: `py-2` → `py-2.5` (maior área de clique)
+- Font: `font-medium` → `font-bold`
+
+**Páginas Atualizadas:**
+- `/apps/web/app/dashboard/page.tsx`
+- `/apps/web/app/dashboard/leads/page.tsx`
+- `/apps/web/app/dashboard/corretores/page.tsx`
+- `/apps/web/app/dashboard/imoveis/page.tsx`
+- `/apps/web/app/dashboard/negociacoes/page.tsx`
+- `/apps/web/app/dashboard/proprietarios/page.tsx`
+- `/apps/web/app/dashboard/gerencial/page.tsx`
+- `/apps/web/app/dashboard/meu-desempenho/page.tsx`
+- `/apps/web/app/dashboard/metas/page.tsx`
+- `/apps/web/app/dashboard/tarefas/page.tsx`
+- `/apps/web/app/dashboard/administracao/page.tsx`
+- `/apps/web/app/dashboard/admin/tenants/page.tsx`
+- `/apps/web/app/dashboard/layout.tsx`
+
+**Documentação:**
+- Guidelines de tipografia adicionadas ao CLAUDE.md na seção "Frontend Guidelines"
+
+---
+
 ### 2026-01-24
 
 #### Histórico/Timeline de Interações (#8) ✅
@@ -4533,11 +4640,21 @@ Conforme Art. 39 da LGPD: *"O operador deverá realizar o tratamento segundo as 
 
 ---
 
-**Última atualização**: 24 de janeiro de 2026
-**Versão**: 1.15.0
+**Última atualização**: 25 de janeiro de 2026
+**Versão**: 1.16.0
 **Status**: Em produção ✅
 
-**Novidades da versão 1.15.0** (24 de janeiro de 2026):
+**Novidades da versão 1.16.0** (25 de janeiro de 2026):
+- ✅ **Padronização de Tipografia (Vivoly Design System)**
+- ✅ Aplicado padrão consistente de font-weight em todas as páginas do dashboard
+- ✅ Font weights: `font-medium` → `font-semibold`, `font-semibold` → `font-bold`
+- ✅ Cores de texto ajustadas: `gray-500` → `gray-600`, `gray-600` → `gray-700`
+- ✅ KPI values aumentados: `text-2xl` → `text-3xl`
+- ✅ Padding de botões: `py-2` → `py-2.5`
+- ✅ Documentação de guidelines de tipografia no CLAUDE.md
+- ✅ Páginas atualizadas: dashboard, leads, corretores, imoveis, negociacoes, proprietarios, gerencial, meu-desempenho, metas, tarefas, administracao, admin/tenants, layout
+
+**Versão 1.15.0** (24 de janeiro de 2026):
 - ✅ **Histórico/Timeline de Interações (#8)**
 - ✅ Componente visual de timeline cronológica
 - ✅ Cards expandíveis com detalhes completos
