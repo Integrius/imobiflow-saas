@@ -1,5 +1,5 @@
 import { FastifyError, FastifyReply, FastifyRequest } from 'fastify'
-import { AppError } from '../errors/app-error'
+import { AppError } from '../errors/AppError'
 import { ZodError } from 'zod'
 
 export async function errorHandler(

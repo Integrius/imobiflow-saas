@@ -1,4 +1,5 @@
 import TelegramBot from 'node-telegram-bot-api';
+import { prisma } from '../../shared/database/prisma.service';
 
 export class TelegramService {
   private bot: TelegramBot;
@@ -8,6 +9,16 @@ export class TelegramService {
     const token = process.env.TELEGRAM_BOT_TOKEN!;
     this.bot = new TelegramBot(token, { polling: true });
     this.setupCommands();
+  }
+
+  /**
+   * Busca o corretor e tenant_id pelo chat_id do Telegram
+   */
+  private async findCorretorByChatId(chatId: string) {
+    return prisma.corretor.findFirst({
+      where: { telegram_chat_id: chatId },
+      select: { id: true, tenant_id: true }
+    });
   }
 
   private setupCommands() {
@@ -47,14 +58,123 @@ export class TelegramService {
 
     // Comando /stats
     this.bot.onText(/\/stats/, async (msg) => {
-      // TODO: Buscar stats reais do banco
+      const chatId = msg.chat.id.toString();
+      const corretor = await this.findCorretorByChatId(chatId);
+
+      if (!corretor) {
+        await this.bot.sendMessage(msg.chat.id,
+          `⚠️ Seu chat não está vinculado a nenhum corretor.\nPeça ao administrador para configurar seu Telegram no painel.`,
+          { parse_mode: 'Markdown' }
+        );
+        return;
+      }
+
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+
+      const [totalLeadsHoje, leadsQuentes, scoreResult, mensagensHoje] = await Promise.all([
+        prisma.lead.count({
+          where: { tenant_id: corretor.tenant_id, created_at: { gte: today } }
+        }),
+        prisma.lead.count({
+          where: { tenant_id: corretor.tenant_id, temperatura: 'QUENTE' }
+        }),
+        prisma.lead.aggregate({
+          where: { tenant_id: corretor.tenant_id, created_at: { gte: today }, score: { gt: 0 } },
+          _avg: { score: true }
+        }),
+        prisma.message.count({
+          where: { tenant_id: corretor.tenant_id, created_at: { gte: today }, is_from_lead: true }
+        })
+      ]);
+
+      const scoreMedio = Math.round(scoreResult._avg.score || 0);
+
       await this.bot.sendMessage(msg.chat.id,
         `📊 *Estatísticas de Hoje:*\n\n` +
-        `📩 Mensagens recebidas: 47\n` +
-        `👤 Novos leads: 12\n` +
-        `🔥 Leads quentes: 5\n` +
-        `⭐ Score médio: 67/100\n` +
-        `✅ Taxa de resposta IA: 100%`,
+        `📩 Mensagens recebidas: ${mensagensHoje}\n` +
+        `👤 Novos leads: ${totalLeadsHoje}\n` +
+        `🔥 Leads quentes: ${leadsQuentes}\n` +
+        `⭐ Score médio: ${scoreMedio}/100`,
+        { parse_mode: 'Markdown' }
+      );
+    });
+
+    // Comando /leads
+    this.bot.onText(/\/leads/, async (msg) => {
+      const chatId = msg.chat.id.toString();
+      const corretor = await this.findCorretorByChatId(chatId);
+
+      if (!corretor) {
+        await this.bot.sendMessage(msg.chat.id,
+          `⚠️ Seu chat não está vinculado a nenhum corretor.`,
+          { parse_mode: 'Markdown' }
+        );
+        return;
+      }
+
+      const leadsRecentes = await prisma.lead.findMany({
+        where: { tenant_id: corretor.tenant_id },
+        orderBy: { created_at: 'desc' },
+        take: 5,
+        select: { nome: true, telefone: true, temperatura: true, score: true, created_at: true }
+      });
+
+      if (leadsRecentes.length === 0) {
+        await this.bot.sendMessage(msg.chat.id,
+          `📭 Nenhum lead cadastrado ainda.`,
+          { parse_mode: 'Markdown' }
+        );
+        return;
+      }
+
+      const tempIcon: Record<string, string> = { QUENTE: '🔥', MORNO: '🌡️', FRIO: '❄️' };
+
+      const lista = leadsRecentes.map((l, i) => {
+        const icon = tempIcon[l.temperatura] || '🎯';
+        return `${i + 1}. ${icon} *${l.nome}* (${l.score}/100)\n   📱 ${l.telefone}`;
+      }).join('\n\n');
+
+      await this.bot.sendMessage(msg.chat.id,
+        `👥 *Últimos 5 Leads:*\n\n${lista}`,
+        { parse_mode: 'Markdown' }
+      );
+    });
+
+    // Comando /hot
+    this.bot.onText(/\/hot/, async (msg) => {
+      const chatId = msg.chat.id.toString();
+      const corretor = await this.findCorretorByChatId(chatId);
+
+      if (!corretor) {
+        await this.bot.sendMessage(msg.chat.id,
+          `⚠️ Seu chat não está vinculado a nenhum corretor.`,
+          { parse_mode: 'Markdown' }
+        );
+        return;
+      }
+
+      const leadsQuentes = await prisma.lead.findMany({
+        where: { tenant_id: corretor.tenant_id, temperatura: 'QUENTE' },
+        orderBy: { score: 'desc' },
+        take: 5,
+        select: { nome: true, telefone: true, score: true }
+      });
+
+      if (leadsQuentes.length === 0) {
+        await this.bot.sendMessage(msg.chat.id,
+          `❄️ Nenhum lead quente no momento.`,
+          { parse_mode: 'Markdown' }
+        );
+        return;
+      }
+
+      const lista = leadsQuentes.map((l, i) => {
+        return `${i + 1}. 🔥 *${l.nome}* (${l.score}/100)\n   📱 ${l.telefone}`;
+      }).join('\n\n');
+
+      await this.bot.sendMessage(msg.chat.id,
+        `🔥 *Leads Quentes Agora:*\n\n${lista}\n\n⚡ *Entre em contato o quanto antes!*`,
         { parse_mode: 'Markdown' }
       );
     });

@@ -32,10 +32,14 @@ import { metasRoutes } from './modules/metas/metas.routes'
 import { notificationsRoutes } from './modules/notifications/notifications.routes'
 import { reportsRoutes } from './modules/reports/reports.routes'
 import { tarefasRoutes } from './modules/tarefas/tarefas.routes'
+import { errorHandler } from './shared/middlewares/error.middleware'
 
 const server = Fastify({
   logger: true
 })
+
+// Error handler global
+server.setErrorHandler(errorHandler)
 
 server.register(cors, {
   origin: (origin, cb) => {

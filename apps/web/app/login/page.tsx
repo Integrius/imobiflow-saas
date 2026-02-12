@@ -80,29 +80,28 @@ export default function LoginPage() {
         // Se está em subdomínio VÁLIDO, validar se o tenant existe
         console.log(`🔍 Validando tenant: ${subdomain}`);
 
-        // TEMPORÁRIO: Validação desabilitada até deploy do endpoint
-        // TODO: Reabilitar após deploy do endpoint /tenants/by-subdomain/:subdomain
-        /*
-        // Validar se tenant existe antes de permitir login
         (async () => {
           try {
             await api.get(`/tenants/by-subdomain/${subdomain}`);
-            // Tenant válido, pode continuar
             console.log(`✅ Tenant "${subdomain}" encontrado e válido`);
           } catch (error: any) {
             if (error.response?.status === 404) {
               setError(`A imobiliária "${subdomain}" não foi encontrada.`);
               console.error(`❌ Tenant "${subdomain}" não encontrado`);
 
-              // Redirecionar para domínio base após 3 segundos
               setTimeout(() => {
-                console.log('🔄 Redirecionando para domínio base...');
+                window.location.href = 'https://integrius.com.br';
+              }, 3000);
+            } else if (error.response?.status === 403) {
+              setError('Esta imobiliária está temporariamente indisponível.');
+              console.error(`⛔ Tenant "${subdomain}" inativo/suspenso`);
+
+              setTimeout(() => {
                 window.location.href = 'https://integrius.com.br';
               }, 3000);
             }
           }
         })();
-        */
       }
     }
   }, []);

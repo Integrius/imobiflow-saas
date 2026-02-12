@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { getTenantId } from './tenant';
+import { toast } from './toast';
 
 // URL da API - SIMPLES E DIRETO
 // Em produção, sempre usar a URL do Render
@@ -65,11 +66,24 @@ api.interceptors.request.use((config) => {
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    if (error.response?.status === 401 && typeof window !== 'undefined') {
-      // Remover cookie de sessão
+    if (typeof window === 'undefined') {
+      return Promise.reject(error);
+    }
+
+    const status = error.response?.status;
+
+    if (status === 401) {
       document.cookie = 'token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
       window.location.href = '/login';
+    } else if (status === 403) {
+      const message = error.response?.data?.message || 'Sem permissão para esta ação.';
+      toast.error(message);
+    } else if (status && status >= 500) {
+      toast.error('Erro interno do servidor. Tente novamente em alguns instantes.');
+    } else if (!error.response) {
+      toast.error('Sem conexão com o servidor. Verifique sua internet.');
     }
+
     return Promise.reject(error);
   }
 );

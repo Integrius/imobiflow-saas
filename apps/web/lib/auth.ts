@@ -46,19 +46,27 @@ export function isAdminUser(): boolean {
   }
 }
 
-// Função getTenantIdBySubdomain removida (não utilizada após remoção do Google OAuth)
+/**
+ * Busca o tenant_id pelo subdomínio via API
+ */
+async function getTenantIdBySubdomain(subdomain: string): Promise<string | null> {
+  try {
+    const response = await api.get(`/tenants/by-subdomain/${subdomain}`);
+    return response.data?.id || null;
+  } catch {
+    return null;
+  }
+}
 
 export async function login(data: LoginData): Promise<AuthResponse> {
   // Se estiver usando subdomínio, precisamos buscar o tenant_id pelo slug
   const subdomain = getSubdomain();
   let tenantId: string | null = null;
 
-  // TEMPORÁRIO: Validação desabilitada até deploy do endpoint
-  // TODO: Reabilitar após deploy do endpoint /tenants/by-subdomain/:subdomain
-  /*
   if (subdomain) {
     try {
-      tenantId = await getTenantIdBySubdomain(subdomain);
+      const response = await api.get(`/tenants/by-subdomain/${subdomain}`);
+      tenantId = response.data?.id || null;
 
       if (!tenantId) {
         throw new Error(`A imobiliária "${subdomain}" não foi encontrada. Verifique se digitou o endereço corretamente.`);
@@ -68,10 +76,15 @@ export async function login(data: LoginData): Promise<AuthResponse> {
       if (error.response?.status === 404) {
         throw new Error(`A imobiliária "${subdomain}" não foi encontrada. Verifique se digitou o endereço corretamente.`);
       }
+      if (error.response?.status === 403) {
+        throw new Error('Esta imobiliária está temporariamente indisponível. Entre em contato com o suporte.');
+      }
+      if (error.message?.includes('não foi encontrada') || error.message?.includes('indisponível')) {
+        throw error;
+      }
       throw new Error('Erro ao conectar com o servidor. Tente novamente.');
     }
   }
-  */
 
   // IMPORTANTE: Limpar tenant_id antigo do localStorage antes de fazer login
   // Isso previne que o interceptor do axios envie um tenant_id antigo
