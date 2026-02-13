@@ -25,7 +25,7 @@ export class AutomacoesService {
     for (const tenant of tenants) {
       // Executa cada automação
       resultados.push(await this.automacao1FollowUp(tenant.id, tenant.nome));
-      resultados.push(await this.automacao2TemperaturaDecrescente(tenant.id, tenant.nome));
+      // AUTOMAÇÃO #2 (Temperatura) foi REMOVIDA - usar temperatura-auto-job.ts separadamente
       resultados.push(await this.automacao3LembreteVisita(tenant.id, tenant.nome));
       resultados.push(await this.automacao4LeadAbandonado(tenant.id, tenant.nome));
       resultados.push(await this.automacao5AtribuicaoPorArea(tenant.id, tenant.nome));
@@ -122,93 +122,22 @@ export class AutomacoesService {
   }
 
   /**
-   * AUTOMAÇÃO #2: Temperatura decrescente
-   * Lead QUENTE→MORNO após 5 dias, MORNO→FRIO após 10 dias
+   * AUTOMAÇÃO #2: REMOVIDA (Temperatura Decrescente)
+   *
+   * Esta automação foi REMOVIDA para evitar duplicação com temperatura-auto.service.ts
+   *
+   * Motivo da remoção:
+   * - temperatura-auto.service.ts usa last_interaction_at (mais preciso)
+   * - temperatura-auto.service.ts registra mudanças na timeline
+   * - temperatura-auto.service.ts tem estatísticas detalhadas
+   * - Evita race conditions e notificações duplicadas
+   *
+   * Para executar atualização de temperatura, use:
+   * npx tsx src/shared/jobs/temperatura-auto-job.ts
+   *
+   * Agendamento sugerido (cron diário 8:00 AM):
+   * 0 8 * * * cd /path/to/apps/api && npx tsx src/shared/jobs/temperatura-auto-job.ts
    */
-  private async automacao2TemperaturaDecrescente(tenantId: string, tenantNome: string): Promise<AutomacaoResult> {
-    const erros: string[] = [];
-    let executadas = 0;
-
-    try {
-      const cincoDiasAtras = new Date();
-      cincoDiasAtras.setDate(cincoDiasAtras.getDate() - 5);
-
-      const dezDiasAtras = new Date();
-      dezDiasAtras.setDate(dezDiasAtras.getDate() - 10);
-
-      // QUENTE → MORNO (5 dias)
-      const leadsQuentes = await prisma.lead.findMany({
-        where: {
-          tenant_id: tenantId,
-          temperatura: 'QUENTE',
-          updated_at: { lte: cincoDiasAtras }
-        },
-        include: {
-          corretor: { select: { telegram_chat_id: true } }
-        }
-      });
-
-      for (const lead of leadsQuentes) {
-        try {
-          await prisma.lead.update({
-            where: { id: lead.id },
-            data: { temperatura: 'MORNO' }
-          });
-
-          // Notifica corretor via Telegram
-          if (lead.corretor?.telegram_chat_id) {
-            const mensagem = `🌡️ *Temperatura Atualizada*\n\nLead: ${lead.nome}\n🔥 QUENTE → 🌡️ MORNO\n\nMotivo: 5 dias sem atividade`;
-            await telegramService.sendMessage(lead.corretor.telegram_chat_id, mensagem);
-          }
-
-          executadas++;
-        } catch (error: any) {
-          erros.push(`Lead ${lead.id}: ${error.message}`);
-        }
-      }
-
-      // MORNO → FRIO (10 dias)
-      const leadsMornos = await prisma.lead.findMany({
-        where: {
-          tenant_id: tenantId,
-          temperatura: 'MORNO',
-          updated_at: { lte: dezDiasAtras }
-        },
-        include: {
-          corretor: { select: { telegram_chat_id: true } }
-        }
-      });
-
-      for (const lead of leadsMornos) {
-        try {
-          await prisma.lead.update({
-            where: { id: lead.id },
-            data: { temperatura: 'FRIO' }
-          });
-
-          // Notifica corretor via Telegram
-          if (lead.corretor?.telegram_chat_id) {
-            const mensagem = `❄️ *Temperatura Atualizada*\n\nLead: ${lead.nome}\n🌡️ MORNO → ❄️ FRIO\n\nMotivo: 10 dias sem atividade`;
-            await telegramService.sendMessage(lead.corretor.telegram_chat_id, mensagem);
-          }
-
-          executadas++;
-        } catch (error: any) {
-          erros.push(`Lead ${lead.id}: ${error.message}`);
-        }
-      }
-    } catch (error: any) {
-      erros.push(`Erro geral: ${error.message}`);
-    }
-
-    return {
-      tenantId,
-      tenantNome,
-      automacao: 'Temperatura Decrescente',
-      executadas,
-      erros
-    };
-  }
 
   /**
    * AUTOMAÇÃO #3: Lembrete de visita

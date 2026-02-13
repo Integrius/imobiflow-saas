@@ -5,10 +5,12 @@
  *
  * Automações implementadas:
  * 1. Follow-up automático - Lead sem resposta há 3 dias → WhatsApp
- * 2. Temperatura decrescente - QUENTE→MORNO (5 dias), MORNO→FRIO (10 dias)
- * 3. Lembrete de visita - 24h antes da visita → WhatsApp + Telegram
- * 4. Lead abandonado - 7 dias sem resposta → marcar como FRIO
- * 5. Atribuição por área - Lead sem corretor → atribuir por especialização
+ * 2. Lembrete de visita - 24h antes da visita → WhatsApp + Telegram
+ * 3. Lead abandonado - 7 dias sem resposta → marcar como FRIO
+ * 4. Atribuição por área - Lead sem corretor → atribuir por especialização
+ *
+ * NOTA: Temperatura decrescente foi REMOVIDA deste job (duplicação).
+ *       Use temperatura-auto-job.ts separadamente (execução diária recomendada).
  *
  * Para executar manualmente:
  * cd apps/api && npx tsx src/shared/jobs/automacoes-job.ts
