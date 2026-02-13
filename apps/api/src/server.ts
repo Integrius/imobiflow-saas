@@ -33,6 +33,7 @@ import { metasRoutes } from './modules/metas/metas.routes'
 import { notificationsRoutes } from './modules/notifications/notifications.routes'
 import { reportsRoutes } from './modules/reports/reports.routes'
 import { tarefasRoutes } from './modules/tarefas/tarefas.routes'
+import { landingRoutes } from './modules/public/landing.routes'
 import { errorHandler } from './shared/middlewares/error.middleware'
 
 const server = Fastify({
@@ -97,6 +98,7 @@ server.register(dashboardGerencialRoutes, { prefix: '/api/v1/dashboard-gerencial
 server.register(aiRoutes, { prefix: '/api/v1/ai' })
 server.register(whatsAppRoutes, { prefix: '/api/v1/whatsapp' })
 server.register(localidadesRoutes, { prefix: '/api/v1/localidades' }) // Rotas públicas IBGE
+server.register(landingRoutes, { prefix: '/api/v1/public/landing' }) // Rotas públicas da landing page
 server.register(telegramRoutes, { prefix: '/api/v1/telegram' }) // Rotas de notificações Telegram
 server.register(agendamentosRoutes, { prefix: '/api/v1/agendamentos' }) // Rotas de agendamentos de visitas
 server.register(propostasRoutes, { prefix: '/api/v1/propostas' }) // Rotas de propostas/ofertas

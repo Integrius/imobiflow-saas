@@ -663,4 +663,178 @@ export async function adminRoutes(server: FastifyInstance) {
       }
     }
   )
+
+  /**
+   * POST /api/v1/admin/landing/hero-image
+   *
+   * Upload de imagem hero da landing page
+   *
+   * Faz upload da imagem para Cloudinary e armazena a URL
+   * em variável de ambiente LANDING_HERO_IMAGE_URL
+   *
+   * Validações:
+   * - Formato: PNG, JPG, JPEG, WebP
+   * - Tamanho máximo: 2MB
+   * - Otimização automática pelo Cloudinary
+   *
+   * Acesso: Apenas ADMIN do tenant Vivoly
+   */
+  server.post(
+    '/landing/hero-image',
+    {
+      preHandler: [authMiddleware, requireVivolyAdmin]
+    },
+    async (request, reply) => {
+      try {
+        const data = await request.file()
+
+        if (!data) {
+          return reply.status(400).send({
+            error: 'Nenhum arquivo enviado'
+          })
+        }
+
+        // Validar tipo de arquivo
+        const allowedMimeTypes = ['image/png', 'image/jpeg', 'image/jpg', 'image/webp']
+        if (!allowedMimeTypes.includes(data.mimetype)) {
+          return reply.status(400).send({
+            error: 'Formato inválido',
+            message: 'Apenas PNG, JPG, JPEG e WebP são aceitos'
+          })
+        }
+
+        // Converter stream para buffer
+        const chunks: Buffer[] = []
+        for await (const chunk of data.file) {
+          chunks.push(chunk)
+        }
+        const buffer = Buffer.concat(chunks)
+
+        // Validar tamanho (máx 2MB)
+        const MAX_SIZE = 2 * 1024 * 1024 // 2MB
+        if (buffer.length > MAX_SIZE) {
+          return reply.status(400).send({
+            error: 'Arquivo muito grande',
+            message: 'Tamanho máximo: 2MB'
+          })
+        }
+
+        // Upload para Cloudinary
+        const cloudinary = (await import('../../config/cloudinary')).default
+        // @ts-ignore - stream é módulo nativo do Node
+        const { Readable } = await import('stream')
+
+        const uploadResult = await new Promise<any>((resolve, reject) => {
+          const uploadStream = cloudinary.uploader.upload_stream(
+            {
+              folder: 'vivoly/landing',
+              public_id: 'hero-image',
+              resource_type: 'image',
+              overwrite: true, // Sobrescrever imagem anterior
+              transformation: [
+                { quality: 'auto:good' },
+                { fetch_format: 'auto' },
+                { width: 1200, crop: 'limit' } // Limitar largura máxima
+              ]
+            },
+            (error, result) => {
+              if (error) reject(error)
+              else resolve(result)
+            }
+          )
+
+          const readableStream = Readable.from(buffer)
+          readableStream.pipe(uploadStream)
+        })
+
+        // Armazenar URL no banco (criar tabela de config se não existir)
+        // Por enquanto, retornar a URL para ser configurada manualmente
+        const imageUrl = uploadResult.secure_url
+
+        server.log.info({
+          imageUrl,
+          uploadedBy: request.user?.id
+        }, 'Hero image da landing page atualizada')
+
+        return reply.send({
+          success: true,
+          message: 'Imagem atualizada com sucesso',
+          data: {
+            url: imageUrl,
+            width: uploadResult.width,
+            height: uploadResult.height,
+            format: uploadResult.format,
+            size: uploadResult.bytes
+          },
+          instructions: {
+            step1: 'Imagem enviada para Cloudinary com sucesso',
+            step2: 'Atualize a variável de ambiente LANDING_HERO_IMAGE_URL no Render',
+            step3: `Valor: ${imageUrl}`,
+            step4: 'Ou acesse via API pública: GET /api/v1/public/landing/config'
+          }
+        })
+      } catch (error: any) {
+        server.log.error({ error }, 'Erro ao fazer upload da hero image')
+        return reply.status(500).send({
+          error: 'Erro ao fazer upload',
+          message: error.message
+        })
+      }
+    }
+  )
+
+  /**
+   * GET /api/v1/admin/landing/hero-image
+   *
+   * Retorna a URL atual da hero image
+   *
+   * Acesso: Apenas ADMIN do tenant Vivoly
+   */
+  server.get(
+    '/landing/hero-image',
+    {
+      preHandler: [authMiddleware, requireVivolyAdmin]
+    },
+    async (request, reply) => {
+      try {
+        // Buscar a URL mais recente do Cloudinary
+        const cloudinary = (await import('../../config/cloudinary')).default
+
+        try {
+          const result = await cloudinary.api.resource('vivoly/landing/hero-image', {
+            resource_type: 'image'
+          })
+
+          return reply.send({
+            success: true,
+            data: {
+              url: result.secure_url,
+              width: result.width,
+              height: result.height,
+              format: result.format,
+              size: result.bytes,
+              created_at: result.created_at,
+              updated_at: result.created_at
+            }
+          })
+        } catch (cloudinaryError: any) {
+          // Imagem não existe ainda
+          if (cloudinaryError.error?.http_code === 404) {
+            return reply.send({
+              success: true,
+              data: null,
+              message: 'Nenhuma imagem hero configurada ainda. Use POST /api/v1/admin/landing/hero-image para fazer upload.'
+            })
+          }
+          throw cloudinaryError
+        }
+      } catch (error: any) {
+        server.log.error({ error }, 'Erro ao buscar hero image')
+        return reply.status(500).send({
+          error: 'Erro ao buscar imagem',
+          message: error.message
+        })
+      }
+    }
+  )
 }
