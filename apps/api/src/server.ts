@@ -2,6 +2,7 @@ import Fastify from 'fastify'
 import cors from '@fastify/cors'
 import helmet from '@fastify/helmet'
 import multipart from '@fastify/multipart'
+import cookie from '@fastify/cookie'
 import { authRoutes } from './modules/auth/auth.routes'
 import { tenantRoutes } from './modules/tenants/tenant.routes'
 import { dataExportRoutes } from './modules/tenants/data-export.routes'
@@ -40,6 +41,12 @@ const server = Fastify({
 
 // Error handler global
 server.setErrorHandler(errorHandler)
+
+// Cookie parser (necessário para httpOnly cookies)
+server.register(cookie, {
+  secret: process.env.COOKIE_SECRET || process.env.JWT_SECRET || 'imobiflow-cookie-secret',
+  parseOptions: {}
+})
 
 server.register(cors, {
   origin: (origin, cb) => {

@@ -24,18 +24,30 @@ declare module 'fastify' {
  *
  * Valida o token JWT e carrega informações do usuário no request
  * IMPORTANTE: Este middleware assume que tenantMiddleware já foi executado
+ *
+ * Prioridade de leitura do token:
+ * 1. Cookie httpOnly (seguro, protegido contra XSS)
+ * 2. Header Authorization (fallback para compatibilidade)
  */
 export async function authMiddleware(
   request: FastifyRequest,
   reply: FastifyReply
 ) {
-  const authHeader = request.headers.authorization
+  // Tentar ler token do cookie httpOnly (prioridade)
+  let token = request.cookies?.token
 
-  if (!authHeader) {
-    return reply.status(401).send({ error: 'Token não fornecido' })
+  // Fallback: Ler do header Authorization (compatibilidade)
+  if (!token) {
+    const authHeader = request.headers.authorization
+    if (authHeader) {
+      const parts = authHeader.split(' ')
+      token = parts[1]  // Bearer TOKEN
+    }
   }
 
-  const [, token] = authHeader.split(' ')
+  if (!token) {
+    return reply.status(401).send({ error: 'Token não fornecido' })
+  }
 
   try {
     const decoded = verify(token, process.env.JWT_SECRET!) as TokenPayload

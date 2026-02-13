@@ -110,14 +110,13 @@ export async function login(data: LoginData): Promise<AuthResponse> {
       localStorage.setItem('tenant_id', finalTenantId);
     }
 
-    // IMPORTANTE: Não armazena token em localStorage para evitar sessões persistentes
-    // Token só existe em cookie de sessão que expira ao fechar navegador
+    // Armazenar dados do usuário em localStorage
     localStorage.setItem('user', JSON.stringify(response.data.user));
 
-    // Cookie de SESSÃO (sem max-age): expira automaticamente ao fechar navegador
-    // Isso garante que cada acesso ao tenant exige novo login
-    // Ideal para empresas pequenas com computadores compartilhados
-    document.cookie = `token=${response.data.token}; path=/; SameSite=Lax; Secure`;
+    // ✅ SEGURANÇA: Token é setado automaticamente pelo backend via httpOnly cookie
+    // Não precisa mais setar manualmente via JavaScript
+    // Isso protege contra ataques XSS (cookie não acessível por scripts maliciosos)
+    // O cookie é enviado automaticamente em todas as requisições (withCredentials: true)
 
     // Armazenar tenant_slug em cookie de longa duração (90 dias) para lembrança de último acesso
     if (subdomain) {
@@ -147,12 +146,12 @@ export async function logout() {
     console.error('Erro ao fazer logout no backend:', error);
   }
 
-  // Remover de localStorage (token não está mais no localStorage, mas removemos user e tenant_id)
+  // Remover de localStorage (user e tenant_id)
   localStorage.removeItem('user');
   localStorage.removeItem('tenant_id');
 
-  // Remover TODOS os cookies (incluindo token e last_tenant)
-  // Isso garante que usuários administrativos sempre caiam na landing page após logout
+  // ✅ SEGURANÇA: Cookie httpOnly é limpo automaticamente pelo backend
+  // Limpeza manual abaixo é apenas fallback para compatibilidade
   document.cookie = 'token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
   document.cookie = 'last_tenant=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
 

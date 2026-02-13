@@ -41,6 +41,15 @@ export class AuthController {
 
       const result = await this.service.login(data, tenantId)
 
+      // ✅ Setar cookie httpOnly com o token JWT
+      reply.setCookie('token', result.token, {
+        httpOnly: true,    // Não acessível por JavaScript (proteção XSS)
+        secure: process.env.NODE_ENV === 'production',  // HTTPS apenas em produção
+        sameSite: 'lax',   // Proteção CSRF
+        path: '/',
+        maxAge: 7 * 24 * 60 * 60  // 7 dias (mesmo tempo do JWT)
+      })
+
       // ✅ Log de login bem-sucedido
       await ActivityLogService.logLogin(
         result.user.tenant_id,
@@ -49,6 +58,7 @@ export class AuthController {
         true
       )
 
+      // Retornar dados do usuário (token ainda incluído para compatibilidade inicial)
       return reply.status(200).send(result)
     } catch (error: any) {
       if (error.name === 'ZodError') {
@@ -107,6 +117,15 @@ export class AuthController {
 
       const result = await this.service.googleLogin(credential, tenantId)
 
+      // ✅ Setar cookie httpOnly com o token JWT
+      reply.setCookie('token', result.token, {
+        httpOnly: true,    // Não acessível por JavaScript (proteção XSS)
+        secure: process.env.NODE_ENV === 'production',  // HTTPS apenas em produção
+        sameSite: 'lax',   // Proteção CSRF
+        path: '/',
+        maxAge: 7 * 24 * 60 * 60  // 7 dias (mesmo tempo do JWT)
+      })
+
       // ✅ Log de login via Google bem-sucedido
       await ActivityLogService.logLogin(
         result.user.tenant_id,
@@ -134,6 +153,9 @@ export class AuthController {
         request
       )
 
+      // ✅ Limpar cookie httpOnly
+      reply.clearCookie('token', { path: '/' })
+
       return reply.status(200).send({
         success: true,
         message: 'Logout realizado com sucesso'
@@ -141,6 +163,10 @@ export class AuthController {
     } catch (error: any) {
       // Mesmo com erro, retorna sucesso (logout não deve falhar)
       console.error('Erro ao registrar logout:', error)
+
+      // ✅ Limpar cookie mesmo em caso de erro
+      reply.clearCookie('token', { path: '/' })
+
       return reply.status(200).send({
         success: true,
         message: 'Logout realizado'
