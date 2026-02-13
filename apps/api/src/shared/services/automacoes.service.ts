@@ -96,8 +96,9 @@ export class AutomacoesService {
                 lead_id: lead.id,
                 tenant_id: tenantId,
                 tipo: 'WHATSAPP',
-                descricao: 'Follow-up automático (3 dias sem resposta)',
-                user_id: lead.corretor?.user_id
+                conteudo: 'Follow-up automático (3 dias sem resposta)',
+                direcao: 'SAIDA',
+                automatico: true
               }
             });
 
@@ -239,8 +240,9 @@ export class AutomacoesService {
           lead: true,
           imovel: true,
           corretor: {
-            include: {
-              user: { select: { nome: true, telefone: true } }
+            select: {
+              telegram_chat_id: true,
+              telefone: true
             }
           }
         }
@@ -258,8 +260,12 @@ export class AutomacoesService {
             minute: '2-digit'
           });
 
+          // Formata endereço do imóvel
+          const endereco = agendamento.imovel.endereco as any;
+          const enderecoFormatado = `${endereco.rua || ''}, ${endereco.numero || 'S/N'} - ${endereco.bairro || ''}, ${endereco.cidade || ''}`;
+
           // Mensagem para o lead
-          const mensagemLead = `🏠 *Lembrete de Visita*\n\nOlá ${agendamento.lead.nome}!\n\nLembrando da visita amanhã:\n📅 ${dataFormatada} às ${horaFormatada}\n🏢 ${agendamento.imovel.titulo}\n📍 ${agendamento.imovel.endereco_completo}\n\nNos vemos lá!`;
+          const mensagemLead = `🏠 *Lembrete de Visita*\n\nOlá ${agendamento.lead.nome}!\n\nLembrando da visita amanhã:\n📅 ${dataFormatada} às ${horaFormatada}\n🏢 ${agendamento.imovel.titulo}\n📍 ${enderecoFormatado}\n\nNos vemos lá!`;
 
           // Mensagem para o corretor
           const mensagemCorretor = `🏠 *Lembrete de Visita*\n\nVisita agendada amanhã:\n📅 ${dataFormatada} às ${horaFormatada}\n👤 Cliente: ${agendamento.lead.nome}\n📱 ${agendamento.lead.telefone}\n🏢 ${agendamento.imovel.titulo}`;
@@ -384,19 +390,19 @@ export class AutomacoesService {
         where: {
           tenant_id: tenantId,
           corretor_id: null,
-          localizacao: { not: null }
+          bairro: { not: null }
         }
       });
 
       for (const lead of leadsSemCorretor) {
         try {
-          if (!lead.localizacao) continue;
+          if (!lead.bairro) continue;
 
           // Busca corretores com especialização na área
           const corretores = await prisma.corretor.findMany({
             where: {
               tenant_id: tenantId,
-              especializacoes: { has: lead.localizacao }
+              especializacoes: { has: lead.bairro }
             },
             orderBy: { performance_score: 'desc' },
             take: 1
@@ -410,7 +416,7 @@ export class AutomacoesService {
 
             // Notifica corretor via Telegram
             if (corretores[0].telegram_chat_id) {
-              const mensagem = `🎯 *Novo Lead Atribuído*\n\n👤 ${lead.nome}\n📱 ${lead.telefone}\n📍 ${lead.localizacao}\n\nLead atribuído automaticamente por especialização na área.`;
+              const mensagem = `🎯 *Novo Lead Atribuído*\n\n👤 ${lead.nome}\n📱 ${lead.telefone}\n📍 ${lead.bairro}\n\nLead atribuído automaticamente por especialização na área.`;
               await telegramService.sendMessage(corretores[0].telegram_chat_id, mensagem);
             }
 
