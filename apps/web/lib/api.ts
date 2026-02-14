@@ -44,9 +44,8 @@ function getCookie(name: string): string | null {
 // Interceptor para adicionar token e tenant
 api.interceptors.request.use((config) => {
   if (typeof window !== 'undefined') {
-    // Adicionar token de autenticação do COOKIE DE SESSÃO
-    // Token não está mais em localStorage, apenas em cookie
-    const token = getCookie('token');
+    // Adicionar token de autenticação do localStorage (principal) ou cookie (fallback)
+    const token = localStorage.getItem('token') || getCookie('token');
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
@@ -76,7 +75,8 @@ api.interceptors.response.use(
 
     // 401 - Não autenticado (redirecionar para login)
     if (status === 401) {
-      // Limpar cookie e redirecionar
+      // Limpar token, cookie e redirecionar
+      localStorage.removeItem('token');
       document.cookie = 'token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
       localStorage.removeItem('user');
       localStorage.removeItem('tenant_id');

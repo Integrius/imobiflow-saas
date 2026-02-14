@@ -104,6 +104,10 @@ export async function login(data: LoginData): Promise<AuthResponse> {
   const response = await api.post('/auth/login', data, config);
 
   if (response.data.token) {
+    // Armazenar token em localStorage para uso do frontend
+    // (o backend também seta httpOnly cookie como camada extra de segurança)
+    localStorage.setItem('token', response.data.token);
+
     // Armazenar tenant_id (do subdomínio OU da resposta do backend)
     const finalTenantId = tenantId || response.data.user?.tenant_id;
     if (finalTenantId) {
@@ -112,11 +116,6 @@ export async function login(data: LoginData): Promise<AuthResponse> {
 
     // Armazenar dados do usuário em localStorage
     localStorage.setItem('user', JSON.stringify(response.data.user));
-
-    // ✅ SEGURANÇA: Token é setado automaticamente pelo backend via httpOnly cookie
-    // Não precisa mais setar manualmente via JavaScript
-    // Isso protege contra ataques XSS (cookie não acessível por scripts maliciosos)
-    // O cookie é enviado automaticamente em todas as requisições (withCredentials: true)
 
     // Armazenar tenant_slug em cookie de longa duração (90 dias) para lembrança de último acesso
     if (subdomain) {
@@ -146,7 +145,8 @@ export async function logout() {
     console.error('Erro ao fazer logout no backend:', error);
   }
 
-  // Remover de localStorage (user e tenant_id)
+  // Remover de localStorage (token, user e tenant_id)
+  localStorage.removeItem('token');
   localStorage.removeItem('user');
   localStorage.removeItem('tenant_id');
 
@@ -160,12 +160,12 @@ export async function logout() {
 }
 
 /**
- * Obter token de autenticação do cookie de sessão
- * Token agora está APENAS em cookie (não em localStorage)
+ * Obter token de autenticação
+ * Verifica localStorage (principal) e cookie (fallback)
  */
 export function getToken(): string | null {
   if (typeof window === 'undefined') return null;
-  return getCookie('token');
+  return localStorage.getItem('token') || getCookie('token');
 }
 
 /**
