@@ -136,7 +136,7 @@ export async function setupRoutes(server: FastifyInstance) {
       // 2. Verificar se tenant já existe
       server.log.info('🔍 Verificando se tenant Vivoly já existe...');
       const existingTenant = await prisma.$queryRaw<any[]>`
-        SELECT id, nome, subdominio FROM "Tenant" WHERE slug = 'vivoly' LIMIT 1
+        SELECT id, nome, subdominio FROM "tenants" WHERE slug = 'vivoly' LIMIT 1
       `;
 
       let tenantId: string;
@@ -148,7 +148,7 @@ export async function setupRoutes(server: FastifyInstance) {
         // 3. Criar tenant usando SQL raw
         server.log.info('📦 Criando tenant Vivoly...');
         const newTenant = await prisma.$queryRaw<any[]>`
-          INSERT INTO "Tenant" (
+          INSERT INTO "tenants" (
             id, nome, slug, subdominio, email, telefone,
             plano, status, limite_usuarios, limite_imoveis,
             total_usuarios, total_imoveis, created_at, updated_at
@@ -178,7 +178,7 @@ export async function setupRoutes(server: FastifyInstance) {
       // 4. Verificar se admin já existe
       server.log.info('🔍 Verificando se admin já existe...');
       const existingAdmin = await prisma.$queryRaw<any[]>`
-        SELECT id, email FROM "User"
+        SELECT id, email FROM "users"
         WHERE tenant_id = ${tenantId}::uuid
         AND email = 'admin@vivoly.com'
         LIMIT 1
@@ -194,7 +194,7 @@ export async function setupRoutes(server: FastifyInstance) {
         const senhaHash = await bcrypt.hash('admin123', 10);
 
         await prisma.$executeRaw`
-          INSERT INTO "User" (
+          INSERT INTO "users" (
             id, tenant_id, nome, email, senha_hash, tipo, ativo,
             status_conta, primeiro_acesso, created_at, updated_at
           ) VALUES (
@@ -219,7 +219,7 @@ export async function setupRoutes(server: FastifyInstance) {
       // 6. Buscar dados finais
       const users = await prisma.$queryRaw<any[]>`
         SELECT id, nome, email, tipo
-        FROM "User"
+        FROM "users"
         WHERE tenant_id = ${tenantId}::uuid
       `;
 
