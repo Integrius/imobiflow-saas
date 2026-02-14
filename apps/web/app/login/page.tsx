@@ -10,6 +10,7 @@ import { api } from '@/lib/api';
 // Google OAuth removido por questões de segurança
 
 export default function LoginPage() {
+  console.log('🟢 LoginPage: componente renderizando');
   const router = useRouter();
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
@@ -21,6 +22,7 @@ export default function LoginPage() {
 
   // Detectar se está acessando via subdomínio e verificar cookie de último tenant
   useEffect(() => {
+    console.log('🟢 LoginPage: useEffect executando');
     if (typeof window !== 'undefined') {
       const hostname = window.location.hostname;
       const parts = hostname.split('.');
@@ -117,6 +119,7 @@ export default function LoginPage() {
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
+    console.log('🟡 LoginPage: handleSubmit chamado, email:', email);
 
     // Limpa erro anterior e timeout
     if (errorTimeoutRef.current) {
@@ -126,7 +129,9 @@ export default function LoginPage() {
     setLoading(true);
 
     try {
+      console.log('🟡 LoginPage: chamando login()...');
       const response = await login({ email, senha });
+      console.log('🟢 LoginPage: login() retornou com sucesso');
       setLoading(false);
 
       // Verificar se é primeiro acesso
@@ -136,7 +141,8 @@ export default function LoginPage() {
         router.push('/dashboard');
       }
     } catch (err: any) {
-      const errorMessage = err.response?.data?.error || 'Erro ao fazer login';
+      console.log('🔴 LoginPage: erro no login:', err);
+      const errorMessage = err.response?.data?.error || err.message || 'Erro ao fazer login';
       console.log('🔴 ERRO DE LOGIN:', errorMessage, '- Será exibido por 15 segundos');
       setError(errorMessage);
       setLoading(false);
@@ -375,6 +381,7 @@ export default function LoginPage() {
               <button
                 type="submit"
                 disabled={loading}
+                onClick={() => console.log('🟣 LoginPage: botão clicado')}
                 className="w-full px-8 py-3 bg-[#00C48C] text-white rounded-lg hover:bg-[#00B07D] transition-all duration-200 font-semibold shadow-md hover:shadow-lg hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
               >
                 {loading ? (
