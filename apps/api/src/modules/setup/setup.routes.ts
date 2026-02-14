@@ -261,6 +261,93 @@ export async function setupRoutes(server: FastifyInstance) {
   });
 
   /**
+   * POST /api/v1/setup/admin-only
+   *
+   * Cria apenas o usuário ADMIN para o tenant Vivoly
+   * Usa quando o tenant já existe mas falta o admin
+   */
+  server.post('/admin-only', async (request, reply) => {
+    try {
+      server.log.info('👤 Criando apenas ADMIN para tenant Vivoly...');
+
+      // Buscar tenant Vivoly
+      const tenant = await prisma.tenant.findUnique({
+        where: { slug: 'vivoly' }
+      });
+
+      if (!tenant) {
+        return reply.status(404).send({
+          error: 'Tenant não encontrado',
+          message: 'O tenant Vivoly não existe. Execute POST /api/v1/setup/tenant-admin primeiro'
+        });
+      }
+
+      // Verificar se admin já existe
+      const existingAdmin = await prisma.user.findFirst({
+        where: {
+          tenant_id: tenant.id,
+          email: 'admin@vivoly.com'
+        }
+      });
+
+      if (existingAdmin) {
+        return reply.status(400).send({
+          error: 'Admin já existe',
+          message: 'Já existe um admin com o email admin@vivoly.com',
+          admin: {
+            id: existingAdmin.id,
+            email: existingAdmin.email,
+            tipo: existingAdmin.tipo
+          }
+        });
+      }
+
+      // Criar usuário ADMIN
+      const senhaHash = await bcrypt.hash('admin123', 10);
+
+      const admin = await prisma.user.create({
+        data: {
+          tenant_id: tenant.id,
+          nome: 'Administrador Vivoly',
+          email: 'admin@vivoly.com',
+          senha_hash: senhaHash,
+          tipo: 'ADMIN',
+          ativo: true
+        }
+      });
+
+      server.log.info(`✅ ADMIN criado: ${admin.email}`);
+
+      return {
+        success: true,
+        message: 'ADMIN criado com sucesso!',
+        admin: {
+          id: admin.id,
+          nome: admin.nome,
+          email: admin.email,
+          tipo: admin.tipo
+        },
+        credentials: {
+          email: 'admin@vivoly.com',
+          senha: 'admin123'
+        },
+        access: {
+          url_producao: 'https://vivoly.integrius.com.br',
+          url_dev: 'http://localhost:3000',
+          api_login: 'POST /api/v1/auth/login'
+        }
+      };
+
+    } catch (error: any) {
+      server.log.error('Erro ao criar admin:', error);
+      return reply.status(500).send({
+        error: 'Erro ao criar admin',
+        message: error.message
+      });
+    }
+  });
+
+  /**
    * GET /api/v1/setup/check
    *
    * Verifica se o setup já foi feito
