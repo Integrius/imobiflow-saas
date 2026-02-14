@@ -86,6 +86,7 @@ export default function DashboardLayout({
       items: [
         { name: 'Leads', href: '/dashboard/leads', icon: '👥' },
         { name: 'Negociações', href: '/dashboard/negociacoes', icon: '💼' },
+        { name: 'Agendamentos', href: '/dashboard/agendamentos', icon: '📅' },
         { name: 'Imóveis', href: '/dashboard/imoveis', icon: '🏠' },
         { name: 'Proprietários', href: '/dashboard/proprietarios', icon: '🏢' },
       ]
@@ -133,6 +134,7 @@ export default function DashboardLayout({
       items: [
         { name: 'Leads', href: '/dashboard/leads', icon: '👥' },
         { name: 'Negociações', href: '/dashboard/negociacoes', icon: '💼' },
+        { name: 'Agendamentos', href: '/dashboard/agendamentos', icon: '📅' },
         { name: 'Imóveis', href: '/dashboard/imoveis', icon: '🏠' },
         { name: 'Proprietários', href: '/dashboard/proprietarios', icon: '🏢' },
       ]
