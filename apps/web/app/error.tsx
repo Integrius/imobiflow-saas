@@ -1,45 +1,84 @@
 'use client';
 
 import Link from 'next/link';
+import { useEffect } from 'react';
 
-export default function GlobalError({
-  error,
-  reset,
-}: {
+interface ErrorProps {
   error: Error & { digest?: string };
   reset: () => void;
-}) {
+}
+
+export default function Error({ error, reset }: ErrorProps) {
+  useEffect(() => {
+    console.error('Application error:', error);
+  }, [error]);
+
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50">
-      <div className="max-w-md w-full px-6 text-center">
-        <div className="mb-8">
-          <div className="inline-flex items-center justify-center w-24 h-24 rounded-full bg-red-50 mb-6">
-            <svg className="w-12 h-12 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z" />
-            </svg>
-          </div>
-          <h1 className="text-2xl font-bold text-gray-800 mb-2">
-            Algo deu errado
-          </h1>
-          <p className="text-gray-500">
-            Ocorreu um erro inesperado. Tente novamente ou volte para a página inicial.
-          </p>
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4 sm:px-6 lg:px-8">
+      <div className="max-w-md w-full text-center">
+        {/* Error Icon SVG */}
+        <div className="flex justify-center mb-8">
+          <svg
+            className="w-20 h-20"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+            aria-label="Error icon"
+          >
+            <circle cx="12" cy="12" r="10" strokeWidth="1.5" className="text-gray-300" />
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth="1.5"
+              d="M12 8v4m0 4h.01M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"
+              className="text-red-500"
+            />
+          </svg>
         </div>
 
-        <div className="space-y-3">
+        {/* Error Heading */}
+        <h1 className="text-4xl font-bold text-gray-900 mb-3">
+          Algo deu errado
+        </h1>
+
+        {/* Error Description */}
+        <p className="text-gray-600 mb-8 text-base leading-relaxed">
+          Ocorreu um erro inesperado. Tente novamente.
+        </p>
+
+        {/* Error Details */}
+        {error.message && (
+          <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-8 text-left">
+            <p className="text-sm text-red-700 break-words font-mono">
+              {error.message}
+            </p>
+          </div>
+        )}
+
+        {/* Action Buttons */}
+        <div className="flex flex-col gap-3 sm:flex-row sm:gap-3 sm:justify-center">
           <button
             onClick={reset}
-            className="block w-full px-6 py-3 bg-[#00C48C] text-white rounded-lg hover:bg-[#00B07D] transition-all duration-200 font-semibold"
+            className="flex-1 sm:flex-none inline-flex items-center justify-center px-6 py-3 rounded-lg font-bold text-white bg-green-500 hover:bg-green-600 active:bg-green-700 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
           >
             Tentar novamente
           </button>
+
           <Link
             href="/"
-            className="block w-full px-6 py-3 bg-white text-gray-700 rounded-lg border border-gray-200 hover:bg-gray-50 transition-all duration-200 font-medium"
+            className="flex-1 sm:flex-none inline-flex items-center justify-center px-6 py-3 rounded-lg font-bold text-green-600 bg-white border-2 border-green-600 hover:bg-green-50 active:bg-green-100 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
           >
-            Voltar para o início
+            Voltar para o inicio
           </Link>
         </div>
+
+        {/* Error ID */}
+        {error.digest && (
+          <p className="text-xs text-gray-500 mt-8">
+            ID do erro: {error.digest}
+          </p>
+        )}
       </div>
     </div>
   );

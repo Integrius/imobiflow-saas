@@ -2,36 +2,85 @@ import Link from 'next/link';
 
 export default function NotFound() {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50">
-      <div className="max-w-md w-full px-6 text-center">
-        <div className="mb-8">
-          <div className="inline-flex items-center justify-center w-24 h-24 rounded-full bg-[#00C48C]/10 mb-6">
-            <svg className="w-12 h-12 text-[#00C48C]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-          </div>
-          <h1 className="text-6xl font-bold text-[#064E3B] mb-2">404</h1>
-          <h2 className="text-xl font-semibold text-gray-800 mb-2">
-            Página não encontrada
-          </h2>
-          <p className="text-gray-500">
-            A página que você está procurando não existe ou foi movida.
-          </p>
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4 py-12">
+      <div className="max-w-md w-full text-center">
+        {/* 404 Illustration */}
+        <div className="mb-8 flex justify-center">
+          <svg
+            className="w-32 h-32 text-gray-300"
+            viewBox="0 0 200 200"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            {/* Search Icon Background */}
+            <circle cx="100" cy="100" r="90" fill="currentColor" opacity="0.1" />
+
+            {/* Magnifying Glass */}
+            <circle cx="85" cy="85" r="45" stroke="currentColor" strokeWidth="6" />
+            <line
+              x1="120"
+              y1="120"
+              x2="160"
+              y2="160"
+              stroke="currentColor"
+              strokeWidth="6"
+              strokeLinecap="round"
+            />
+
+            {/* Question Mark */}
+            <text
+              x="100"
+              y="110"
+              fontSize="60"
+              fontWeight="bold"
+              textAnchor="middle"
+              fill="currentColor"
+            >
+              ?
+            </text>
+          </svg>
         </div>
 
-        <div className="space-y-3">
+        {/* Heading */}
+        <h1 className="text-5xl font-bold text-gray-900 mb-3">404</h1>
+
+        {/* Main Title */}
+        <h2 className="text-2xl font-semibold text-gray-800 mb-4">
+          Página não encontrada
+        </h2>
+
+        {/* Subtitle */}
+        <p className="text-gray-600 mb-8 text-lg">
+          Desculpe, a página que você está procurando não existe ou foi movida.
+        </p>
+
+        {/* Action Buttons */}
+        <div className="flex flex-col sm:flex-row gap-4 mb-12">
           <Link
             href="/"
-            className="block w-full px-6 py-3 bg-[#00C48C] text-white rounded-lg hover:bg-[#00B07D] transition-all duration-200 font-semibold"
+            className="flex-1 inline-flex items-center justify-center px-6 py-3 bg-green-500 hover:bg-green-600 text-white font-semibold rounded-lg transition-colors duration-200 no-underline"
           >
             Voltar para o início
           </Link>
           <Link
             href="/login"
-            className="block w-full px-6 py-3 bg-white text-gray-700 rounded-lg border border-gray-200 hover:bg-gray-50 transition-all duration-200 font-medium"
+            className="flex-1 inline-flex items-center justify-center px-6 py-3 bg-white border-2 border-green-500 text-green-600 hover:bg-green-50 font-semibold rounded-lg transition-colors duration-200 no-underline"
           >
-            Ir para o login
+            Ir para login
           </Link>
+        </div>
+
+        {/* Footer Text */}
+        <div className="border-t border-gray-200 pt-8">
+          <p className="text-gray-600 text-sm">
+            Precisa de ajuda? Entre em contato com nosso suporte.
+          </p>
+          <a
+            href="mailto:support@imobiflow.com"
+            className="text-green-600 hover:text-green-700 font-medium text-sm mt-2 inline-block transition-colors duration-200"
+          >
+            suporte@imobiflow.com
+          </a>
         </div>
       </div>
     </div>
