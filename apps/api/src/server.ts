@@ -112,8 +112,14 @@ server.register(metasRoutes, { prefix: '/api/v1/metas' }) // Rotas de metas de c
 server.register(notificationsRoutes, { prefix: '/api/v1/notifications' }) // Rotas de notificações in-app
 server.register(reportsRoutes, { prefix: '/api/v1/reports' }) // Rotas de relatórios em PDF
 server.register(tarefasRoutes, { prefix: '/api/v1/tarefas' }) // Rotas de tarefas/follow-ups
-server.register(setupRoutes, { prefix: '/api/v1/setup' }) // ⚠️ SETUP INICIAL - Remover em produção!
-server.register(testRoutes, { prefix: '/api/v1/test' }) // 🧪 ROTAS DE TESTE - Debug
+// Rotas de debug/setup: apenas em desenvolvimento ou com ENABLE_DEBUG_ROUTES=true
+if (process.env.NODE_ENV !== 'production' || process.env.ENABLE_DEBUG_ROUTES === 'true') {
+  server.register(setupRoutes, { prefix: '/api/v1/setup' })
+  server.register(testRoutes, { prefix: '/api/v1/test' })
+  console.log('⚠️  Rotas de setup e teste habilitadas')
+} else {
+  console.log('🔒 Rotas de setup e teste desabilitadas em produção')
+}
 
 const start = async () => {
   try {
