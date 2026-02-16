@@ -115,6 +115,7 @@ export default function DashboardLayout({
     {
       title: 'Administração',
       items: [
+        { name: 'Planos e Assinatura', href: '/dashboard/planos', icon: '💳' },
         { name: 'Minha Conta', href: '/dashboard/administracao', icon: '👤' },
         { name: 'Logs', href: '/dashboard/logs', icon: '📋' },
         { name: 'Cancelar Assinatura', href: '/dashboard/cancelar-assinatura', icon: '🚫' },

@@ -34,6 +34,7 @@ import { notificationsRoutes } from './modules/notifications/notifications.route
 import { reportsRoutes } from './modules/reports/reports.routes'
 import { tarefasRoutes } from './modules/tarefas/tarefas.routes'
 import { landingRoutes } from './modules/public/landing.routes'
+import { pagamentosRoutes } from './modules/pagamentos/pagamentos.routes'
 import { errorHandler } from './shared/middlewares/error.middleware'
 
 const server = Fastify({
@@ -112,6 +113,7 @@ server.register(metasRoutes, { prefix: '/api/v1/metas' }) // Rotas de metas de c
 server.register(notificationsRoutes, { prefix: '/api/v1/notifications' }) // Rotas de notificações in-app
 server.register(reportsRoutes, { prefix: '/api/v1/reports' }) // Rotas de relatórios em PDF
 server.register(tarefasRoutes, { prefix: '/api/v1/tarefas' }) // Rotas de tarefas/follow-ups
+server.register(pagamentosRoutes, { prefix: '/api/v1/pagamentos' }) // Rotas de pagamentos e assinaturas (Mercado Pago)
 // Rotas de debug/setup: apenas em desenvolvimento ou com ENABLE_DEBUG_ROUTES=true
 if (process.env.NODE_ENV !== 'production' || process.env.ENABLE_DEBUG_ROUTES === 'true') {
   server.register(setupRoutes, { prefix: '/api/v1/setup' })

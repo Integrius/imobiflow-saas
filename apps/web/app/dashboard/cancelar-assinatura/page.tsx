@@ -23,7 +23,7 @@ export default function CancelarAssinaturaPage() {
     try {
       setLoading(true);
 
-      await api.post('/tenants/cancel', {
+      await api.post('/pagamentos/cancelar', {
         motivo: motivo.trim()
       });
 
