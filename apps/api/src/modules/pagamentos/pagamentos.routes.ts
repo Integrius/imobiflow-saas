@@ -4,6 +4,7 @@ import { authMiddleware } from '../../shared/middlewares/auth.middleware';
 import { PagamentosService } from './pagamentos.service';
 import { prisma } from '../../shared/database/prisma.service';
 import { mercadoPagoService } from '../../shared/services/mercadopago.service';
+import { PlanoTenant } from '@prisma/client';
 
 const PLANOS_VALIDOS = ['BASICO', 'PRO', 'ENTERPRISE'];
 
@@ -20,14 +21,20 @@ export async function pagamentosRoutes(server: FastifyInstance) {
     '/webhook',
     async (request: FastifyRequest, reply: FastifyReply) => {
       try {
-        const signature = request.headers['x-signature'] as string;
+        const xSignature = request.headers['x-signature'] as string;
+        const xRequestId = request.headers['x-request-id'] as string;
+        const { data } = request.body as { type: string; data: { id: string } };
 
-        if (!signature || !mercadoPagoService.validateWebhookSignature(signature)) {
+        if (!xSignature || !mercadoPagoService.validateWebhookSignature({
+          xSignature,
+          xRequestId: xRequestId || '',
+          dataId: data?.id || ''
+        })) {
           console.log('[Pagamentos Webhook] Assinatura invalida ou ausente');
           return reply.status(200).send({ received: true });
         }
 
-        const { type, data } = request.body as { type: string; data: { id: string } };
+        const { type } = request.body as { type: string; data: { id: string } };
 
         if (!type || !data?.id) {
           console.log('[Pagamentos Webhook] Payload invalido:', JSON.stringify(request.body));
@@ -74,7 +81,7 @@ export async function pagamentosRoutes(server: FastifyInstance) {
           });
         }
 
-        const resultado = await service.criarAssinatura(tenantId, plano, user.email);
+        const resultado = await service.criarAssinatura(tenantId, plano as PlanoTenant, user.email);
 
         return reply.status(201).send({
           checkoutUrl: resultado.checkoutUrl,
