@@ -232,7 +232,7 @@ export default function DashboardLayout({
         <div className="p-4 border-t border-gray-100">
           <div className="bg-gray-50 rounded-lg p-3 text-center">
             <p className="text-xs text-gray-500">Vivoly Integrius</p>
-            <p className="text-xs text-gray-400 mt-0.5">v1.15.0</p>
+            <p className="text-xs text-gray-400 mt-0.5">v1.16.0</p>
           </div>
         </div>
       </aside>
