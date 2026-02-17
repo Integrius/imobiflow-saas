@@ -25,6 +25,31 @@ const sendMessageSchema = z.object({
   message: z.string().min(1)
 })
 
+/**
+ * Verifica se o tenant tem acesso ao WhatsApp
+ * Tenants da campanha de lançamento (60 dias grátis) não têm acesso ao WhatsApp
+ */
+async function checkWhatsAppAccess(tenantId: string): Promise<{ allowed: boolean; message?: string }> {
+  const tenant = await prisma.tenant.findUnique({
+    where: { id: tenantId },
+    select: { configuracoes: true, status: true }
+  })
+
+  if (!tenant) {
+    return { allowed: false, message: 'Tenant não encontrado' }
+  }
+
+  const config = tenant.configuracoes as Record<string, any> | null
+  if (config?.campanha_lancamento === true && config?.whatsapp_habilitado === false) {
+    return {
+      allowed: false,
+      message: 'A integração com WhatsApp estará disponível após a ativação do seu plano pago. Durante o período gratuito da campanha de lançamento, todas as demais funcionalidades estão liberadas.'
+    }
+  }
+
+  return { allowed: true }
+}
+
 export async function whatsAppRoutes(server: FastifyInstance) {
   /**
    * POST /api/v1/whatsapp/webhook
@@ -159,6 +184,12 @@ export async function whatsAppRoutes(server: FastifyInstance) {
       try {
         const tenantId = request.user!.tenant_id
 
+        // Verificar acesso ao WhatsApp (campanha de lançamento)
+        const access = await checkWhatsAppAccess(tenantId)
+        if (!access.allowed) {
+          return reply.status(403).send({ success: false, error: access.message, campanha_bloqueio: true })
+        }
+
         const config = await whatsAppService.getConfig(tenantId)
 
         return reply.send({
@@ -187,6 +218,13 @@ export async function whatsAppRoutes(server: FastifyInstance) {
     async (request, reply) => {
       try {
         const tenantId = request.user!.tenant_id
+
+        // Verificar acesso ao WhatsApp (campanha de lançamento)
+        const access = await checkWhatsAppAccess(tenantId)
+        if (!access.allowed) {
+          return reply.status(403).send({ success: false, error: access.message, campanha_bloqueio: true })
+        }
+
         const data = configSchema.parse(request.body)
 
         const config = await whatsAppService.upsertConfig(tenantId, data)
@@ -231,6 +269,12 @@ export async function whatsAppRoutes(server: FastifyInstance) {
       try {
         const tenantId = request.user!.tenant_id
 
+        // Verificar acesso ao WhatsApp (campanha de lançamento)
+        const access = await checkWhatsAppAccess(tenantId)
+        if (!access.allowed) {
+          return reply.status(403).send({ success: false, error: access.message, campanha_bloqueio: true })
+        }
+
         const result = await whatsAppService.testConnection(tenantId)
 
         return reply.send({
@@ -260,6 +304,13 @@ export async function whatsAppRoutes(server: FastifyInstance) {
     async (request, reply) => {
       try {
         const tenantId = request.user!.tenant_id
+
+        // Verificar acesso ao WhatsApp (campanha de lançamento)
+        const access = await checkWhatsAppAccess(tenantId)
+        if (!access.allowed) {
+          return reply.status(403).send({ success: false, error: access.message, campanha_bloqueio: true })
+        }
+
         const data = sendMessageSchema.parse(request.body)
 
         // Buscar lead

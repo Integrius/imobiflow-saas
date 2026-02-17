@@ -48,8 +48,23 @@ export class TenantService {
       const adminSenha = data.adminSenha
 
       return await this.prisma.$transaction(async (tx) => {
+        // Verificar campanha de lançamento: 60 dias grátis para os 20 primeiros
+        const totalTenants = await tx.tenant.count()
+        const isCampanhaLancamento = totalTenants < 20
+
+        // Campanha: 60 dias | Normal: 14 dias
+        const trialDays = isCampanhaLancamento ? 60 : 14
+        const dataExpiracao = new Date(Date.now() + trialDays * 24 * 60 * 60 * 1000)
+
+        // Usar limites corretos baseados no plano selecionado
+        const limites = this.getPlanLimits(data.plano || 'BASICO')
+
+        // Configurações do tenant (inclui flag de campanha)
+        const configuracoes = isCampanhaLancamento
+          ? { campanha_lancamento: true, whatsapp_habilitado: false, trial_days: 60 }
+          : { campanha_lancamento: false, whatsapp_habilitado: true, trial_days: 14 }
+
         // 1. Criar tenant
-        const dataExpiracao = new Date(Date.now() + 14 * 24 * 60 * 60 * 1000) // 14 dias
         const tenant = await tx.tenant.create({
           data: {
             nome: data.nome,
@@ -60,9 +75,8 @@ export class TenantService {
             plano: data.plano,
             status: 'TRIAL',
             data_expiracao: dataExpiracao,
-            limite_usuarios: 3,
-            limite_imoveis: 100,
-            limite_storage_mb: 1000
+            configuracoes,
+            ...limites
           }
         })
 

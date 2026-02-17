@@ -75,6 +75,34 @@ export async function tenantRoutes(server: FastifyInstance) {
   )
 
   /**
+   * GET /api/v1/tenants/campanha-lancamento
+   * Status da campanha de lançamento (público - para landing page)
+   */
+  server.get(
+    '/campanha-lancamento',
+    async (request, reply) => {
+      try {
+        const totalTenants = await prisma.tenant.count()
+        const vagasTotal = 20
+        const vagasRestantes = Math.max(0, vagasTotal - totalTenants)
+
+        return reply.send({
+          success: true,
+          data: {
+            ativa: vagasRestantes > 0,
+            vagas_total: vagasTotal,
+            vagas_restantes: vagasRestantes,
+            dias_gratis: 60
+          }
+        })
+      } catch (error) {
+        server.log.error({ error }, 'Erro ao buscar status da campanha')
+        return reply.status(500).send({ error: 'Erro ao buscar status da campanha' })
+      }
+    }
+  )
+
+  /**
    * GET /api/v1/tenants/trial-info
    * Informações do trial do tenant atual (requer autenticação)
    */

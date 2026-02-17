@@ -345,25 +345,58 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Social Proof - Stats */}
-      <section className="py-16 px-6 bg-white">
-        <div className="max-w-7xl mx-auto">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
-            <div className="p-6">
-              <div className="text-4xl md:text-5xl font-bold text-[#064E3B] mb-2">500+</div>
-              <div className="text-gray-600 font-medium">Imobiliárias Ativas</div>
+      {/* Launch Campaign Banner */}
+      <section className="py-16 px-6 bg-gradient-to-r from-[#064E3B] via-[#047857] to-[#059669] relative overflow-hidden">
+        {/* Background decoration */}
+        <div className="absolute inset-0 opacity-10">
+          <div className="absolute top-0 left-0 w-64 h-64 bg-white rounded-full -translate-x-1/2 -translate-y-1/2" />
+          <div className="absolute bottom-0 right-0 w-96 h-96 bg-white rounded-full translate-x-1/3 translate-y-1/3" />
+        </div>
+
+        <div className="max-w-4xl mx-auto relative z-10 text-center">
+          <div className="inline-block bg-[#8FD14F] text-[#064E3B] font-extrabold text-sm px-4 py-1.5 rounded-full mb-6 uppercase tracking-wide">
+            Campanha de Lançamento
+          </div>
+
+          <h2 className="text-3xl md:text-5xl font-extrabold text-white mb-4 leading-tight">
+            60 dias grátis para os<br />
+            <span className="text-[#8FD14F]">20 primeiros cadastrados</span>
+          </h2>
+
+          <p className="text-lg md:text-xl text-white/90 mb-3 max-w-2xl mx-auto">
+            Estamos inaugurando o Integrius e queremos que você faça parte dessa história!
+            Cadastre-se agora e experimente nosso CRM completo por <strong>60 dias sem custo algum</strong>.
+          </p>
+
+          <p className="text-sm text-white/70 mb-8 max-w-xl mx-auto">
+            * A integração com WhatsApp estará disponível a partir da ativação do plano pago. Durante o período gratuito, todas as demais funcionalidades estarão liberadas.
+          </p>
+
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-8">
+            <Link
+              href="/register"
+              className="bg-[#8FD14F] text-[#064E3B] font-bold px-8 py-4 rounded-xl text-lg shadow-lg hover:bg-[#A3E635] hover:shadow-xl transition-all hover:scale-105"
+            >
+              Garantir Minha Vaga
+            </Link>
+            <div className="text-white/80 text-sm">
+              <span className="block font-semibold text-white">Vagas limitadas</span>
+              Apenas para os 20 primeiros
             </div>
-            <div className="p-6">
-              <div className="text-4xl md:text-5xl font-bold text-[#064E3B] mb-2">50k+</div>
-              <div className="text-gray-600 font-medium">Clientes Gerenciados</div>
+          </div>
+
+          <div className="grid grid-cols-3 gap-6 max-w-md mx-auto">
+            <div className="text-center">
+              <div className="text-2xl md:text-3xl font-bold text-[#8FD14F]">60</div>
+              <div className="text-white/70 text-xs">Dias Grátis</div>
             </div>
-            <div className="p-6">
-              <div className="text-4xl md:text-5xl font-bold text-[#064E3B] mb-2">R$ 2B+</div>
-              <div className="text-gray-600 font-medium">Em Negócios Fechados</div>
+            <div className="text-center">
+              <div className="text-2xl md:text-3xl font-bold text-[#8FD14F]">20</div>
+              <div className="text-white/70 text-xs">Vagas Disponíveis</div>
             </div>
-            <div className="p-6">
-              <div className="text-4xl md:text-5xl font-bold text-[#064E3B] mb-2">98%</div>
-              <div className="text-gray-600 font-medium">Satisfação</div>
+            <div className="text-center">
+              <div className="text-2xl md:text-3xl font-bold text-[#8FD14F]">R$0</div>
+              <div className="text-white/70 text-xs">Sem Cartão</div>
             </div>
           </div>
         </div>
