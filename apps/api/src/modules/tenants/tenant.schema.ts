@@ -22,7 +22,8 @@ export const updateTenantSchema = z.object({
   cores_tema: z.record(z.string(), z.string()).optional(),
   configuracoes: z.record(z.string(), z.any()).optional(),
   plano: z.enum(['BASICO', 'PRO', 'ENTERPRISE', 'CUSTOM']).optional(),
-  status: z.enum(['TRIAL', 'ATIVO', 'INATIVO', 'SUSPENSO', 'CANCELADO']).optional()
+  status: z.enum(['TRIAL', 'ATIVO', 'INATIVO', 'SUSPENSO', 'CANCELADO']).optional(),
+  data_expiracao: z.string().datetime().optional()
 })
 
 export type CreateTenantDTO = z.infer<typeof createTenantSchema>
