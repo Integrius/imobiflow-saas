@@ -24,7 +24,7 @@ export const metadata: Metadata = {
   creator: 'Integrius',
   publisher: 'Integrius',
   icons: {
-    icon: '/logo.svg',
+    icon: '/logoIntegrius.png',
   },
 
   // Open Graph
@@ -83,7 +83,7 @@ const organizationSchema = {
   "@type": "Organization",
   "name": "Integrius",
   "url": "https://integrius.com.br",
-  "logo": "https://integrius.com.br/logo.svg",
+  "logo": "https://integrius.com.br/logoIntegrius.png",
   "description": "CRM Imobiliário com Inteligência Artificial para gestão de leads e automação de vendas.",
   "contactPoint": {
     "@type": "ContactPoint",

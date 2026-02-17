@@ -96,8 +96,8 @@ export default function PrimeiroAcessoPage() {
         <div className="text-center mb-8">
           <div className="inline-block bg-white/10 backdrop-blur-sm rounded-2xl p-4 mb-4">
             <Image
-              src="/logo.svg"
-              alt="ImobiFlow"
+              src="/logoIntegrius.png"
+              alt="Integrius"
               width={120}
               height={40}
               className="mx-auto"

@@ -54,7 +54,7 @@ Conectar leads (pessoas procurando imóveis) com corretores e imobiliárias de f
 - **Framework**: Fastify (Node.js)
 - **Linguagem**: TypeScript
 - **ORM**: Prisma
-- **Banco de Dados**: PostgreSQL (Supabase)
+- **Banco de Dados**: PostgreSQL (Render)
 - **Hospedagem**: Render.com
 
 #### Inteligência Artificial
@@ -65,8 +65,25 @@ Conectar leads (pessoas procurando imóveis) com corretores e imobiliárias de f
 #### Integrações
 - **Email**: SendGrid (transacional)
 - **Mensageria**: Telegram Bot (notificações para corretores)
+- **WhatsApp**: Twilio (automação de mensagens e captação de leads)
+- **Pagamentos**: Mercado Pago Assinaturas (cobrança recorrente)
 - **Armazenamento**: Cloudinary (imagens)
+- **Localidades**: IBGE API (estados, cidades, bairros)
 - **DNS/CDN**: Cloudflare
+
+#### Contexto de Branding e Estrutura de Sites
+- **Vivoly** (vivoly.com.br) — Empresa de tecnologia/startup. Projeto separado, NÃO abordado neste repositório.
+- **Integrius** (integrius.com.br) — Site de vendas/marketing do produto SaaS. FOCO PRINCIPAL: maximizar conversão de vendas de assinaturas.
+- **App SaaS** ({tenant}.integrius.com.br) — Aplicação SaaS em produção para clientes.
+- **vivoly.integrius.com.br** — Tenant de GESTÃO (operador do SaaS), NÃO é um cliente. Pode receber tratamentos e capacidades especiais conforme necessidade detectada.
+- **Documento de Capacidades**: consulte `INTEGRIUS-CAPACIDADES.md` para descrição detalhada de todas as funcionalidades do produto (usado para branding e marketing)
+
+#### Pagamentos (Mercado Pago)
+- **Planos**: BASICO (R$97/mês), PRO (R$197/mês), ENTERPRISE (R$397/mês)
+- **Rotas**: `/api/v1/pagamentos` (webhook, assinar, assinatura, cancelar, historico)
+- **Env vars**: MERCADOPAGO_ACCESS_TOKEN, MERCADOPAGO_PLAN_BASICO/_PRO/_ENTERPRISE, MERCADOPAGO_WEBHOOK_SECRET
+- **Webhook URL**: https://imobiflow-saas-1.onrender.com/api/v1/pagamentos/webhook
+- **Frontend**: `/dashboard/planos` (página de gestão de assinatura)
 
 ---
 

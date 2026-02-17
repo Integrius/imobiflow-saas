@@ -29,7 +29,7 @@ export default function Home() {
             <div className="flex items-center">
               <Link href="/" className="flex items-center hover:opacity-90 transition-opacity">
                 <Image
-                  src="/logo.svg"
+                  src="/logoIntegrius.png"
                   alt="Integrius - CRM Imobiliário"
                   width={302}
                   height={74}
@@ -790,7 +790,7 @@ export default function Home() {
             <div>
               <div className="mb-4">
                 <Image
-                  src="/logo.svg"
+                  src="/logoIntegrius.png"
                   alt="Integrius"
                   width={269}
                   height={66}

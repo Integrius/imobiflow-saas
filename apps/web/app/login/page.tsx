@@ -163,8 +163,8 @@ export default function LoginPage() {
         <div>
           <Link href="/" className="inline-block group">
             <Image
-              src="/logo.svg"
-              alt="ImobiFlow"
+              src="/logoIntegrius.png"
+              alt="Integrius"
               width={336}
               height={83}
               className="h-16 w-auto group-hover:scale-105 transition-transform"
@@ -259,14 +259,14 @@ export default function LoginPage() {
             </div>
             <div>
               <div className="text-[#064E3B] font-semibold text-sm">500+ imobiliárias</div>
-              <div className="text-gray-600 text-xs">confiam no ImobiFlow</div>
+              <div className="text-gray-600 text-xs">confiam no Integrius</div>
             </div>
           </div>
         </div>
 
         {/* Footer */}
         <div className="text-gray-500 text-sm">
-          © 2025 ImobiFlow. Todos os direitos reservados.
+          © 2026 Integrius. Todos os direitos reservados.
         </div>
       </div>
 
@@ -277,8 +277,8 @@ export default function LoginPage() {
           <div className="lg:hidden mb-8 text-center">
             <Link href="/" className="inline-block group">
               <Image
-                src="/logo.svg"
-                alt="ImobiFlow"
+                src="/logoIntegrius.png"
+                alt="Integrius"
                 width={302}
                 height={74}
                 className="h-12 w-auto group-hover:scale-105 transition-transform mx-auto"

@@ -153,7 +153,7 @@ export default function AdminLogsPage() {
           📋 Logs de Atividades - Sistema Geral
         </h1>
         <p className="text-gray-600 mt-2">
-          Visualize logs de todos os tenants do sistema ImobiFlow
+          Visualize logs de todos os tenants do sistema Integrius
         </p>
       </div>
 

@@ -76,10 +76,10 @@ export default function NotFound() {
             Precisa de ajuda? Entre em contato com nosso suporte.
           </p>
           <a
-            href="mailto:support@imobiflow.com"
+            href="mailto:contato@integrius.com.br"
             className="text-green-600 hover:text-green-700 font-medium text-sm mt-2 inline-block transition-colors duration-200"
           >
-            suporte@imobiflow.com
+            contato@integrius.com.br
           </a>
         </div>
       </div>

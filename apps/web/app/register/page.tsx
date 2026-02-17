@@ -186,8 +186,8 @@ export default function RegisterPage() {
         <div className="text-center mb-8">
           <Link href="/" className="inline-block mb-6 group">
             <Image
-              src="/logo.svg"
-              alt="Vivoly"
+              src="/logoIntegrius.png"
+              alt="Integrius"
               width={370}
               height={91}
               className="h-[94px] w-auto mx-auto drop-shadow-lg group-hover:scale-105 transition-transform"

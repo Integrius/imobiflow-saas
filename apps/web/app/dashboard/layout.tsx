@@ -203,8 +203,8 @@ export default function DashboardLayout({
         <div className="h-16 flex items-center px-6 border-b border-gray-100">
           <Link href="/dashboard" className="flex items-center gap-2 text-green-800 font-bold text-xl">
             <Image
-              src="/logo.svg"
-              alt="Vivoly"
+              src="/logoIntegrius.png"
+              alt="Integrius"
               width={140}
               height={40}
               className="h-10 w-auto"
@@ -232,7 +232,7 @@ export default function DashboardLayout({
         {/* Footer da Sidebar */}
         <div className="p-4 border-t border-gray-100">
           <div className="bg-gray-50 rounded-lg p-3 text-center">
-            <p className="text-xs text-gray-500">Vivoly Integrius</p>
+            <p className="text-xs text-gray-500">Integrius</p>
             <p className="text-xs text-gray-400 mt-0.5">v1.16.0</p>
           </div>
         </div>
@@ -262,8 +262,8 @@ export default function DashboardLayout({
             <div className="h-16 flex items-center px-6 border-b border-gray-100">
               <Link href="/dashboard" className="flex items-center gap-2">
                 <Image
-                  src="/logo.svg"
-                  alt="Vivoly"
+                  src="/logoIntegrius.png"
+                  alt="Integrius"
                   width={140}
                   height={40}
                   className="h-10 w-auto"

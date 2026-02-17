@@ -15,7 +15,7 @@ export default function BuscarImovelPage() {
             <div className="flex items-center">
               <Link href="/" className="flex items-center hover:opacity-90 transition-opacity">
                 <Image
-                  src="/logo.svg"
+                  src="/logoIntegrius.png"
                   alt="Integrius"
                   width={302}
                   height={74}
@@ -169,7 +169,7 @@ export default function BuscarImovelPage() {
         <div className="max-w-7xl mx-auto text-center">
           <div className="flex justify-center mb-4">
             <Image
-              src="/logo.svg"
+              src="/logoIntegrius.png"
               alt="Integrius"
               width={150}
               height={37}
