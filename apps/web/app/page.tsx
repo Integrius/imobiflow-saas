@@ -351,12 +351,12 @@ export default function Home() {
         {new Date() < new Date('2026-03-05T01:00:00-03:00') && (
           <div className="absolute top-0 left-0 z-20 pointer-events-none">
             <div
-              className="bg-[#DC2626] text-white font-bold text-xs py-1.5 text-center shadow-lg"
+              className="bg-[#DC2626] text-white font-bold text-sm py-2 text-center shadow-lg"
               style={{
-                width: '280px',
+                width: '320px',
                 position: 'absolute',
-                top: '32px',
-                left: '-72px',
+                top: '36px',
+                left: '-78px',
                 transform: 'rotate(-35deg)',
                 transformOrigin: 'center',
               }}
