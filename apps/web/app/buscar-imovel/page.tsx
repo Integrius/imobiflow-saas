@@ -17,10 +17,10 @@ export default function BuscarImovelPage() {
                 <Image
                   src="/logoIntegrius.png"
                   alt="Integrius"
-                  width={302}
-                  height={74}
+                  width={393}
+                  height={96}
                   priority
-                  className="h-12 w-auto"
+                  className="h-16 w-auto"
                 />
               </Link>
             </div>
@@ -171,9 +171,9 @@ export default function BuscarImovelPage() {
             <Image
               src="/logoIntegrius.png"
               alt="Integrius"
-              width={150}
-              height={37}
-              className="h-8 w-auto brightness-0 invert"
+              width={195}
+              height={48}
+              className="h-10 w-auto brightness-0 invert"
             />
           </div>
           <p className="text-gray-400 text-sm">

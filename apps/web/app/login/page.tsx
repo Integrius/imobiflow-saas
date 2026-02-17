@@ -165,9 +165,9 @@ export default function LoginPage() {
             <Image
               src="/logoIntegrius.png"
               alt="Integrius"
-              width={336}
-              height={83}
-              className="h-16 w-auto group-hover:scale-105 transition-transform"
+              width={437}
+              height={108}
+              className="h-[83px] w-auto group-hover:scale-105 transition-transform"
             />
           </Link>
         </div>
@@ -279,9 +279,9 @@ export default function LoginPage() {
               <Image
                 src="/logoIntegrius.png"
                 alt="Integrius"
-                width={302}
-                height={74}
-                className="h-12 w-auto group-hover:scale-105 transition-transform mx-auto"
+                width={393}
+                height={96}
+                className="h-16 w-auto group-hover:scale-105 transition-transform mx-auto"
               />
             </Link>
           </div>

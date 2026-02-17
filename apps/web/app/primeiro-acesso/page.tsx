@@ -98,8 +98,8 @@ export default function PrimeiroAcessoPage() {
             <Image
               src="/logoIntegrius.png"
               alt="Integrius"
-              width={120}
-              height={40}
+              width={156}
+              height={52}
               className="mx-auto"
             />
           </div>

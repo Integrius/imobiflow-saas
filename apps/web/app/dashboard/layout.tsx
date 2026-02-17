@@ -205,9 +205,9 @@ export default function DashboardLayout({
             <Image
               src="/logoIntegrius.png"
               alt="Integrius"
-              width={140}
-              height={40}
-              className="h-10 w-auto"
+              width={182}
+              height={52}
+              className="h-[52px] w-auto"
               priority
             />
           </Link>
@@ -264,9 +264,9 @@ export default function DashboardLayout({
                 <Image
                   src="/logoIntegrius.png"
                   alt="Integrius"
-                  width={140}
-                  height={40}
-                  className="h-10 w-auto"
+                  width={182}
+                  height={52}
+                  className="h-[52px] w-auto"
                   priority
                 />
               </Link>

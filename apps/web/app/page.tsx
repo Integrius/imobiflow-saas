@@ -31,10 +31,10 @@ export default function Home() {
                 <Image
                   src="/logoIntegrius.png"
                   alt="Integrius - CRM Imobiliário"
-                  width={302}
-                  height={74}
+                  width={393}
+                  height={96}
                   priority
-                  className="h-12 w-auto"
+                  className="h-16 w-auto"
                 />
               </Link>
             </div>
@@ -792,9 +792,9 @@ export default function Home() {
                 <Image
                   src="/logoIntegrius.png"
                   alt="Integrius"
-                  width={269}
-                  height={66}
-                  className="h-12 w-auto brightness-0 invert"
+                  width={350}
+                  height={86}
+                  className="h-16 w-auto brightness-0 invert"
                 />
               </div>
               <p className="text-gray-400 text-sm">

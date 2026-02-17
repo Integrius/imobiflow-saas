@@ -188,9 +188,9 @@ export default function RegisterPage() {
             <Image
               src="/logoIntegrius.png"
               alt="Integrius"
-              width={370}
-              height={91}
-              className="h-[94px] w-auto mx-auto drop-shadow-lg group-hover:scale-105 transition-transform"
+              width={481}
+              height={118}
+              className="h-[122px] w-auto mx-auto drop-shadow-lg group-hover:scale-105 transition-transform"
             />
           </Link>
           <h1 className="text-4xl md:text-5xl font-bold text-[#2C2C2C] mb-3">
