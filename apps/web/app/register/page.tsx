@@ -390,7 +390,7 @@ export default function RegisterPage() {
                 {/* Plano */}
                 <div>
                   <label className="block text-sm font-semibold text-[#2C2C2C] mb-2">
-                    Escolha seu Plano
+                    Escolha seu Plano <span className="font-normal text-[#8B7F76]">(você não será cobrado e nem terá que informar o cartão)</span>
                   </label>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                     <button
