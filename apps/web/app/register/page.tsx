@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -11,6 +11,13 @@ export default function RegisterPage() {
   const [loading, setLoading] = useState(false);
   const [checkingSlug, setCheckingSlug] = useState(false);
   const [slugAvailable, setSlugAvailable] = useState<boolean | null>(null);
+  const [campanha, setCampanha] = useState<{ ativa: boolean; vagas_restantes: number; vagas_total: number; dias_gratis: number } | null>(null);
+
+  useEffect(() => {
+    api.get('/tenants/campanha-lancamento')
+      .then((res) => setCampanha(res.data.data))
+      .catch(() => setCampanha(null));
+  }, []);
   const [formData, setFormData] = useState({
     nome: '',
     slug: '',
@@ -197,9 +204,35 @@ export default function RegisterPage() {
             Comece sua jornada 🌱
           </h1>
           <p className="text-lg text-[#8B7F76]">
-            Crie sua conta e experimente <span className="text-gradient-accent font-semibold">grátis por 14 dias</span>
+            {campanha?.ativa ? (
+              <>Crie sua conta e experimente <span className="text-gradient-accent font-semibold">grátis por 60 dias</span></>
+            ) : (
+              <>Crie sua conta e experimente <span className="text-gradient-accent font-semibold">grátis por 14 dias</span></>
+            )}
           </p>
         </div>
+
+        {/* Campaign Welcome Banner */}
+        {campanha?.ativa && (
+          <div className="mb-6 p-5 bg-gradient-to-r from-[#DFF9C7]/60 to-[#CBEFA9]/40 border-2 border-[#8FD14F]/50 rounded-2xl shadow-sm text-center">
+            <p className="text-[#064E3B] text-lg font-bold mb-2">
+              Seja bem-vindo(a) ao Integrius!
+            </p>
+            {campanha.vagas_restantes <= 7 ? (
+              <p className="text-[#2C2C2C] text-sm leading-relaxed">
+                Parabéns! Você será o <strong className="text-[#064E3B]">{campanha.vagas_total - campanha.vagas_restantes + 1}º inscrito</strong> na nossa plataforma.
+                Como parte da nossa campanha de lançamento, você terá <strong className="text-[#064E3B]">60 dias gratuitos</strong> para
+                explorar todas as funcionalidades do CRM. Ao final desse período, você poderá optar por assinar um plano
+                ou cancelar o serviço, sem nenhum compromisso ou prejuízo.
+              </p>
+            ) : (
+              <p className="text-[#2C2C2C] text-sm leading-relaxed">
+                Aproveite nossa campanha de lançamento! Você terá <strong className="text-[#064E3B]">60 dias gratuitos</strong> para
+                conhecer o CRM mais completo do mercado imobiliário. Restam apenas <strong className="text-[#064E3B]">{campanha.vagas_restantes} vagas</strong> nesta promoção.
+              </p>
+            )}
+          </div>
+        )}
 
         {/* Main Card */}
         <div className="glass-card p-8 md:p-10 animate-slide-up">
@@ -548,7 +581,7 @@ export default function RegisterPage() {
                 <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
                   <path fillRule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                 </svg>
-                14 dias grátis • Sem cartão • Cancele quando quiser
+                {campanha?.ativa ? '60' : '14'} dias grátis • Sem cartão • Cancele quando quiser
               </p>
             </div>
           </form>
@@ -566,7 +599,7 @@ export default function RegisterPage() {
             <svg className="w-4 h-4 text-[#8FD14F]" fill="currentColor" viewBox="0 0 20 20">
               <path d="M8 9a3 3 0 100-6 3 3 0 000 6zM8 11a6 6 0 016 6H2a6 6 0 016-6zM16 7a1 1 0 10-2 0v1h-1a1 1 0 100 2h1v1a1 1 0 102 0v-1h1a1 1 0 100-2h-1V7z" />
             </svg>
-            <span>500+ empresas</span>
+            <span>Feito para você</span>
           </div>
           <div className="flex items-center gap-1">
             <svg className="w-4 h-4 text-[#8FD14F]" fill="currentColor" viewBox="0 0 20 20">
