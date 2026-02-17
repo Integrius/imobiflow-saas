@@ -347,6 +347,25 @@ export default function Home() {
 
       {/* Launch Campaign Banner */}
       <section className="py-16 px-6 bg-white border-y border-gray-100 relative overflow-hidden">
+        {/* Faixa diagonal - visível até 05/03/2026 01:00 */}
+        {new Date() < new Date('2026-03-05T01:00:00-03:00') && (
+          <div className="absolute top-0 left-0 z-20 pointer-events-none">
+            <div
+              className="bg-[#DC2626] text-white font-bold text-xs py-1.5 text-center shadow-lg"
+              style={{
+                width: '280px',
+                position: 'absolute',
+                top: '32px',
+                left: '-72px',
+                transform: 'rotate(-35deg)',
+                transformOrigin: 'center',
+              }}
+            >
+              A partir de 05/03/2026
+            </div>
+          </div>
+        )}
+
         {/* Background decoration */}
         <div className="absolute inset-0 opacity-5">
           <div className="absolute top-0 left-0 w-64 h-64 bg-[#064E3B] rounded-full -translate-x-1/2 -translate-y-1/2" />
