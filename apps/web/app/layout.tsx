@@ -18,7 +18,9 @@ export const metadata: Metadata = {
     'IA para imobiliárias',
     'software imobiliária',
     'gestão de corretores',
-    'funil de vendas imobiliário'
+    'funil de vendas imobiliário',
+    'gestão de clientes imobiliários',
+    'CRM gestão de clientes'
   ],
   authors: [{ name: 'Integrius' }],
   creator: 'Integrius',

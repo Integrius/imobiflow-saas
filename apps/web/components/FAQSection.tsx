@@ -11,11 +11,11 @@ interface FAQItem {
 const faqData: FAQItem[] = [
   {
     question: "O que é um CRM imobiliário?",
-    answer: "Um CRM (Customer Relationship Management) imobiliário é um sistema de gestão de relacionamento com clientes especializado para imobiliárias e corretores. Ele permite organizar leads, acompanhar negociações, automatizar follow-ups e centralizar todas as informações de clientes e imóveis em um único lugar."
+    answer: "Um CRM (Customer Relationship Management) imobiliário é um sistema de gestão de relacionamento com clientes especializado para imobiliárias e corretores. Ele permite organizar clientes, acompanhar negociações, automatizar follow-ups e centralizar todas as informações de clientes e imóveis em um único lugar."
   },
   {
     question: "O Integrius tem inteligência artificial?",
-    answer: "Sim! O Integrius conta com a Sofia, nossa assistente de IA que qualifica leads automaticamente, atribui pontuações de 0 a 100, identifica pontos fortes e fracos de cada lead e sugere os próximos passos. Ela também faz match automático entre leads e imóveis disponíveis."
+    answer: "Sim! O Integrius conta com a Sofia, nossa assistente de IA que qualifica clientes automaticamente, atribui pontuações de 0 a 100, identifica pontos fortes e fracos de cada cliente e sugere os próximos passos. Ela também faz match automático entre clientes e imóveis disponíveis."
   },
   {
     question: "Quanto custa o Integrius?",
@@ -23,7 +23,7 @@ const faqData: FAQItem[] = [
   },
   {
     question: "Posso integrar o Integrius com WhatsApp?",
-    answer: "Sim! O plano Profissional e Enterprise incluem integração nativa com WhatsApp Business e Telegram. Você pode receber leads automaticamente desses canais e as notificações são enviadas instantaneamente para os corretores responsáveis."
+    answer: "Sim! O plano Profissional e Enterprise incluem integração nativa com WhatsApp Business e Telegram. Você pode receber clientes automaticamente desses canais e as notificações são enviadas instantaneamente para os corretores responsáveis."
   },
   {
     question: "Como funciona o período de teste grátis?",
@@ -35,7 +35,7 @@ const faqData: FAQItem[] = [
   },
   {
     question: "Quantos usuários posso ter no sistema?",
-    answer: "Depende do plano escolhido: o plano Básico permite 1 usuário, o Profissional permite até 10 usuários, e o Enterprise oferece usuários ilimitados. Cada usuário pode ter permissões personalizadas (Admin, Gestor ou Corretor)."
+    answer: "Depende do plano escolhido: o plano Básico permite até 3 usuários, o Profissional permite até 10 usuários, e o Enterprise oferece usuários ilimitados. Cada usuário pode ter permissões personalizadas (Admin, Gestor ou Corretor)."
   }
 ];
 

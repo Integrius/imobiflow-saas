@@ -38,7 +38,7 @@ const DEFAULT_CONFIG: LandingConfig = {
   hero: {
     imagePath: '/Emoticon.png',
     imageSource: 'local',
-    imageAlt: 'Vivoly - Gestão Imobiliária Inteligente',
+    imageAlt: 'Integrius - CRM Imobiliário Inteligente',
     imageWidth: 520,
     imageHeight: 520,
   },
@@ -49,7 +49,7 @@ const DEFAULT_CONFIG: LandingConfig = {
   },
 
   contact: {
-    email: 'contato@vivoly.com.br',
+    email: 'contato@integrius.com.br',
     whatsapp: '5511999999999',
   },
 };
