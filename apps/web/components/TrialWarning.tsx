@@ -7,6 +7,8 @@ interface TrialInfo {
   isTrial: boolean;
   dias_restantes: number;
   status: string;
+  campanha_lancamento?: boolean;
+  trial_days?: number;
 }
 
 export default function TrialWarning() {
@@ -32,33 +34,55 @@ export default function TrialWarning() {
     return null;
   }
 
-  const { dias_restantes } = trialInfo;
+  const { dias_restantes, campanha_lancamento } = trialInfo;
 
   // Definir cor e ícone baseado nos dias restantes
   let textColor = 'text-white';
   let icon = '✅';
 
-  // Verde: mais de 7 dias
-  if (dias_restantes > 7) {
-    textColor = 'text-[#00C48C]';
-    icon = '✅';
+  if (campanha_lancamento) {
+    // Campanha: verde até 10 dias restantes, depois amarelo/vermelho
+    if (dias_restantes > 10) {
+      textColor = 'text-[#00C48C]';
+      icon = '🎉';
+    } else if (dias_restantes >= 4) {
+      textColor = 'text-[#FFB627]';
+      icon = '⏰';
+    } else {
+      textColor = 'text-[#FF6B6B]';
+      icon = '⚠️';
+    }
+  } else {
+    // Trial normal
+    if (dias_restantes > 7) {
+      textColor = 'text-[#00C48C]';
+      icon = '✅';
+    } else if (dias_restantes >= 4) {
+      textColor = 'text-[#FFB627]';
+      icon = '⏰';
+    } else {
+      textColor = 'text-[#FF6B6B]';
+      icon = '⚠️';
+    }
   }
-  // Amarelo: 4-7 dias
-  else if (dias_restantes >= 4) {
-    textColor = 'text-[#FFB627]';
-    icon = '⏰';
-  }
-  // Vermelho: 0-3 dias
-  else {
-    textColor = 'text-[#FF6B6B]';
-    icon = '⚠️';
+
+  // Texto do aviso
+  let label: string;
+  if (campanha_lancamento) {
+    if (dias_restantes <= 10) {
+      label = `Você tem ${dias_restantes} ${dias_restantes === 1 ? 'dia' : 'dias'} no plano promocional 60 dias`;
+    } else {
+      label = 'Plano promocional 60 dias';
+    }
+  } else {
+    label = `Trial: ${dias_restantes} ${dias_restantes === 1 ? 'dia' : 'dias'}`;
   }
 
   return (
     <div className="flex items-center gap-2 bg-white/10 rounded-lg px-3 py-2 backdrop-blur-sm border border-white/20">
       <span className="text-lg">{icon}</span>
       <span className={`text-sm font-semibold ${textColor}`}>
-        Trial: {dias_restantes} {dias_restantes === 1 ? 'dia' : 'dias'}
+        {label}
       </span>
     </div>
   );

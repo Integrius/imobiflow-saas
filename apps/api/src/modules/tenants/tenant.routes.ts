@@ -82,6 +82,10 @@ export async function tenantRoutes(server: FastifyInstance) {
     '/campanha-lancamento',
     async (request, reply) => {
       try {
+        // Campanha válida até 15/04/2026
+        const CAMPANHA_FIM = new Date('2026-04-15T00:00:00-03:00')
+        const campanhaExpirada = new Date() >= CAMPANHA_FIM
+
         const totalTenants = await prisma.tenant.count()
         const vagasTotal = 20
         const vagasRestantes = Math.max(0, vagasTotal - totalTenants)
@@ -89,10 +93,11 @@ export async function tenantRoutes(server: FastifyInstance) {
         return reply.send({
           success: true,
           data: {
-            ativa: vagasRestantes > 0,
+            ativa: vagasRestantes > 0 && !campanhaExpirada,
             vagas_total: vagasTotal,
             vagas_restantes: vagasRestantes,
-            dias_gratis: 60
+            dias_gratis: 60,
+            data_fim: CAMPANHA_FIM.toISOString()
           }
         })
       } catch (error) {
@@ -120,7 +125,8 @@ export async function tenantRoutes(server: FastifyInstance) {
           select: {
             status: true,
             data_expiracao: true,
-            plano: true
+            plano: true,
+            configuracoes: true
           }
         })
 
@@ -128,12 +134,16 @@ export async function tenantRoutes(server: FastifyInstance) {
           return reply.status(404).send({ error: 'Tenant não encontrado' })
         }
 
+        const config = tenant.configuracoes as Record<string, any> | null
+        const isCampanha = config?.campanha_lancamento === true
+
         // Se não está em trial, retornar sem informações
         if (tenant.status !== 'TRIAL') {
           return reply.send({
             isTrial: false,
             status: tenant.status,
-            plano: tenant.plano
+            plano: tenant.plano,
+            campanha_lancamento: isCampanha
           })
         }
 
@@ -153,7 +163,9 @@ export async function tenantRoutes(server: FastifyInstance) {
           plano: tenant.plano,
           data_expiracao: expirationDate,
           dias_restantes: diasRestantes > 0 ? diasRestantes : 0,
-          expirado: diasRestantes <= 0
+          expirado: diasRestantes <= 0,
+          campanha_lancamento: isCampanha,
+          trial_days: isCampanha ? 60 : 14
         })
       } catch (error) {
         server.log.error({ error }, 'Erro ao buscar informações do trial')

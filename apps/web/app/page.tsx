@@ -345,7 +345,8 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Launch Campaign Banner */}
+      {/* Launch Campaign Banner - visível até 15/04/2026 */}
+      {new Date() < new Date('2026-04-15T01:00:00-03:00') && (
       <section className="py-16 px-6 bg-white border-y border-gray-100 relative overflow-hidden">
         {/* Faixa diagonal - visível até 05/03/2026 01:00 */}
         {new Date() < new Date('2026-03-05T01:00:00-03:00') && (
@@ -420,6 +421,7 @@ export default function Home() {
           </div>
         </div>
       </section>
+      )}
 
       {/* Features Cards */}
       <section id="features" className="py-24 px-6 bg-[#F4F6F8]">

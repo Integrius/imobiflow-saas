@@ -49,8 +49,10 @@ export class TenantService {
 
       return await this.prisma.$transaction(async (tx) => {
         // Verificar campanha de lançamento: 60 dias grátis para os 20 primeiros
+        // Campanha válida até 15/04/2026
+        const CAMPANHA_FIM = new Date('2026-04-15T00:00:00-03:00')
         const totalTenants = await tx.tenant.count()
-        const isCampanhaLancamento = totalTenants < 20
+        const isCampanhaLancamento = totalTenants < 20 && new Date() < CAMPANHA_FIM
 
         // Campanha: 60 dias | Normal: 14 dias
         const trialDays = isCampanhaLancamento ? 60 : 14
@@ -61,7 +63,7 @@ export class TenantService {
 
         // Configurações do tenant (inclui flag de campanha)
         const configuracoes = isCampanhaLancamento
-          ? { campanha_lancamento: true, whatsapp_habilitado: false, trial_days: 60 }
+          ? { campanha_lancamento: true, whatsapp_habilitado: false, trial_days: 60, campanha_inicio: new Date().toISOString() }
           : { campanha_lancamento: false, whatsapp_habilitado: true, trial_days: 14 }
 
         // 1. Criar tenant
