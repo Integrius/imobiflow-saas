@@ -1,25 +1,42 @@
-# ImobiFlow - Documentação para Claude Code
+# ImobiFlow / Integrius - Documentação para Claude Code
 
-## ⚠️ IMPORTANTE: Manutenção da Documentação
+## ⚠️ REGRAS OBRIGATÓRIAS DE WORKFLOW
 
+### 1. Delegação a Assistentes Especialistas
+**TODAS as tarefas devem ser distribuídas para assistentes especialistas (subagents) sempre que possível:**
+- **Explore agent**: pesquisa de código, busca de arquivos, análise de codebase
+- **Plan agent**: planejamento de implementação, design de arquitetura
+- **Bash agent**: operações git, comandos de terminal, deploy
+- **General-purpose agent**: tarefas complexas multi-step, pesquisa web
+
+Tarefas devem ser paralelizadas quando independentes para maximizar eficiência.
+
+### 2. Documentação Obrigatória no CLAUDE.md
 **TODAS as mudanças relevantes no projeto DEVEM ser registradas neste arquivo CLAUDE.md.**
 
-Quando você fizer alterações importantes (novo módulo, nova feature, mudança de configuração, correção crítica, etc.), você DEVE:
-
+Quando fizer alterações importantes, você DEVE:
 1. ✅ Atualizar a seção relevante do CLAUDE.md
 2. ✅ Adicionar entry no "Histórico de Configurações" com data
 3. ✅ Atualizar "Última atualização" e "Versão" no rodapé
 4. ✅ Commitar as mudanças do CLAUDE.md junto com o código
 
-**Exemplos de mudanças que DEVEM ser documentadas:**
+**Mudanças que DEVEM ser documentadas:**
 - Novo módulo/feature implementado
 - Mudança de banco de dados ou configuração de infraestrutura
 - Nova integração (API externa, serviço, etc.)
 - Mudança em fluxos principais ou regras de negócio
 - Correções críticas que afetam arquitetura
 - Novos endpoints ou alteração de contratos de API
+- Mudanças em variáveis de ambiente
+- Alterações na estrutura de arquivos ou monorepo
 
-**Este arquivo é a fonte única de verdade para o projeto. Mantenha-o atualizado!**
+### 3. Assistente Validador de Mudanças
+Um **git pre-commit hook** (`scripts/validate-changes.sh`) valida automaticamente:
+- Se mudanças significativas em código incluem atualização do CLAUDE.md
+- Alerta quando arquivos-chave são modificados sem documentação correspondente
+- Pode ser bypassado com `--no-verify` apenas em casos excepcionais
+
+**Este arquivo é a fonte única de verdade para o projeto. Mantenha-o SEMPRE atualizado!**
 
 ---
 
@@ -290,8 +307,8 @@ imobiflow/
 
 #### Produção (Render.com - API)
 ```env
-# Database (Supabase)
-DATABASE_URL="postgresql://postgres.qdleggkqdaecehtrdfsa:YF2MhSk_-nDb%26c9@aws-1-sa-east-1.pooler.supabase.com:5432/postgres?sslmode=require&connection_limit=3&pool_timeout=0"
+# Database (PostgreSQL no Render)
+DATABASE_URL="postgresql://imobiflow:***@dpg-d4kgd33e5dus73f7b480-a.ohio-postgres.render.com/imobiflow"
 
 # JWT
 JWT_SECRET="seu-secret-seguro"
@@ -891,15 +908,15 @@ ANTHROPIC_API_KEY="sk-ant-api03-xxxxxxxxxxxxx"
 - **Node Version**: 20.x
 - **Auto Deploy**: Push para `main`
 
-### Database (Supabase PostgreSQL)
-- **Provider**: Supabase
-- **Host (Pooler)**: aws-1-sa-east-1.pooler.supabase.com
-- **Database**: postgres
-- **User**: postgres.qdleggkqdaecehtrdfsa
-- **Connection String**: `postgresql://postgres.qdleggkqdaecehtrdfsa:YF2MhSk_-nDb%26c9@aws-1-sa-east-1.pooler.supabase.com:5432/postgres?sslmode=require&connection_limit=3&pool_timeout=0`
-- **Backup**: Automático (Supabase)
-- **Acesso**: Via Supabase Dashboard ou connection pooler
-- **IMPORTANTE**: Usar sempre o pooler (aws-1-sa-east-1.pooler.supabase.com), não a conexão direta
+### Database (PostgreSQL no Render)
+- **Provider**: Render PostgreSQL
+- **Host**: dpg-d4kgd33e5dus73f7b480-a.ohio-postgres.render.com
+- **Database**: imobiflow
+- **User**: imobiflow
+- **Connection String**: Configurada via variável de ambiente `DATABASE_URL` no Render
+- **Backup**: Automático (Render)
+- **Acesso**: Via Render Dashboard ou conexão direta PostgreSQL
+- **NOTA**: Supabase foi usado anteriormente mas migrado de volta para Render em 2026
 
 ---
 
@@ -4530,14 +4547,12 @@ Conforme Art. 39 da LGPD: *"O operador deverá realizar o tratamento segundo as 
 
 ### 2025-12-29
 
-#### Migração para Supabase PostgreSQL ✅
-- ✅ **Banco de Dados Migrado para Supabase**
-  - Migrado de Render PostgreSQL para Supabase PostgreSQL
-  - DATABASE_URL atualizado para usar connection pooler do Supabase
-  - Host: `aws-1-sa-east-1.pooler.supabase.com`
-  - Connection string com `sslmode=require` e `connection_limit=3`
-  - Arquivos `.env` e `.env.supabase` atualizados
-  - IMPORTANTE: Sempre usar pooler, não conexão direta
+#### Migração de Banco de Dados ✅
+- ✅ **Banco de Dados no Render PostgreSQL**
+  - Inicialmente Render → migrado para Supabase (dez/2025) → retornado para Render PostgreSQL (2026)
+  - DATABASE_URL atual: PostgreSQL no Render (host: `dpg-d4kgd33e5dus73f7b480-a.ohio-postgres.render.com`)
+  - Database: `imobiflow`, User: `imobiflow`
+  - Arquivo `.env.supabase` é legado e NÃO deve ser usado
 
 #### Sistema de Propostas/Lances Competitivos ✅
 - ✅ **Sistema Completo de Propostas Implementado**
@@ -4814,5 +4829,51 @@ Conforme Art. 39 da LGPD: *"O operador deverá realizar o tratamento segundo as 
 
 **Versão 1.4.0** (29 de dezembro de 2025):
 - Sistema de Propostas/Lances Competitivos completo
-- Migração para Supabase PostgreSQL com connection pooler
+- Migração de banco de dados (atualmente PostgreSQL no Render)
 - Modal de negociações com "Melhor Oferta" e "Sua Oferta"
+
+**Versão 1.5.0** (fevereiro de 2026):
+- Rebranding completo: ImobiFlow → Integrius (domínio: integrius.com.br)
+- Reestruturação completa da landing page (hero, features cards, carrossel depoimentos, footer expandido)
+- Terminologia: "leads" → "clientes" em todo o frontend (backend mantém "leads" internamente)
+- Integração Mercado Pago para pagamentos de assinaturas
+- Remoção de ChristmasFloat (componente natalino fora de época)
+
+**Versão 1.5.1** (fevereiro de 2026):
+- Sistema de campanha de lançamento (60 dias grátis para os primeiros 20 tenants)
+  - Endpoint: GET `/tenants/campanha-lancamento` (público)
+  - Endpoint: GET `/tenants/trial-info` (autenticado) — retorna `campanha_lancamento` e `trial_days`
+  - `tenant.service.ts`: lógica de campanha com `CAMPANHA_FIM = 2026-04-15`
+  - `configuracoes` JSON: `campanha_lancamento`, `whatsapp_habilitado`, `trial_days`, `campanha_inicio`
+- Controles temporais: promoção encerra automaticamente em 15/04/2026
+- TrialWarning: aviso "Plano promocional 60 dias" + countdown nos últimos 10 dias
+- Faixa diagonal na landing page (ribbon) com data de início da promoção (05/03/2026)
+- Página /register: integração com campanha (posição do inscrito, welcome banner)
+- WhatsApp desabilitado para tenants da campanha (`checkWhatsAppAccess()` em whatsapp.routes.ts)
+- `data_expiracao` adicionado ao `updateTenantSchema` para permitir atualização via API
+- Banco de dados migrado de volta para PostgreSQL no Render (não usar mais Supabase)
+
+**Versão 1.6.0** (fevereiro de 2026):
+- Redesign profissional completo do layout do dashboard (`apps/web/app/dashboard/layout.tsx`)
+  - Ícones emoji substituídos por Lucide React SVG (18 ícones profissionais)
+  - Sidebar colapsável: modo expandido (w-56) ↔ icon-only (w-16) com persistência no localStorage
+  - Menus com expand/collapse por seção (Comercial, Equipe, Produtividade, etc.) com chevron
+  - Espaçamento compactado: sidebar w-64→w-56, header h-16→h-14, padding reduzido
+  - Header profissional: avatar circular com inicial, primeiro nome, logout como ícone
+  - Mobile sidebar atualizada com mesmos ícones SVG e seções colapsáveis
+  - Assistente validador de mudanças: git pre-commit hook + Claude Code hook + regras MEMORY.md
+  - Script: `scripts/validate-changes.sh` (bloqueia commits sem atualização do CLAUDE.md)
+
+---
+
+## IMPORTANTE: Manutenção do CLAUDE.md
+
+**Este arquivo DEVE ser atualizado sempre que houver mudanças significativas no projeto:**
+- Novas features ou módulos
+- Mudanças de infraestrutura (banco de dados, deploy, etc.)
+- Alterações em variáveis de ambiente
+- Novas rotas/endpoints da API
+- Mudanças na estrutura de arquivos
+- Integrações com serviços externos
+
+**Muitas atualizações foram perdidas no passado. Manter este arquivo atualizado é FUNDAMENTAL.**

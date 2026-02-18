@@ -1289,5 +1289,27 @@ Ver `docs/estilo_visual_reformulacao_do_site_integruis_com.md`
 
 ---
 
-**Última atualização**: 30 de dezembro de 2025
-**Versão**: 2.0.0
+**Última atualização**: 17 de fevereiro de 2026
+**Versão**: 2.1.0
+
+---
+
+## 🔒 Assistente Validador de Mudanças (Automático)
+
+O projeto possui um sistema automatizado de validação em 3 camadas:
+
+### Camada 1: Git Pre-commit Hook
+- **Arquivo**: `scripts/validate-changes.sh` (symlink em `.git/hooks/pre-commit`)
+- **Função**: Bloqueia commits que modificam arquivos significativos sem atualizar CLAUDE.md
+- **Arquivos monitorados**: `*.routes.ts`, `*.controller.ts`, `*.service.ts`, `schema.prisma`, `server.ts`, `middleware.ts`, `page.tsx`, `.env`
+- **Bypass**: `git commit --no-verify` (apenas casos excepcionais)
+
+### Camada 2: Claude Code Hook
+- **Arquivo**: `.claude/settings.json`
+- **Função**: Lembra o assistente de verificar CLAUDE.md antes de cada commit
+
+### Camada 3: Regras no CLAUDE.md e MEMORY.md
+- **CLAUDE.md**: Seção "REGRAS OBRIGATÓRIAS DE WORKFLOW" no topo
+- **MEMORY.md**: Regra fundamental persistente entre sessões
+
+**Todas as tarefas devem ser delegadas a assistentes especialistas quando possível.**

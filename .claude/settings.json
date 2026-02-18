@@ -1,0 +1,10 @@
+{
+  "hooks": {
+    "PreToolCall": [
+      {
+        "matcher": "Bash(git commit:*)",
+        "hook": "echo '⚠️  LEMBRETE: Verifique se o CLAUDE.md foi atualizado com as mudanças desta sessão.'"
+      }
+    ]
+  }
+}
