@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { api } from '@/lib/api';
+import { User, Lock, ClipboardList, Settings, RefreshCw, Lightbulb } from 'lucide-react';
 
 // Tipos
 interface User {
@@ -127,9 +128,9 @@ export default function AdministracaoPage() {
   const canViewLogs = user?.tipo === 'ADMIN' || user?.tipo === 'GESTOR';
 
   const tabs = [
-    { id: 'conta' as TabType, label: 'Minha Conta', icon: '👤' },
-    { id: 'seguranca' as TabType, label: 'Segurança', icon: '🔒' },
-    ...(canViewLogs ? [{ id: 'logs' as TabType, label: 'Logs de Atividade', icon: '📋' }] : [])
+    { id: 'conta' as TabType, label: 'Minha Conta', icon: '' },
+    { id: 'seguranca' as TabType, label: 'Segurança', icon: '' },
+    ...(canViewLogs ? [{ id: 'logs' as TabType, label: 'Logs de Atividade', icon: '' }] : [])
   ];
 
   if (loading) {
@@ -145,7 +146,7 @@ export default function AdministracaoPage() {
       {/* Header */}
       <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
         <h1 className="text-2xl font-bold text-[#2C2C2C]">
-          ⚙️ Administração
+          <Settings className="w-5 h-5 inline mr-1" /> Administração
         </h1>
         <p className="text-gray-700 mt-1 font-medium">
           Gerencie sua conta e configurações
@@ -224,9 +225,6 @@ export default function AdministracaoPage() {
                         ? 'bg-blue-100 text-blue-700'
                         : 'bg-green-100 text-green-700'
                     }`}>
-                      {user?.tipo === 'ADMIN' && '👑 '}
-                      {user?.tipo === 'GESTOR' && '📊 '}
-                      {user?.tipo === 'CORRETOR' && '🏠 '}
                       {user?.tipo || '-'}
                     </span>
                   </div>
@@ -244,7 +242,7 @@ export default function AdministracaoPage() {
 
               <div className="pt-4 border-t border-gray-200">
                 <p className="text-sm text-gray-500">
-                  💡 Para alterar seus dados de perfil, entre em contato com o administrador do sistema.
+                  Para alterar seus dados de perfil, entre em contato com o administrador do sistema.
                 </p>
               </div>
             </div>
@@ -309,7 +307,7 @@ export default function AdministracaoPage() {
                       Alterando...
                     </span>
                   ) : (
-                    '🔒 Alterar Senha'
+                    'Alterar Senha'
                   )}
                 </button>
               </form>
@@ -336,7 +334,7 @@ export default function AdministracaoPage() {
                   disabled={loadingLogs}
                   className="px-4 py-2 text-sm bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors disabled:opacity-50"
                 >
-                  {loadingLogs ? '⏳ Carregando...' : '🔄 Atualizar'}
+                  {loadingLogs ? 'Carregando...' : 'Atualizar'}
                 </button>
               </div>
 
@@ -346,7 +344,7 @@ export default function AdministracaoPage() {
                 </div>
               ) : logs.length === 0 ? (
                 <div className="text-center py-12 text-gray-500">
-                  <span className="text-4xl">📋</span>
+                  <ClipboardList className="w-10 h-10 text-gray-300 mx-auto" />
                   <p className="mt-2">Nenhum log de atividade encontrado</p>
                 </div>
               ) : (

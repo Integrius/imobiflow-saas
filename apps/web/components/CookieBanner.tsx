@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { Cookie } from 'lucide-react';
 
 type CookieConsent = 'accepted' | 'rejected' | 'pending';
 
@@ -71,7 +72,7 @@ export default function CookieBanner() {
             <div className="flex items-start gap-4">
               {/* Ícone */}
               <div className="flex-shrink-0 w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
-                <span className="text-xl">🍪</span>
+                <Cookie className="w-5 h-5 text-green-600" />
               </div>
 
               {/* Conteúdo */}

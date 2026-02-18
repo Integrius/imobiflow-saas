@@ -7,6 +7,7 @@ import {
   PieChart, Pie, Cell
 } from 'recharts';
 import ReportDownloadButton from '@/components/ReportDownloadButton';
+import { Users, ClipboardList, DollarSign, TrendingUp, Trophy, BarChart3 } from 'lucide-react';
 
 interface MetricasTime {
   totalCorretores: number;
@@ -209,7 +210,7 @@ export default function DashboardGerencialPage() {
         <div className="bg-white rounded-xl p-6 shadow-lg border-2 border-[#00C48C]/20 hover:shadow-xl transition-shadow">
           <div className="flex items-center justify-between mb-4">
             <div className="p-3 bg-gradient-to-br from-[#00C48C] to-[#059669] rounded-xl">
-              <span className="text-2xl">👥</span>
+              <Users className="w-5 h-5 text-white" />
             </div>
             <span className="text-xs font-bold text-[#00C48C] uppercase">Corretores</span>
           </div>
@@ -223,7 +224,7 @@ export default function DashboardGerencialPage() {
         <div className="bg-white rounded-xl p-6 shadow-lg border-2 border-[#059669]/20 hover:shadow-xl transition-shadow">
           <div className="flex items-center justify-between mb-4">
             <div className="p-3 bg-gradient-to-br from-[#059669] to-[#047857] rounded-xl">
-              <span className="text-2xl">📋</span>
+              <ClipboardList className="w-5 h-5 text-white" />
             </div>
             <span className="text-xs font-bold text-[#059669] uppercase">Leads</span>
           </div>
@@ -237,7 +238,7 @@ export default function DashboardGerencialPage() {
         <div className="bg-white rounded-xl p-6 shadow-lg border-2 border-[#FFB627]/20 hover:shadow-xl transition-shadow">
           <div className="flex items-center justify-between mb-4">
             <div className="p-3 bg-gradient-to-br from-[#FFB627] to-[#F59E0B] rounded-xl">
-              <span className="text-2xl">💰</span>
+              <DollarSign className="w-5 h-5 text-white" />
             </div>
             <span className="text-xs font-bold text-[#FFB627] uppercase">Valor Total</span>
           </div>
@@ -249,7 +250,7 @@ export default function DashboardGerencialPage() {
         <div className="bg-white rounded-xl p-6 shadow-lg border-2 border-[#8B5CF6]/20 hover:shadow-xl transition-shadow">
           <div className="flex items-center justify-between mb-4">
             <div className="p-3 bg-gradient-to-br from-[#8B5CF6] to-[#7C3AED] rounded-xl">
-              <span className="text-2xl">📈</span>
+              <TrendingUp className="w-5 h-5 text-white" />
             </div>
             <span className="text-xs font-bold text-[#8B5CF6] uppercase">Conversão</span>
           </div>
@@ -324,7 +325,7 @@ export default function DashboardGerencialPage() {
 
         {/* Top Fechamentos */}
         <div className="bg-white rounded-xl p-6 shadow-lg border-2 border-gray-100">
-          <h3 className="text-lg font-bold text-[#064E3B] mb-4">🏆 Top Fechamentos</h3>
+          <h3 className="text-lg font-bold text-[#064E3B] mb-4 flex items-center gap-2"><Trophy className="w-5 h-5 text-yellow-500" /> Top Fechamentos</h3>
           <div className="space-y-3">
             {data.tops.fechamentos.map((corretor, index) => (
               <div key={corretor.id} className="flex items-center gap-3">
@@ -347,7 +348,7 @@ export default function DashboardGerencialPage() {
 
         {/* Top Valor */}
         <div className="bg-white rounded-xl p-6 shadow-lg border-2 border-gray-100">
-          <h3 className="text-lg font-bold text-[#064E3B] mb-4">💰 Top Valor Fechado</h3>
+          <h3 className="text-lg font-bold text-[#064E3B] mb-4 flex items-center gap-2"><DollarSign className="w-5 h-5 text-yellow-500" /> Top Valor Fechado</h3>
           <div className="space-y-3">
             {data.tops.valor.map((corretor, index) => (
               <div key={corretor.id} className="flex items-center gap-3">
@@ -379,7 +380,7 @@ export default function DashboardGerencialPage() {
                 : 'bg-gray-50 text-[#374151] hover:bg-gray-100'
             }`}
           >
-            📊 Ranking de Corretores
+            <BarChart3 className="w-4 h-4 inline mr-1" /> Ranking de Corretores
           </button>
           <button
             onClick={() => setTabAtiva('comparativo')}
@@ -389,7 +390,7 @@ export default function DashboardGerencialPage() {
                 : 'bg-gray-50 text-[#374151] hover:bg-gray-100'
             }`}
           >
-            📈 Comparativo Mensal
+            <TrendingUp className="w-4 h-4 inline mr-1" /> Comparativo Mensal
           </button>
         </div>
 
@@ -432,9 +433,9 @@ export default function DashboardGerencialPage() {
                         <div>
                           <span className="font-bold">{corretor.metricas.totalLeads}</span>
                           <div className="flex justify-center gap-1 mt-1">
-                            <span className="text-xs px-1 bg-red-100 text-red-600 rounded">🔥{corretor.metricas.leadsQuentes}</span>
-                            <span className="text-xs px-1 bg-yellow-100 text-yellow-600 rounded">⚡{corretor.metricas.leadsMornos}</span>
-                            <span className="text-xs px-1 bg-blue-100 text-blue-600 rounded">❄️{corretor.metricas.leadsFrios}</span>
+                            <span className="text-xs px-1 bg-red-100 text-red-600 rounded">Q {corretor.metricas.leadsQuentes}</span>
+                            <span className="text-xs px-1 bg-yellow-100 text-yellow-600 rounded">M {corretor.metricas.leadsMornos}</span>
+                            <span className="text-xs px-1 bg-blue-100 text-blue-600 rounded">F {corretor.metricas.leadsFrios}</span>
                           </div>
                         </div>
                       </td>

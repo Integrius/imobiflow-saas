@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { api } from '@/lib/api';
+import { Users, Target, BarChart3, CalendarDays, Plus, Package, Pencil, Trash2, RefreshCw } from 'lucide-react';
 
 interface Corretor {
   id: string;
@@ -293,7 +294,7 @@ export default function MetasPage() {
             onClick={handleAtualizarProgresso}
             className="px-4 py-2.5 bg-[#059669] text-white rounded-lg font-bold hover:bg-[#047857] transition-colors"
           >
-            🔄 Atualizar
+            <RefreshCw className="w-4 h-4 inline mr-1" /> Atualizar
           </button>
         </div>
       </div>
@@ -303,7 +304,7 @@ export default function MetasPage() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
           <div className="bg-white rounded-xl p-6 shadow-lg border-2 border-[#00C48C]/20">
             <div className="flex items-center justify-between mb-2">
-              <span className="text-2xl">👥</span>
+              <Users className="w-5 h-5 text-[#00C48C]" />
               <span className="text-xs font-bold text-[#00C48C] uppercase">Corretores</span>
             </div>
             <div className="text-3xl font-bold text-[#064E3B]">{resumo.estatisticas.totalCorretoresComMeta}</div>
@@ -312,7 +313,7 @@ export default function MetasPage() {
 
           <div className="bg-white rounded-xl p-6 shadow-lg border-2 border-[#059669]/20">
             <div className="flex items-center justify-between mb-2">
-              <span className="text-2xl">🎯</span>
+              <Target className="w-5 h-5 text-[#059669]" />
               <span className="text-xs font-bold text-[#059669] uppercase">Atingidas</span>
             </div>
             <div className="text-3xl font-bold text-[#064E3B]">{resumo.estatisticas.metasAtingidas}</div>
@@ -321,7 +322,7 @@ export default function MetasPage() {
 
           <div className="bg-white rounded-xl p-6 shadow-lg border-2 border-[#FFB627]/20">
             <div className="flex items-center justify-between mb-2">
-              <span className="text-2xl">📊</span>
+              <BarChart3 className="w-5 h-5 text-[#FFB627]" />
               <span className="text-xs font-bold text-[#FFB627] uppercase">Média</span>
             </div>
             <div className="text-3xl font-bold text-[#064E3B]">{resumo.estatisticas.mediaProgresso}%</div>
@@ -330,7 +331,7 @@ export default function MetasPage() {
 
           <div className="bg-white rounded-xl p-6 shadow-lg border-2 border-[#8B5CF6]/20">
             <div className="flex items-center justify-between mb-2">
-              <span className="text-2xl">📅</span>
+              <CalendarDays className="w-5 h-5 text-[#8B5CF6]" />
               <span className="text-xs font-bold text-[#8B5CF6] uppercase">Período</span>
             </div>
             <div className="text-2xl font-bold text-[#064E3B]">{MESES[mesAno.mes - 1]}</div>
@@ -345,13 +346,13 @@ export default function MetasPage() {
           onClick={() => openCreateModal('individual')}
           className="px-6 py-3 bg-gradient-to-r from-[#00C48C] to-[#059669] text-white rounded-lg font-bold hover:shadow-lg transition-all"
         >
-          ➕ Nova Meta Individual
+          <Plus className="w-4 h-4 inline mr-1" /> Nova Meta Individual
         </button>
         <button
           onClick={() => openCreateModal('lote')}
           className="px-6 py-3 bg-gradient-to-r from-[#8B5CF6] to-[#7C3AED] text-white rounded-lg font-bold hover:shadow-lg transition-all"
         >
-          📦 Criar Metas em Lote
+          <Package className="w-4 h-4 inline mr-1" /> Criar Metas em Lote
         </button>
       </div>
 
@@ -500,14 +501,14 @@ export default function MetasPage() {
                         className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
                         title="Editar"
                       >
-                        ✏️
+                        <Pencil className="w-4 h-4" />
                       </button>
                       <button
                         onClick={() => handleDelete(meta.id)}
                         className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
                         title="Excluir"
                       >
-                        🗑️
+                        <Trash2 className="w-4 h-4" />
                       </button>
                     </div>
                   </td>
@@ -523,8 +524,8 @@ export default function MetasPage() {
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
           <div className="bg-white rounded-xl p-6 w-full max-w-lg shadow-2xl">
             <h3 className="text-xl font-bold text-[#064E3B] mb-4">
-              {modalMode === 'lote' ? '📦 Criar Metas em Lote' :
-               selectedMeta ? '✏️ Editar Meta' : '➕ Nova Meta'}
+              {modalMode === 'lote' ? 'Criar Metas em Lote' :
+               selectedMeta ? 'Editar Meta' : 'Nova Meta'}
             </h3>
 
             <div className="space-y-4">

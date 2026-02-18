@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react'
 import { api } from '@/lib/api'
+import { Target, Briefcase, CalendarDays, DollarSign, Trophy, CheckCircle2, AlertTriangle, XCircle, BellRing, Info } from 'lucide-react'
 
 interface Notification {
   id: string
@@ -104,27 +105,28 @@ export default function NotificationBell() {
   }
 
   const getTypeIcon = (type: string) => {
+    const cls = "w-4 h-4"
     switch (type) {
       case 'LEAD':
-        return '🎯'
+        return <Target className={cls} />
       case 'NEGOCIACAO':
-        return '💼'
+        return <Briefcase className={cls} />
       case 'AGENDAMENTO':
-        return '📅'
+        return <CalendarDays className={cls} />
       case 'PROPOSTA':
-        return '💰'
+        return <DollarSign className={cls} />
       case 'META':
-        return '🏆'
+        return <Trophy className={cls} />
       case 'SUCCESS':
-        return '✅'
+        return <CheckCircle2 className={cls} />
       case 'WARNING':
-        return '⚠️'
+        return <AlertTriangle className={cls} />
       case 'ERROR':
-        return '❌'
+        return <XCircle className={cls} />
       case 'SISTEMA':
-        return '🔔'
+        return <BellRing className={cls} />
       default:
-        return 'ℹ️'
+        return <Info className={cls} />
     }
   }
 

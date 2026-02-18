@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { api } from '@/lib/api';
+import { CheckCircle2, PartyPopper, Clock, AlertTriangle } from 'lucide-react';
 
 interface TrialInfo {
   isTrial: boolean;
@@ -38,31 +39,29 @@ export default function TrialWarning() {
 
   // Definir cor e ícone baseado nos dias restantes
   let textColor = 'text-white';
-  let icon = '✅';
+  let icon: React.ReactNode = <CheckCircle2 className="w-4 h-4" />;
 
   if (campanha_lancamento) {
-    // Campanha: verde até 10 dias restantes, depois amarelo/vermelho
     if (dias_restantes > 10) {
       textColor = 'text-[#00C48C]';
-      icon = '🎉';
+      icon = <PartyPopper className="w-4 h-4" />;
     } else if (dias_restantes >= 4) {
       textColor = 'text-[#FFB627]';
-      icon = '⏰';
+      icon = <Clock className="w-4 h-4" />;
     } else {
       textColor = 'text-[#FF6B6B]';
-      icon = '⚠️';
+      icon = <AlertTriangle className="w-4 h-4" />;
     }
   } else {
-    // Trial normal
     if (dias_restantes > 7) {
       textColor = 'text-[#00C48C]';
-      icon = '✅';
+      icon = <CheckCircle2 className="w-4 h-4" />;
     } else if (dias_restantes >= 4) {
       textColor = 'text-[#FFB627]';
-      icon = '⏰';
+      icon = <Clock className="w-4 h-4" />;
     } else {
       textColor = 'text-[#FF6B6B]';
-      icon = '⚠️';
+      icon = <AlertTriangle className="w-4 h-4" />;
     }
   }
 
@@ -80,7 +79,7 @@ export default function TrialWarning() {
 
   return (
     <div className="flex items-center gap-2 bg-white/10 rounded-lg px-3 py-2 backdrop-blur-sm border border-white/20">
-      <span className="text-lg">{icon}</span>
+      <span>{icon}</span>
       <span className={`text-sm font-semibold ${textColor}`}>
         {label}
       </span>

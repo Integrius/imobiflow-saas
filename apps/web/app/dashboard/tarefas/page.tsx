@@ -2,6 +2,12 @@
 
 import { useState, useEffect } from 'react'
 import { api } from '@/lib/api'
+import {
+  ClipboardList, Phone, Mail, MessageCircle, Home, FileText,
+  Users, MapPin, RefreshCw, User, CalendarDays, Bell, Check,
+  Pencil, X, Trash2, ListChecks
+} from 'lucide-react'
+import type { LucideIcon } from 'lucide-react'
 
 interface Tarefa {
   id: string
@@ -32,15 +38,15 @@ interface Stats {
   taxaConclusao: number
 }
 
-const TIPOS = [
-  { value: 'FOLLOW_UP', label: 'Follow-up', icon: '📋' },
-  { value: 'LIGACAO', label: 'Ligação', icon: '📞' },
-  { value: 'EMAIL', label: 'Email', icon: '📧' },
-  { value: 'WHATSAPP', label: 'WhatsApp', icon: '💬' },
-  { value: 'VISITA', label: 'Visita', icon: '🏠' },
-  { value: 'DOCUMENTO', label: 'Documento', icon: '📄' },
-  { value: 'REUNIAO', label: 'Reunião', icon: '👥' },
-  { value: 'OUTRO', label: 'Outro', icon: '📌' }
+const TIPOS: { value: string; label: string; icon: LucideIcon }[] = [
+  { value: 'FOLLOW_UP', label: 'Follow-up', icon: ClipboardList },
+  { value: 'LIGACAO', label: 'Ligação', icon: Phone },
+  { value: 'EMAIL', label: 'Email', icon: Mail },
+  { value: 'WHATSAPP', label: 'WhatsApp', icon: MessageCircle },
+  { value: 'VISITA', label: 'Visita', icon: Home },
+  { value: 'DOCUMENTO', label: 'Documento', icon: FileText },
+  { value: 'REUNIAO', label: 'Reunião', icon: Users },
+  { value: 'OUTRO', label: 'Outro', icon: MapPin }
 ]
 
 const PRIORIDADES = [
@@ -243,8 +249,8 @@ export default function TarefasPage() {
     })
   }
 
-  const getTipoIcon = (tipo: string) => {
-    return TIPOS.find(t => t.value === tipo)?.icon || '📌'
+  const getTipoIcon = (tipo: string): LucideIcon => {
+    return TIPOS.find(t => t.value === tipo)?.icon || MapPin
   }
 
   const getPrioridadeStyle = (prioridade: string) => {
@@ -352,7 +358,7 @@ export default function TarefasPage() {
             >
               <option value="">Todos</option>
               {TIPOS.map(t => (
-                <option key={t.value} value={t.value}>{t.icon} {t.label}</option>
+                <option key={t.value} value={t.value}>{t.label}</option>
               ))}
             </select>
           </div>
@@ -376,7 +382,7 @@ export default function TarefasPage() {
       <div className="bg-white rounded-lg shadow-sm border border-gray-100 overflow-hidden">
         {tarefas.length === 0 ? (
           <div className="p-8 text-center text-[#6B7280]">
-            <div className="text-4xl mb-2">📋</div>
+            <div className="mb-2"><ListChecks className="w-10 h-10 text-gray-300 mx-auto" /></div>
             <p className="font-medium">Nenhuma tarefa encontrada</p>
             <button
               onClick={() => {
@@ -399,7 +405,7 @@ export default function TarefasPage() {
               >
                 <div className="flex items-start justify-between gap-4">
                   <div className="flex items-start gap-3 flex-1">
-                    <span className="text-2xl">{getTipoIcon(tarefa.tipo)}</span>
+                    {(() => { const Icon = getTipoIcon(tarefa.tipo); return <Icon className="w-5 h-5 text-gray-400 mt-0.5 flex-shrink-0" />; })()}
                     <div className="flex-1">
                       <div className="flex items-center gap-2 flex-wrap">
                         <h3 className={`font-semibold ${
@@ -415,7 +421,7 @@ export default function TarefasPage() {
                         </span>
                         {tarefa.recorrente && (
                           <span className="px-2 py-0.5 rounded text-xs font-medium bg-purple-100 text-purple-700">
-                            🔄 {RECORRENCIA.find(r => r.value === tarefa.tipo_recorrencia)?.label}
+                            <RefreshCw className="w-3 h-3 inline" /> {RECORRENCIA.find(r => r.value === tarefa.tipo_recorrencia)?.label}
                           </span>
                         )}
                       </div>
@@ -425,20 +431,20 @@ export default function TarefasPage() {
                       <div className="flex items-center gap-4 mt-2 text-sm text-[#6B7280] font-medium">
                         {tarefa.lead && (
                           <span className="flex items-center gap-1">
-                            <span>👤</span>
+                            <User className="w-3.5 h-3.5" />
                             <span>{tarefa.lead.nome}</span>
                           </span>
                         )}
                         {tarefa.data_vencimento && (
                           <span className={`flex items-center gap-1 ${isVencida(tarefa) ? 'text-red-500 font-semibold' : ''}`}>
-                            <span>📅</span>
+                            <CalendarDays className="w-3.5 h-3.5" />
                             <span>{formatDate(tarefa.data_vencimento)}</span>
                             {isVencida(tarefa) && <span>(Vencida!)</span>}
                           </span>
                         )}
                         {tarefa.data_lembrete && (
                           <span className="flex items-center gap-1">
-                            <span>🔔</span>
+                            <Bell className="w-3.5 h-3.5" />
                             <span>{formatDate(tarefa.data_lembrete)}</span>
                           </span>
                         )}
@@ -455,21 +461,21 @@ export default function TarefasPage() {
                           className="p-2 text-green-600 hover:bg-green-50 rounded-lg transition-colors"
                           title="Concluir"
                         >
-                          ✓
+                          <Check className="w-4 h-4" />
                         </button>
                         <button
                           onClick={() => openEditModal(tarefa)}
                           className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
                           title="Editar"
                         >
-                          ✎
+                          <Pencil className="w-4 h-4" />
                         </button>
                         <button
                           onClick={() => handleCancelar(tarefa)}
                           className="p-2 text-orange-600 hover:bg-orange-50 rounded-lg transition-colors"
                           title="Cancelar"
                         >
-                          ✕
+                          <X className="w-4 h-4" />
                         </button>
                       </>
                     )}
@@ -478,7 +484,7 @@ export default function TarefasPage() {
                       className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
                       title="Excluir"
                     >
-                      🗑
+                      <Trash2 className="w-4 h-4" />
                     </button>
                   </div>
                 </div>
@@ -536,7 +542,7 @@ export default function TarefasPage() {
                     className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#8FD14F]/50"
                   >
                     {TIPOS.map(t => (
-                      <option key={t.value} value={t.value}>{t.icon} {t.label}</option>
+                      <option key={t.value} value={t.value}>{t.label}</option>
                     ))}
                   </select>
                 </div>
@@ -690,7 +696,7 @@ export default function TarefasPage() {
                   onClick={handleConcluir}
                   className="px-4 py-2.5 bg-gradient-to-r from-green-500 to-green-600 text-white rounded-lg font-bold hover:opacity-90 transition-opacity flex items-center gap-2"
                 >
-                  <span>✓</span>
+                  <Check className="w-4 h-4" />
                   <span>Concluir Tarefa</span>
                 </button>
               </div>

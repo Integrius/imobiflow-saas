@@ -2,29 +2,77 @@
 
 import { useState, useEffect } from 'react';
 import { api } from '@/lib/api';
+import {
+  ClipboardList,
+  Search,
+  Lock,
+  DoorOpen,
+  XCircle,
+  KeyRound,
+  RefreshCw,
+  Mail,
+  Building2,
+  Ban,
+  CheckCircle2,
+  Package,
+  CreditCard,
+  DollarSign,
+  AlertTriangle,
+  UserPlus,
+  UserCog,
+  UserMinus,
+  UserCheck,
+  Settings,
+  ShieldOff,
+} from 'lucide-react';
+import type { LucideIcon } from 'lucide-react';
 
 // Tipos de atividades com labels em português
-const TIPOS_ATIVIDADE = {
-  LOGIN: '🔐 Login',
-  LOGOUT: '🚪 Logout',
-  LOGIN_FALHOU: '❌ Login Falhou',
-  SENHA_ALTERADA: '🔑 Senha Alterada',
-  SENHA_RESETADA: '🔄 Senha Resetada',
-  EMAIL_ALTERADO: '📧 Email Alterado',
-  TENANT_CRIADO: '🏢 Tenant Criado',
-  TENANT_CANCELADO: '🚫 Tenant Cancelado',
-  TENANT_REATIVADO: '✅ Tenant Reativado',
-  TENANT_EXPORTACAO_DADOS: '📦 Exportação de Dados',
-  ASSINATURA_ATIVADA: '💳 Assinatura Ativada',
-  ASSINATURA_CANCELADA: '❌ Assinatura Cancelada',
-  PAGAMENTO_REALIZADO: '💰 Pagamento Realizado',
-  PAGAMENTO_FALHOU: '⚠️ Pagamento Falhou',
-  USUARIO_CRIADO: '👤 Usuário Criado',
-  USUARIO_EDITADO: '✏️ Usuário Editado',
-  USUARIO_DESATIVADO: '🔴 Usuário Desativado',
-  USUARIO_REATIVADO: '🟢 Usuário Reativado',
-  CONFIGURACAO_ALTERADA: '⚙️ Configuração Alterada',
-  ACESSO_NEGADO: '🛑 Acesso Negado',
+const TIPOS_ATIVIDADE: Record<string, string> = {
+  LOGIN: 'Login',
+  LOGOUT: 'Logout',
+  LOGIN_FALHOU: 'Login Falhou',
+  SENHA_ALTERADA: 'Senha Alterada',
+  SENHA_RESETADA: 'Senha Resetada',
+  EMAIL_ALTERADO: 'Email Alterado',
+  TENANT_CRIADO: 'Tenant Criado',
+  TENANT_CANCELADO: 'Tenant Cancelado',
+  TENANT_REATIVADO: 'Tenant Reativado',
+  TENANT_EXPORTACAO_DADOS: 'Exportação de Dados',
+  ASSINATURA_ATIVADA: 'Assinatura Ativada',
+  ASSINATURA_CANCELADA: 'Assinatura Cancelada',
+  PAGAMENTO_REALIZADO: 'Pagamento Realizado',
+  PAGAMENTO_FALHOU: 'Pagamento Falhou',
+  USUARIO_CRIADO: 'Usuário Criado',
+  USUARIO_EDITADO: 'Usuário Editado',
+  USUARIO_DESATIVADO: 'Usuário Desativado',
+  USUARIO_REATIVADO: 'Usuário Reativado',
+  CONFIGURACAO_ALTERADA: 'Configuração Alterada',
+  ACESSO_NEGADO: 'Acesso Negado',
+};
+
+// Mapeamento de ícones e cores por tipo de atividade
+const TIPOS_ICONE: Record<string, { icon: LucideIcon; color: string }> = {
+  LOGIN: { icon: Lock, color: 'text-blue-500' },
+  LOGOUT: { icon: DoorOpen, color: 'text-gray-500' },
+  LOGIN_FALHOU: { icon: XCircle, color: 'text-red-500' },
+  SENHA_ALTERADA: { icon: KeyRound, color: 'text-amber-500' },
+  SENHA_RESETADA: { icon: RefreshCw, color: 'text-amber-500' },
+  EMAIL_ALTERADO: { icon: Mail, color: 'text-blue-500' },
+  TENANT_CRIADO: { icon: Building2, color: 'text-emerald-500' },
+  TENANT_CANCELADO: { icon: Ban, color: 'text-red-500' },
+  TENANT_REATIVADO: { icon: CheckCircle2, color: 'text-green-500' },
+  TENANT_EXPORTACAO_DADOS: { icon: Package, color: 'text-purple-500' },
+  ASSINATURA_ATIVADA: { icon: CreditCard, color: 'text-green-500' },
+  ASSINATURA_CANCELADA: { icon: XCircle, color: 'text-red-500' },
+  PAGAMENTO_REALIZADO: { icon: DollarSign, color: 'text-green-500' },
+  PAGAMENTO_FALHOU: { icon: AlertTriangle, color: 'text-amber-500' },
+  USUARIO_CRIADO: { icon: UserPlus, color: 'text-blue-500' },
+  USUARIO_EDITADO: { icon: UserCog, color: 'text-blue-500' },
+  USUARIO_DESATIVADO: { icon: UserMinus, color: 'text-red-500' },
+  USUARIO_REATIVADO: { icon: UserCheck, color: 'text-green-500' },
+  CONFIGURACAO_ALTERADA: { icon: Settings, color: 'text-gray-500' },
+  ACESSO_NEGADO: { icon: ShieldOff, color: 'text-red-500' },
 };
 
 interface ActivityLog {
@@ -150,7 +198,7 @@ export default function AdminLogsPage() {
       {/* Header */}
       <div className="mb-6">
         <h1 className="text-3xl font-bold text-gray-900">
-          📋 Logs de Atividades - Sistema Geral
+          Logs de Atividades - Sistema Geral
         </h1>
         <p className="text-gray-600 mt-2">
           Visualize logs de todos os tenants do sistema Integrius
@@ -183,7 +231,7 @@ export default function AdminLogsPage() {
 
       {/* Filtros */}
       <div className="bg-white rounded-lg shadow p-4 mb-6">
-        <h2 className="text-lg font-semibold mb-4">🔍 Filtros</h2>
+        <h2 className="text-lg font-semibold mb-4">Filtros</h2>
         <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">

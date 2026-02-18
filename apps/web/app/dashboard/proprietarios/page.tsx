@@ -5,6 +5,7 @@ import { api } from '@/lib/api';
 import { toast } from '@/lib/toast';
 import Modal from '@/components/Modal';
 import { formatPhone, formatCPF, formatCNPJ, unformatNumbers } from '@/lib/formatters';
+import { User, Building, Eye, Trash2, ClipboardList, Home, MapPin, Building2 } from 'lucide-react';
 
 interface Proprietario {
   id: string;
@@ -334,7 +335,7 @@ export default function ProprietariosPage() {
       <div className="mb-6">
         <input
           type="text"
-          placeholder="🔍 Buscar por nome, email ou CPF/CNPJ..."
+          placeholder="Buscar por nome, email ou CPF/CNPJ..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
           className="input-modern"
@@ -378,7 +379,7 @@ export default function ProprietariosPage() {
                         ? 'bg-[#059669]/20 text-[#059669] border-[#059669]/50'
                         : 'bg-[#059669]/20 text-[#059669] border-[#059669]/50'
                     }`}>
-                      {proprietario.tipo_pessoa === 'FISICA' ? '👤 Pessoa Física' : '🏢 Pessoa Jurídica'}
+                      {proprietario.tipo_pessoa === 'FISICA' ? 'Pessoa Física' : 'Pessoa Jurídica'}
                     </span>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-[#374151] font-semibold">{formatPhone(proprietario.contato?.telefone_principal || '')}</td>
@@ -387,7 +388,7 @@ export default function ProprietariosPage() {
                       onClick={() => openEditModal(proprietario)}
                       className="text-[#00C48C] hover:text-[#059669] mr-4 font-bold hover:underline transition-all"
                     >
-                      👁️ Consultar
+                      <Eye className="w-3.5 h-3.5 inline mr-0.5" /> Consultar
                     </button>
                     <button
                       onClick={() => {
@@ -396,7 +397,7 @@ export default function ProprietariosPage() {
                       }}
                       className="text-[#FF6B6B] hover:text-[#FF006E] font-bold hover:underline transition-all"
                     >
-                      🗑️ Excluir
+                      <Trash2 className="w-3.5 h-3.5 inline mr-0.5" /> Excluir
                     </button>
                   </td>
                 </tr>
@@ -423,7 +424,7 @@ export default function ProprietariosPage() {
             ) : (
               <div className="flex items-center gap-4 justify-center">
                 <div className="text-center">
-                  <div className="text-xs text-[#374151] font-semibold mb-1">👤 CORRETOR</div>
+                  <div className="text-xs text-[#374151] font-semibold mb-1"><User className="w-3 h-3 inline mr-1" />CORRETOR</div>
                   {editingProprietario.corretor ? (
                     <div className="text-sm font-bold text-[#A97E6F]">{editingProprietario.corretor.user.nome}</div>
                   ) : (
@@ -457,7 +458,7 @@ export default function ProprietariosPage() {
                   : 'text-[#4B5563] hover:text-[#00C48C]'
               }`}
             >
-              📋 Dados
+              <ClipboardList className="w-4 h-4 inline mr-1" /> Dados
             </button>
             <button
               type="button"
@@ -468,7 +469,7 @@ export default function ProprietariosPage() {
                   : 'text-[#4B5563] hover:text-[#00C48C]'
               }`}
             >
-              🏘️ Imóveis ({proprietarioImoveis.length})
+              <Building2 className="w-4 h-4 inline mr-1" /> Imóveis ({proprietarioImoveis.length})
             </button>
           </div>
         )}
@@ -604,7 +605,7 @@ export default function ProprietariosPage() {
                       />
                     ) : (
                       <div className="w-24 h-24 bg-[#F9FAFB] rounded-lg flex items-center justify-center border-2 border-[#059669]/20">
-                        <span className="text-4xl">🏘️</span>
+                        <Building2 className="w-10 h-10 text-gray-300" />
                       </div>
                     )}
 
@@ -630,7 +631,7 @@ export default function ProprietariosPage() {
                       </p>
                       {imovel.endereco && (
                         <p className="text-[#374151] text-sm font-medium mt-1">
-                          📍 {imovel.endereco.cidade}, {imovel.endereco.estado}
+                          <MapPin className="w-3.5 h-3.5 inline mr-0.5" /> {imovel.endereco.cidade}, {imovel.endereco.estado}
                         </p>
                       )}
                     </div>

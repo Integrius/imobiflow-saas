@@ -18,6 +18,11 @@ import {
   Cell
 } from 'recharts';
 import ReportDownloadButton from '@/components/ReportDownloadButton';
+import {
+  DollarSign, Gem, ClipboardList, Target, BarChart3, TrendingUp, Trophy,
+  AlertTriangle, Clock, CalendarDays, FileText, RefreshCw, CheckCircle2,
+  Flame, Zap, Snowflake, Medal, Bot
+} from 'lucide-react';
 
 interface DashboardData {
   corretor: {
@@ -232,7 +237,10 @@ const SofiaInsightCard = ({ insight, onAction }: { insight: Insight; onAction?: 
   return (
     <div className={`bg-gradient-to-r ${style.bg} border ${style.border} rounded-xl p-4 flex items-start gap-3`}>
       <div className={`${style.iconBg} ${style.iconText} p-2 rounded-full shrink-0`}>
-        <span className="text-xl">{insight.icone}</span>
+        {insight.tipo === 'ALERTA' ? <AlertTriangle className="w-4 h-4" /> :
+         insight.tipo === 'SUCESSO' ? <CheckCircle2 className="w-4 h-4" /> :
+         insight.tipo === 'DICA' ? <Zap className="w-4 h-4" /> :
+         <Bot className="w-4 h-4" />}
       </div>
       <div className="flex-1 min-w-0">
         <h3 className={`text-sm font-bold ${style.titleColor}`}>{insight.titulo}</h3>
@@ -271,10 +279,10 @@ const SofiaInsightsWidget = ({ insights, onAction }: { insights: Insight[]; onAc
     return (
       <div className="bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200 rounded-xl p-4 mb-6 flex items-center gap-3">
         <div className="bg-green-500 text-white p-2 rounded-full shrink-0">
-          <span className="text-xl">🤖</span>
+          <Bot className="w-5 h-5" />
         </div>
         <div>
-          <h3 className="text-sm font-bold text-green-900">Sofia está satisfeita! ✨</h3>
+          <h3 className="text-sm font-bold text-green-900">Sofia está satisfeita!</h3>
           <p className="text-sm text-green-700 mt-1">
             Parabéns! Você está em dia com seus leads. Continue assim!
           </p>
@@ -286,7 +294,7 @@ const SofiaInsightsWidget = ({ insights, onAction }: { insights: Insight[]; onAc
   return (
     <div className="space-y-3 mb-6">
       <div className="flex items-center gap-2 mb-2">
-        <span className="text-lg">🤖</span>
+        <Bot className="w-4 h-4 text-indigo-600" />
         <h2 className="text-sm font-bold text-gray-700 uppercase tracking-wide">Insights da Sofia</h2>
         <span className="px-2 py-0.5 bg-indigo-100 text-indigo-800 text-xs font-semibold rounded-full">
           {insights.length} {insights.length === 1 ? 'alerta' : 'alertas'}
@@ -416,7 +424,7 @@ export default function MeuDesempenhoPage() {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
         <div className="text-center max-w-md">
-          <div className="text-6xl mb-4">⚠️</div>
+          <AlertTriangle className="w-12 h-12 text-amber-500 mx-auto mb-4" />
           <h2 className="text-xl font-bold text-gray-800 mb-2">Erro ao carregar</h2>
           <p className="text-gray-600 mb-4">{error}</p>
           <button
@@ -466,7 +474,7 @@ export default function MeuDesempenhoPage() {
             onClick={loadDashboard}
             className="px-4 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors flex items-center gap-2"
           >
-            <span>🔄</span>
+            <RefreshCw className="w-4 h-4" />
             Atualizar
           </button>
         </div>
@@ -514,8 +522,8 @@ export default function MeuDesempenhoPage() {
               <p className="text-sm font-semibold text-gray-600">Vendas do Mês</p>
               <p className="text-3xl font-bold text-gray-900">{formatCurrency(data.vendas.totalMes)}</p>
             </div>
-            <div className="p-3 bg-green-100 rounded-full">
-              <span className="text-2xl">💰</span>
+            <div className="p-2.5 bg-green-100 rounded-lg">
+              <DollarSign className="w-5 h-5 text-green-600" />
             </div>
           </div>
           {data.corretor.metaMensal > 0 && (
@@ -541,8 +549,8 @@ export default function MeuDesempenhoPage() {
               <p className="text-sm font-semibold text-gray-600">Comissões do Mês</p>
               <p className="text-3xl font-bold text-gray-900">{formatCurrency(data.comissoes.totalMes)}</p>
             </div>
-            <div className="p-3 bg-blue-100 rounded-full">
-              <span className="text-2xl">💎</span>
+            <div className="p-2.5 bg-blue-100 rounded-lg">
+              <Gem className="w-5 h-5 text-blue-600" />
             </div>
           </div>
           <p className="mt-2 text-xs text-gray-500">
@@ -557,8 +565,8 @@ export default function MeuDesempenhoPage() {
               <p className="text-sm font-semibold text-gray-600">Negociações Ativas</p>
               <p className="text-3xl font-bold text-gray-900">{data.negociacoes.ativas}</p>
             </div>
-            <div className="p-3 bg-purple-100 rounded-full">
-              <span className="text-2xl">📋</span>
+            <div className="p-2.5 bg-purple-100 rounded-lg">
+              <ClipboardList className="w-5 h-5 text-purple-600" />
             </div>
           </div>
           <p className="mt-2 text-xs text-gray-500">
@@ -573,8 +581,8 @@ export default function MeuDesempenhoPage() {
               <p className="text-sm font-semibold text-gray-600">Taxa de Conversão</p>
               <p className="text-3xl font-bold text-gray-900">{data.metricas.taxaConversao}%</p>
             </div>
-            <div className="p-3 bg-yellow-100 rounded-full">
-              <span className="text-2xl">🎯</span>
+            <div className="p-2.5 bg-yellow-100 rounded-lg">
+              <Target className="w-5 h-5 text-yellow-600" />
             </div>
           </div>
           <p className="mt-2 text-xs text-gray-500">
@@ -589,7 +597,7 @@ export default function MeuDesempenhoPage() {
         {/* Coluna 1: Status dos Leads (Com Interatividade) */}
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
           <div className="flex justify-between items-center mb-4">
-            <h3 className="text-lg font-bold text-gray-900">📊 Status da Carteira</h3>
+            <h3 className="text-lg font-bold text-gray-900 flex items-center gap-2"><BarChart3 className="w-4 h-4 text-gray-400" /> Status da Carteira</h3>
             <button 
               onClick={() => router.push('/leads')}
               className="text-xs text-blue-600 hover:text-blue-800 font-medium"
@@ -616,7 +624,7 @@ export default function MeuDesempenhoPage() {
                 className="group flex justify-between items-center p-2 hover:bg-red-50 rounded transition-all cursor-pointer border-l-4 border-red-500 shadow-sm hover:shadow-md"
               >
                 <span className="text-gray-700 flex items-center gap-2">
-                  🔥 Quentes (Prioridade)
+                  Quentes (Prioridade)
                   <span className="opacity-0 group-hover:opacity-100 text-xs text-red-500 font-semibold transition-opacity">Ver →</span>
                 </span>
                 <span className="font-bold text-red-600 text-lg">{data.leads.quentes}</span>
@@ -628,7 +636,7 @@ export default function MeuDesempenhoPage() {
                 className="group flex justify-between items-center p-2 hover:bg-yellow-50 rounded transition-all cursor-pointer border-l-4 border-yellow-500 hover:shadow-sm"
               >
                 <span className="text-gray-700 flex items-center gap-2">
-                  ⚡ Mornos
+                  Mornos
                   <span className="opacity-0 group-hover:opacity-100 text-xs text-yellow-600 font-semibold transition-opacity">Ver →</span>
                 </span>
                 <span className="font-bold text-yellow-600 text-lg">{data.leads.mornos}</span>
@@ -640,7 +648,7 @@ export default function MeuDesempenhoPage() {
                 className="group flex justify-between items-center p-2 hover:bg-blue-50 rounded transition-all cursor-pointer border-l-4 border-blue-500 hover:shadow-sm"
               >
                 <span className="text-gray-700 flex items-center gap-2">
-                   ❄️ Frios
+                   Frios
                    <span className="opacity-0 group-hover:opacity-100 text-xs text-blue-500 font-semibold transition-opacity">Ver →</span>
                 </span>
                 <span className="font-bold text-blue-600 text-lg">{data.leads.frios}</span>
@@ -654,7 +662,7 @@ export default function MeuDesempenhoPage() {
             
             {/* Gráfico 1: Evolução Financeira */}
             <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-              <h3 className="text-lg font-bold text-gray-900 mb-4">📈 Evolução de Vendas</h3>
+              <h3 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2"><TrendingUp className="w-4 h-4 text-gray-400" /> Evolução de Vendas</h3>
               <div className="h-[250px] w-full">
                 <ResponsiveContainer width="100%" height="100%">
                   <ComposedChart data={data.evolucaoMensal}>
@@ -679,7 +687,7 @@ export default function MeuDesempenhoPage() {
 
             {/* Gráfico 2: Funil de Vendas Visual */}
             <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-              <h3 className="text-lg font-bold text-gray-900 mb-4">🌪️ Funil de Conversão</h3>
+              <h3 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2"><Target className="w-4 h-4 text-gray-400" /> Funil de Conversão</h3>
               <div className="h-[250px] w-full">
                 <ResponsiveContainer width="100%" height="100%">
                     <BarChart
@@ -707,7 +715,7 @@ export default function MeuDesempenhoPage() {
       {ranking && (
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
           <div className="flex items-center justify-between mb-6">
-            <h3 className="text-lg font-bold text-gray-900">🏆 Seu Ranking na Equipe</h3>
+            <h3 className="text-lg font-bold text-gray-900 flex items-center gap-2"><Trophy className="w-4 h-4 text-gray-400" /> Seu Ranking na Equipe</h3>
             <span className="text-sm text-gray-500">{ranking.totalCorretores} corretores ativos</span>
           </div>
 
@@ -757,7 +765,7 @@ export default function MeuDesempenhoPage() {
           {/* Comparativo com Média da Equipe */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
-              <h4 className="text-sm font-bold text-gray-700 mb-3">📊 Você vs Média da Equipe</h4>
+              <h4 className="text-sm font-bold text-gray-700 mb-3">Você vs Média da Equipe</h4>
               <div className="space-y-3">
                 <div>
                   <div className="flex justify-between text-xs mb-1">
@@ -829,13 +837,13 @@ export default function MeuDesempenhoPage() {
 
             {/* Top 3 e Comparativo Mês Anterior */}
             <div>
-              <h4 className="text-sm font-bold text-gray-700 mb-3">🥇 Top 3 Fechamentos do Mês</h4>
+              <h4 className="text-sm font-bold text-gray-700 mb-3">Top 3 Fechamentos do Mês</h4>
               <div className="space-y-2 mb-4">
                 {ranking.top3.fechamentos.map((corretor, idx) => (
                   <div key={idx} className="flex items-center justify-between p-2 bg-gray-50 rounded-lg">
                     <div className="flex items-center gap-2">
-                      <span className={`text-lg ${idx === 0 ? '🥇' : idx === 1 ? '🥈' : '🥉'}`}>
-                        {idx === 0 ? '🥇' : idx === 1 ? '🥈' : '🥉'}
+                      <span className={`text-sm font-bold ${idx === 0 ? 'text-yellow-600' : idx === 1 ? 'text-gray-400' : 'text-amber-700'}`}>
+                        {idx + 1}º
                       </span>
                       <span className="text-sm font-medium text-gray-700">{corretor.nome}</span>
                     </div>
@@ -844,7 +852,7 @@ export default function MeuDesempenhoPage() {
                 ))}
               </div>
 
-              <h4 className="text-sm font-bold text-gray-700 mb-3">📅 Comparativo Mês Anterior</h4>
+              <h4 className="text-sm font-bold text-gray-700 mb-3">Comparativo Mês Anterior</h4>
               <div className="grid grid-cols-3 gap-2">
                 <div className="text-center p-2 bg-gray-50 rounded-lg">
                   <p className="text-lg font-bold text-gray-900">{ranking.comparativoMesAnterior.fechamentos}</p>
@@ -894,7 +902,7 @@ export default function MeuDesempenhoPage() {
           {/* Leads Sem Contato - Alerta */}
           <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-bold text-gray-900">⚠️ Leads Sem Contato</h3>
+              <h3 className="text-lg font-bold text-gray-900 flex items-center gap-2"><AlertTriangle className="w-4 h-4 text-amber-500" /> Leads Sem Contato</h3>
               <span className={`text-xs px-2 py-1 rounded-full ${
                 metricas.leadsSemContato.length > 5
                   ? 'bg-red-100 text-red-800'
@@ -908,7 +916,7 @@ export default function MeuDesempenhoPage() {
 
             {metricas.leadsSemContato.length === 0 ? (
               <div className="text-center py-4">
-                <span className="text-4xl">✅</span>
+                <CheckCircle2 className="w-8 h-8 text-green-500 mx-auto" />
                 <p className="text-sm text-gray-500 mt-2">Todos os leads estão em dia!</p>
               </div>
             ) : (
@@ -946,7 +954,7 @@ export default function MeuDesempenhoPage() {
 
           {/* Métricas de Tempo */}
           <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-            <h3 className="text-lg font-bold text-gray-900 mb-4">⏱️ Métricas de Tempo</h3>
+            <h3 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2"><Clock className="w-4 h-4 text-gray-400" /> Métricas de Tempo</h3>
 
             <div className="space-y-4">
               <div className="p-4 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg">
@@ -979,7 +987,7 @@ export default function MeuDesempenhoPage() {
 
           {/* Tarefas e Propostas */}
           <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-            <h3 className="text-lg font-bold text-gray-900 mb-4">📋 Atividades Pendentes</h3>
+            <h3 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2"><ClipboardList className="w-4 h-4 text-gray-400" /> Atividades Pendentes</h3>
 
             <div className="space-y-4">
               <div
@@ -992,7 +1000,7 @@ export default function MeuDesempenhoPage() {
                 </div>
                 {metricas.tarefas.atrasadas > 0 && (
                   <p className="text-xs text-red-600 font-medium mt-1">
-                    ⚠️ {metricas.tarefas.atrasadas} atrasada{metricas.tarefas.atrasadas > 1 ? 's' : ''}
+                    {metricas.tarefas.atrasadas} atrasada{metricas.tarefas.atrasadas > 1 ? 's' : ''}
                   </p>
                 )}
               </div>
@@ -1027,7 +1035,7 @@ export default function MeuDesempenhoPage() {
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
           <div className="flex justify-between items-center mb-4">
             <div className="flex items-center gap-3">
-              <h3 className="text-lg font-bold text-gray-900">📅 Agenda (Próximos)</h3>
+              <h3 className="text-lg font-bold text-gray-900 flex items-center gap-2"><CalendarDays className="w-4 h-4 text-gray-400" /> Agenda (Próximos)</h3>
               {/* Action Button: Nova Visita */}
               <button 
                 onClick={handleNewVisit}
@@ -1061,7 +1069,7 @@ export default function MeuDesempenhoPage() {
                     <div className="flex-1 min-w-0">
                       <p className="text-sm font-medium text-gray-900 truncate">{ag.leadNome}</p>
                       <p className="text-xs text-gray-500">{ag.imovelTitulo}</p>
-                      <p className="text-xs text-gray-400 mt-1">📞 {ag.leadTelefone}</p>
+                      <p className="text-xs text-gray-400 mt-1">{ag.leadTelefone}</p>
                     </div>
                     <div className="text-right ml-4">
                       <p className="text-sm font-bold text-gray-800">
@@ -1083,7 +1091,7 @@ export default function MeuDesempenhoPage() {
 
         {/* Últimas Negociações */}
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-          <h3 className="text-lg font-bold text-gray-900 mb-4">📋 Últimas Movimentações</h3>
+          <h3 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2"><FileText className="w-4 h-4 text-gray-400" /> Últimas Movimentações</h3>
           {data.ultimasNegociacoes.length === 0 ? (
             <p className="text-gray-500 text-center py-4">Nenhuma negociação encontrada</p>
           ) : (

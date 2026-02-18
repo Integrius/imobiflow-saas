@@ -46,7 +46,7 @@ export default function CancelarAssinaturaPage() {
       {/* Header */}
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-gray-900">
-          🚫 Cancelar Assinatura
+          Cancelar Assinatura
         </h1>
         <p className="text-gray-600 mt-2">
           Lamentamos que esteja pensando em cancelar. Gostaríamos de entender o motivo.
@@ -76,33 +76,33 @@ export default function CancelarAssinaturaPage() {
             </div>
 
             <h2 className="text-xl font-semibold text-gray-900 mb-4">
-              📋 O que acontece ao cancelar:
+              O que acontece ao cancelar:
             </h2>
 
             <ul className="space-y-3 mb-6">
               <li className="flex items-start">
-                <span className="text-red-500 mr-3 text-lg">❌</span>
+                <span className="text-red-500 mr-3 text-lg font-bold">x</span>
                 <div>
                   <strong className="text-gray-900">Acesso imediato será bloqueado</strong>
                   <p className="text-gray-600 text-sm">Você não poderá mais fazer login no sistema</p>
                 </div>
               </li>
               <li className="flex items-start">
-                <span className="text-red-500 mr-3 text-lg">🗑️</span>
+                <span className="text-red-500 mr-3 text-lg font-bold">x</span>
                 <div>
                   <strong className="text-gray-900">Dados serão removidos em 30 dias</strong>
                   <p className="text-gray-600 text-sm">Você tem 30 dias para recuperar seus dados antes da exclusão permanente</p>
                 </div>
               </li>
               <li className="flex items-start">
-                <span className="text-red-500 mr-3 text-lg">💳</span>
+                <span className="text-red-500 mr-3 text-lg font-bold">x</span>
                 <div>
                   <strong className="text-gray-900">Cobranças cessarão imediatamente</strong>
                   <p className="text-gray-600 text-sm">Não haverá mais cobranças após o cancelamento</p>
                 </div>
               </li>
               <li className="flex items-start">
-                <span className="text-green-500 mr-3 text-lg">📦</span>
+                <span className="text-green-500 mr-3 text-lg font-bold">+</span>
                 <div>
                   <strong className="text-gray-900">Você pode exportar seus dados</strong>
                   <p className="text-gray-600 text-sm">Antes de cancelar, exporte seus dados usando o botão "Recuperar Dados" no topo</p>
@@ -112,7 +112,7 @@ export default function CancelarAssinaturaPage() {
 
             <div className="bg-emerald-50 border-l-4 border-emerald-400 p-4">
               <p className="text-sm text-emerald-700">
-                💡 <strong>Dica:</strong> Se está enfrentando dificuldades técnicas ou tem dúvidas sobre o sistema, entre em contato com nosso suporte antes de cancelar: <a href="mailto:contato@integrius.com.br" className="underline font-medium">contato@integrius.com.br</a>
+                <strong>Dica:</strong> Se está enfrentando dificuldades técnicas ou tem dúvidas sobre o sistema, entre em contato com nosso suporte antes de cancelar: <a href="mailto:contato@integrius.com.br" className="underline font-medium">contato@integrius.com.br</a>
               </p>
             </div>
           </div>
@@ -120,7 +120,7 @@ export default function CancelarAssinaturaPage() {
           {/* Formulário de Cancelamento */}
           <div className="bg-white rounded-lg shadow-md p-6">
             <h2 className="text-xl font-semibold text-gray-900 mb-4">
-              💬 Por que está cancelando?
+              Por que está cancelando?
             </h2>
             <p className="text-gray-600 text-sm mb-4">
               Seu feedback é muito importante para melhorarmos nosso serviço.
@@ -159,7 +159,7 @@ export default function CancelarAssinaturaPage() {
           <div className="bg-white rounded-lg shadow-md p-8">
             <div className="text-center mb-6">
               <div className="w-20 h-20 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <span className="text-4xl">⚠️</span>
+                <span className="text-4xl text-red-500 font-bold">!</span>
               </div>
               <h2 className="text-2xl font-bold text-gray-900 mb-2">
                 Última Confirmação

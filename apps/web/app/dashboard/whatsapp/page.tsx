@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { api } from '@/lib/api'
+import { Smartphone, Lock, Plug, Settings, Clock, MessageCircle, Link2, Save } from 'lucide-react'
 
 interface WhatsAppConfig {
   id?: string
@@ -135,7 +136,7 @@ export default function WhatsAppConfigPage() {
     <div className="max-w-4xl mx-auto p-6">
       <div className="mb-8">
         <h1 className="text-2xl font-bold text-[#2C2C2C] flex items-center gap-3">
-          <span className="text-3xl">📱</span>
+          <Smartphone className="w-8 h-8 text-gray-400" />
           Configuração WhatsApp (Twilio)
         </h1>
         <p className="text-[#8B7F76] mt-2">
@@ -183,7 +184,7 @@ export default function WhatsAppConfigPage() {
         {/* Credenciais Twilio */}
         <div className="p-6 border-b border-gray-100">
           <h2 className="text-lg font-semibold text-[#2C2C2C] mb-4 flex items-center gap-2">
-            🔐 Credenciais Twilio
+            <Lock className="w-4 h-4 inline mr-1" /> Credenciais Twilio
           </h2>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -242,7 +243,7 @@ export default function WhatsAppConfigPage() {
                   Testando...
                 </>
               ) : (
-                <>🔌 Testar Conexão</>
+                <><Plug className="w-4 h-4 inline mr-1" /> Testar Conexão</>
               )}
             </button>
           </div>
@@ -251,7 +252,7 @@ export default function WhatsAppConfigPage() {
         {/* Configurações de Comportamento */}
         <div className="p-6 border-b border-gray-100">
           <h2 className="text-lg font-semibold text-[#2C2C2C] mb-4 flex items-center gap-2">
-            ⚙️ Comportamento
+            <Settings className="w-4 h-4 inline mr-1" /> Comportamento
           </h2>
 
           <div className="space-y-4">
@@ -338,7 +339,7 @@ export default function WhatsAppConfigPage() {
         {/* Horário Comercial */}
         <div className="p-6 border-b border-gray-100">
           <h2 className="text-lg font-semibold text-[#2C2C2C] mb-4 flex items-center gap-2">
-            🕐 Horário Comercial
+            <Clock className="w-4 h-4 inline mr-1" /> Horário Comercial
           </h2>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -383,7 +384,7 @@ export default function WhatsAppConfigPage() {
         {/* Mensagens Personalizadas */}
         <div className="p-6 border-b border-gray-100">
           <h2 className="text-lg font-semibold text-[#2C2C2C] mb-4 flex items-center gap-2">
-            💬 Mensagens Personalizadas
+            <MessageCircle className="w-4 h-4 inline mr-1" /> Mensagens Personalizadas
           </h2>
 
           <div>
@@ -406,7 +407,7 @@ export default function WhatsAppConfigPage() {
         {/* Webhook Info */}
         <div className="p-6 border-b border-gray-100 bg-blue-50">
           <h2 className="text-lg font-semibold text-[#2C2C2C] mb-4 flex items-center gap-2">
-            🔗 Configuração do Webhook no Twilio
+            <Link2 className="w-4 h-4 inline mr-1" /> Configuração do Webhook no Twilio
           </h2>
 
           <p className="text-sm text-[#2C2C2C] mb-3">
@@ -453,7 +454,7 @@ export default function WhatsAppConfigPage() {
                 Salvando...
               </>
             ) : (
-              <>💾 Salvar Configurações</>
+              <><Save className="w-4 h-4 inline mr-1" /> Salvar Configurações</>
             )}
           </button>
         </div>

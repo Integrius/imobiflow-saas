@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { api } from '@/lib/api';
 import { toast } from '@/lib/toast';
+import { MessageCircle, Mail, Phone, Home, StickyNote, Smartphone, Send, ThumbsUp, Minus, ThumbsDown, ClipboardList, RefreshCw, BarChart3, User, CalendarDays, Bot, Inbox, MapPin } from 'lucide-react';
 
 interface Interacao {
   id: string;
@@ -28,20 +29,20 @@ interface TimelineInteracoesProps {
   onInteracaoAdded?: () => void;
 }
 
-const tipoConfig: Record<string, { icon: string; label: string; color: string; bgColor: string }> = {
-  WHATSAPP: { icon: '💬', label: 'WhatsApp', color: 'text-[#25D366]', bgColor: 'bg-[#25D366]/10' },
-  EMAIL: { icon: '📧', label: 'Email', color: 'text-[#EA4335]', bgColor: 'bg-[#EA4335]/10' },
-  LIGACAO: { icon: '📞', label: 'Ligação', color: 'text-[#4285F4]', bgColor: 'bg-[#4285F4]/10' },
-  VISITA: { icon: '🏠', label: 'Visita', color: 'text-[#FF9800]', bgColor: 'bg-[#FF9800]/10' },
-  NOTA: { icon: '📝', label: 'Anotação', color: 'text-[#9C27B0]', bgColor: 'bg-[#9C27B0]/10' },
-  SMS: { icon: '📱', label: 'SMS', color: 'text-[#607D8B]', bgColor: 'bg-[#607D8B]/10' },
-  TELEGRAM: { icon: '✈️', label: 'Telegram', color: 'text-[#0088CC]', bgColor: 'bg-[#0088CC]/10' },
+const tipoConfig: Record<string, { icon: React.ReactNode; label: string; color: string; bgColor: string }> = {
+  WHATSAPP: { icon: <MessageCircle className="w-3 h-3" />, label: 'WhatsApp', color: 'text-[#25D366]', bgColor: 'bg-[#25D366]/10' },
+  EMAIL: { icon: <Mail className="w-3 h-3" />, label: 'Email', color: 'text-[#EA4335]', bgColor: 'bg-[#EA4335]/10' },
+  LIGACAO: { icon: <Phone className="w-3 h-3" />, label: 'Ligação', color: 'text-[#4285F4]', bgColor: 'bg-[#4285F4]/10' },
+  VISITA: { icon: <Home className="w-3 h-3" />, label: 'Visita', color: 'text-[#FF9800]', bgColor: 'bg-[#FF9800]/10' },
+  NOTA: { icon: <StickyNote className="w-3 h-3" />, label: 'Anotação', color: 'text-[#9C27B0]', bgColor: 'bg-[#9C27B0]/10' },
+  SMS: { icon: <Smartphone className="w-3 h-3" />, label: 'SMS', color: 'text-[#607D8B]', bgColor: 'bg-[#607D8B]/10' },
+  TELEGRAM: { icon: <Send className="w-3 h-3" />, label: 'Telegram', color: 'text-[#0088CC]', bgColor: 'bg-[#0088CC]/10' },
 };
 
-const sentimentoConfig: Record<string, { icon: string; color: string }> = {
-  POSITIVO: { icon: '😊', color: 'text-green-500' },
-  NEUTRO: { icon: '😐', color: 'text-gray-500' },
-  NEGATIVO: { icon: '😞', color: 'text-red-500' },
+const sentimentoConfig: Record<string, { icon: React.ReactNode; color: string }> = {
+  POSITIVO: { icon: <ThumbsUp className="w-3 h-3" />, color: 'text-green-500' },
+  NEUTRO: { icon: <Minus className="w-3 h-3" />, color: 'text-gray-500' },
+  NEGATIVO: { icon: <ThumbsDown className="w-3 h-3" />, color: 'text-red-500' },
 };
 
 export default function TimelineInteracoes({
@@ -127,7 +128,7 @@ export default function TimelineInteracoes({
       {showHeader && (
         <div className="flex items-center justify-between">
           <h4 className="text-md font-bold text-[#064E3B] flex items-center gap-2">
-            📋 Histórico de Interações
+            <ClipboardList className="w-4 h-4 inline mr-1" /> Histórico de Interações
             <span className="text-xs font-normal text-[#4B5563] bg-gray-100 px-2 py-0.5 rounded-full">
               {interacoes.length} registros
             </span>
@@ -137,7 +138,7 @@ export default function TimelineInteracoes({
             className="text-xs text-[#00C48C] hover:text-[#059669] font-medium flex items-center gap-1"
             title="Atualizar"
           >
-            🔄 Atualizar
+            <RefreshCw className="w-3.5 h-3.5 inline mr-1" /> Atualizar
           </button>
         </div>
       )}
@@ -156,7 +157,7 @@ export default function TimelineInteracoes({
             Todos ({interacoes.length})
           </button>
           {tiposPresentes.map((tipo) => {
-            const config = tipoConfig[tipo] || { icon: '📌', label: tipo, color: 'text-gray-500', bgColor: 'bg-gray-100' };
+            const config = tipoConfig[tipo] || { icon: <MapPin className="w-3 h-3" />, label: tipo, color: 'text-gray-500', bgColor: 'bg-gray-100' };
             const count = interacoes.filter((i) => i.tipo === tipo).length;
             return (
               <button
@@ -180,7 +181,7 @@ export default function TimelineInteracoes({
       {/* Timeline */}
       {filteredInteracoes.length === 0 ? (
         <div className="text-center py-8 bg-gray-50 rounded-lg border-2 border-dashed border-gray-200">
-          <div className="text-4xl mb-2">📭</div>
+          <div className="mb-2"><Inbox className="w-10 h-10 text-gray-300 mx-auto" /></div>
           <p className="text-[#4B5563] font-medium">
             {interacoes.length === 0
               ? 'Nenhuma interação registrada ainda'
@@ -197,7 +198,7 @@ export default function TimelineInteracoes({
 
           <div className="space-y-4">
             {filteredInteracoes.map((interacao, index) => {
-              const config = tipoConfig[interacao.tipo] || { icon: '📌', label: interacao.tipo, color: 'text-gray-500', bgColor: 'bg-gray-100' };
+              const config = tipoConfig[interacao.tipo] || { icon: <MapPin className="w-3 h-3" />, label: interacao.tipo, color: 'text-gray-500', bgColor: 'bg-gray-100' };
               const sentimento = interacao.sentimento ? sentimentoConfig[interacao.sentimento] : null;
               const isExpanded = expandedId === interacao.id;
 
@@ -240,7 +241,7 @@ export default function TimelineInteracoes({
                         )}
                         {interacao.automatico && (
                           <span className="text-[10px] bg-purple-100 text-purple-600 px-1.5 py-0.5 rounded" title="Registrado automaticamente">
-                            🤖 Auto
+                            <Bot className="w-3 h-3 inline mr-0.5" /> Auto
                           </span>
                         )}
                       </div>
@@ -267,12 +268,12 @@ export default function TimelineInteracoes({
                         )}
                         {interacao.corretor?.user?.nome && (
                           <div className="flex items-center gap-2 text-xs text-[#4B5563]">
-                            <span>👤</span>
+                            <User className="w-3 h-3" />
                             <span>Registrado por: <strong>{interacao.corretor.user.nome}</strong></span>
                           </div>
                         )}
                         <div className="flex items-center gap-2 text-xs text-[#9CA3AF]">
-                          <span>📅</span>
+                          <CalendarDays className="w-3 h-3" />
                           <span>{formatFullDate(interacao.created_at)}</span>
                         </div>
                       </div>
@@ -298,7 +299,7 @@ export default function TimelineInteracoes({
           <div className="flex items-center justify-between text-xs">
             <div className="flex items-center gap-4">
               <span className="text-[#4B5563]">
-                📊 <strong>{interacoes.length}</strong> interações total
+                <BarChart3 className="w-3.5 h-3.5 inline mr-1" /> <strong>{interacoes.length}</strong> interações total
               </span>
               {interacoes.filter((i) => i.direcao === 'SAIDA').length > 0 && (
                 <span className="text-green-600">

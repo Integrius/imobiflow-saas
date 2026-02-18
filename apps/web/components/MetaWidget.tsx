@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { api } from '@/lib/api';
+import { Target } from 'lucide-react';
 
 interface MetaData {
   id: string;
@@ -95,7 +96,7 @@ export default function MetaWidget() {
     return (
       <div className="bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl p-6 shadow-lg border-2 border-gray-200">
         <div className="text-center">
-          <span className="text-4xl mb-3 block">🎯</span>
+          <span className="mb-3 block"><Target className="w-10 h-10 text-gray-300 mx-auto" /></span>
           <h3 className="text-lg font-bold text-[#064E3B] mb-2">Metas do Mês</h3>
           <p className="text-sm text-[#4B5563]">
             Nenhuma meta definida para este mês.

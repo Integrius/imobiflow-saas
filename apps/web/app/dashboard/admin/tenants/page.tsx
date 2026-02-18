@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { api } from '@/lib/api';
+import { Building, RefreshCw, Search, Check, Users, Home } from 'lucide-react';
 
 interface TenantAdmin {
   id: string;
@@ -224,7 +225,7 @@ export default function AdminTenantsPage() {
   if (error) {
     return (
       <div className="bg-red-50 border border-red-200 rounded-lg p-6 m-6">
-        <h2 className="text-red-800 font-bold text-lg mb-2">❌ Erro</h2>
+        <h2 className="text-red-800 font-bold text-lg mb-2">Erro</h2>
         <p className="text-red-600">{error}</p>
         <button
           onClick={loadData}
@@ -242,7 +243,7 @@ export default function AdminTenantsPage() {
       <div className="flex justify-between items-center">
         <div>
           <h1 className="text-3xl font-bold text-[#2C2C2C]">
-            🏢 Administração de Tenants
+            <Building className="w-5 h-5 inline mr-1" /> Administração de Tenants
           </h1>
           <p className="text-gray-700 mt-1 font-medium">
             Gerenciamento centralizado de todas as imobiliárias cadastradas
@@ -252,7 +253,7 @@ export default function AdminTenantsPage() {
           onClick={loadData}
           className="px-4 py-2.5 bg-[#8FD14F] text-white rounded-lg hover:bg-[#7FB344] transition-colors font-bold"
         >
-          🔄 Atualizar
+          <RefreshCw className="w-4 h-4 inline mr-1" /> Atualizar
         </button>
       </div>
 
@@ -320,7 +321,7 @@ export default function AdminTenantsPage() {
                   Atualizando...
                 </>
               ) : (
-                '✓ Aplicar'
+                'Aplicar'
               )}
             </button>
 
@@ -340,7 +341,7 @@ export default function AdminTenantsPage() {
           {/* Busca */}
           <div className="md:col-span-2">
             <label className="block text-sm font-semibold text-gray-700 mb-2">
-              🔍 Buscar
+              <Search className="w-4 h-4 inline mr-1" /> Buscar
             </label>
             <input
               type="text"
@@ -520,10 +521,10 @@ export default function AdminTenantsPage() {
                   <td className="px-6 py-4 whitespace-nowrap text-sm">
                     <div className="space-y-1">
                       <div className="text-xs">
-                        👥 {tenant.uso.usuarios}/{tenant.limites.usuarios}
+                        <Users className="w-3.5 h-3.5 inline mr-0.5" /> {tenant.uso.usuarios}/{tenant.limites.usuarios}
                       </div>
                       <div className="text-xs">
-                        🏠 {tenant.uso.imoveis}/{tenant.limites.imoveis}
+                        <Home className="w-3.5 h-3.5 inline mr-0.5" /> {tenant.uso.imoveis}/{tenant.limites.imoveis}
                       </div>
                     </div>
                   </td>

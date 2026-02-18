@@ -6,6 +6,7 @@ import { toast } from '@/lib/toast';
 import Modal from '@/components/Modal';
 import ImageUpload from '@/components/ImageUpload';
 import { formatCEP, formatCurrencyInput, formatCurrencyForEdit, parseCurrency, unformatNumbers } from '@/lib/formatters';
+import { Search, Building2, MapPin, Ruler, BedDouble, Bath, Car, Briefcase, Pencil, Trash2, Link2, Home, User, ClipboardList } from 'lucide-react';
 
 interface Imovel {
   id: string;
@@ -373,7 +374,7 @@ export default function ImoveisPage() {
         <div className="flex-1 max-w-md">
           <input
             type="text"
-            placeholder="🔍 Buscar por título, endereço ou cidade..."
+            placeholder="Buscar por título, endereço ou cidade..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="input-modern"
@@ -407,12 +408,12 @@ export default function ImoveisPage() {
                     onError={(e) => {
                       e.currentTarget.src = '';
                       e.currentTarget.style.display = 'none';
-                      e.currentTarget.parentElement!.innerHTML = '<div class="flex flex-col items-center justify-center h-full"><span class="text-6xl mb-2">🏠</span><span class="text-[#4B5563] font-semibold">Imagem indisponível</span></div>';
+                      e.currentTarget.parentElement!.innerHTML = '<div class="flex flex-col items-center justify-center h-full"><span class="text-[#4B5563] font-semibold">Imagem indisponível</span></div>';
                     }}
                   />
                 ) : (
                   <div className="flex flex-col items-center justify-center">
-                    <span className="text-7xl mb-3">🏠</span>
+                    <Building2 className="w-16 h-16 text-gray-300 mb-3" />
                     <span className="text-[#4B5563] font-semibold">Sem imagem</span>
                   </div>
                 )}
@@ -433,21 +434,21 @@ export default function ImoveisPage() {
                   </h3>
                   <p className="text-xs font-semibold text-[#00C48C] uppercase tracking-wider bg-[#00C48C]/20 px-2 py-1 rounded-md inline-block border border-[#00C48C]/50">{imovel.tipo}</p>
                 </div>
-                <p className="text-sm text-[#374151] mb-1 font-semibold">📍 {imovel.endereco?.logradouro}, {imovel.endereco?.numero}</p>
+                <p className="text-sm text-[#374151] mb-1 font-semibold flex items-center gap-1"><MapPin className="w-3.5 h-3.5 text-gray-400" /> {imovel.endereco?.logradouro}, {imovel.endereco?.numero}</p>
                 <p className="text-xs text-[#4B5563] font-medium mb-4">{imovel.endereco?.cidade} - {imovel.endereco?.estado}</p>
 
                 <div className="flex flex-wrap gap-2 text-xs text-[#064E3B] mb-4">
                   {imovel.caracteristicas?.area_total && (
-                    <span className="px-2 py-1 bg-[#059669]/20 rounded-md font-bold border border-[#059669]/50">📐 {imovel.caracteristicas.area_total}m²</span>
+                    <span className="px-2 py-1 bg-[#059669]/20 rounded-md font-bold border border-[#059669]/50 flex items-center gap-1"><Ruler className="w-3.5 h-3.5" /> {imovel.caracteristicas.area_total}m²</span>
                   )}
                   {imovel.caracteristicas?.quartos && (
-                    <span className="px-2 py-1 bg-[#059669]/20 rounded-md font-bold border border-[#059669]/50">🛏️ {imovel.caracteristicas.quartos} quartos</span>
+                    <span className="px-2 py-1 bg-[#059669]/20 rounded-md font-bold border border-[#059669]/50 flex items-center gap-1"><BedDouble className="w-3.5 h-3.5" /> {imovel.caracteristicas.quartos} quartos</span>
                   )}
                   {imovel.caracteristicas?.banheiros && (
-                    <span className="px-2 py-1 bg-[#059669]/20 rounded-md font-bold border border-[#059669]/50">🚿 {imovel.caracteristicas.banheiros} banheiros</span>
+                    <span className="px-2 py-1 bg-[#059669]/20 rounded-md font-bold border border-[#059669]/50 flex items-center gap-1"><Bath className="w-3.5 h-3.5" /> {imovel.caracteristicas.banheiros} banheiros</span>
                   )}
                   {imovel.caracteristicas?.vagas_garagem && (
-                    <span className="px-2 py-1 bg-[#059669]/20 rounded-md font-bold border border-[#059669]/50">🚗 {imovel.caracteristicas.vagas_garagem} vagas</span>
+                    <span className="px-2 py-1 bg-[#059669]/20 rounded-md font-bold border border-[#059669]/50 flex items-center gap-1"><Car className="w-3.5 h-3.5" /> {imovel.caracteristicas.vagas_garagem} vagas</span>
                   )}
                 </div>
 
@@ -488,7 +489,7 @@ export default function ImoveisPage() {
                   onClick={() => window.location.href = `/dashboard/negociacoes?imovel=${imovel.id}&proprietario=${imovel.proprietario_id}&corretor=${imovel.corretor_responsavel?.id || ''}`}
                   className="w-full mb-3 px-4 py-2.5 text-sm bg-gradient-to-r from-[#FFB627] to-[#F59E0B] text-white rounded-lg hover:shadow-lg font-bold transition-all"
                 >
-                  💼 Nova Proposta
+                  <Briefcase className="w-3.5 h-3.5 inline" /> Nova Proposta
                 </button>
 
                 <div className="flex gap-2">
@@ -496,7 +497,7 @@ export default function ImoveisPage() {
                     onClick={() => openEditModal(imovel)}
                     className="flex-1 px-4 py-2.5 text-sm bg-gradient-to-r from-[#00C48C] to-[#059669] text-white rounded-lg hover:shadow-lg font-bold transition-all"
                   >
-                    ✏️ Editar
+                    <Pencil className="w-3.5 h-3.5 inline" /> Editar
                   </button>
                   <button
                     onClick={() => {
@@ -505,7 +506,7 @@ export default function ImoveisPage() {
                     }}
                     className="flex-1 px-4 py-2.5 text-sm bg-[#EF4444] text-white rounded-lg hover:bg-[#DC2626] font-bold transition-all"
                   >
-                    🗑️ Excluir
+                    <Trash2 className="w-3.5 h-3.5 inline" /> Excluir
                   </button>
                 </div>
               </div>
@@ -777,7 +778,7 @@ export default function ImoveisPage() {
           {editingImovel && (
             <div className="space-y-4 bg-gradient-to-r from-[#F0FDF4] to-[#EFF6FF] p-4 rounded-lg border-2 border-[#00C48C]/30">
               <h4 className="text-md font-bold text-[#064E3B] border-b border-[#00C48C]/30 pb-2 flex items-center gap-2">
-                🔗 Vinculações
+                <Link2 className="w-4 h-4 inline mr-1" /> Vinculações
               </h4>
 
               {loadingPropostas ? (
@@ -788,7 +789,7 @@ export default function ImoveisPage() {
                 <div className="grid grid-cols-3 gap-4">
                   {/* Proprietário */}
                   <div className="bg-white p-3 rounded-lg border-2 border-[#FFB627]/30">
-                    <div className="text-xs font-bold text-[#374151] mb-1">🏠 PROPRIETÁRIO</div>
+                    <div className="text-xs font-bold text-[#374151] mb-1"><Home className="w-3 h-3 inline mr-1" />PROPRIETÁRIO</div>
                     {editingImovel.proprietario ? (
                       <div className="text-sm font-bold text-[#064E3B]">{editingImovel.proprietario.nome}</div>
                     ) : (
@@ -798,7 +799,7 @@ export default function ImoveisPage() {
 
                   {/* Corretor Responsável */}
                   <div className="bg-white p-3 rounded-lg border-2 border-[#A97E6F]/30">
-                    <div className="text-xs font-bold text-[#374151] mb-1">👤 CORRETOR</div>
+                    <div className="text-xs font-bold text-[#374151] mb-1"><User className="w-3 h-3 inline mr-1" />CORRETOR</div>
                     {editingImovel.corretor_responsavel ? (
                       <div className="text-sm font-bold text-[#064E3B]">{editingImovel.corretor_responsavel.user.nome}</div>
                     ) : (
@@ -808,7 +809,7 @@ export default function ImoveisPage() {
 
                   {/* Total de Propostas */}
                   <div className="bg-white p-3 rounded-lg border-2 border-[#00C48C]/30">
-                    <div className="text-xs font-bold text-[#374151] mb-1">📋 PROPOSTAS</div>
+                    <div className="text-xs font-bold text-[#374151] mb-1"><ClipboardList className="w-3 h-3 inline mr-1" />PROPOSTAS</div>
                     <div className="text-3xl font-bold text-[#00C48C]">
                       {totalPropostas}
                     </div>

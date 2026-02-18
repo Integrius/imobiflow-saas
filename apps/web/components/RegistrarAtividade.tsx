@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { api } from '@/lib/api';
 import { toast } from '@/lib/toast';
 import Modal from '@/components/Modal';
+import { Phone, MessageCircle, Home, StickyNote, CheckCircle2 } from 'lucide-react';
 
 interface RegistrarAtividadeProps {
   leadId: string;
@@ -13,11 +14,11 @@ interface RegistrarAtividadeProps {
 
 type TipoAtividade = 'LIGACAO' | 'WHATSAPP' | 'VISITA' | 'NOTA';
 
-const tiposAtividade: { value: TipoAtividade; label: string; icon: string }[] = [
-  { value: 'LIGACAO', label: 'Ligação', icon: '📞' },
-  { value: 'WHATSAPP', label: 'WhatsApp', icon: '💬' },
-  { value: 'VISITA', label: 'Visita', icon: '🏠' },
-  { value: 'NOTA', label: 'Anotação', icon: '📝' },
+const tiposAtividade: { value: TipoAtividade; label: string; icon: React.ReactNode }[] = [
+  { value: 'LIGACAO', label: 'Ligação', icon: <Phone className="w-5 h-5" /> },
+  { value: 'WHATSAPP', label: 'WhatsApp', icon: <MessageCircle className="w-5 h-5" /> },
+  { value: 'VISITA', label: 'Visita', icon: <Home className="w-5 h-5" /> },
+  { value: 'NOTA', label: 'Anotação', icon: <StickyNote className="w-5 h-5" /> },
 ];
 
 export default function RegistrarAtividade({ leadId, leadNome, onSuccess }: RegistrarAtividadeProps) {
@@ -73,7 +74,7 @@ export default function RegistrarAtividade({ leadId, leadNome, onSuccess }: Regi
         className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-white bg-gradient-to-r from-[#00C48C] to-[#059669] rounded-lg hover:shadow-md transition-all hover:scale-105"
         title="Registrar atividade com este lead"
       >
-        <span>✅</span>
+        <CheckCircle2 className="w-4 h-4" />
         <span>Registrar Atividade</span>
       </button>
 
@@ -163,7 +164,7 @@ export default function RegistrarAtividade({ leadId, leadNome, onSuccess }: Regi
               disabled={submitting || !tipoSelecionado || (tipoSelecionado === 'NOTA' && !observacao)}
               className="px-6 py-2.5 bg-gradient-to-r from-[#00C48C] to-[#059669] text-white rounded-lg hover:shadow-lg font-bold transition-all disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {submitting ? 'Registrando...' : '✅ Registrar'}
+              {submitting ? 'Registrando...' : 'Registrar'}
             </button>
           </div>
         </div>

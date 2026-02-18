@@ -2,30 +2,80 @@
 
 import { useState, useEffect } from 'react';
 import { api } from '@/lib/api';
+import {
+  ClipboardList,
+  Search,
+  Lock,
+  DoorOpen,
+  XCircle,
+  KeyRound,
+  RefreshCw,
+  Mail,
+  Building2,
+  Ban,
+  CheckCircle2,
+  Package,
+  CreditCard,
+  DollarSign,
+  AlertTriangle,
+  UserRound,
+  Pencil,
+  CircleDot,
+  CircleCheck,
+  Settings,
+  ShieldAlert,
+} from 'lucide-react';
 
-// Tipos de atividades com labels em português
-const TIPOS_ATIVIDADE = {
-  LOGIN: '🔐 Login',
-  LOGOUT: '🚪 Logout',
-  LOGIN_FALHOU: '❌ Login Falhou',
-  SENHA_ALTERADA: '🔑 Senha Alterada',
-  SENHA_RESETADA: '🔄 Senha Resetada',
-  EMAIL_ALTERADO: '📧 Email Alterado',
-  TENANT_CRIADO: '🏢 Conta Criada',
-  TENANT_CANCELADO: '🚫 Conta Cancelada',
-  TENANT_REATIVADO: '✅ Conta Reativada',
-  TENANT_EXPORTACAO_DADOS: '📦 Exportação de Dados',
-  ASSINATURA_ATIVADA: '💳 Assinatura Ativada',
-  ASSINATURA_CANCELADA: '❌ Assinatura Cancelada',
-  PAGAMENTO_REALIZADO: '💰 Pagamento Realizado',
-  PAGAMENTO_FALHOU: '⚠️ Pagamento Falhou',
-  USUARIO_CRIADO: '👤 Usuário Criado',
-  USUARIO_EDITADO: '✏️ Usuário Editado',
-  USUARIO_DESATIVADO: '🔴 Usuário Desativado',
-  USUARIO_REATIVADO: '🟢 Usuário Reativado',
-  CONFIGURACAO_ALTERADA: '⚙️ Configuração Alterada',
-  ACESSO_NEGADO: '🛑 Acesso Negado',
+// Tipos de atividades com labels em português (text-only for <option> elements)
+const TIPOS_ATIVIDADE_LABELS: Record<string, string> = {
+  LOGIN: 'Login',
+  LOGOUT: 'Logout',
+  LOGIN_FALHOU: 'Login Falhou',
+  SENHA_ALTERADA: 'Senha Alterada',
+  SENHA_RESETADA: 'Senha Resetada',
+  EMAIL_ALTERADO: 'Email Alterado',
+  TENANT_CRIADO: 'Conta Criada',
+  TENANT_CANCELADO: 'Conta Cancelada',
+  TENANT_REATIVADO: 'Conta Reativada',
+  TENANT_EXPORTACAO_DADOS: 'Exportação de Dados',
+  ASSINATURA_ATIVADA: 'Assinatura Ativada',
+  ASSINATURA_CANCELADA: 'Assinatura Cancelada',
+  PAGAMENTO_REALIZADO: 'Pagamento Realizado',
+  PAGAMENTO_FALHOU: 'Pagamento Falhou',
+  USUARIO_CRIADO: 'Usuário Criado',
+  USUARIO_EDITADO: 'Usuário Editado',
+  USUARIO_DESATIVADO: 'Usuário Desativado',
+  USUARIO_REATIVADO: 'Usuário Reativado',
+  CONFIGURACAO_ALTERADA: 'Configuração Alterada',
+  ACESSO_NEGADO: 'Acesso Negado',
 };
+
+// Icon + color mapping for each activity type
+const TIPOS_ATIVIDADE_ICONS: Record<string, { icon: React.ElementType; className: string }> = {
+  LOGIN: { icon: Lock, className: 'text-blue-500' },
+  LOGOUT: { icon: DoorOpen, className: 'text-gray-400' },
+  LOGIN_FALHOU: { icon: XCircle, className: 'text-red-500' },
+  SENHA_ALTERADA: { icon: KeyRound, className: 'text-amber-500' },
+  SENHA_RESETADA: { icon: RefreshCw, className: 'text-amber-500' },
+  EMAIL_ALTERADO: { icon: Mail, className: 'text-blue-500' },
+  TENANT_CRIADO: { icon: Building2, className: 'text-green-600' },
+  TENANT_CANCELADO: { icon: Ban, className: 'text-red-500' },
+  TENANT_REATIVADO: { icon: CheckCircle2, className: 'text-green-500' },
+  TENANT_EXPORTACAO_DADOS: { icon: Package, className: 'text-purple-500' },
+  ASSINATURA_ATIVADA: { icon: CreditCard, className: 'text-green-500' },
+  ASSINATURA_CANCELADA: { icon: XCircle, className: 'text-red-500' },
+  PAGAMENTO_REALIZADO: { icon: DollarSign, className: 'text-green-500' },
+  PAGAMENTO_FALHOU: { icon: AlertTriangle, className: 'text-amber-500' },
+  USUARIO_CRIADO: { icon: UserRound, className: 'text-blue-500' },
+  USUARIO_EDITADO: { icon: Pencil, className: 'text-gray-500' },
+  USUARIO_DESATIVADO: { icon: CircleDot, className: 'text-red-500' },
+  USUARIO_REATIVADO: { icon: CircleCheck, className: 'text-green-500' },
+  CONFIGURACAO_ALTERADA: { icon: Settings, className: 'text-gray-500' },
+  ACESSO_NEGADO: { icon: ShieldAlert, className: 'text-red-600' },
+};
+
+// Combined type for backward compatibility with ActivityLog interface
+const TIPOS_ATIVIDADE = TIPOS_ATIVIDADE_LABELS;
 
 interface ActivityLog {
   id: string;
@@ -125,7 +175,7 @@ export default function TenantLogsPage() {
       {/* Header */}
       <div className="mb-6">
         <h1 className="text-3xl font-bold text-gray-900">
-          📋 Logs de Atividades
+          Logs de Atividades
         </h1>
         <p className="text-gray-600 mt-2">
           Histórico de todas as atividades da sua conta
@@ -158,7 +208,7 @@ export default function TenantLogsPage() {
 
       {/* Filtros */}
       <div className="bg-white rounded-lg shadow p-4 mb-6">
-        <h2 className="text-lg font-semibold mb-4">🔍 Filtros</h2>
+        <h2 className="text-lg font-semibold mb-4">Filtros</h2>
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">

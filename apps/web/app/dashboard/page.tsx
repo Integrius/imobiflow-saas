@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { api } from '@/lib/api';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import Link from 'next/link';
+import { Users, Building2, Handshake, Sparkles, ListChecks, AlertTriangle, UserPlus, Plus } from 'lucide-react';
 
 interface DashboardData {
   leads: { total: number; quentes: number; mornos: number; frios: number };
@@ -181,7 +182,7 @@ export default function DashboardPage() {
                 <span className="text-xs font-bold text-gray-600 uppercase">Leads</span>
                 <div className="text-3xl font-bold text-gray-900 mt-1">{data.leads.total}</div>
                 <div className="flex items-center gap-1 mt-2">
-                  <span className="text-xs text-red-500 font-semibold">🔥 {data.leads.quentes}</span>
+                  <span className="text-xs text-red-500 font-semibold">{data.leads.quentes} quentes</span>
                 </div>
               </div>
 
@@ -342,7 +343,7 @@ export default function DashboardPage() {
               <div className="bg-white/10 backdrop-blur-md rounded-lg p-5 border border-white/20 text-white">
                 <div className="flex items-center gap-3 mb-3">
                   <div className="w-8 h-8 rounded-full bg-white flex items-center justify-center animate-pulse">
-                    <span className="text-indigo-600">✨</span>
+                    <Sparkles className="w-4 h-4 text-indigo-600" />
                   </div>
                   <h3 className="font-bold text-md">Sofia Insights</h3>
                 </div>
@@ -415,31 +416,31 @@ export default function DashboardPage() {
             <div className="space-y-2">
               <Link
                 href="/dashboard/leads?new=true"
-                className="flex items-center gap-3 p-3 rounded-lg bg-green-50 text-green-700 hover:bg-green-100 transition-colors"
+                className="flex items-center gap-2.5 p-3 rounded-lg bg-green-50 text-green-700 hover:bg-green-100 transition-colors"
               >
-                <span>👥</span>
-                <span className="text-sm font-semibold">Novo Lead</span>
+                <UserPlus className="w-4 h-4" />
+                <span className="text-sm font-medium">Novo Lead</span>
               </Link>
               <Link
                 href="/dashboard/imoveis?new=true"
-                className="flex items-center gap-3 p-3 rounded-lg bg-gray-50 text-gray-800 hover:bg-gray-100 transition-colors"
+                className="flex items-center gap-2.5 p-3 rounded-lg bg-gray-50 text-gray-800 hover:bg-gray-100 transition-colors"
               >
-                <span>🏠</span>
-                <span className="text-sm font-semibold">Novo Imóvel</span>
+                <Building2 className="w-4 h-4 text-gray-500" />
+                <span className="text-sm font-medium">Novo Imóvel</span>
               </Link>
               <Link
                 href="/dashboard/negociacoes"
-                className="flex items-center gap-3 p-3 rounded-lg bg-gray-50 text-gray-800 hover:bg-gray-100 transition-colors"
+                className="flex items-center gap-2.5 p-3 rounded-lg bg-gray-50 text-gray-800 hover:bg-gray-100 transition-colors"
               >
-                <span>💼</span>
-                <span className="text-sm font-semibold">Ver Negociações</span>
+                <Handshake className="w-4 h-4 text-gray-500" />
+                <span className="text-sm font-medium">Ver Negociações</span>
               </Link>
               <Link
                 href="/dashboard/tarefas?new=true"
-                className="flex items-center gap-3 p-3 rounded-lg bg-gray-50 text-gray-800 hover:bg-gray-100 transition-colors"
+                className="flex items-center gap-2.5 p-3 rounded-lg bg-gray-50 text-gray-800 hover:bg-gray-100 transition-colors"
               >
-                <span>📋</span>
-                <span className="text-sm font-semibold">Nova Tarefa</span>
+                <ListChecks className="w-4 h-4 text-gray-500" />
+                <span className="text-sm font-medium">Nova Tarefa</span>
               </Link>
             </div>
           </div>
@@ -448,7 +449,7 @@ export default function DashboardPage() {
           {data && (data.leads.quentes > 0 || (meta && calcularProgressoMeta() < 50)) && (
             <div className="bg-amber-50 border border-amber-200 p-4 rounded-xl">
               <h3 className="font-bold text-amber-900 text-sm mb-3 flex items-center gap-2">
-                <span>⚠️</span>
+                <AlertTriangle className="w-4 h-4" />
                 Atenção
               </h3>
               <div className="space-y-2">

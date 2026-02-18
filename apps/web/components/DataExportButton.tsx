@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { api } from '@/lib/api';
+import { Package, CheckCircle2 } from 'lucide-react';
 
 interface ExportStatus {
   canExport: boolean;
@@ -40,13 +41,13 @@ export default function DataExportButton() {
     try {
       const response = await api.post('/export/data');
 
-      alert(`✅ Dados exportados com sucesso!\n\n${response.data.stats.leads} leads, ${response.data.stats.imoveis} imóveis, ${response.data.stats.proprietarios} proprietários, ${response.data.stats.negociacoes} negociações e ${response.data.stats.agendamentos} agendamentos foram enviados para seu email.`);
+      alert(`Dados exportados com sucesso!\n\n${response.data.stats.leads} leads, ${response.data.stats.imoveis} imóveis, ${response.data.stats.proprietarios} proprietários, ${response.data.stats.negociacoes} negociações e ${response.data.stats.agendamentos} agendamentos foram enviados para seu email.`);
 
       // Atualizar status
       await checkExportStatus();
     } catch (error: any) {
       const errorMessage = error.response?.data?.error || 'Erro ao exportar dados';
-      alert(`❌ ${errorMessage}`);
+      alert(`Erro: ${errorMessage}`);
     } finally {
       setIsExporting(false);
     }
@@ -78,7 +79,7 @@ export default function DataExportButton() {
           </>
         ) : (
           <>
-            📦 Recuperar Dados
+            <Package className="w-4 h-4 inline mr-1" /> Recuperar Dados
           </>
         )}
       </button>
@@ -90,7 +91,7 @@ export default function DataExportButton() {
     return (
       <div className="bg-gradient-to-r from-[#D4EDDA] to-[#C3E6CB] border-2 border-[#28A745] rounded-lg px-4 py-2">
         <p className="text-sm font-semibold text-[#155724] flex items-center gap-2">
-          <span className="text-lg">✅</span>
+          <CheckCircle2 className="w-5 h-5 text-green-500" />
           Dados exportados e enviados por email
         </p>
       </div>

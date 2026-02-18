@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { api } from '@/lib/api'
 import Modal from '@/components/Modal'
+import { Clock, CheckCircle2, Home, XCircle, Ban, Monitor, RefreshCw, CalendarDays, Star } from 'lucide-react'
 
 interface Agendamento {
   id: string
@@ -43,17 +44,17 @@ interface Agendamento {
 }
 
 const STATUS_CONFIG: Record<string, { label: string; color: string; icon: string }> = {
-  PENDENTE: { label: 'Pendente', color: 'bg-yellow-100 text-yellow-700', icon: '⏳' },
-  CONFIRMADO: { label: 'Confirmado', color: 'bg-blue-100 text-blue-700', icon: '✅' },
-  REALIZADO: { label: 'Realizado', color: 'bg-green-100 text-green-700', icon: '🏠' },
-  CANCELADO: { label: 'Cancelado', color: 'bg-red-100 text-red-700', icon: '❌' },
-  NAO_COMPARECEU: { label: 'Não Compareceu', color: 'bg-gray-100 text-gray-700', icon: '🚫' },
+  PENDENTE: { label: 'Pendente', color: 'bg-yellow-100 text-yellow-700', icon: '' },
+  CONFIRMADO: { label: 'Confirmado', color: 'bg-blue-100 text-blue-700', icon: '' },
+  REALIZADO: { label: 'Realizado', color: 'bg-green-100 text-green-700', icon: '' },
+  CANCELADO: { label: 'Cancelado', color: 'bg-red-100 text-red-700', icon: '' },
+  NAO_COMPARECEU: { label: 'Não Compareceu', color: 'bg-gray-100 text-gray-700', icon: '' },
 }
 
 const TIPO_VISITA_CONFIG: Record<string, { label: string; icon: string }> = {
-  PRESENCIAL: { label: 'Presencial', icon: '🏠' },
-  VIRTUAL: { label: 'Virtual', icon: '💻' },
-  HIBRIDA: { label: 'Híbrida', icon: '🔄' },
+  PRESENCIAL: { label: 'Presencial', icon: '' },
+  VIRTUAL: { label: 'Virtual', icon: '' },
+  HIBRIDA: { label: 'Híbrida', icon: '' },
 }
 
 export default function AgendamentosPage() {
@@ -369,7 +370,7 @@ export default function AgendamentosPage() {
       {/* Lista de Agendamentos */}
       {agendamentos.length === 0 ? (
         <div className="bg-white rounded-lg p-12 shadow-sm border border-gray-100 text-center">
-          <p className="text-4xl mb-4">📅</p>
+          <div className="mb-4"><CalendarDays className="w-10 h-10 text-gray-300 mx-auto" /></div>
           <h3 className="text-lg font-bold text-gray-700 mb-2">Nenhum agendamento encontrado</h3>
           <p className="text-gray-500 mb-4">Crie o primeiro agendamento de visita</p>
           <button
@@ -650,11 +651,11 @@ export default function AgendamentosPage() {
                 <p className="text-xs text-yellow-600 font-bold uppercase mb-2">Confirmações</p>
                 <div className="flex gap-4">
                   <div className="flex items-center gap-2">
-                    <span>{selectedAgendamento.confirmado_lead ? '✅' : '⏳'}</span>
+                    {selectedAgendamento.confirmado_lead ? <CheckCircle2 className="w-4 h-4 text-green-500" /> : <Clock className="w-4 h-4 text-yellow-500" />}
                     <span className="text-sm text-gray-700">Lead</span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <span>{selectedAgendamento.confirmado_corretor ? '✅' : '⏳'}</span>
+                    {selectedAgendamento.confirmado_corretor ? <CheckCircle2 className="w-4 h-4 text-green-500" /> : <Clock className="w-4 h-4 text-yellow-500" />}
                     <span className="text-sm text-gray-700">Corretor</span>
                   </div>
                 </div>

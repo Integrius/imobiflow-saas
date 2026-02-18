@@ -7,6 +7,25 @@ import Modal from '@/components/Modal';
 import EmptyState, { EmptyStateIcons } from '@/components/EmptyState';
 import CorretorStatusLed from '@/components/CorretorStatusLed';
 import { formatPhone, unformatNumbers } from '@/lib/formatters';
+import {
+  Mail,
+  Coins,
+  Search,
+  Crown,
+  ClipboardList,
+  Home,
+  Eye,
+  Trash2,
+  Building2,
+  Users,
+  MapPin,
+  Flame,
+  Thermometer,
+  Snowflake,
+  Smartphone,
+  Clock,
+  DollarSign,
+} from 'lucide-react';
 
 interface Corretor {
   id: string;
@@ -499,7 +518,7 @@ export default function CorretoresPage() {
                   : 'none'
               }}
             >
-              📧 Reenviar {selectedCorretores.length > 0 && `(${selectedCorretores.length})`}
+              <span className="flex items-center justify-center gap-1.5"><Mail className="w-4 h-4" /> Reenviar {selectedCorretores.length > 0 && `(${selectedCorretores.length})`}</span>
             </button>
 
             {/* Botão: Calcular Comissões */}
@@ -526,7 +545,7 @@ export default function CorretoresPage() {
                   Calculando...
                 </span>
               ) : (
-                <>💰 Comissões {selectedCorretores.length > 0 && `(${selectedCorretores.length})`}</>
+                <><DollarSign className="w-4 h-4 inline mr-1" /> Comissões {selectedCorretores.length > 0 && `(${selectedCorretores.length})`}</>
               )}
             </button>
 
@@ -548,7 +567,7 @@ export default function CorretoresPage() {
       <div className="mb-6">
         <input
           type="text"
-          placeholder="🔍 Buscar por nome, email ou CRECI..."
+          placeholder="Buscar por nome, email ou CRECI..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
           className="input-modern"
@@ -622,7 +641,7 @@ export default function CorretoresPage() {
                         ? 'bg-blue-100 text-blue-700 border border-blue-300'
                         : 'bg-gray-100 text-gray-700 border border-gray-300'
                     }`}>
-                      {corretor.tipo === 'ADMIN' ? '👑 Admin' : corretor.tipo === 'GESTOR' ? '📋 Gestor' : '🏠 Corretor'}
+                      {corretor.tipo === 'ADMIN' ? 'Admin' : corretor.tipo === 'GESTOR' ? 'Gestor' : 'Corretor'}
                     </span>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-[#374151] font-medium">{corretor.email}</td>
@@ -644,7 +663,7 @@ export default function CorretoresPage() {
                       onClick={() => openEditModal(corretor)}
                       className="text-[#00C48C] hover:text-[#059669] mr-4 font-bold hover:underline transition-all"
                     >
-                      👁️ Consultar
+                      <Eye className="w-3.5 h-3.5 inline mr-0.5" /> Consultar
                     </button>
                     <button
                       onClick={() => {
@@ -653,7 +672,7 @@ export default function CorretoresPage() {
                       }}
                       className="text-[#FF6B6B] hover:text-[#FF006E] font-bold hover:underline transition-all"
                     >
-                      🗑️ Excluir
+                      <Trash2 className="w-3.5 h-3.5 inline mr-0.5" /> Excluir
                     </button>
                   </td>
                 </tr>
@@ -699,7 +718,7 @@ export default function CorretoresPage() {
                   : 'text-[#4B5563] hover:text-[#00C48C]'
               }`}
             >
-              📋 Dados
+              <ClipboardList className="w-4 h-4 inline mr-1" /> Dados
             </button>
             <button
               type="button"
@@ -710,7 +729,7 @@ export default function CorretoresPage() {
                   : 'text-[#4B5563] hover:text-[#00C48C]'
               }`}
             >
-              🏘️ Imóveis ({corretorImoveis.length})
+              <Building2 className="w-4 h-4 inline mr-1" /> Imóveis ({corretorImoveis.length})
             </button>
             <button
               type="button"
@@ -721,7 +740,7 @@ export default function CorretoresPage() {
                   : 'text-[#4B5563] hover:text-[#00C48C]'
               }`}
             >
-              👥 Clientes ({corretorLeads.length})
+              <Users className="w-4 h-4 inline mr-1" /> Clientes ({corretorLeads.length})
             </button>
           </div>
         )}
@@ -879,7 +898,7 @@ export default function CorretoresPage() {
                       />
                     ) : (
                       <div className="w-24 h-24 bg-[#F9FAFB] rounded-lg flex items-center justify-center border-2 border-[#059669]/20">
-                        <span className="text-4xl">🏘️</span>
+                        <Building2 className="w-10 h-10 text-gray-300" />
                       </div>
                     )}
 
@@ -905,7 +924,7 @@ export default function CorretoresPage() {
                       </p>
                       {imovel.endereco && (
                         <p className="text-[#4B5563] text-sm mt-1">
-                          📍 {imovel.endereco.cidade}, {imovel.endereco.estado}
+                          <MapPin className="w-3.5 h-3.5 inline mr-0.5" /> {imovel.endereco.cidade}, {imovel.endereco.estado}
                         </p>
                       )}
                     </div>
@@ -954,24 +973,24 @@ export default function CorretoresPage() {
                             ? 'bg-[#FFB627]/20 text-[#FFB627]'
                             : 'bg-[#059669]/20 text-[#059669]'
                         }`}>
-                          {lead.temperatura === 'QUENTE' ? '🔥 QUENTE' : lead.temperatura === 'MORNO' ? '🌡️ MORNO' : '❄️ FRIO'}
+                          {lead.temperatura === 'QUENTE' ? 'QUENTE' : lead.temperatura === 'MORNO' ? 'MORNO' : 'FRIO'}
                         </span>
                       </div>
 
                       <div className="flex gap-4 mt-2">
                         <div className="flex items-center gap-2">
-                          <span className="text-[#4B5563]">📧</span>
+                          <Mail className="w-3.5 h-3.5 text-[#4B5563]" />
                           <span className="text-[#4B5563] text-sm">{lead.email}</span>
                         </div>
                         <div className="flex items-center gap-2">
-                          <span className="text-[#4B5563]">📱</span>
+                          <Smartphone className="w-3.5 h-3.5 text-[#4B5563]" />
                           <span className="text-[#4B5563] text-sm">{lead.telefone}</span>
                         </div>
                       </div>
 
                       {lead.origem && (
                         <p className="text-[#4B5563] text-xs mt-2">
-                          📍 Origem: {lead.origem}
+                          <MapPin className="w-3.5 h-3.5 inline mr-0.5" /> Origem: {lead.origem}
                         </p>
                       )}
 
@@ -1025,7 +1044,7 @@ export default function CorretoresPage() {
           setComissoesModalOpen(false);
           setComissoesData(null);
         }}
-        title="💰 Relatório de Comissões"
+        title="Relatório de Comissões"
       >
         {comissoesData && (
           <div className="space-y-6">

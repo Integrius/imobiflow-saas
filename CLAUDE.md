@@ -4853,6 +4853,16 @@ Conforme Art. 39 da LGPD: *"O operador deverá realizar o tratamento segundo as 
 - `data_expiracao` adicionado ao `updateTenantSchema` para permitir atualização via API
 - Banco de dados migrado de volta para PostgreSQL no Render (não usar mais Supabase)
 
+**Versão 1.6.1** (fevereiro de 2026):
+- Profissionalização completa de TODAS as páginas do dashboard e componentes
+  - ~150 emojis substituídos por ícones Lucide React SVG em 16 páginas do dashboard
+  - 8 componentes compartilhados atualizados (TimelineInteracoes, TarefasWidget, NotificationBell, RegistrarAtividade, TrialWarning, MetaWidget, DataExportButton, CookieBanner)
+  - Páginas atualizadas: page, meu-desempenho, gerencial, corretores, tarefas, imoveis, negociacoes, metas, proprietarios, agendamentos, administracao, cancelar-assinatura, whatsapp, logs, admin/logs, admin/tenants
+  - Ícones consistentes: w-4 h-4 para inline, w-5 h-5 para cards/headers, text-gray-400 para decorativos
+  - Placeholders de busca sem emoji (antes: "🔍 Buscar...", agora: "Buscar...")
+  - Badges de tipo sem emoji (Admin, Gestor, Corretor em vez de 👑📋🏠)
+  - Temperatura de leads: texto "Q/M/F" em vez de 🔥⚡❄️
+
 **Versão 1.6.0** (fevereiro de 2026):
 - Redesign profissional completo do layout do dashboard (`apps/web/app/dashboard/layout.tsx`)
   - Ícones emoji substituídos por Lucide React SVG (18 ícones profissionais)

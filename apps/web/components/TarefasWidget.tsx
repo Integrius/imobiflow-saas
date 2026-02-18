@@ -3,6 +3,8 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { api } from '@/lib/api'
+import { ClipboardList, Phone, Mail, MessageCircle, Home, FileText, Users, MapPin, User, CalendarDays, Check, CheckCircle2, ListChecks } from 'lucide-react'
+import type { LucideIcon } from 'lucide-react'
 
 interface Tarefa {
   id: string
@@ -14,15 +16,15 @@ interface Tarefa {
   lead?: { id: string; nome: string }
 }
 
-const TIPOS: Record<string, string> = {
-  FOLLOW_UP: '📋',
-  LIGACAO: '📞',
-  EMAIL: '📧',
-  WHATSAPP: '💬',
-  VISITA: '🏠',
-  DOCUMENTO: '📄',
-  REUNIAO: '👥',
-  OUTRO: '📌'
+const TIPOS: Record<string, LucideIcon> = {
+  FOLLOW_UP: ClipboardList,
+  LIGACAO: Phone,
+  EMAIL: Mail,
+  WHATSAPP: MessageCircle,
+  VISITA: Home,
+  DOCUMENTO: FileText,
+  REUNIAO: Users,
+  OUTRO: MapPin
 }
 
 const PRIORIDADES: Record<string, { label: string; color: string }> = {
@@ -114,7 +116,7 @@ export default function TarefasWidget() {
       <div className="bg-gradient-to-r from-[#8FD14F]/10 to-[#7AB93F]/10 p-4 border-b border-gray-100">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <span className="text-2xl">📋</span>
+            <ListChecks className="w-6 h-6 text-gray-400" />
             <h3 className="font-semibold text-[#2C2C2C]">Minhas Tarefas</h3>
           </div>
           <div className="flex items-center gap-2">
@@ -134,7 +136,7 @@ export default function TarefasWidget() {
       <div className="p-4">
         {tarefas.length === 0 ? (
           <div className="text-center py-6 text-[#8B7F76]">
-            <div className="text-3xl mb-2">✅</div>
+            <div className="mb-2"><CheckCircle2 className="w-8 h-8 text-green-400 mx-auto" /></div>
             <p className="text-sm">Nenhuma tarefa pendente</p>
             <Link
               href="/dashboard/tarefas"
@@ -155,7 +157,7 @@ export default function TarefasWidget() {
                 }`}
               >
                 <div className="flex items-center gap-3 flex-1 min-w-0">
-                  <span className="text-xl">{TIPOS[tarefa.tipo] || '📌'}</span>
+                  {(() => { const Icon = TIPOS[tarefa.tipo] || MapPin; return <Icon className="w-5 h-5 text-gray-400" />; })()}
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-medium text-[#2C2C2C] truncate">
                       {tarefa.titulo}
@@ -163,12 +165,12 @@ export default function TarefasWidget() {
                     <div className="flex items-center gap-2 mt-1">
                       {tarefa.lead && (
                         <span className="text-xs text-[#8B7F76]">
-                          👤 {tarefa.lead.nome}
+                          <User className="w-3 h-3 inline mr-0.5" /> {tarefa.lead.nome}
                         </span>
                       )}
                       {tarefa.data_vencimento && (
                         <span className={`text-xs ${isVencida(tarefa) ? 'text-red-500 font-medium' : 'text-[#8B7F76]'}`}>
-                          📅 {formatDate(tarefa.data_vencimento)}
+                          <CalendarDays className="w-3 h-3 inline mr-0.5" /> {formatDate(tarefa.data_vencimento)}
                         </span>
                       )}
                     </div>
