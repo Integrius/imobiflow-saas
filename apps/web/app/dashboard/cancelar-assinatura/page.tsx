@@ -45,10 +45,10 @@ export default function CancelarAssinaturaPage() {
     <div className="max-w-4xl mx-auto py-8 px-4">
       {/* Header */}
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900">
+        <h1 className="text-3xl font-bold text-content">
           Cancelar Assinatura
         </h1>
-        <p className="text-gray-600 mt-2">
+        <p className="text-content-secondary mt-2">
           Lamentamos que esteja pensando em cancelar. Gostaríamos de entender o motivo.
         </p>
       </div>
@@ -56,7 +56,7 @@ export default function CancelarAssinaturaPage() {
       {!showConfirmation ? (
         <>
           {/* Card de Informações */}
-          <div className="bg-white rounded-lg shadow-md p-6 mb-6">
+          <div className="bg-surface rounded-lg shadow-md p-6 mb-6">
             <div className="bg-yellow-50 border-l-4 border-yellow-400 p-4 mb-6">
               <div className="flex">
                 <div className="flex-shrink-0">
@@ -75,7 +75,7 @@ export default function CancelarAssinaturaPage() {
               </div>
             </div>
 
-            <h2 className="text-xl font-semibold text-gray-900 mb-4">
+            <h2 className="text-xl font-semibold text-content mb-4">
               O que acontece ao cancelar:
             </h2>
 
@@ -83,29 +83,29 @@ export default function CancelarAssinaturaPage() {
               <li className="flex items-start">
                 <span className="text-red-500 mr-3 text-lg font-bold">x</span>
                 <div>
-                  <strong className="text-gray-900">Acesso imediato será bloqueado</strong>
-                  <p className="text-gray-600 text-sm">Você não poderá mais fazer login no sistema</p>
+                  <strong className="text-content">Acesso imediato será bloqueado</strong>
+                  <p className="text-content-secondary text-sm">Você não poderá mais fazer login no sistema</p>
                 </div>
               </li>
               <li className="flex items-start">
                 <span className="text-red-500 mr-3 text-lg font-bold">x</span>
                 <div>
-                  <strong className="text-gray-900">Dados serão removidos em 30 dias</strong>
-                  <p className="text-gray-600 text-sm">Você tem 30 dias para recuperar seus dados antes da exclusão permanente</p>
+                  <strong className="text-content">Dados serão removidos em 30 dias</strong>
+                  <p className="text-content-secondary text-sm">Você tem 30 dias para recuperar seus dados antes da exclusão permanente</p>
                 </div>
               </li>
               <li className="flex items-start">
                 <span className="text-red-500 mr-3 text-lg font-bold">x</span>
                 <div>
-                  <strong className="text-gray-900">Cobranças cessarão imediatamente</strong>
-                  <p className="text-gray-600 text-sm">Não haverá mais cobranças após o cancelamento</p>
+                  <strong className="text-content">Cobranças cessarão imediatamente</strong>
+                  <p className="text-content-secondary text-sm">Não haverá mais cobranças após o cancelamento</p>
                 </div>
               </li>
               <li className="flex items-start">
                 <span className="text-green-500 mr-3 text-lg font-bold">+</span>
                 <div>
-                  <strong className="text-gray-900">Você pode exportar seus dados</strong>
-                  <p className="text-gray-600 text-sm">Antes de cancelar, exporte seus dados usando o botão "Recuperar Dados" no topo</p>
+                  <strong className="text-content">Você pode exportar seus dados</strong>
+                  <p className="text-content-secondary text-sm">Antes de cancelar, exporte seus dados usando o botão "Recuperar Dados" no topo</p>
                 </div>
               </li>
             </ul>
@@ -118,11 +118,11 @@ export default function CancelarAssinaturaPage() {
           </div>
 
           {/* Formulário de Cancelamento */}
-          <div className="bg-white rounded-lg shadow-md p-6">
-            <h2 className="text-xl font-semibold text-gray-900 mb-4">
+          <div className="bg-surface rounded-lg shadow-md p-6">
+            <h2 className="text-xl font-semibold text-content mb-4">
               Por que está cancelando?
             </h2>
-            <p className="text-gray-600 text-sm mb-4">
+            <p className="text-content-secondary text-sm mb-4">
               Seu feedback é muito importante para melhorarmos nosso serviço.
             </p>
 
@@ -130,7 +130,7 @@ export default function CancelarAssinaturaPage() {
               value={motivo}
               onChange={(e) => setMotivo(e.target.value)}
               placeholder="Conte-nos o motivo do cancelamento..."
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent resize-none"
+              className="w-full px-4 py-3 border border-edge rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent resize-none"
               rows={5}
               required
             />
@@ -138,7 +138,7 @@ export default function CancelarAssinaturaPage() {
             <div className="mt-6 flex gap-4">
               <button
                 onClick={() => router.back()}
-                className="flex-1 px-6 py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg font-medium transition-colors"
+                className="flex-1 px-6 py-3 bg-surface-tertiary hover:bg-surface-secondary text-content rounded-lg font-medium transition-colors"
                 disabled={loading}
               >
                 ← Voltar
@@ -161,23 +161,23 @@ export default function CancelarAssinaturaPage() {
               <div className="w-20 h-20 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
                 <span className="text-4xl text-red-500 font-bold">!</span>
               </div>
-              <h2 className="text-2xl font-bold text-gray-900 mb-2">
+              <h2 className="text-2xl font-bold text-content mb-2">
                 Última Confirmação
               </h2>
-              <p className="text-gray-600">
+              <p className="text-content-secondary">
                 Esta ação é <strong className="text-red-600">irreversível</strong>. Tem certeza que deseja prosseguir?
               </p>
             </div>
 
-            <div className="bg-gray-50 rounded-lg p-6 mb-6">
-              <h3 className="font-semibold text-gray-900 mb-2">Motivo do cancelamento:</h3>
-              <p className="text-gray-700 italic">"{motivo}"</p>
+            <div className="bg-surface-secondary rounded-lg p-6 mb-6">
+              <h3 className="font-semibold text-content mb-2">Motivo do cancelamento:</h3>
+              <p className="text-content italic">"{motivo}"</p>
             </div>
 
             <div className="flex gap-4">
               <button
                 onClick={() => setShowConfirmation(false)}
-                className="flex-1 px-6 py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg font-medium transition-colors"
+                className="flex-1 px-6 py-3 bg-surface-tertiary hover:bg-surface-secondary text-content rounded-lg font-medium transition-colors"
                 disabled={loading}
               >
                 ← Não, Voltar
@@ -206,7 +206,7 @@ export default function CancelarAssinaturaPage() {
 
       {/* Footer de Suporte */}
       <div className="mt-8 text-center">
-        <p className="text-gray-600 text-sm">
+        <p className="text-content-secondary text-sm">
           Precisa de ajuda? Entre em contato conosco:
           <a href="mailto:contato@integrius.com.br" className="text-[#8FD14F] hover:underline font-medium ml-1">
             contato@integrius.com.br

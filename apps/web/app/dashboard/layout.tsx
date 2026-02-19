@@ -8,6 +8,7 @@ import { logout, getToken } from '@/lib/auth';
 import ToastContainer from '@/components/ToastContainer';
 import TrialWarning from '@/components/TrialWarning';
 import NotificationBell from '@/components/NotificationBell';
+import { ThemeToggle } from '@/components/ThemeToggle';
 import {
   LayoutDashboard,
   Users,
@@ -237,15 +238,15 @@ export default function DashboardLayout({
           group flex items-center gap-2.5 px-2.5 py-1.5 text-[13px] font-medium rounded-md
           transition-colors duration-150
           ${isActive
-            ? 'bg-green-50 text-green-800 border-l-2 border-green-600 -ml-[1px]'
-            : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+            ? 'bg-brand-light text-brand-dark border-l-2 border-brand -ml-[1px]'
+            : 'text-content-secondary hover:bg-surface-secondary hover:text-content'
           }
           ${sidebarCollapsed && !isMobile ? 'justify-center !px-0' : ''}
         `}
       >
         <IconComponent
           className={`w-4 h-4 flex-shrink-0 ${
-            isActive ? 'text-green-700' : 'text-gray-400 group-hover:text-gray-600'
+            isActive ? 'text-brand' : 'text-content-tertiary group-hover:text-content-secondary'
           }`}
         />
         {(!sidebarCollapsed || isMobile) && (
@@ -271,7 +272,7 @@ export default function DashboardLayout({
     // Sidebar colapsada: apenas ícones, sem headers
     if (sidebarCollapsed && !isMobile) {
       return (
-        <div key={section.key} className="space-y-0.5 py-1 border-t border-gray-100">
+        <div key={section.key} className="space-y-0.5 py-1 border-t border-edge-light">
           {section.items.map(item => renderMenuItem(item, isMobile))}
         </div>
       );
@@ -281,7 +282,7 @@ export default function DashboardLayout({
       <div key={section.key}>
         <button
           onClick={() => toggleSection(section.key)}
-          className="w-full flex items-center justify-between px-2.5 py-1 text-[11px] font-semibold text-gray-400 uppercase tracking-wider hover:text-gray-600 transition-colors"
+          className="w-full flex items-center justify-between px-2.5 py-1 text-[11px] font-semibold text-content-tertiary uppercase tracking-wider hover:text-content-secondary transition-colors"
         >
           <span>{section.title}</span>
           {isExpanded
@@ -296,7 +297,7 @@ export default function DashboardLayout({
         )}
         {!isExpanded && hasActiveItem && (
           <div className="flex justify-center py-0.5">
-            <div className="w-1 h-1 rounded-full bg-green-500" />
+            <div className="w-1 h-1 rounded-full bg-brand" />
           </div>
         )}
       </div>
@@ -306,19 +307,19 @@ export default function DashboardLayout({
   // ─── Layout ───
 
   return (
-    <div className="min-h-screen bg-gray-50 text-gray-800 font-sans antialiased h-screen flex overflow-hidden">
+    <div className="min-h-screen bg-surface-secondary text-content font-sans antialiased h-screen flex overflow-hidden">
       <ToastContainer />
 
       {/* Sidebar — Desktop */}
       <aside
         className={`
           ${sidebarCollapsed ? 'w-16' : 'w-56'}
-          bg-white border-r border-gray-200 flex-col hidden md:flex z-10
+          bg-surface border-r border-edge flex-col hidden md:flex z-10
           transition-[width] duration-200 ease-in-out
         `}
       >
         {/* Logo */}
-        <div className="h-14 flex items-center justify-center px-3 border-b border-gray-100">
+        <div className="h-14 flex items-center justify-center px-3 border-b border-edge-light">
           {!sidebarCollapsed ? (
             <Link href="/dashboard" className="flex items-center">
               <Image
@@ -350,10 +351,10 @@ export default function DashboardLayout({
         </nav>
 
         {/* Footer: Collapse toggle + version */}
-        <div className="p-2 border-t border-gray-100">
+        <div className="p-2 border-t border-edge-light">
           <button
             onClick={toggleSidebar}
-            className="w-full flex items-center justify-center gap-2 px-2 py-1.5 text-gray-400 hover:text-gray-600 hover:bg-gray-50 rounded-md transition-colors text-xs"
+            className="w-full flex items-center justify-center gap-2 px-2 py-1.5 text-content-tertiary hover:text-content-secondary hover:bg-surface-secondary rounded-md transition-colors text-xs"
             title={sidebarCollapsed ? 'Expandir menu' : 'Recolher menu'}
           >
             {sidebarCollapsed ? (
@@ -366,7 +367,7 @@ export default function DashboardLayout({
             )}
           </button>
           {!sidebarCollapsed && (
-            <p className="text-[10px] text-gray-300 text-center mt-1">v1.16.0</p>
+            <p className="text-[10px] text-content-tertiary text-center mt-1">v1.16.0</p>
           )}
         </div>
       </aside>
@@ -378,19 +379,19 @@ export default function DashboardLayout({
             className="fixed inset-0 bg-black/50"
             onClick={() => setSidebarOpen(false)}
           />
-          <div className="relative flex-1 flex flex-col max-w-xs w-full bg-white h-full border-r border-gray-200 shadow-xl">
+          <div className="relative flex-1 flex flex-col max-w-xs w-full bg-surface h-full border-r border-edge shadow-xl">
             <div className="absolute top-0 right-0 -mr-12 pt-2">
               <button
                 onClick={() => setSidebarOpen(false)}
-                className="ml-1 flex items-center justify-center h-10 w-10 rounded-full focus:outline-none bg-white shadow-lg"
+                className="ml-1 flex items-center justify-center h-10 w-10 rounded-full focus:outline-none bg-surface shadow-lg"
               >
                 <span className="sr-only">Fechar sidebar</span>
-                <X className="h-5 w-5 text-gray-600" />
+                <X className="h-5 w-5 text-content-secondary" />
               </button>
             </div>
 
             {/* Logo Mobile */}
-            <div className="h-14 flex items-center px-4 border-b border-gray-100">
+            <div className="h-14 flex items-center px-4 border-b border-edge-light">
               <Link href="/dashboard" className="flex items-center">
                 <Image
                   src="/logoIntegrius.png"
@@ -412,14 +413,14 @@ export default function DashboardLayout({
       )}
 
       {/* Main Content Area */}
-      <main className="flex-1 flex flex-col h-screen overflow-hidden bg-gray-50">
+      <main className="flex-1 flex flex-col h-screen overflow-hidden bg-surface-secondary">
         {/* Header */}
-        <header className="h-14 bg-white border-b border-gray-200 flex items-center justify-between px-4 md:px-6">
+        <header className="h-14 bg-surface border-b border-edge flex items-center justify-between px-4 md:px-6">
           <div className="flex items-center gap-3">
             {/* Mobile Menu Button */}
             <button
               onClick={() => setSidebarOpen(!sidebarOpen)}
-              className="md:hidden text-gray-500 hover:text-gray-700"
+              className="md:hidden text-content-secondary hover:text-content"
             >
               <Menu className="h-5 w-5" />
             </button>
@@ -428,14 +429,15 @@ export default function DashboardLayout({
           <div className="flex items-center gap-3">
             <TrialWarning />
             <NotificationBell />
+            <ThemeToggle />
 
-            <div className="hidden sm:flex items-center gap-2 pl-3 border-l border-gray-200">
-              <div className="w-7 h-7 rounded-full bg-green-100 flex items-center justify-center">
-                <span className="text-xs font-semibold text-green-800">
+            <div className="hidden sm:flex items-center gap-2 pl-3 border-l border-edge">
+              <div className="w-7 h-7 rounded-full bg-brand-light flex items-center justify-center">
+                <span className="text-xs font-semibold text-brand-dark">
                   {user?.nome?.charAt(0)?.toUpperCase() || 'U'}
                 </span>
               </div>
-              <span className="text-sm text-gray-700 font-medium">
+              <span className="text-sm text-content font-medium">
                 {user?.nome?.split(' ')[0] || 'Usuário'}
               </span>
             </div>
@@ -443,7 +445,7 @@ export default function DashboardLayout({
             <button
               onClick={logout}
               title="Sair"
-              className="text-gray-400 hover:text-red-500 transition-colors"
+              className="text-content-tertiary hover:text-red-500 transition-colors"
             >
               <LogOut className="w-4 h-4" />
             </button>

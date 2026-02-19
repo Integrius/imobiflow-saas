@@ -144,19 +144,19 @@ export default function AdministracaoPage() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-        <h1 className="text-2xl font-bold text-[#2C2C2C]">
+      <div className="bg-surface rounded-xl shadow-sm border border-edge p-6">
+        <h1 className="text-2xl font-bold text-content">
           <Settings className="w-5 h-5 inline mr-1" /> Administração
         </h1>
-        <p className="text-gray-700 mt-1 font-medium">
+        <p className="text-content mt-1 font-medium">
           Gerencie sua conta e configurações
         </p>
       </div>
 
       {/* Tabs */}
-      <div className="bg-white rounded-xl shadow-sm border border-gray-100">
+      <div className="bg-surface rounded-xl shadow-sm border border-edge">
         {/* Tab Headers */}
-        <div className="border-b border-gray-200">
+        <div className="border-b border-edge">
           <nav className="flex -mb-px">
             {tabs.map((tab) => (
               <button
@@ -165,7 +165,7 @@ export default function AdministracaoPage() {
                 className={`flex items-center gap-2 px-6 py-4 text-sm font-semibold border-b-2 transition-colors ${
                   activeTab === tab.id
                     ? 'border-[#00C48C] text-[#00C48C]'
-                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                    : 'border-transparent text-content-secondary hover:text-content hover:border-edge'
                 }`}
               >
                 <span>{tab.icon}</span>
@@ -184,7 +184,7 @@ export default function AdministracaoPage() {
             </div>
           )}
           {success && (
-            <div className="mb-4 p-4 bg-green-50 border border-green-200 rounded-lg text-green-700">
+            <div className="mb-4 p-4 bg-brand-light border border-brand rounded-lg text-brand">
               {success}
             </div>
           )}
@@ -192,38 +192,38 @@ export default function AdministracaoPage() {
           {/* Aba: Minha Conta */}
           {activeTab === 'conta' && (
             <div className="space-y-6">
-              <h2 className="text-lg font-bold text-[#2C2C2C]">Dados da Conta</h2>
+              <h2 className="text-lg font-bold text-content">Dados da Conta</h2>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-1">
+                  <label className="block text-sm font-semibold text-content mb-1">
                     Nome
                   </label>
-                  <div className="px-4 py-3 bg-gray-50 border border-gray-200 rounded-lg text-gray-700">
+                  <div className="px-4 py-3 bg-surface-secondary border border-edge rounded-lg text-content">
                     {user?.nome || '-'}
                   </div>
                 </div>
 
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-1">
+                  <label className="block text-sm font-semibold text-content mb-1">
                     Email
                   </label>
-                  <div className="px-4 py-3 bg-gray-50 border border-gray-200 rounded-lg text-gray-700">
+                  <div className="px-4 py-3 bg-surface-secondary border border-edge rounded-lg text-content">
                     {user?.email || '-'}
                   </div>
                 </div>
 
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-1">
+                  <label className="block text-sm font-semibold text-content mb-1">
                     Tipo de Usuário
                   </label>
-                  <div className="px-4 py-3 bg-gray-50 border border-gray-200 rounded-lg">
+                  <div className="px-4 py-3 bg-surface-secondary border border-edge rounded-lg">
                     <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${
                       user?.tipo === 'ADMIN'
                         ? 'bg-purple-100 text-purple-700'
                         : user?.tipo === 'GESTOR'
                         ? 'bg-blue-100 text-blue-700'
-                        : 'bg-green-100 text-green-700'
+                        : 'bg-brand-light text-brand'
                     }`}>
                       {user?.tipo || '-'}
                     </span>
@@ -231,17 +231,17 @@ export default function AdministracaoPage() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-1">
+                  <label className="block text-sm font-semibold text-content mb-1">
                     ID do Usuário
                   </label>
-                  <div className="px-4 py-3 bg-gray-50 border border-gray-200 rounded-lg text-gray-500 text-sm font-mono">
+                  <div className="px-4 py-3 bg-surface-secondary border border-edge rounded-lg text-content-secondary text-sm font-mono">
                     {user?.id || '-'}
                   </div>
                 </div>
               </div>
 
-              <div className="pt-4 border-t border-gray-200">
-                <p className="text-sm text-gray-500">
+              <div className="pt-4 border-t border-edge">
+                <p className="text-sm text-content-secondary">
                   Para alterar seus dados de perfil, entre em contato com o administrador do sistema.
                 </p>
               </div>
@@ -251,44 +251,44 @@ export default function AdministracaoPage() {
           {/* Aba: Segurança */}
           {activeTab === 'seguranca' && (
             <div className="space-y-6">
-              <h2 className="text-lg font-bold text-[#2C2C2C]">Alterar Senha</h2>
+              <h2 className="text-lg font-bold text-content">Alterar Senha</h2>
 
               <form onSubmit={handleAlterarSenha} className="max-w-md space-y-4">
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-1">
+                  <label className="block text-sm font-semibold text-content mb-1">
                     Senha Atual *
                   </label>
                   <input
                     type="password"
                     value={senhaAtual}
                     onChange={(e) => setSenhaAtual(e.target.value)}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#00C48C] focus:border-transparent"
+                    className="w-full px-4 py-3 border border-edge rounded-lg focus:ring-2 focus:ring-[#00C48C] focus:border-transparent"
                     placeholder="Digite sua senha atual"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-1">
+                  <label className="block text-sm font-semibold text-content mb-1">
                     Nova Senha *
                   </label>
                   <input
                     type="password"
                     value={novaSenha}
                     onChange={(e) => setNovaSenha(e.target.value)}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#00C48C] focus:border-transparent"
+                    className="w-full px-4 py-3 border border-edge rounded-lg focus:ring-2 focus:ring-[#00C48C] focus:border-transparent"
                     placeholder="Digite a nova senha (mín. 6 caracteres)"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-1">
+                  <label className="block text-sm font-semibold text-content mb-1">
                     Confirmar Nova Senha *
                   </label>
                   <input
                     type="password"
                     value={confirmarSenha}
                     onChange={(e) => setConfirmarSenha(e.target.value)}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#00C48C] focus:border-transparent"
+                    className="w-full px-4 py-3 border border-edge rounded-lg focus:ring-2 focus:ring-[#00C48C] focus:border-transparent"
                     placeholder="Confirme a nova senha"
                   />
                 </div>
@@ -312,9 +312,9 @@ export default function AdministracaoPage() {
                 </button>
               </form>
 
-              <div className="pt-4 border-t border-gray-200">
-                <h3 className="text-sm font-semibold text-gray-700 mb-2">Dicas de Segurança:</h3>
-                <ul className="text-sm text-gray-500 space-y-1">
+              <div className="pt-4 border-t border-edge">
+                <h3 className="text-sm font-semibold text-content mb-2">Dicas de Segurança:</h3>
+                <ul className="text-sm text-content-secondary space-y-1">
                   <li>• Use uma senha com pelo menos 6 caracteres</li>
                   <li>• Combine letras maiúsculas, minúsculas e números</li>
                   <li>• Evite usar informações pessoais como datas de nascimento</li>
@@ -328,11 +328,11 @@ export default function AdministracaoPage() {
           {activeTab === 'logs' && canViewLogs && (
             <div className="space-y-6">
               <div className="flex items-center justify-between">
-                <h2 className="text-lg font-bold text-[#2C2C2C]">Logs de Atividade</h2>
+                <h2 className="text-lg font-bold text-content">Logs de Atividade</h2>
                 <button
                   onClick={loadLogs}
                   disabled={loadingLogs}
-                  className="px-4 py-2 text-sm bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors disabled:opacity-50"
+                  className="px-4 py-2 text-sm bg-surface-secondary hover:bg-surface-tertiary rounded-lg transition-colors disabled:opacity-50"
                 >
                   {loadingLogs ? 'Carregando...' : 'Atualizar'}
                 </button>
@@ -343,39 +343,39 @@ export default function AdministracaoPage() {
                   <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#00C48C]"></div>
                 </div>
               ) : logs.length === 0 ? (
-                <div className="text-center py-12 text-gray-500">
-                  <ClipboardList className="w-10 h-10 text-gray-300 mx-auto" />
+                <div className="text-center py-12 text-content-secondary">
+                  <ClipboardList className="w-10 h-10 text-content-tertiary mx-auto" />
                   <p className="mt-2">Nenhum log de atividade encontrado</p>
                 </div>
               ) : (
                 <div className="overflow-x-auto">
-                  <table className="min-w-full divide-y divide-gray-200">
-                    <thead className="bg-gray-50">
+                  <table className="min-w-full divide-y divide-edge">
+                    <thead className="bg-surface-secondary">
                       <tr>
-                        <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                        <th className="px-4 py-3 text-left text-xs font-semibold text-content-secondary uppercase tracking-wider">
                           Data/Hora
                         </th>
-                        <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                        <th className="px-4 py-3 text-left text-xs font-semibold text-content-secondary uppercase tracking-wider">
                           Usuário
                         </th>
-                        <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                        <th className="px-4 py-3 text-left text-xs font-semibold text-content-secondary uppercase tracking-wider">
                           Ação
                         </th>
-                        <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                        <th className="px-4 py-3 text-left text-xs font-semibold text-content-secondary uppercase tracking-wider">
                           Descrição
                         </th>
-                        <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                        <th className="px-4 py-3 text-left text-xs font-semibold text-content-secondary uppercase tracking-wider">
                           IP
                         </th>
                       </tr>
                     </thead>
-                    <tbody className="bg-white divide-y divide-gray-200">
+                    <tbody className="bg-surface divide-y divide-edge">
                       {logs.map((log) => (
-                        <tr key={log.id} className="hover:bg-gray-50">
-                          <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-500">
+                        <tr key={log.id} className="hover:bg-surface-secondary">
+                          <td className="px-4 py-3 whitespace-nowrap text-sm text-content-secondary">
                             {new Date(log.created_at).toLocaleString('pt-BR')}
                           </td>
-                          <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-700">
+                          <td className="px-4 py-3 whitespace-nowrap text-sm text-content">
                             {log.user?.nome || '-'}
                           </td>
                           <td className="px-4 py-3 whitespace-nowrap">
@@ -391,10 +391,10 @@ export default function AdministracaoPage() {
                               {log.acao}
                             </span>
                           </td>
-                          <td className="px-4 py-3 text-sm text-gray-600 max-w-xs truncate">
+                          <td className="px-4 py-3 text-sm text-content-secondary max-w-xs truncate">
                             {log.descricao}
                           </td>
-                          <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-400 font-mono">
+                          <td className="px-4 py-3 whitespace-nowrap text-sm text-content-tertiary font-mono">
                             {log.ip || '-'}
                           </td>
                         </tr>

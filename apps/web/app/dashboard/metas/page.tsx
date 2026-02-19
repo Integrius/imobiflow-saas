@@ -273,7 +273,7 @@ export default function MetasPage() {
           <select
             value={mesAno.mes}
             onChange={(e) => setMesAno({ ...mesAno, mes: parseInt(e.target.value) })}
-            className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#00C48C] focus:border-transparent"
+            className="px-4 py-2 border border-edge rounded-lg focus:ring-2 focus:ring-[#00C48C] focus:border-transparent"
           >
             {MESES.map((mes, index) => (
               <option key={index} value={index + 1}>{mes}</option>
@@ -283,7 +283,7 @@ export default function MetasPage() {
           <select
             value={mesAno.ano}
             onChange={(e) => setMesAno({ ...mesAno, ano: parseInt(e.target.value) })}
-            className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#00C48C] focus:border-transparent"
+            className="px-4 py-2 border border-edge rounded-lg focus:ring-2 focus:ring-[#00C48C] focus:border-transparent"
           >
             {[2024, 2025, 2026, 2027].map((ano) => (
               <option key={ano} value={ano}>{ano}</option>
@@ -302,7 +302,7 @@ export default function MetasPage() {
       {/* Cards de Estatísticas */}
       {resumo && (
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-          <div className="bg-white rounded-xl p-6 shadow-lg border-2 border-[#00C48C]/20">
+          <div className="bg-surface rounded-xl p-6 shadow-lg border-2 border-[#00C48C]/20">
             <div className="flex items-center justify-between mb-2">
               <Users className="w-5 h-5 text-[#00C48C]" />
               <span className="text-xs font-bold text-[#00C48C] uppercase">Corretores</span>
@@ -311,7 +311,7 @@ export default function MetasPage() {
             <p className="text-sm text-[#374151] font-medium">com metas definidas</p>
           </div>
 
-          <div className="bg-white rounded-xl p-6 shadow-lg border-2 border-[#059669]/20">
+          <div className="bg-surface rounded-xl p-6 shadow-lg border-2 border-[#059669]/20">
             <div className="flex items-center justify-between mb-2">
               <Target className="w-5 h-5 text-[#059669]" />
               <span className="text-xs font-bold text-[#059669] uppercase">Atingidas</span>
@@ -320,7 +320,7 @@ export default function MetasPage() {
             <p className="text-sm text-[#374151] font-medium">{resumo.estatisticas.percentualAtingimento}% do total</p>
           </div>
 
-          <div className="bg-white rounded-xl p-6 shadow-lg border-2 border-[#FFB627]/20">
+          <div className="bg-surface rounded-xl p-6 shadow-lg border-2 border-[#FFB627]/20">
             <div className="flex items-center justify-between mb-2">
               <BarChart3 className="w-5 h-5 text-[#FFB627]" />
               <span className="text-xs font-bold text-[#FFB627] uppercase">Média</span>
@@ -329,7 +329,7 @@ export default function MetasPage() {
             <p className="text-sm text-[#374151] font-medium">progresso médio</p>
           </div>
 
-          <div className="bg-white rounded-xl p-6 shadow-lg border-2 border-[#8B5CF6]/20">
+          <div className="bg-surface rounded-xl p-6 shadow-lg border-2 border-[#8B5CF6]/20">
             <div className="flex items-center justify-between mb-2">
               <CalendarDays className="w-5 h-5 text-[#8B5CF6]" />
               <span className="text-xs font-bold text-[#8B5CF6] uppercase">Período</span>
@@ -357,10 +357,10 @@ export default function MetasPage() {
       </div>
 
       {/* Tabela de Metas */}
-      <div className="bg-white rounded-xl shadow-lg border-2 border-gray-100 overflow-hidden">
+      <div className="bg-surface rounded-xl shadow-lg border-2 border-edge-light overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full">
-            <thead className="bg-gray-50">
+            <thead className="bg-surface-secondary">
               <tr>
                 <th className="px-6 py-4 text-left text-sm font-bold text-[#064E3B]">Corretor</th>
                 <th className="px-6 py-4 text-center text-sm font-bold text-[#064E3B]">Leads</th>
@@ -382,7 +382,7 @@ export default function MetasPage() {
                 </tr>
               )}
               {resumo?.todas.map((meta) => (
-                <tr key={meta.id} className="border-t hover:bg-gray-50 transition-colors">
+                <tr key={meta.id} className="border-t hover:bg-surface-secondary transition-colors">
                   <td className="px-6 py-4">
                     <div>
                       <p className="font-bold text-[#064E3B]">{meta.corretor.user.nome}</p>
@@ -522,7 +522,7 @@ export default function MetasPage() {
       {/* Modal de Criação/Edição */}
       {showModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-xl p-6 w-full max-w-lg shadow-2xl">
+          <div className="bg-surface rounded-xl p-6 w-full max-w-lg shadow-2xl">
             <h3 className="text-xl font-bold text-[#064E3B] mb-4">
               {modalMode === 'lote' ? 'Criar Metas em Lote' :
                selectedMeta ? 'Editar Meta' : 'Nova Meta'}
@@ -536,7 +536,7 @@ export default function MetasPage() {
                   <select
                     value={formData.corretor_id}
                     onChange={(e) => setFormData({ ...formData, corretor_id: e.target.value })}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#00C48C] focus:border-transparent"
+                    className="w-full px-4 py-2 border border-edge rounded-lg focus:ring-2 focus:ring-[#00C48C] focus:border-transparent"
                   >
                     <option value="">Selecione um corretor</option>
                     {corretores.map((corretor) => (
@@ -564,7 +564,7 @@ export default function MetasPage() {
                     type="number"
                     value={formData.meta_leads}
                     onChange={(e) => setFormData({ ...formData, meta_leads: e.target.value })}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#00C48C] focus:border-transparent"
+                    className="w-full px-4 py-2 border border-edge rounded-lg focus:ring-2 focus:ring-[#00C48C] focus:border-transparent"
                     placeholder="Ex: 20"
                   />
                 </div>
@@ -575,7 +575,7 @@ export default function MetasPage() {
                     type="number"
                     value={formData.meta_visitas}
                     onChange={(e) => setFormData({ ...formData, meta_visitas: e.target.value })}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#00C48C] focus:border-transparent"
+                    className="w-full px-4 py-2 border border-edge rounded-lg focus:ring-2 focus:ring-[#00C48C] focus:border-transparent"
                     placeholder="Ex: 15"
                   />
                 </div>
@@ -586,7 +586,7 @@ export default function MetasPage() {
                     type="number"
                     value={formData.meta_propostas}
                     onChange={(e) => setFormData({ ...formData, meta_propostas: e.target.value })}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#00C48C] focus:border-transparent"
+                    className="w-full px-4 py-2 border border-edge rounded-lg focus:ring-2 focus:ring-[#00C48C] focus:border-transparent"
                     placeholder="Ex: 10"
                   />
                 </div>
@@ -597,7 +597,7 @@ export default function MetasPage() {
                     type="number"
                     value={formData.meta_fechamentos}
                     onChange={(e) => setFormData({ ...formData, meta_fechamentos: e.target.value })}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#00C48C] focus:border-transparent"
+                    className="w-full px-4 py-2 border border-edge rounded-lg focus:ring-2 focus:ring-[#00C48C] focus:border-transparent"
                     placeholder="Ex: 5"
                   />
                 </div>
@@ -608,7 +608,7 @@ export default function MetasPage() {
                     type="number"
                     value={formData.meta_valor}
                     onChange={(e) => setFormData({ ...formData, meta_valor: e.target.value })}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#00C48C] focus:border-transparent"
+                    className="w-full px-4 py-2 border border-edge rounded-lg focus:ring-2 focus:ring-[#00C48C] focus:border-transparent"
                     placeholder="Ex: 500000"
                   />
                 </div>
@@ -618,7 +618,7 @@ export default function MetasPage() {
             <div className="flex justify-end gap-4 mt-6">
               <button
                 onClick={() => setShowModal(false)}
-                className="px-4 py-2.5 text-[#374151] font-medium hover:bg-gray-100 rounded-lg transition-colors"
+                className="px-4 py-2.5 text-[#374151] font-medium hover:bg-surface-tertiary rounded-lg transition-colors"
               >
                 Cancelar
               </button>

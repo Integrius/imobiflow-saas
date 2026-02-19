@@ -133,7 +133,7 @@ export default function DashboardPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-brand"></div>
       </div>
     );
   }
@@ -158,7 +158,7 @@ export default function DashboardPage() {
     <div className="space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-gray-900">Visão Geral</h1>
+        <h1 className="text-2xl font-bold text-content">Visão Geral</h1>
         <Link
           href="/dashboard/leads?new=true"
           className="bg-green-600 text-white px-4 py-2.5 rounded-lg text-sm font-semibold flex items-center gap-2 hover:bg-green-700 transition-colors"
@@ -178,18 +178,18 @@ export default function DashboardPage() {
           {data && (
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               {/* Leads Total */}
-              <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-100">
-                <span className="text-xs font-bold text-gray-600 uppercase">Leads</span>
-                <div className="text-3xl font-bold text-gray-900 mt-1">{data.leads.total}</div>
+              <div className="bg-surface p-4 rounded-xl shadow-sm border border-edge-light">
+                <span className="text-xs font-bold text-content-secondary uppercase">Leads</span>
+                <div className="text-3xl font-bold text-content mt-1">{data.leads.total}</div>
                 <div className="flex items-center gap-1 mt-2">
                   <span className="text-xs text-red-500 font-semibold">{data.leads.quentes} quentes</span>
                 </div>
               </div>
 
               {/* Conversão */}
-              <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-100">
-                <span className="text-xs font-bold text-gray-600 uppercase">Conversão</span>
-                <div className="text-3xl font-bold text-gray-900 mt-1">{data.negociacoes.taxaConversao}%</div>
+              <div className="bg-surface p-4 rounded-xl shadow-sm border border-edge-light">
+                <span className="text-xs font-bold text-content-secondary uppercase">Conversão</span>
+                <div className="text-3xl font-bold text-content mt-1">{data.negociacoes.taxaConversao}%</div>
                 <div className="w-full bg-gray-200 rounded-full h-1.5 mt-2">
                   <div
                     className="bg-green-500 h-1.5 rounded-full"
@@ -199,18 +199,18 @@ export default function DashboardPage() {
               </div>
 
               {/* Imóveis */}
-              <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-100">
-                <span className="text-xs font-bold text-gray-600 uppercase">Imóveis</span>
-                <div className="text-3xl font-bold text-gray-900 mt-1">{data.imoveis.total}</div>
+              <div className="bg-surface p-4 rounded-xl shadow-sm border border-edge-light">
+                <span className="text-xs font-bold text-content-secondary uppercase">Imóveis</span>
+                <div className="text-3xl font-bold text-content mt-1">{data.imoveis.total}</div>
                 <div className="flex items-center gap-1 mt-2">
                   <span className="text-xs text-green-600 font-semibold">✓ {data.imoveis.disponiveis} disp.</span>
                 </div>
               </div>
 
               {/* Negociações */}
-              <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-100">
-                <span className="text-xs font-bold text-gray-600 uppercase">Negociações</span>
-                <div className="text-3xl font-bold text-gray-900 mt-1">{data.negociacoes.total}</div>
+              <div className="bg-surface p-4 rounded-xl shadow-sm border border-edge-light">
+                <span className="text-xs font-bold text-content-secondary uppercase">Negociações</span>
+                <div className="text-3xl font-bold text-content mt-1">{data.negociacoes.total}</div>
                 <div className="flex items-center gap-1 mt-2">
                   <span className="text-xs text-green-600 font-semibold">✓ {data.negociacoes.fechadas} fechadas</span>
                 </div>
@@ -220,7 +220,7 @@ export default function DashboardPage() {
 
           {/* Gráfico de Performance */}
           {chartData && (
-            <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+            <div className="bg-surface p-6 rounded-xl shadow-sm border border-edge-light">
               <div className="flex items-center justify-between mb-4">
                 <h3 className="text-lg font-bold text-gray-900">Performance</h3>
                 <div className="flex gap-1">
@@ -264,7 +264,7 @@ export default function DashboardPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {/* Leads por Temperatura */}
             {data && (
-              <div className="bg-white p-5 rounded-xl shadow-sm border border-gray-100">
+              <div className="bg-surface p-5 rounded-xl shadow-sm border border-edge-light">
                 <h3 className="font-bold text-gray-900 text-sm mb-4">Leads por Temperatura</h3>
                 <div className="space-y-3">
                   <div className="flex items-center justify-between">
@@ -294,7 +294,7 @@ export default function DashboardPage() {
 
             {/* Meta do Mês */}
             {meta && (
-              <div className="bg-white p-5 rounded-xl shadow-sm border border-gray-100">
+              <div className="bg-surface p-5 rounded-xl shadow-sm border border-edge-light">
                 <h3 className="font-bold text-gray-900 text-sm mb-4">Meta do Mês</h3>
                 <div className="space-y-3">
                   <div className="flex items-center justify-between">
@@ -365,7 +365,7 @@ export default function DashboardPage() {
           )}
 
           {/* Tarefas de Hoje */}
-          <div className="bg-white p-5 rounded-xl shadow-sm border border-gray-100">
+          <div className="bg-surface p-5 rounded-xl shadow-sm border border-edge-light">
             <div className="flex items-center justify-between mb-4">
               <h3 className="font-bold text-gray-900 text-sm">Agenda Hoje</h3>
               <Link
@@ -411,7 +411,7 @@ export default function DashboardPage() {
           </div>
 
           {/* Ações Rápidas */}
-          <div className="bg-white p-5 rounded-xl shadow-sm border border-gray-100">
+          <div className="bg-surface p-5 rounded-xl shadow-sm border border-edge-light">
             <h3 className="font-bold text-gray-900 text-sm mb-4">Ações Rápidas</h3>
             <div className="space-y-2">
               <Link

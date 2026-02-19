@@ -174,7 +174,7 @@ function getStatusBadgeClasses(status: string): string {
     case 'INATIVO':
       return 'bg-red-100 text-red-800';
     default:
-      return 'bg-gray-100 text-gray-800';
+      return 'bg-gray-100 text-content';
   }
 }
 
@@ -189,7 +189,7 @@ function getPaymentStatusBadge(status: string): { classes: string; label: string
   if (s === 'rejected' || s === 'recusado' || s === 'falha') {
     return { classes: 'bg-red-100 text-red-800', label: 'Recusado' };
   }
-  return { classes: 'bg-gray-100 text-gray-800', label: status || '--' };
+  return { classes: 'bg-gray-100 text-content', label: status || '--' };
 }
 
 // ---------------------------------------------------------------------------
@@ -282,7 +282,7 @@ export default function PlanosPage() {
       <div className="flex items-center justify-center py-32">
         <div className="text-center">
           <div className="w-10 h-10 border-4 border-[#00C48C] border-t-transparent rounded-full animate-spin mx-auto mb-4" />
-          <p className="text-gray-500 text-sm font-semibold">Carregando planos...</p>
+          <p className="text-content-secondary text-sm font-semibold">Carregando planos...</p>
         </div>
       </div>
     );
@@ -296,8 +296,8 @@ export default function PlanosPage() {
     <div className="space-y-8">
       {/* ---- Header ---- */}
       <div>
-        <h1 className="text-2xl font-bold text-gray-900">Planos e Assinatura</h1>
-        <p className="text-sm text-gray-600 mt-1">
+        <h1 className="text-2xl font-bold text-content">Planos e Assinatura</h1>
+        <p className="text-sm text-content-secondary mt-1">
           Gerencie seu plano, acompanhe o uso e consulte o historico de pagamentos.
         </p>
       </div>
@@ -365,13 +365,13 @@ export default function PlanosPage() {
 
       {/* ---- Current subscription card ---- */}
       {tenant && (
-        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-          <h2 className="text-lg font-bold text-gray-900 mb-4">Assinatura Atual</h2>
+        <div className="bg-surface rounded-xl shadow-sm border border-edge-light p-6">
+          <h2 className="text-lg font-bold text-content mb-4">Assinatura Atual</h2>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {/* Plan name */}
             <div>
-              <p className="text-xs font-semibold text-gray-600 uppercase mb-1">Plano</p>
+              <p className="text-xs font-semibold text-content-secondary uppercase mb-1">Plano</p>
               <span className="inline-block px-3 py-1 rounded-full text-sm font-bold bg-[#064E3B] text-white">
                 {currentPlan || 'Nenhum'}
               </span>
@@ -379,7 +379,7 @@ export default function PlanosPage() {
 
             {/* Status */}
             <div>
-              <p className="text-xs font-semibold text-gray-600 uppercase mb-1">Status</p>
+              <p className="text-xs font-semibold text-content-secondary uppercase mb-1">Status</p>
               <span
                 className={`inline-block px-3 py-1 rounded-full text-sm font-bold ${getStatusBadgeClasses(
                   tenantStatus
@@ -391,10 +391,10 @@ export default function PlanosPage() {
 
             {/* Next billing */}
             <div>
-              <p className="text-xs font-semibold text-gray-600 uppercase mb-1">
+              <p className="text-xs font-semibold text-content-secondary uppercase mb-1">
                 Proxima Cobranca
               </p>
-              <p className="text-sm font-semibold text-gray-900">
+              <p className="text-sm font-semibold text-content">
                 {assinatura?.proxima_cobranca
                   ? formatDate(assinatura.proxima_cobranca)
                   : '--'}
@@ -403,10 +403,10 @@ export default function PlanosPage() {
 
             {/* Monthly value */}
             <div>
-              <p className="text-xs font-semibold text-gray-600 uppercase mb-1">
+              <p className="text-xs font-semibold text-content-secondary uppercase mb-1">
                 Valor Mensal
               </p>
-              <p className="text-sm font-semibold text-gray-900">
+              <p className="text-sm font-semibold text-content">
                 {assinatura?.valor_mensal
                   ? formatCurrency(assinatura.valor_mensal)
                   : '--'}
@@ -419,12 +419,12 @@ export default function PlanosPage() {
             {/* Users */}
             <div>
               <div className="flex items-center justify-between mb-1">
-                <p className="text-sm font-semibold text-gray-700">Usuarios</p>
-                <p className="text-sm text-gray-600">
+                <p className="text-sm font-semibold text-content">Usuarios</p>
+                <p className="text-sm text-content-secondary">
                   {tenant.total_usuarios}/{tenant.limite_usuarios}
                 </p>
               </div>
-              <div className="w-full h-2.5 bg-gray-200 rounded-full overflow-hidden">
+              <div className="w-full h-2.5 bg-surface-secondary rounded-full overflow-hidden">
                 <div
                   className="h-full rounded-full bg-[#00C48C] transition-all duration-500"
                   style={{
@@ -440,12 +440,12 @@ export default function PlanosPage() {
             {/* Properties */}
             <div>
               <div className="flex items-center justify-between mb-1">
-                <p className="text-sm font-semibold text-gray-700">Imoveis</p>
-                <p className="text-sm text-gray-600">
+                <p className="text-sm font-semibold text-content">Imoveis</p>
+                <p className="text-sm text-content-secondary">
                   {tenant.total_imoveis}/{tenant.limite_imoveis}
                 </p>
               </div>
-              <div className="w-full h-2.5 bg-gray-200 rounded-full overflow-hidden">
+              <div className="w-full h-2.5 bg-surface-secondary rounded-full overflow-hidden">
                 <div
                   className="h-full rounded-full bg-[#00C48C] transition-all duration-500"
                   style={{
@@ -463,7 +463,7 @@ export default function PlanosPage() {
 
       {/* ---- Plans grid ---- */}
       <div>
-        <h2 className="text-lg font-bold text-gray-900 mb-4">Escolha seu Plano</h2>
+        <h2 className="text-lg font-bold text-content mb-4">Escolha seu Plano</h2>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {PLANOS.map((plano) => {
@@ -476,12 +476,12 @@ export default function PlanosPage() {
             return (
               <div
                 key={plano.id}
-                className={`relative bg-white rounded-xl shadow-sm border-2 p-6 flex flex-col transition-shadow hover:shadow-md ${
+                className={`relative bg-surface rounded-xl shadow-sm border-2 p-6 flex flex-col transition-shadow hover:shadow-md ${
                   plano.destaque
                     ? 'border-[#00C48C]'
                     : isCurrentPlan
-                    ? 'border-gray-300'
-                    : 'border-gray-100'
+                    ? 'border-edge'
+                    : 'border-edge-light'
                 }`}
               >
                 {/* "Mais Popular" badge */}
@@ -494,24 +494,24 @@ export default function PlanosPage() {
                 )}
 
                 {/* Plan name */}
-                <h3 className="text-xl font-bold text-gray-900 mt-2">{plano.nome}</h3>
+                <h3 className="text-xl font-bold text-content mt-2">{plano.nome}</h3>
 
                 {/* Price */}
                 <div className="mt-3 flex items-end gap-1">
-                  <span className="text-3xl font-bold text-gray-900">
+                  <span className="text-3xl font-bold text-content">
                     {formatCurrency(plano.preco)}
                   </span>
-                  <span className="text-sm text-gray-500 mb-1">/mes</span>
+                  <span className="text-sm text-content-secondary mb-1">/mes</span>
                 </div>
 
                 {/* Divider */}
-                <hr className="my-4 border-gray-100" />
+                <hr className="my-4 border-edge-light" />
 
                 {/* Limits */}
-                <div className="space-y-2 text-sm text-gray-700 mb-4">
+                <div className="space-y-2 text-sm text-content mb-4">
                   <div className="flex items-center gap-2">
                     <svg
-                      className="w-4 h-4 text-gray-400 flex-shrink-0"
+                      className="w-4 h-4 text-content-tertiary flex-shrink-0"
                       fill="none"
                       viewBox="0 0 24 24"
                       stroke="currentColor"
@@ -530,7 +530,7 @@ export default function PlanosPage() {
                   </div>
                   <div className="flex items-center gap-2">
                     <svg
-                      className="w-4 h-4 text-gray-400 flex-shrink-0"
+                      className="w-4 h-4 text-content-tertiary flex-shrink-0"
                       fill="none"
                       viewBox="0 0 24 24"
                       stroke="currentColor"
@@ -546,7 +546,7 @@ export default function PlanosPage() {
                   </div>
                   <div className="flex items-center gap-2">
                     <svg
-                      className="w-4 h-4 text-gray-400 flex-shrink-0"
+                      className="w-4 h-4 text-content-tertiary flex-shrink-0"
                       fill="none"
                       viewBox="0 0 24 24"
                       stroke="currentColor"
@@ -565,7 +565,7 @@ export default function PlanosPage() {
                 {/* Features */}
                 <ul className="space-y-2 flex-1">
                   {plano.features.map((feature, idx) => (
-                    <li key={idx} className="flex items-start gap-2 text-sm text-gray-700">
+                    <li key={idx} className="flex items-start gap-2 text-sm text-content">
                       <svg
                         className="w-4 h-4 text-[#00C48C] flex-shrink-0 mt-0.5"
                         fill="none"
@@ -589,7 +589,7 @@ export default function PlanosPage() {
                   {isCurrentPlan ? (
                     <button
                       disabled
-                      className="w-full py-2.5 rounded-lg text-sm font-bold bg-gray-200 text-gray-500 cursor-not-allowed"
+                      className="w-full py-2.5 rounded-lg text-sm font-bold bg-surface-secondary text-content-secondary cursor-not-allowed"
                     >
                       Plano Atual
                     </button>
@@ -623,13 +623,13 @@ export default function PlanosPage() {
       </div>
 
       {/* ---- Payment history ---- */}
-      <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-        <h2 className="text-lg font-bold text-gray-900 mb-4">Historico de Pagamentos</h2>
+      <div className="bg-surface rounded-xl shadow-sm border border-edge-light p-6">
+        <h2 className="text-lg font-bold text-content mb-4">Historico de Pagamentos</h2>
 
         {historicoData.length === 0 ? (
           <div className="text-center py-10">
             <svg
-              className="w-12 h-12 text-gray-300 mx-auto mb-3"
+              className="w-12 h-12 text-content-tertiary mx-auto mb-3"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
@@ -641,7 +641,7 @@ export default function PlanosPage() {
                 d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
               />
             </svg>
-            <p className="text-sm text-gray-500 font-semibold">
+            <p className="text-sm text-content-secondary font-semibold">
               Nenhum historico de pagamento
             </p>
           </div>
@@ -649,11 +649,11 @@ export default function PlanosPage() {
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
-                <tr className="border-b border-gray-200">
-                  <th className="text-left py-3 px-4 font-semibold text-gray-600">Data</th>
-                  <th className="text-left py-3 px-4 font-semibold text-gray-600">Tipo</th>
-                  <th className="text-left py-3 px-4 font-semibold text-gray-600">Status</th>
-                  <th className="text-left py-3 px-4 font-semibold text-gray-600">Detalhes</th>
+                <tr className="border-b border-edge">
+                  <th className="text-left py-3 px-4 font-semibold text-content-secondary">Data</th>
+                  <th className="text-left py-3 px-4 font-semibold text-content-secondary">Tipo</th>
+                  <th className="text-left py-3 px-4 font-semibold text-content-secondary">Status</th>
+                  <th className="text-left py-3 px-4 font-semibold text-content-secondary">Detalhes</th>
                 </tr>
               </thead>
               <tbody>
@@ -662,16 +662,16 @@ export default function PlanosPage() {
                   return (
                     <tr
                       key={idx}
-                      className="border-b border-gray-50 hover:bg-gray-50 transition-colors"
+                      className="border-b border-gray-50 hover:bg-surface-secondary transition-colors"
                     >
-                      <td className="py-3 px-4 text-gray-700">
+                      <td className="py-3 px-4 text-content">
                         {evento.data
                           ? formatDateTime(evento.data)
                           : evento.timestamp
                           ? formatDateTime(evento.timestamp)
                           : '--'}
                       </td>
-                      <td className="py-3 px-4 text-gray-700 capitalize">
+                      <td className="py-3 px-4 text-content capitalize">
                         {evento.tipo ?? '--'}
                       </td>
                       <td className="py-3 px-4">
@@ -681,7 +681,7 @@ export default function PlanosPage() {
                           {statusBadge.label}
                         </span>
                       </td>
-                      <td className="py-3 px-4 text-gray-600">
+                      <td className="py-3 px-4 text-content-secondary">
                         {evento.detalhes
                           ? evento.detalhes
                           : evento.valor

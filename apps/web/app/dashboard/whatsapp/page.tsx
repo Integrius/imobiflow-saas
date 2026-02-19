@@ -135,8 +135,8 @@ export default function WhatsAppConfigPage() {
   return (
     <div className="max-w-4xl mx-auto p-6">
       <div className="mb-8">
-        <h1 className="text-2xl font-bold text-[#2C2C2C] flex items-center gap-3">
-          <Smartphone className="w-8 h-8 text-gray-400" />
+        <h1 className="text-2xl font-bold text-content flex items-center gap-3">
+          <Smartphone className="w-8 h-8 text-content-tertiary" />
           Configuração WhatsApp (Twilio)
         </h1>
         <p className="text-[#8B7F76] mt-2">
@@ -149,7 +149,7 @@ export default function WhatsAppConfigPage() {
         <div
           className={`mb-6 p-4 rounded-lg ${
             message.type === 'success'
-              ? 'bg-green-50 border border-green-200 text-green-700'
+              ? 'bg-brand-light border border-brand text-brand'
               : 'bg-red-50 border border-red-200 text-red-700'
           }`}
         >
@@ -160,19 +160,19 @@ export default function WhatsAppConfigPage() {
       {/* Cards de Estatísticas */}
       {stats && (
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-          <div className="bg-white rounded-xl shadow-sm p-4 border border-gray-100">
+          <div className="bg-surface rounded-xl shadow-sm p-4 border border-edge-light">
             <div className="text-2xl font-bold text-[#8FD14F]">{stats.total_messages}</div>
             <div className="text-sm text-[#8B7F76]">Total de Mensagens</div>
           </div>
-          <div className="bg-white rounded-xl shadow-sm p-4 border border-gray-100">
+          <div className="bg-surface rounded-xl shadow-sm p-4 border border-edge-light">
             <div className="text-2xl font-bold text-blue-500">{stats.received_messages}</div>
             <div className="text-sm text-[#8B7F76]">Recebidas</div>
           </div>
-          <div className="bg-white rounded-xl shadow-sm p-4 border border-gray-100">
+          <div className="bg-surface rounded-xl shadow-sm p-4 border border-edge-light">
             <div className="text-2xl font-bold text-purple-500">{stats.sent_messages}</div>
             <div className="text-sm text-[#8B7F76]">Enviadas</div>
           </div>
-          <div className="bg-white rounded-xl shadow-sm p-4 border border-gray-100">
+          <div className="bg-surface rounded-xl shadow-sm p-4 border border-edge-light">
             <div className="text-2xl font-bold text-[#A97E6F]">{stats.leads_from_whatsapp}</div>
             <div className="text-sm text-[#8B7F76]">Leads via WhatsApp</div>
           </div>
@@ -180,16 +180,16 @@ export default function WhatsAppConfigPage() {
       )}
 
       {/* Formulário de Configuração */}
-      <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+      <div className="bg-surface rounded-xl shadow-sm border border-edge-light overflow-hidden">
         {/* Credenciais Twilio */}
-        <div className="p-6 border-b border-gray-100">
-          <h2 className="text-lg font-semibold text-[#2C2C2C] mb-4 flex items-center gap-2">
+        <div className="p-6 border-b border-edge-light">
+          <h2 className="text-lg font-semibold text-content mb-4 flex items-center gap-2">
             <Lock className="w-4 h-4 inline mr-1" /> Credenciais Twilio
           </h2>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-[#2C2C2C] mb-1">
+              <label className="block text-sm font-medium text-content mb-1">
                 Account SID
               </label>
               <input
@@ -197,12 +197,12 @@ export default function WhatsAppConfigPage() {
                 value={config.twilio_account_sid || ''}
                 onChange={(e) => setConfig({ ...config, twilio_account_sid: e.target.value })}
                 placeholder="ACxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
-                className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#8FD14F]/50"
+                className="w-full px-4 py-2 border border-edge rounded-lg focus:outline-none focus:ring-2 focus:ring-[#8FD14F]/50"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-[#2C2C2C] mb-1">
+              <label className="block text-sm font-medium text-content mb-1">
                 Auth Token
               </label>
               <input
@@ -210,12 +210,12 @@ export default function WhatsAppConfigPage() {
                 value={config.twilio_auth_token || ''}
                 onChange={(e) => setConfig({ ...config, twilio_auth_token: e.target.value })}
                 placeholder="••••••••••••••••"
-                className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#8FD14F]/50"
+                className="w-full px-4 py-2 border border-edge rounded-lg focus:outline-none focus:ring-2 focus:ring-[#8FD14F]/50"
               />
             </div>
 
             <div className="md:col-span-2">
-              <label className="block text-sm font-medium text-[#2C2C2C] mb-1">
+              <label className="block text-sm font-medium text-content mb-1">
                 Número WhatsApp Business
               </label>
               <input
@@ -223,7 +223,7 @@ export default function WhatsAppConfigPage() {
                 value={config.twilio_phone_number || ''}
                 onChange={(e) => setConfig({ ...config, twilio_phone_number: e.target.value })}
                 placeholder="+5511999999999"
-                className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#8FD14F]/50"
+                className="w-full px-4 py-2 border border-edge rounded-lg focus:outline-none focus:ring-2 focus:ring-[#8FD14F]/50"
               />
               <p className="text-xs text-[#8B7F76] mt-1">
                 Número configurado no Twilio para WhatsApp Business
@@ -250,17 +250,17 @@ export default function WhatsAppConfigPage() {
         </div>
 
         {/* Configurações de Comportamento */}
-        <div className="p-6 border-b border-gray-100">
-          <h2 className="text-lg font-semibold text-[#2C2C2C] mb-4 flex items-center gap-2">
+        <div className="p-6 border-b border-edge-light">
+          <h2 className="text-lg font-semibold text-content mb-4 flex items-center gap-2">
             <Settings className="w-4 h-4 inline mr-1" /> Comportamento
           </h2>
 
           <div className="space-y-4">
             {/* Status Ativo */}
-            <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+            <div className="flex items-center justify-between p-4 bg-surface-secondary rounded-lg">
               <div>
-                <div className="font-medium text-[#2C2C2C]">Integração Ativa</div>
-                <div className="text-sm text-[#8B7F76]">
+                <div className="font-medium text-content">Integração Ativa</div>
+                <div className="text-sm text-content-secondary">
                   Habilita o recebimento e processamento de mensagens
                 </div>
               </div>
@@ -276,10 +276,10 @@ export default function WhatsAppConfigPage() {
             </div>
 
             {/* Respostas Automáticas */}
-            <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+            <div className="flex items-center justify-between p-4 bg-surface-secondary rounded-lg">
               <div>
-                <div className="font-medium text-[#2C2C2C]">Respostas Automáticas (Sofia)</div>
-                <div className="text-sm text-[#8B7F76]">
+                <div className="font-medium text-content">Respostas Automáticas (Sofia)</div>
+                <div className="text-sm text-content-secondary">
                   A IA Sofia responde automaticamente às mensagens
                 </div>
               </div>
@@ -295,10 +295,10 @@ export default function WhatsAppConfigPage() {
             </div>
 
             {/* Atribuição Automática */}
-            <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+            <div className="flex items-center justify-between p-4 bg-surface-secondary rounded-lg">
               <div>
-                <div className="font-medium text-[#2C2C2C]">Atribuir Corretor Automaticamente</div>
-                <div className="text-sm text-[#8B7F76]">
+                <div className="font-medium text-content">Atribuir Corretor Automaticamente</div>
+                <div className="text-sm text-content-secondary">
                   Atribui um corretor padrão para novos leads
                 </div>
               </div>
@@ -316,13 +316,13 @@ export default function WhatsAppConfigPage() {
             {/* Corretor Padrão */}
             {config.auto_assign_corretor && (
               <div>
-                <label className="block text-sm font-medium text-[#2C2C2C] mb-1">
+                <label className="block text-sm font-medium text-content mb-1">
                   Corretor Padrão
                 </label>
                 <select
                   value={config.default_corretor_id || ''}
                   onChange={(e) => setConfig({ ...config, default_corretor_id: e.target.value || undefined })}
-                  className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#8FD14F]/50"
+                  className="w-full px-4 py-2 border border-edge rounded-lg focus:outline-none focus:ring-2 focus:ring-[#8FD14F]/50"
                 >
                   <option value="">Selecione um corretor</option>
                   {corretores.map((c) => (
@@ -337,32 +337,32 @@ export default function WhatsAppConfigPage() {
         </div>
 
         {/* Horário Comercial */}
-        <div className="p-6 border-b border-gray-100">
-          <h2 className="text-lg font-semibold text-[#2C2C2C] mb-4 flex items-center gap-2">
+        <div className="p-6 border-b border-edge-light">
+          <h2 className="text-lg font-semibold text-content mb-4 flex items-center gap-2">
             <Clock className="w-4 h-4 inline mr-1" /> Horário Comercial
           </h2>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-[#2C2C2C] mb-1">
+              <label className="block text-sm font-medium text-content mb-1">
                 Início
               </label>
               <input
                 type="time"
                 value={config.business_hours_start || '08:00'}
                 onChange={(e) => setConfig({ ...config, business_hours_start: e.target.value })}
-                className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#8FD14F]/50"
+                className="w-full px-4 py-2 border border-edge rounded-lg focus:outline-none focus:ring-2 focus:ring-[#8FD14F]/50"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-[#2C2C2C] mb-1">
+              <label className="block text-sm font-medium text-content mb-1">
                 Fim
               </label>
               <input
                 type="time"
                 value={config.business_hours_end || '18:00'}
                 onChange={(e) => setConfig({ ...config, business_hours_end: e.target.value })}
-                className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#8FD14F]/50"
+                className="w-full px-4 py-2 border border-edge rounded-lg focus:outline-none focus:ring-2 focus:ring-[#8FD14F]/50"
               />
             </div>
           </div>
@@ -382,8 +382,8 @@ export default function WhatsAppConfigPage() {
         </div>
 
         {/* Mensagens Personalizadas */}
-        <div className="p-6 border-b border-gray-100">
-          <h2 className="text-lg font-semibold text-[#2C2C2C] mb-4 flex items-center gap-2">
+        <div className="p-6 border-b border-edge-light">
+          <h2 className="text-lg font-semibold text-content mb-4 flex items-center gap-2">
             <MessageCircle className="w-4 h-4 inline mr-1" /> Mensagens Personalizadas
           </h2>
 
@@ -405,8 +405,8 @@ export default function WhatsAppConfigPage() {
         </div>
 
         {/* Webhook Info */}
-        <div className="p-6 border-b border-gray-100 bg-blue-50">
-          <h2 className="text-lg font-semibold text-[#2C2C2C] mb-4 flex items-center gap-2">
+        <div className="p-6 border-b border-edge-light bg-blue-50">
+          <h2 className="text-lg font-semibold text-content mb-4 flex items-center gap-2">
             <Link2 className="w-4 h-4 inline mr-1" /> Configuração do Webhook no Twilio
           </h2>
 
@@ -436,10 +436,10 @@ export default function WhatsAppConfigPage() {
         </div>
 
         {/* Botões de Ação */}
-        <div className="p-6 bg-gray-50 flex justify-end gap-3">
+        <div className="p-6 bg-surface-secondary flex justify-end gap-3">
           <button
             onClick={loadData}
-            className="px-6 py-2 border border-gray-300 text-[#2C2C2C] rounded-lg hover:bg-gray-100"
+            className="px-6 py-2 border border-edge text-content rounded-lg hover:bg-surface-secondary"
           >
             Cancelar
           </button>

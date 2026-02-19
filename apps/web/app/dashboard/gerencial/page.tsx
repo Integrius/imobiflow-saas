@@ -207,7 +207,7 @@ export default function DashboardGerencialPage() {
       {/* Cards de Métricas Principais */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {/* Total Corretores */}
-        <div className="bg-white rounded-xl p-6 shadow-lg border-2 border-[#00C48C]/20 hover:shadow-xl transition-shadow">
+        <div className="bg-surface rounded-xl p-6 shadow-lg border-2 border-[#00C48C]/20 hover:shadow-xl transition-shadow">
           <div className="flex items-center justify-between mb-4">
             <div className="p-3 bg-gradient-to-br from-[#00C48C] to-[#059669] rounded-xl">
               <Users className="w-5 h-5 text-white" />
@@ -221,7 +221,7 @@ export default function DashboardGerencialPage() {
         </div>
 
         {/* Total Leads */}
-        <div className="bg-white rounded-xl p-6 shadow-lg border-2 border-[#059669]/20 hover:shadow-xl transition-shadow">
+        <div className="bg-surface rounded-xl p-6 shadow-lg border-2 border-[#059669]/20 hover:shadow-xl transition-shadow">
           <div className="flex items-center justify-between mb-4">
             <div className="p-3 bg-gradient-to-br from-[#059669] to-[#047857] rounded-xl">
               <ClipboardList className="w-5 h-5 text-white" />
@@ -235,7 +235,7 @@ export default function DashboardGerencialPage() {
         </div>
 
         {/* Valor Fechado */}
-        <div className="bg-white rounded-xl p-6 shadow-lg border-2 border-[#FFB627]/20 hover:shadow-xl transition-shadow">
+        <div className="bg-surface rounded-xl p-6 shadow-lg border-2 border-[#FFB627]/20 hover:shadow-xl transition-shadow">
           <div className="flex items-center justify-between mb-4">
             <div className="p-3 bg-gradient-to-br from-[#FFB627] to-[#F59E0B] rounded-xl">
               <DollarSign className="w-5 h-5 text-white" />
@@ -247,7 +247,7 @@ export default function DashboardGerencialPage() {
         </div>
 
         {/* Taxa de Conversão */}
-        <div className="bg-white rounded-xl p-6 shadow-lg border-2 border-[#8B5CF6]/20 hover:shadow-xl transition-shadow">
+        <div className="bg-surface rounded-xl p-6 shadow-lg border-2 border-[#8B5CF6]/20 hover:shadow-xl transition-shadow">
           <div className="flex items-center justify-between mb-4">
             <div className="p-3 bg-gradient-to-br from-[#8B5CF6] to-[#7C3AED] rounded-xl">
               <TrendingUp className="w-5 h-5 text-white" />
@@ -283,7 +283,7 @@ export default function DashboardGerencialPage() {
       {/* Distribuição de Temperatura + Top Corretores */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Distribuição de Temperatura */}
-        <div className="bg-white rounded-xl p-6 shadow-lg border-2 border-gray-100">
+        <div className="bg-surface rounded-xl p-6 shadow-lg border-2 border-edge-light">
           <h3 className="text-lg font-bold text-[#064E3B] mb-4">Distribuição de Leads</h3>
           <ResponsiveContainer width="100%" height={200}>
             <PieChart>
@@ -324,7 +324,7 @@ export default function DashboardGerencialPage() {
         </div>
 
         {/* Top Fechamentos */}
-        <div className="bg-white rounded-xl p-6 shadow-lg border-2 border-gray-100">
+        <div className="bg-surface rounded-xl p-6 shadow-lg border-2 border-edge-light">
           <h3 className="text-lg font-bold text-[#064E3B] mb-4 flex items-center gap-2"><Trophy className="w-5 h-5 text-yellow-500" /> Top Fechamentos</h3>
           <div className="space-y-3">
             {data.tops.fechamentos.map((corretor, index) => (
@@ -347,7 +347,7 @@ export default function DashboardGerencialPage() {
         </div>
 
         {/* Top Valor */}
-        <div className="bg-white rounded-xl p-6 shadow-lg border-2 border-gray-100">
+        <div className="bg-surface rounded-xl p-6 shadow-lg border-2 border-edge-light">
           <h3 className="text-lg font-bold text-[#064E3B] mb-4 flex items-center gap-2"><DollarSign className="w-5 h-5 text-yellow-500" /> Top Valor Fechado</h3>
           <div className="space-y-3">
             {data.tops.valor.map((corretor, index) => (
@@ -370,14 +370,14 @@ export default function DashboardGerencialPage() {
       </div>
 
       {/* Tabs: Ranking Completo / Comparativo */}
-      <div className="bg-white rounded-xl shadow-lg border-2 border-gray-100 overflow-hidden">
+      <div className="bg-surface rounded-xl shadow-lg border-2 border-edge-light overflow-hidden">
         <div className="flex border-b">
           <button
             onClick={() => setTabAtiva('ranking')}
             className={`flex-1 py-4 px-6 font-bold transition-colors ${
               tabAtiva === 'ranking'
                 ? 'bg-[#00C48C] text-white'
-                : 'bg-gray-50 text-[#374151] hover:bg-gray-100'
+                : 'bg-surface-secondary text-content-secondary hover:bg-surface-tertiary'
             }`}
           >
             <BarChart3 className="w-4 h-4 inline mr-1" /> Ranking de Corretores
@@ -387,7 +387,7 @@ export default function DashboardGerencialPage() {
             className={`flex-1 py-4 px-6 font-bold transition-colors ${
               tabAtiva === 'comparativo'
                 ? 'bg-[#00C48C] text-white'
-                : 'bg-gray-50 text-[#374151] hover:bg-gray-100'
+                : 'bg-surface-secondary text-content-secondary hover:bg-surface-tertiary'
             }`}
           >
             <TrendingUp className="w-4 h-4 inline mr-1" /> Comparativo Mensal
@@ -413,7 +413,7 @@ export default function DashboardGerencialPage() {
                 </thead>
                 <tbody>
                   {data.ranking.map((corretor) => (
-                    <tr key={corretor.id} className="border-b hover:bg-gray-50 transition-colors">
+                    <tr key={corretor.id} className="border-b hover:bg-surface-secondary transition-colors">
                       <td className="py-4">
                         <div className={`w-8 h-8 rounded-full flex items-center justify-center text-white font-bold ${
                           corretor.ranking.posicao === 1 ? 'bg-yellow-500' :
@@ -505,7 +505,7 @@ export default function DashboardGerencialPage() {
 
               <div className="grid grid-cols-3 gap-4 mt-6">
                 {data.comparativo.map((periodo) => (
-                  <div key={periodo.periodo} className="bg-gray-50 rounded-lg p-4">
+                  <div key={periodo.periodo} className="bg-surface-secondary rounded-lg p-4">
                     <h4 className="font-bold text-[#064E3B] mb-3">{periodo.periodo}</h4>
                     <div className="space-y-2 text-sm">
                       <div className="flex justify-between">

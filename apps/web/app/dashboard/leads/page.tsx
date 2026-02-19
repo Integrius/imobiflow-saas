@@ -262,7 +262,7 @@ export default function LeadsPage() {
   if (loading) {
     return (
       <div className="flex justify-center items-center min-h-[400px]">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-brand"></div>
       </div>
     );
   }
@@ -285,19 +285,19 @@ export default function LeadsPage() {
 
       {/* KPIs - Cards minimalistas */}
       <div className="grid grid-cols-4 gap-4">
-        <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-100">
+        <div className="bg-surface p-4 rounded-xl shadow-sm border border-edge-light">
           <span className="text-xs font-bold text-gray-600 uppercase tracking-wide">Total</span>
           <div className="text-3xl font-bold text-gray-900 mt-1">{leads.length}</div>
         </div>
-        <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-100">
+        <div className="bg-surface p-4 rounded-xl shadow-sm border border-edge-light">
           <span className="text-xs font-bold text-red-600 uppercase tracking-wide">Quentes</span>
           <div className="text-3xl font-bold text-red-600 mt-1">{leadsQuentes}</div>
         </div>
-        <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-100">
+        <div className="bg-surface p-4 rounded-xl shadow-sm border border-edge-light">
           <span className="text-xs font-bold text-amber-600 uppercase tracking-wide">Mornos</span>
           <div className="text-3xl font-bold text-amber-600 mt-1">{leadsMornos}</div>
         </div>
-        <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-100">
+        <div className="bg-surface p-4 rounded-xl shadow-sm border border-edge-light">
           <span className="text-xs font-bold text-blue-600 uppercase tracking-wide">Frios</span>
           <div className="text-3xl font-bold text-blue-600 mt-1">{leadsFrios}</div>
         </div>
@@ -339,7 +339,7 @@ export default function LeadsPage() {
           </div>
 
           {/* Tabela */}
-          <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+          <div className="bg-surface rounded-xl shadow-sm border border-edge-light overflow-hidden">
             <table className="min-w-full divide-y divide-gray-100">
               <thead className="bg-gray-50">
                 <tr>
@@ -349,7 +349,7 @@ export default function LeadsPage() {
                   <th className="px-6 py-3 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">Ações</th>
                 </tr>
               </thead>
-              <tbody className="bg-white divide-y divide-gray-50">
+              <tbody className="bg-surface divide-y divide-edge-light">
                 {filteredLeads.length === 0 ? (
                   <tr>
                     <td colSpan={4} className="px-6 py-12 text-center text-gray-600">
@@ -442,7 +442,7 @@ export default function LeadsPage() {
           </div>
 
           {/* Ações Rápidas */}
-          <div className="bg-white p-5 rounded-xl shadow-sm border border-gray-100">
+          <div className="bg-surface p-5 rounded-xl shadow-sm border border-edge-light">
             <h3 className="font-bold text-gray-900 text-sm mb-3">Ações Rápidas</h3>
             <div className="space-y-2">
               <Link
@@ -467,7 +467,7 @@ export default function LeadsPage() {
           </div>
 
           {/* Resumo por Origem */}
-          <div className="bg-white p-5 rounded-xl shadow-sm border border-gray-100">
+          <div className="bg-surface p-5 rounded-xl shadow-sm border border-edge-light">
             <h3 className="font-bold text-gray-900 text-sm mb-3">Por Origem</h3>
             <div className="space-y-2.5 text-sm">
               {['SITE', 'WHATSAPP', 'INDICACAO', 'REDES_SOCIAIS', 'TELEFONE'].map(origem => {
@@ -577,7 +577,7 @@ export default function LeadsPage() {
                   <label className={`flex items-center p-3 border rounded-lg cursor-pointer transition-all ${
                     formData.perfil === 'PROPRIETARIO'
                       ? 'bg-green-50 border-green-500 text-green-800'
-                      : 'bg-white border-gray-200 text-gray-700 hover:border-green-300'
+                      : 'bg-surface border-edge text-content hover:border-green-300'
                   }`}>
                     <input
                       type="radio"
@@ -592,7 +592,7 @@ export default function LeadsPage() {
                   <label className={`flex items-center p-3 border rounded-lg cursor-pointer transition-all ${
                     formData.perfil === 'INTERESSADO'
                       ? 'bg-green-50 border-green-500 text-green-800'
-                      : 'bg-white border-gray-200 text-gray-700 hover:border-green-300'
+                      : 'bg-surface border-edge text-content hover:border-green-300'
                   }`}>
                     <input
                       type="radio"
@@ -613,7 +613,7 @@ export default function LeadsPage() {
                   <label className={`flex items-center p-3 border rounded-lg cursor-pointer transition-all ${
                     formData.interesse.finalidade === 'VENDA'
                       ? 'bg-green-50 border-green-500 text-green-800'
-                      : 'bg-white border-gray-200 text-gray-700 hover:border-green-300'
+                      : 'bg-surface border-edge text-content hover:border-green-300'
                   }`}>
                     <input
                       type="radio"
@@ -628,7 +628,7 @@ export default function LeadsPage() {
                   <label className={`flex items-center p-3 border rounded-lg cursor-pointer transition-all ${
                     formData.interesse.finalidade === 'LOCACAO'
                       ? 'bg-green-50 border-green-500 text-green-800'
-                      : 'bg-white border-gray-200 text-gray-700 hover:border-green-300'
+                      : 'bg-surface border-edge text-content hover:border-green-300'
                   }`}>
                     <input
                       type="radio"
@@ -719,7 +719,7 @@ export default function LeadsPage() {
 
                 {loadingDetails ? (
                   <div className="flex justify-center py-4">
-                    <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-green-600"></div>
+                    <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-brand"></div>
                   </div>
                 ) : (
                   <div className="grid grid-cols-3 gap-3">

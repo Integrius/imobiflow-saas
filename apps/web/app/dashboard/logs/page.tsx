@@ -174,10 +174,10 @@ export default function TenantLogsPage() {
     <div className="p-6 max-w-7xl mx-auto">
       {/* Header */}
       <div className="mb-6">
-        <h1 className="text-3xl font-bold text-gray-900">
+        <h1 className="text-3xl font-bold text-content">
           Logs de Atividades
         </h1>
-        <p className="text-gray-600 mt-2">
+        <p className="text-content-secondary mt-2">
           Histórico de todas as atividades da sua conta
         </p>
       </div>
@@ -185,9 +185,9 @@ export default function TenantLogsPage() {
       {/* Estatísticas */}
       {stats && (
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-          <div className="bg-white rounded-lg shadow p-4">
-            <div className="text-sm text-gray-600">Total de Logs</div>
-            <div className="text-2xl font-bold text-gray-900">{stats.total}</div>
+          <div className="bg-surface rounded-lg shadow p-4">
+            <div className="text-sm text-content-secondary">Total de Logs</div>
+            <div className="text-2xl font-bold text-content">{stats.total}</div>
           </div>
           <div className="bg-emerald-50 rounded-lg shadow p-4">
             <div className="text-sm text-emerald-600">Últimas 24h</div>
@@ -207,11 +207,11 @@ export default function TenantLogsPage() {
       )}
 
       {/* Filtros */}
-      <div className="bg-white rounded-lg shadow p-4 mb-6">
+      <div className="bg-surface rounded-lg shadow p-4 mb-6">
         <h2 className="text-lg font-semibold mb-4">Filtros</h2>
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-content mb-1">
               Tipo de Atividade
             </label>
             <select
@@ -220,7 +220,7 @@ export default function TenantLogsPage() {
                 setFiltroTipo(e.target.value);
                 setPage(0);
               }}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#8FD14F] focus:border-transparent"
+              className="w-full px-3 py-2 border border-edge rounded-lg focus:ring-2 focus:ring-[#8FD14F] focus:border-transparent"
             >
               <option value="">Todos</option>
               {Object.entries(TIPOS_ATIVIDADE).map(([key, label]) => (
@@ -232,7 +232,7 @@ export default function TenantLogsPage() {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-content mb-1">
               Data Início
             </label>
             <input
@@ -242,12 +242,12 @@ export default function TenantLogsPage() {
                 setFiltroDataInicio(e.target.value);
                 setPage(0);
               }}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#8FD14F] focus:border-transparent"
+              className="w-full px-3 py-2 border border-edge rounded-lg focus:ring-2 focus:ring-[#8FD14F] focus:border-transparent"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-content mb-1">
               Data Fim
             </label>
             <input
@@ -257,14 +257,14 @@ export default function TenantLogsPage() {
                 setFiltroDataFim(e.target.value);
                 setPage(0);
               }}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#8FD14F] focus:border-transparent"
+              className="w-full px-3 py-2 border border-edge rounded-lg focus:ring-2 focus:ring-[#8FD14F] focus:border-transparent"
             />
           </div>
 
           <div className="flex items-end">
             <button
               onClick={limparFiltros}
-              className="w-full px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg transition-colors"
+              className="w-full px-4 py-2 bg-surface-tertiary hover:bg-surface-secondary text-content rounded-lg transition-colors"
             >
               Limpar Filtros
             </button>
@@ -273,12 +273,12 @@ export default function TenantLogsPage() {
       </div>
 
       {/* Tabela de Logs */}
-      <div className="bg-white rounded-lg shadow overflow-hidden">
+      <div className="bg-surface rounded-lg shadow overflow-hidden">
         <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
+          <table className="min-w-full divide-y divide-edge-light">
+            <thead className="bg-surface-secondary">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-content-secondary uppercase tracking-wider">
                   Data/Hora
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -295,23 +295,23 @@ export default function TenantLogsPage() {
                 </th>
               </tr>
             </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
+            <tbody className="bg-surface divide-y divide-edge-light">
               {loading ? (
                 <tr>
-                  <td colSpan={5} className="px-6 py-4 text-center text-gray-500">
+                  <td colSpan={5} className="px-6 py-4 text-center text-content-secondary">
                     Carregando logs...
                   </td>
                 </tr>
               ) : logs.length === 0 ? (
                 <tr>
-                  <td colSpan={5} className="px-6 py-4 text-center text-gray-500">
+                  <td colSpan={5} className="px-6 py-4 text-center text-content-secondary">
                     Nenhum log encontrado
                   </td>
                 </tr>
               ) : (
                 logs.map((log) => (
-                  <tr key={log.id} className="hover:bg-gray-50">
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                  <tr key={log.id} className="hover:bg-surface-secondary">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-content">
                       {formatDate(log.created_at)}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
@@ -319,22 +319,22 @@ export default function TenantLogsPage() {
                         {TIPOS_ATIVIDADE[log.tipo]}
                       </span>
                     </td>
-                    <td className="px-6 py-4 text-sm text-gray-900 max-w-md truncate">
+                    <td className="px-6 py-4 text-sm text-content max-w-md truncate">
                       {log.acao}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       {log.user ? (
                         <div>
-                          <div className="text-sm font-medium text-gray-900">
+                          <div className="text-sm font-medium text-content">
                             {log.user.nome}
                           </div>
-                          <div className="text-xs text-gray-500">{log.user.email}</div>
+                          <div className="text-xs text-content-secondary">{log.user.email}</div>
                         </div>
                       ) : (
-                        <span className="text-sm text-gray-400">Sistema</span>
+                        <span className="text-sm text-content-secondary">Sistema</span>
                       )}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-content-secondary">
                       {log.ip_address || '-'}
                     </td>
                   </tr>
@@ -345,26 +345,26 @@ export default function TenantLogsPage() {
         </div>
 
         {/* Paginação */}
-        <div className="bg-white px-4 py-3 flex items-center justify-between border-t border-gray-200 sm:px-6">
+        <div className="bg-surface px-4 py-3 flex items-center justify-between border-t border-edge sm:px-6">
           <div className="flex-1 flex justify-between sm:hidden">
             <button
               onClick={() => setPage(Math.max(0, page - 1))}
               disabled={page === 0}
-              className="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="relative inline-flex items-center px-4 py-2 border border-edge text-sm font-medium rounded-md text-content bg-surface hover:bg-surface-secondary disabled:opacity-50 disabled:cursor-not-allowed"
             >
               Anterior
             </button>
             <button
               onClick={() => setPage(page + 1)}
               disabled={logs.length < limit}
-              className="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="ml-3 relative inline-flex items-center px-4 py-2 border border-edge text-sm font-medium rounded-md text-content bg-surface hover:bg-surface-secondary disabled:opacity-50 disabled:cursor-not-allowed"
             >
               Próximo
             </button>
           </div>
           <div className="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
             <div>
-              <p className="text-sm text-gray-700">
+              <p className="text-sm text-content">
                 Mostrando <span className="font-medium">{page * limit + 1}</span> a{' '}
                 <span className="font-medium">
                   {Math.min(page * limit + limit, total)}
@@ -380,17 +380,17 @@ export default function TenantLogsPage() {
                 <button
                   onClick={() => setPage(Math.max(0, page - 1))}
                   disabled={page === 0}
-                  className="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="relative inline-flex items-center px-2 py-2 rounded-l-md border border-edge bg-surface text-sm font-medium text-content-secondary hover:bg-surface-secondary disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   Anterior
                 </button>
-                <span className="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700">
+                <span className="relative inline-flex items-center px-4 py-2 border border-edge bg-surface text-sm font-medium text-content">
                   Página {page + 1}
                 </span>
                 <button
                   onClick={() => setPage(page + 1)}
                   disabled={logs.length < limit}
-                  className="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="relative inline-flex items-center px-2 py-2 rounded-r-md border border-edge bg-surface text-sm font-medium text-content-secondary hover:bg-surface-secondary disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   Próximo
                 </button>

@@ -472,7 +472,7 @@ export default function ImoveisPage() {
                     <select
                       value={imovel.corretor_responsavel?.id || ''}
                       onChange={(e) => handleChangeCorretor(imovel.id, e.target.value)}
-                      className="ml-2 px-2 py-1 border border-gray-300 rounded-md text-sm"
+                      className="ml-2 px-2 py-1 border border-edge rounded-md text-sm"
                     >
                       <option value="">Sem corretor</option>
                       {corretores.map(corretor => (
@@ -533,7 +533,7 @@ export default function ImoveisPage() {
                 required
                 value={formData.titulo}
                 onChange={(e) => handleFormChange('titulo', e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-600 focus:border-transparent"
+                className="w-full px-3 py-2 border border-edge rounded-lg focus:ring-2 focus:ring-emerald-600 focus:border-transparent"
               />
             </div>
 
@@ -544,7 +544,7 @@ export default function ImoveisPage() {
               <select
                 value={formData.tipo}
                 onChange={(e) => handleFormChange('tipo', e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-600 focus:border-transparent"
+                className="w-full px-3 py-2 border border-edge rounded-lg focus:ring-2 focus:ring-emerald-600 focus:border-transparent"
               >
                 <option value="APARTAMENTO">Apartamento</option>
                 <option value="CASA">Casa</option>
@@ -561,7 +561,7 @@ export default function ImoveisPage() {
               <select
                 value={formData.status}
                 onChange={(e) => handleFormChange('status', e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-600 focus:border-transparent"
+                className="w-full px-3 py-2 border border-edge rounded-lg focus:ring-2 focus:ring-emerald-600 focus:border-transparent"
               >
                 <option value="DISPONIVEL">Disponível</option>
                 <option value="RESERVADO">Reservado</option>
@@ -577,7 +577,7 @@ export default function ImoveisPage() {
                 required
                 value={formData.proprietario_id}
                 onChange={(e) => handleFormChange('proprietario_id', e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-600 focus:border-transparent"
+                className="w-full px-3 py-2 border border-edge rounded-lg focus:ring-2 focus:ring-emerald-600 focus:border-transparent"
               >
                 <option value="">Selecione...</option>
                 {proprietarios.map((prop) => (
@@ -598,7 +598,7 @@ export default function ImoveisPage() {
                 placeholder="0,00"
                 value={formData.valor}
                 onChange={(e) => handleFormChange('valor', e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-600 focus:border-transparent"
+                className="w-full px-3 py-2 border border-edge rounded-lg focus:ring-2 focus:ring-emerald-600 focus:border-transparent"
               />
             </div>
 
@@ -611,7 +611,7 @@ export default function ImoveisPage() {
                 required
                 value={formData.endereco}
                 onChange={(e) => handleFormChange('endereco', e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-600 focus:border-transparent"
+                className="w-full px-3 py-2 border border-edge rounded-lg focus:ring-2 focus:ring-emerald-600 focus:border-transparent"
               />
             </div>
 
@@ -624,7 +624,7 @@ export default function ImoveisPage() {
                 required
                 value={formData.cidade}
                 onChange={(e) => handleFormChange('cidade', e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-600 focus:border-transparent"
+                className="w-full px-3 py-2 border border-edge rounded-lg focus:ring-2 focus:ring-emerald-600 focus:border-transparent"
               />
             </div>
 
@@ -637,7 +637,7 @@ export default function ImoveisPage() {
                 required
                 value={formData.estado}
                 onChange={(e) => handleFormChange('estado', e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-600 focus:border-transparent"
+                className="w-full px-3 py-2 border border-edge rounded-lg focus:ring-2 focus:ring-emerald-600 focus:border-transparent"
                 placeholder="UF"
                 maxLength={2}
               />
@@ -653,7 +653,7 @@ export default function ImoveisPage() {
                 placeholder="00000-000"
                 value={formData.cep}
                 onChange={(e) => handleFormChange('cep', e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-600 focus:border-transparent"
+                className="w-full px-3 py-2 border border-edge rounded-lg focus:ring-2 focus:ring-emerald-600 focus:border-transparent"
               />
             </div>
 
@@ -667,7 +667,7 @@ export default function ImoveisPage() {
                 min="0"
                 value={formData.area}
                 onChange={(e) => handleFormChange('area', e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-600 focus:border-transparent"
+                className="w-full px-3 py-2 border border-edge rounded-lg focus:ring-2 focus:ring-emerald-600 focus:border-transparent"
               />
             </div>
 
@@ -680,7 +680,7 @@ export default function ImoveisPage() {
                 min="0"
                 value={formData.quartos}
                 onChange={(e) => handleFormChange('quartos', e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-600 focus:border-transparent"
+                className="w-full px-3 py-2 border border-edge rounded-lg focus:ring-2 focus:ring-emerald-600 focus:border-transparent"
               />
             </div>
 
@@ -693,7 +693,7 @@ export default function ImoveisPage() {
                 min="0"
                 value={formData.banheiros}
                 onChange={(e) => handleFormChange('banheiros', e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-600 focus:border-transparent"
+                className="w-full px-3 py-2 border border-edge rounded-lg focus:ring-2 focus:ring-emerald-600 focus:border-transparent"
               />
             </div>
 
@@ -706,7 +706,7 @@ export default function ImoveisPage() {
                 min="0"
                 value={formData.vagas}
                 onChange={(e) => handleFormChange('vagas', e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-600 focus:border-transparent"
+                className="w-full px-3 py-2 border border-edge rounded-lg focus:ring-2 focus:ring-emerald-600 focus:border-transparent"
               />
             </div>
 
@@ -718,7 +718,7 @@ export default function ImoveisPage() {
                 rows={3}
                 value={formData.descricao}
                 onChange={(e) => handleFormChange('descricao', e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-600 focus:border-transparent"
+                className="w-full px-3 py-2 border border-edge rounded-lg focus:ring-2 focus:ring-emerald-600 focus:border-transparent"
               />
             </div>
 
@@ -763,7 +763,7 @@ export default function ImoveisPage() {
                     rows={4}
                     value={formData.fotos}
                     onChange={(e) => handleFormChange('fotos', e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#00C48C] focus:border-[#00C48C] bg-[#F4F6F8] text-[#064E3B]"
+                    className="w-full px-3 py-2 border border-edge rounded-lg focus:ring-2 focus:ring-[#00C48C] focus:border-[#00C48C] bg-[#F4F6F8] text-[#064E3B]"
                     placeholder="https://exemplo.com/foto1.jpg&#10;https://exemplo.com/foto2.jpg"
                   />
                   <p className="text-xs text-[#4B5563] mt-1">
@@ -788,7 +788,7 @@ export default function ImoveisPage() {
               ) : (
                 <div className="grid grid-cols-3 gap-4">
                   {/* Proprietário */}
-                  <div className="bg-white p-3 rounded-lg border-2 border-[#FFB627]/30">
+                  <div className="bg-surface p-3 rounded-lg border-2 border-[#FFB627]/30">
                     <div className="text-xs font-bold text-[#374151] mb-1"><Home className="w-3 h-3 inline mr-1" />PROPRIETÁRIO</div>
                     {editingImovel.proprietario ? (
                       <div className="text-sm font-bold text-[#064E3B]">{editingImovel.proprietario.nome}</div>
@@ -798,7 +798,7 @@ export default function ImoveisPage() {
                   </div>
 
                   {/* Corretor Responsável */}
-                  <div className="bg-white p-3 rounded-lg border-2 border-[#A97E6F]/30">
+                  <div className="bg-surface p-3 rounded-lg border-2 border-[#A97E6F]/30">
                     <div className="text-xs font-bold text-[#374151] mb-1"><User className="w-3 h-3 inline mr-1" />CORRETOR</div>
                     {editingImovel.corretor_responsavel ? (
                       <div className="text-sm font-bold text-[#064E3B]">{editingImovel.corretor_responsavel.user.nome}</div>
@@ -808,7 +808,7 @@ export default function ImoveisPage() {
                   </div>
 
                   {/* Total de Propostas */}
-                  <div className="bg-white p-3 rounded-lg border-2 border-[#00C48C]/30">
+                  <div className="bg-surface p-3 rounded-lg border-2 border-[#00C48C]/30">
                     <div className="text-xs font-bold text-[#374151] mb-1"><ClipboardList className="w-3 h-3 inline mr-1" />PROPOSTAS</div>
                     <div className="text-3xl font-bold text-[#00C48C]">
                       {totalPropostas}
@@ -820,7 +820,7 @@ export default function ImoveisPage() {
             </div>
           )}
 
-          <div className="flex justify-end gap-3 pt-6 border-t border-gray-200 mt-6">
+          <div className="flex justify-end gap-3 pt-6 border-t border-edge mt-6">
             <button
               type="button"
               onClick={handleCloseModal}
@@ -852,7 +852,7 @@ export default function ImoveisPage() {
           </p>
           <p className="text-sm text-[#4B5563] font-medium">Esta ação não pode ser desfeita.</p>
 
-          <div className="flex justify-end gap-3 pt-6 border-t border-gray-200 mt-6">
+          <div className="flex justify-end gap-3 pt-6 border-t border-edge mt-6">
             <button
               onClick={() => setDeleteModalOpen(false)}
               className="px-6 py-2.5 text-[#059669] border-2 border-[#059669] rounded-lg hover:bg-[#059669] hover:text-white font-bold transition-all"

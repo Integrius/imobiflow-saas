@@ -450,7 +450,7 @@ export default function NegociacoesPage() {
               <th className="px-6 py-4 text-left text-xs font-bold text-white uppercase tracking-wider">Ações</th>
             </tr>
           </thead>
-          <tbody className="bg-white divide-y divide-[rgba(169,126,111,0.1)]">
+          <tbody className="bg-surface divide-y divide-[rgba(169,126,111,0.1)]">
             {filteredNegociacoes.length === 0 ? (
               <tr>
                 <td colSpan={7} className="px-6 py-12 text-center text-[#4B5563]">
@@ -625,7 +625,7 @@ export default function NegociacoesPage() {
                 required
                 value={formData.lead_id}
                 onChange={(e) => handleFormChange('lead_id', e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-600 focus:border-transparent"
+                className="w-full px-3 py-2 border border-edge rounded-lg focus:ring-2 focus:ring-emerald-600 focus:border-transparent"
               >
                 <option value="">Selecione...</option>
                 {leads.map((lead) => (
@@ -654,7 +654,7 @@ export default function NegociacoesPage() {
                     setMyOffer(null);
                   }
                 }}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-600 focus:border-transparent"
+                className="w-full px-3 py-2 border border-edge rounded-lg focus:ring-2 focus:ring-emerald-600 focus:border-transparent"
               >
                 <option value="">Selecione...</option>
                 {imoveis.map((imovel) => (
@@ -672,7 +672,7 @@ export default function NegociacoesPage() {
               <select
                 value={formData.corretor_id}
                 onChange={(e) => handleFormChange('corretor_id', e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-600 focus:border-transparent"
+                className="w-full px-3 py-2 border border-edge rounded-lg focus:ring-2 focus:ring-emerald-600 focus:border-transparent"
               >
                 <option value="">Nenhum</option>
                 {corretores.map((corretor) => (
@@ -690,7 +690,7 @@ export default function NegociacoesPage() {
               <select
                 value={formData.status}
                 onChange={(e) => handleFormChange('status', e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-600 focus:border-transparent"
+                className="w-full px-3 py-2 border border-edge rounded-lg focus:ring-2 focus:ring-emerald-600 focus:border-transparent"
               >
                 <option value="PROPOSTA">Proposta</option>
                 <option value="EM_ANDAMENTO">Em Andamento</option>
@@ -712,7 +712,7 @@ export default function NegociacoesPage() {
                   const formatted = formatCurrencyInput(e.target.value);
                   handleFormChange('valor_proposta', formatted);
                 }}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-600 focus:border-transparent font-bold text-lg"
+                className="w-full px-3 py-2 border border-edge rounded-lg focus:ring-2 focus:ring-emerald-600 focus:border-transparent font-bold text-lg"
                 placeholder="0,00"
               />
             </div>
@@ -752,7 +752,7 @@ export default function NegociacoesPage() {
                   const formatted = formatCurrencyInput(e.target.value);
                   handleFormChange('valor_final', formatted);
                 }}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-600 focus:border-transparent"
+                className="w-full px-3 py-2 border border-edge rounded-lg focus:ring-2 focus:ring-emerald-600 focus:border-transparent"
                 placeholder="0,00"
               />
             </div>
@@ -769,7 +769,7 @@ export default function NegociacoesPage() {
                 max="100"
                 value={formData.percentual_comissao}
                 onChange={(e) => handleFormChange('percentual_comissao', e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-600 focus:border-transparent"
+                className="w-full px-3 py-2 border border-edge rounded-lg focus:ring-2 focus:ring-emerald-600 focus:border-transparent"
                 placeholder="5.0"
               />
             </div>
@@ -783,7 +783,7 @@ export default function NegociacoesPage() {
                 required
                 value={formData.data_inicio}
                 onChange={(e) => handleFormChange('data_inicio', e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-600 focus:border-transparent"
+                className="w-full px-3 py-2 border border-edge rounded-lg focus:ring-2 focus:ring-emerald-600 focus:border-transparent"
               />
             </div>
 
@@ -795,7 +795,7 @@ export default function NegociacoesPage() {
                 type="date"
                 value={formData.data_conclusao}
                 onChange={(e) => handleFormChange('data_conclusao', e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-600 focus:border-transparent"
+                className="w-full px-3 py-2 border border-edge rounded-lg focus:ring-2 focus:ring-emerald-600 focus:border-transparent"
               />
             </div>
 
@@ -807,7 +807,7 @@ export default function NegociacoesPage() {
                 rows={3}
                 value={formData.observacoes}
                 onChange={(e) => handleFormChange('observacoes', e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-600 focus:border-transparent"
+                className="w-full px-3 py-2 border border-edge rounded-lg focus:ring-2 focus:ring-emerald-600 focus:border-transparent"
               />
             </div>
           </div>
@@ -816,7 +816,7 @@ export default function NegociacoesPage() {
             <button
               type="button"
               onClick={handleCloseModal}
-              className="px-4 py-2 text-[#064E3B] border border-gray-300 rounded-lg hover:bg-[#F9FAFB] transition-all"
+              className="px-4 py-2 text-[#064E3B] border border-edge rounded-lg hover:bg-surface-secondary transition-all"
             >
               Cancelar
             </button>
@@ -839,7 +839,7 @@ export default function NegociacoesPage() {
         size="sm"
       >
         <div className="space-y-4">
-          <p className="text-gray-700 font-medium">
+          <p className="text-content font-medium">
             Tem certeza que deseja excluir a negociação <strong>{deletingNegociacao?.codigo}</strong>?
           </p>
           <p className="text-sm text-[#374151] font-medium">Esta ação não pode ser desfeita.</p>
@@ -847,7 +847,7 @@ export default function NegociacoesPage() {
           <div className="flex justify-end gap-3 pt-4 border-t">
             <button
               onClick={() => setDeleteModalOpen(false)}
-              className="px-4 py-2 text-[#064E3B] border border-gray-300 rounded-lg hover:bg-[#F9FAFB] transition-all"
+              className="px-4 py-2 text-[#064E3B] border border-edge rounded-lg hover:bg-surface-secondary transition-all"
             >
               Cancelar
             </button>

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { GoogleOAuthWrapper } from "@/components/GoogleOAuthWrapper";
+import { ThemeProvider } from "@/components/ThemeProvider";
 import CookieBannerWrapper from "@/components/CookieBannerWrapper";
 
 export const metadata: Metadata = {
@@ -122,7 +123,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="pt-BR">
+    <html lang="pt-BR" suppressHydrationWarning>
       <head>
         <script
           type="application/ld+json"
@@ -134,10 +135,12 @@ export default function RootLayout({
         />
       </head>
       <body>
-        <GoogleOAuthWrapper>
-          {children}
-          <CookieBannerWrapper />
-        </GoogleOAuthWrapper>
+        <ThemeProvider>
+          <GoogleOAuthWrapper>
+            {children}
+            <CookieBannerWrapper />
+          </GoogleOAuthWrapper>
+        </ThemeProvider>
       </body>
     </html>
   );

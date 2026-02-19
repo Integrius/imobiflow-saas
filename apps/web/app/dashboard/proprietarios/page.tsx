@@ -315,8 +315,8 @@ export default function ProprietariosPage() {
     <div>
       <div className="flex justify-between items-center mb-8">
         <div>
-          <h2 className="text-4xl font-bold text-[#064E3B] tracking-tight">Proprietários</h2>
-          <p className="text-sm text-[#374151] mt-2 font-semibold">
+          <h2 className="text-4xl font-bold text-content tracking-tight">Proprietários</h2>
+          <p className="text-sm text-content-secondary mt-2 font-semibold">
             <span className="text-[#00C48C] text-lg font-bold">{proprietarios.length}</span> proprietários cadastrados
           </p>
         </div>
@@ -355,7 +355,7 @@ export default function ProprietariosPage() {
               <th className="px-6 py-4 text-left text-xs font-bold text-white uppercase tracking-wider">Ações</th>
             </tr>
           </thead>
-          <tbody className="bg-white divide-y divide-[rgba(169,126,111,0.1)]">
+          <tbody className="bg-surface divide-y divide-[rgba(169,126,111,0.1)]">
             {filteredProprietarios.length === 0 ? (
               <tr>
                 <td colSpan={6} className="px-6 py-12 text-center text-[#4B5563]">
@@ -365,7 +365,7 @@ export default function ProprietariosPage() {
               </tr>
             ) : (
               filteredProprietarios.map((proprietario, index) => (
-                <tr key={proprietario.id} className={`hover:bg-[#F9FAFB] transition-colors ${index % 2 === 0 ? 'bg-white' : 'bg-white/70'}`}>
+                <tr key={proprietario.id} className={`hover:bg-[#F9FAFB] transition-colors ${index % 2 === 0 ? 'bg-surface' : 'bg-surface/70'}`}>
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-bold text-[#064E3B]">
                     {proprietario.nome}
                   </td>
@@ -448,7 +448,7 @@ export default function ProprietariosPage() {
 
         {/* Abas - apenas quando editando */}
         {editingProprietario && (
-          <div className="flex border-b border-gray-300 mb-6">
+          <div className="flex border-b border-edge mb-6">
             <button
               type="button"
               onClick={() => setActiveTab('dados')}
@@ -487,7 +487,7 @@ export default function ProprietariosPage() {
                 required
                 value={formData.nome}
                 onChange={(e) => handleFormChange('nome', e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-600 focus:border-transparent"
+                className="w-full px-3 py-2 border border-edge rounded-lg focus:ring-2 focus:ring-emerald-600 focus:border-transparent"
               />
             </div>
 
@@ -498,7 +498,7 @@ export default function ProprietariosPage() {
               <select
                 value={formData.tipo_pessoa}
                 onChange={(e) => handleFormChange('tipo_pessoa', e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-600 focus:border-transparent"
+                className="w-full px-3 py-2 border border-edge rounded-lg focus:ring-2 focus:ring-emerald-600 focus:border-transparent"
               >
                 <option value="FISICA">Pessoa Física</option>
                 <option value="JURIDICA">Pessoa Jurídica</option>
@@ -514,7 +514,7 @@ export default function ProprietariosPage() {
                 required
                 value={formData.cpf_cnpj}
                 onChange={(e) => handleFormChange('cpf_cnpj', e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-600 focus:border-transparent"
+                className="w-full px-3 py-2 border border-edge rounded-lg focus:ring-2 focus:ring-emerald-600 focus:border-transparent"
                 placeholder={formData.tipo_pessoa === 'FISICA' ? '000.000.000-00' : '00.000.000/0000-00'}
               />
             </div>
@@ -528,7 +528,7 @@ export default function ProprietariosPage() {
                 required
                 value={formData.email}
                 onChange={(e) => handleFormChange('email', e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-600 focus:border-transparent"
+                className="w-full px-3 py-2 border border-edge rounded-lg focus:ring-2 focus:ring-emerald-600 focus:border-transparent"
               />
             </div>
 
@@ -541,7 +541,7 @@ export default function ProprietariosPage() {
                 required
                 value={formData.telefone}
                 onChange={(e) => handleFormChange('telefone', e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-600 focus:border-transparent"
+                className="w-full px-3 py-2 border border-edge rounded-lg focus:ring-2 focus:ring-emerald-600 focus:border-transparent"
                 placeholder="(11) 99999-9999"
               />
             </div>
@@ -554,12 +554,12 @@ export default function ProprietariosPage() {
                 type="text"
                 value={formData.endereco}
                 onChange={(e) => handleFormChange('endereco', e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-600 focus:border-transparent"
+                className="w-full px-3 py-2 border border-edge rounded-lg focus:ring-2 focus:ring-emerald-600 focus:border-transparent"
               />
             </div>
           </div>
 
-          <div className="flex justify-end gap-3 pt-6 border-t border-gray-200 mt-6">
+          <div className="flex justify-end gap-3 pt-6 border-t border-edge mt-6">
             <button
               type="button"
               onClick={handleCloseModal}
@@ -594,7 +594,7 @@ export default function ProprietariosPage() {
                 {proprietarioImoveis.map((imovel) => (
                   <div
                     key={imovel.id}
-                    className="flex gap-4 p-4 border-2 border-gray-200 rounded-lg hover:border-[#00C48C] hover:shadow-lg transition-all bg-white"
+                    className="flex gap-4 p-4 border-2 border-edge rounded-lg hover:border-[#00C48C] hover:shadow-lg transition-all bg-surface"
                   >
                     {/* Foto */}
                     {imovel.fotoPrincipal ? (
@@ -656,7 +656,7 @@ export default function ProprietariosPage() {
           </p>
           <p className="text-sm text-[#374151] font-medium">Esta ação não pode ser desfeita.</p>
 
-          <div className="flex justify-end gap-3 pt-6 border-t border-gray-200 mt-6">
+          <div className="flex justify-end gap-3 pt-6 border-t border-edge mt-6">
             <button
               onClick={() => setDeleteModalOpen(false)}
               className="px-6 py-2.5 text-[#059669] border-2 border-[#059669] rounded-lg hover:bg-[#059669] hover:text-white font-bold transition-all"

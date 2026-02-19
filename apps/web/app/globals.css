@@ -4,14 +4,14 @@
 
 @layer base {
   :root {
-    /* === TECH CLEAN PREMIUM (Padrão Login) === */
+    /* === TECH CLEAN PREMIUM === */
 
     /* Cores Principais */
-    --green-tech: #00C48C;         /* Verde Tech (principal) */
-    --green-secondary: #059669;   /* Verde Secundário (mais escuro) */
-    --blue-deep: #064E3B;          /* Azul Profundo (escuro) */
-    --bg-light: #F4F6F8;           /* Background claro */
-    --white: #FFFFFF;              /* Branco puro */
+    --green-tech: #00C48C;
+    --green-secondary: #059669;
+    --blue-deep: #064E3B;
+    --bg-light: #F4F6F8;
+    --white: #FFFFFF;
 
     /* Grays (Tailwind padrão) */
     --gray-50: #F9FAFB;
@@ -27,24 +27,24 @@
 
     /* Estados */
     --success: var(--green-tech);
-    --warning: #F59E0B;            /* Amber-500 */
-    --error: #EF4444;              /* Red-500 */
+    --warning: #F59E0B;
+    --error: #EF4444;
     --info: var(--green-secondary);
 
-    /* Backgrounds */
+    /* Backgrounds (legacy) */
     --bg-primary: var(--white);
     --bg-secondary: var(--bg-light);
     --bg-tertiary: var(--gray-50);
     --bg-dark: var(--blue-deep);
 
-    /* Text Colors */
+    /* Text Colors (legacy) */
     --text-primary: var(--blue-deep);
     --text-secondary: var(--gray-700);
     --text-muted: var(--gray-600);
     --text-on-dark: var(--white);
     --text-accent: var(--green-tech);
 
-    /* Borders */
+    /* Borders (legacy) */
     --border-light: var(--gray-100);
     --border-medium: var(--gray-200);
     --border-strong: var(--gray-300);
@@ -61,17 +61,56 @@
     --gradient-primary: linear-gradient(135deg, var(--green-tech) 0%, var(--green-secondary) 100%);
     --gradient-hero: linear-gradient(180deg, var(--blue-deep) 0%, #065F46 100%);
     --gradient-bg: linear-gradient(135deg, var(--bg-light) 0%, var(--white) 100%);
+
+    /* === Semantic Tokens (Dark Mode) === */
+    --brand: #2e7d32;
+    --brand-light: #e8f5e9;
+    --brand-dark: #1b5e20;
+    --surface: #ffffff;
+    --surface-secondary: #f9fafb;
+    --surface-tertiary: #f3f4f6;
+    --surface-elevated: #ffffff;
+    --content: #1f2937;
+    --content-secondary: #6b7280;
+    --content-tertiary: #9ca3af;
+    --content-inverse: #ffffff;
+    --edge: #e5e7eb;
+    --edge-light: #f3f4f6;
   }
 
-  /* Dark Mode (opcional para dashboard) */
   .dark {
-    --bg-primary: var(--charcoal);
-    --bg-secondary: #1A1A1A;
-    --bg-tertiary: var(--mocha-900);
-    --text-primary: var(--warm-white);
-    --text-secondary: var(--mocha-300);
-    --border-light: rgba(169, 126, 111, 0.1);
-    --border-medium: rgba(169, 126, 111, 0.2);
+    --bg-primary: #111827;
+    --bg-secondary: #1f2937;
+    --bg-tertiary: #374151;
+    --text-primary: #f9fafb;
+    --text-secondary: #d1d5db;
+    --text-muted: #9ca3af;
+    --text-on-dark: #111827;
+    --text-accent: #4caf50;
+    --border-light: #374151;
+    --border-medium: #4b5563;
+    --border-strong: #6b7280;
+
+    /* Semantic Tokens */
+    --brand: #4caf50;
+    --brand-light: #1a2e1a;
+    --brand-dark: #81c784;
+    --surface: #111827;
+    --surface-secondary: #1f2937;
+    --surface-tertiary: #374151;
+    --surface-elevated: #1f2937;
+    --content: #f9fafb;
+    --content-secondary: #d1d5db;
+    --content-tertiary: #9ca3af;
+    --content-inverse: #111827;
+    --edge: #374151;
+    --edge-light: #1f2937;
+
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
+    --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.4);
+    --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.5);
+    --shadow-xl: 0 20px 25px rgba(0, 0, 0, 0.6);
+    --gradient-bg: linear-gradient(135deg, #1f2937 0%, #111827 100%);
   }
 }
 

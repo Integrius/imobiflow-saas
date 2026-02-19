@@ -4672,9 +4672,19 @@ Conforme Art. 39 da LGPD: *"O operador deverá realizar o tratamento segundo as 
 
 ---
 
-**Última atualização**: 25 de janeiro de 2026
-**Versão**: 1.16.0
+**Última atualização**: 19 de fevereiro de 2026
+**Versão**: 1.17.0
 **Status**: Em produção ✅
+
+**Novidades da versão 1.17.0** (19 de fevereiro de 2026):
+- ✅ **Dark/Light Mode com next-themes e CSS Variables**
+- ✅ ThemeProvider (`next-themes`) integrado no root layout com suporte a `light`, `dark` e `system`
+- ✅ ThemeToggle: dropdown com 3 opções (Sol/Lua/Monitor) usando Lucide React — integrado no header do dashboard
+- ✅ `tailwind.config.ts`: `darkMode: 'class'` + tokens semânticos via CSS variables (`brand`, `surface`, `content`, `edge`)
+- ✅ `globals.css`: variáveis completas para ambos os temas (`:root` e `.dark`)
+- ✅ Todas as páginas do dashboard adaptadas para classes semânticas (`bg-surface`, `text-content`, `border-edge`)
+- ✅ Persistência automática da preferência via localStorage (gerenciado pelo next-themes)
+- ✅ Arquivos criados: `ThemeProvider.tsx`, `ThemeToggle.tsx`
 
 **Novidades da versão 1.16.0** (25 de janeiro de 2026):
 - ✅ **Padronização de Tipografia (Vivoly Design System)**

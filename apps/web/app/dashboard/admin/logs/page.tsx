@@ -197,10 +197,10 @@ export default function AdminLogsPage() {
     <div className="p-6 max-w-7xl mx-auto">
       {/* Header */}
       <div className="mb-6">
-        <h1 className="text-3xl font-bold text-gray-900">
+        <h1 className="text-3xl font-bold text-content">
           Logs de Atividades - Sistema Geral
         </h1>
-        <p className="text-gray-600 mt-2">
+        <p className="text-content-secondary mt-2">
           Visualize logs de todos os tenants do sistema Integrius
         </p>
       </div>
@@ -208,17 +208,17 @@ export default function AdminLogsPage() {
       {/* Estatísticas */}
       {stats && (
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-          <div className="bg-white rounded-lg shadow p-4">
-            <div className="text-sm text-gray-600">Total de Logs</div>
-            <div className="text-2xl font-bold text-gray-900">{stats.total}</div>
+          <div className="bg-surface rounded-lg shadow p-4">
+            <div className="text-sm text-content-secondary">Total de Logs</div>
+            <div className="text-2xl font-bold text-content">{stats.total}</div>
           </div>
-          <div className="bg-emerald-50 rounded-lg shadow p-4">
-            <div className="text-sm text-emerald-600">Últimas 24h</div>
-            <div className="text-2xl font-bold text-emerald-900">{stats.ultimas24h}</div>
+          <div className="bg-brand-light rounded-lg shadow p-4">
+            <div className="text-sm text-brand">Últimas 24h</div>
+            <div className="text-2xl font-bold text-brand-dark">{stats.ultimas24h}</div>
           </div>
-          <div className="bg-green-50 rounded-lg shadow p-4">
-            <div className="text-sm text-green-600">Últimos 7 dias</div>
-            <div className="text-2xl font-bold text-green-900">{stats.ultimos7dias}</div>
+          <div className="bg-brand-light rounded-lg shadow p-4">
+            <div className="text-sm text-brand">Últimos 7 dias</div>
+            <div className="text-2xl font-bold text-brand-dark">{stats.ultimos7dias}</div>
           </div>
           <div className="bg-purple-50 rounded-lg shadow p-4">
             <div className="text-sm text-purple-600">Tipos de Eventos</div>
@@ -230,7 +230,7 @@ export default function AdminLogsPage() {
       )}
 
       {/* Filtros */}
-      <div className="bg-white rounded-lg shadow p-4 mb-6">
+      <div className="bg-surface rounded-lg shadow p-4 mb-6">
         <h2 className="text-lg font-semibold mb-4">Filtros</h2>
         <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
           <div>
@@ -243,7 +243,7 @@ export default function AdminLogsPage() {
                 setFiltroTipo(e.target.value);
                 setPage(0);
               }}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#8FD14F] focus:border-transparent"
+              className="w-full px-3 py-2 border border-edge rounded-lg focus:ring-2 focus:ring-[#8FD14F] focus:border-transparent"
             >
               <option value="">Todos</option>
               {Object.entries(TIPOS_ATIVIDADE).map(([key, label]) => (
@@ -264,7 +264,7 @@ export default function AdminLogsPage() {
                 setFiltroTenant(e.target.value);
                 setPage(0);
               }}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#8FD14F] focus:border-transparent"
+              className="w-full px-3 py-2 border border-edge rounded-lg focus:ring-2 focus:ring-[#8FD14F] focus:border-transparent"
             >
               <option value="">Todos os Tenants</option>
               {tenants.map((tenant) => (
@@ -286,7 +286,7 @@ export default function AdminLogsPage() {
                 setFiltroDataInicio(e.target.value);
                 setPage(0);
               }}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#8FD14F] focus:border-transparent"
+              className="w-full px-3 py-2 border border-edge rounded-lg focus:ring-2 focus:ring-[#8FD14F] focus:border-transparent"
             />
           </div>
 
@@ -301,7 +301,7 @@ export default function AdminLogsPage() {
                 setFiltroDataFim(e.target.value);
                 setPage(0);
               }}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#8FD14F] focus:border-transparent"
+              className="w-full px-3 py-2 border border-edge rounded-lg focus:ring-2 focus:ring-[#8FD14F] focus:border-transparent"
             />
           </div>
 
@@ -317,10 +317,10 @@ export default function AdminLogsPage() {
       </div>
 
       {/* Tabela de Logs */}
-      <div className="bg-white rounded-lg shadow overflow-hidden">
+      <div className="bg-surface rounded-lg shadow overflow-hidden">
         <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
+          <table className="min-w-full divide-y divide-edge">
+            <thead className="bg-surface-secondary">
               <tr>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Data/Hora
@@ -342,7 +342,7 @@ export default function AdminLogsPage() {
                 </th>
               </tr>
             </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
+            <tbody className="bg-surface divide-y divide-edge">
               {loading ? (
                 <tr>
                   <td colSpan={6} className="px-6 py-4 text-center text-gray-500">
@@ -357,12 +357,12 @@ export default function AdminLogsPage() {
                 </tr>
               ) : (
                 logs.map((log) => (
-                  <tr key={log.id} className="hover:bg-gray-50">
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                  <tr key={log.id} className="hover:bg-surface-secondary">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-content">
                       {formatDate(log.created_at)}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm font-medium text-gray-900">
+                      <div className="text-sm font-medium text-content">
                         {log.tenant.nome}
                       </div>
                       <div className="text-xs text-gray-500">{log.tenant.slug}</div>
@@ -372,13 +372,13 @@ export default function AdminLogsPage() {
                         {TIPOS_ATIVIDADE[log.tipo]}
                       </span>
                     </td>
-                    <td className="px-6 py-4 text-sm text-gray-900 max-w-md truncate">
+                    <td className="px-6 py-4 text-sm text-content max-w-md truncate">
                       {log.acao}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       {log.user ? (
                         <div>
-                          <div className="text-sm font-medium text-gray-900">
+                          <div className="text-sm font-medium text-content">
                             {log.user.nome}
                           </div>
                           <div className="text-xs text-gray-500">{log.user.email}</div>
@@ -398,19 +398,19 @@ export default function AdminLogsPage() {
         </div>
 
         {/* Paginação */}
-        <div className="bg-white px-4 py-3 flex items-center justify-between border-t border-gray-200 sm:px-6">
+        <div className="bg-surface px-4 py-3 flex items-center justify-between border-t border-edge sm:px-6">
           <div className="flex-1 flex justify-between sm:hidden">
             <button
               onClick={() => setPage(Math.max(0, page - 1))}
               disabled={page === 0}
-              className="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="relative inline-flex items-center px-4 py-2 border border-edge text-sm font-medium rounded-md text-gray-700 bg-surface hover:bg-surface-secondary disabled:opacity-50 disabled:cursor-not-allowed"
             >
               Anterior
             </button>
             <button
               onClick={() => setPage(page + 1)}
               disabled={logs.length < limit}
-              className="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="ml-3 relative inline-flex items-center px-4 py-2 border border-edge text-sm font-medium rounded-md text-gray-700 bg-surface hover:bg-surface-secondary disabled:opacity-50 disabled:cursor-not-allowed"
             >
               Próximo
             </button>
@@ -433,17 +433,17 @@ export default function AdminLogsPage() {
                 <button
                   onClick={() => setPage(Math.max(0, page - 1))}
                   disabled={page === 0}
-                  className="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="relative inline-flex items-center px-2 py-2 rounded-l-md border border-edge bg-surface text-sm font-medium text-gray-500 hover:bg-surface-secondary disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   Anterior
                 </button>
-                <span className="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700">
+                <span className="relative inline-flex items-center px-4 py-2 border border-edge bg-surface text-sm font-medium text-gray-700">
                   Página {page + 1}
                 </span>
                 <button
                   onClick={() => setPage(page + 1)}
                   disabled={logs.length < limit}
-                  className="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="relative inline-flex items-center px-2 py-2 rounded-r-md border border-edge bg-surface text-sm font-medium text-gray-500 hover:bg-surface-secondary disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   Próximo
                 </button>
