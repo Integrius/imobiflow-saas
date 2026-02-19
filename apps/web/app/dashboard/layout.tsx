@@ -450,9 +450,10 @@ export default function DashboardLayout({
             <button
               onClick={logout}
               title="Sair"
-              className="text-content-tertiary hover:text-red-500 transition-colors"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-red-50 text-red-600 hover:bg-red-600 hover:text-white transition-colors text-xs font-semibold border border-red-200 hover:border-red-600"
             >
-              <LogOut className="w-4 h-4" />
+              <LogOut className="w-3.5 h-3.5" />
+              <span className="hidden sm:inline">Sair</span>
             </button>
           </div>
         </header>
