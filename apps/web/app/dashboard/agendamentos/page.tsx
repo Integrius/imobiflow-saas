@@ -292,7 +292,7 @@ export default function AgendamentosPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#8FD14F]"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-brand"></div>
       </div>
     )
   }
@@ -302,15 +302,15 @@ export default function AgendamentosPage() {
       {/* Header */}
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-2xl font-bold text-[#2C2C2C]">Agendamentos</h1>
-          <p className="text-[#6B7280] font-medium">Gerencie visitas a imóveis</p>
+          <h1 className="text-2xl font-bold text-content">Agendamentos</h1>
+          <p className="text-sm text-content-secondary font-medium">Gerencie visitas a imóveis</p>
         </div>
         <button
           onClick={() => {
             resetForm()
             setShowModal(true)
           }}
-          className="px-4 py-2.5 bg-gradient-to-r from-[#8FD14F] to-[#7AB93F] text-white rounded-lg font-bold hover:opacity-90 transition-opacity flex items-center gap-2"
+          className="px-4 py-2.5 bg-green-600 text-white rounded-lg font-bold hover:bg-green-700 transition-colors flex items-center gap-2"
         >
           <span>+</span>
           <span>Novo Agendamento</span>
@@ -319,35 +319,35 @@ export default function AgendamentosPage() {
 
       {/* Stats Cards */}
       <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-        <div className="bg-white rounded-lg p-4 shadow-sm border border-gray-100">
-          <p className="text-xs text-gray-500 font-medium">Total</p>
-          <p className="text-2xl font-bold text-gray-800">{contadores.total}</p>
+        <div className="bg-surface rounded-lg p-4 shadow-sm border border-edge-light">
+          <p className="text-xs text-content-secondary font-medium">Total</p>
+          <p className="text-2xl font-bold text-content">{contadores.total}</p>
         </div>
-        <div className="bg-white rounded-lg p-4 shadow-sm border border-gray-100">
+        <div className="bg-surface rounded-lg p-4 shadow-sm border border-edge-light">
           <p className="text-xs text-yellow-600 font-medium">Pendentes</p>
           <p className="text-2xl font-bold text-yellow-700">{contadores.pendentes}</p>
         </div>
-        <div className="bg-white rounded-lg p-4 shadow-sm border border-gray-100">
+        <div className="bg-surface rounded-lg p-4 shadow-sm border border-edge-light">
           <p className="text-xs text-blue-600 font-medium">Confirmados</p>
           <p className="text-2xl font-bold text-blue-700">{contadores.confirmados}</p>
         </div>
-        <div className="bg-white rounded-lg p-4 shadow-sm border border-gray-100">
+        <div className="bg-surface rounded-lg p-4 shadow-sm border border-edge-light">
           <p className="text-xs text-green-600 font-medium">Realizados</p>
           <p className="text-2xl font-bold text-green-700">{contadores.realizados}</p>
         </div>
-        <div className="bg-white rounded-lg p-4 shadow-sm border border-gray-100">
+        <div className="bg-surface rounded-lg p-4 shadow-sm border border-edge-light">
           <p className="text-xs text-red-600 font-medium">Cancelados</p>
           <p className="text-2xl font-bold text-red-700">{contadores.cancelados}</p>
         </div>
       </div>
 
       {/* Filtros */}
-      <div className="bg-white rounded-lg p-4 shadow-sm border border-gray-100">
+      <div className="bg-surface rounded-lg p-4 shadow-sm border border-edge-light">
         <div className="flex flex-wrap gap-4">
           <select
             value={filtroStatus}
             onChange={(e) => setFiltroStatus(e.target.value)}
-            className="px-3 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-green-200 focus:border-green-400 outline-none"
+            className="px-3 py-2 border border-edge rounded-lg text-sm text-content bg-surface focus:ring-2 focus:ring-green-500 focus:border-transparent outline-none"
           >
             <option value="">Todos os status</option>
             {Object.entries(STATUS_CONFIG).map(([value, config]) => (
@@ -357,7 +357,7 @@ export default function AgendamentosPage() {
           <select
             value={filtroCorretor}
             onChange={(e) => setFiltroCorretor(e.target.value)}
-            className="px-3 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-green-200 focus:border-green-400 outline-none"
+            className="px-3 py-2 border border-edge rounded-lg text-sm text-content bg-surface focus:ring-2 focus:ring-green-500 focus:border-transparent outline-none"
           >
             <option value="">Todos os corretores</option>
             {corretores.map(c => (
@@ -369,13 +369,13 @@ export default function AgendamentosPage() {
 
       {/* Lista de Agendamentos */}
       {agendamentos.length === 0 ? (
-        <div className="bg-white rounded-lg p-12 shadow-sm border border-gray-100 text-center">
-          <div className="mb-4"><CalendarDays className="w-10 h-10 text-gray-300 mx-auto" /></div>
-          <h3 className="text-lg font-bold text-gray-700 mb-2">Nenhum agendamento encontrado</h3>
-          <p className="text-gray-500 mb-4">Crie o primeiro agendamento de visita</p>
+        <div className="bg-surface rounded-lg p-12 shadow-sm border border-edge-light text-center">
+          <div className="mb-4"><CalendarDays className="w-10 h-10 text-content-tertiary mx-auto" /></div>
+          <h3 className="text-lg font-bold text-content mb-2">Nenhum agendamento encontrado</h3>
+          <p className="text-content-secondary mb-4">Crie o primeiro agendamento de visita</p>
           <button
             onClick={() => { resetForm(); setShowModal(true) }}
-            className="px-4 py-2 bg-gradient-to-r from-[#8FD14F] to-[#7AB93F] text-white rounded-lg font-bold hover:opacity-90 transition-opacity"
+            className="px-4 py-2 bg-green-600 text-white rounded-lg font-bold hover:bg-green-700 transition-colors"
           >
             + Novo Agendamento
           </button>
@@ -391,7 +391,7 @@ export default function AgendamentosPage() {
               <div
                 key={agendamento.id}
                 onClick={() => openDetail(agendamento)}
-                className="bg-white rounded-lg p-4 shadow-sm border border-gray-100 hover:border-green-200 transition-colors cursor-pointer"
+                className="bg-surface rounded-lg p-4 shadow-sm border border-edge-light hover:border-brand/30 hover:bg-surface-secondary transition-colors cursor-pointer"
               >
                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
                   {/* Info principal */}
@@ -409,19 +409,19 @@ export default function AgendamentosPage() {
                         </span>
                       )}
                     </div>
-                    <p className="font-bold text-gray-800 truncate">
+                    <p className="font-bold text-content truncate">
                       {agendamento.lead.nome} - {agendamento.imovel.titulo}
                     </p>
-                    <p className="text-sm text-gray-500">
+                    <p className="text-sm text-content-secondary">
                       Corretor: {agendamento.corretor.user.nome}
                     </p>
                   </div>
 
                   {/* Data e hora */}
                   <div className="text-right flex-shrink-0">
-                    <p className="text-lg font-bold text-gray-800">{formatDate(agendamento.data_visita)}</p>
+                    <p className="text-lg font-bold text-content">{formatDate(agendamento.data_visita)}</p>
                     <p className="text-sm font-medium text-green-600">{formatTime(agendamento.data_visita)}</p>
-                    <p className="text-xs text-gray-400">{agendamento.duracao_minutos} min</p>
+                    <p className="text-xs text-content-tertiary">{agendamento.duracao_minutos} min</p>
                   </div>
 
                   {/* Ações rápidas */}
@@ -468,12 +468,12 @@ export default function AgendamentosPage() {
       <Modal isOpen={showModal} onClose={() => setShowModal(false)} title="Novo Agendamento de Visita">
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm font-bold text-gray-700 mb-1">Lead *</label>
+            <label className="block text-sm font-bold text-content mb-1">Lead *</label>
             <select
               value={formData.lead_id}
               onChange={(e) => setFormData({ ...formData, lead_id: e.target.value })}
               required
-              className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-green-200 focus:border-green-400 outline-none"
+              className="w-full px-3 py-2 border border-edge rounded-lg text-sm text-content bg-surface focus:ring-2 focus:ring-green-500 focus:border-transparent outline-none"
             >
               <option value="">Selecione o lead...</option>
               {leads.map(lead => (
@@ -483,12 +483,12 @@ export default function AgendamentosPage() {
           </div>
 
           <div>
-            <label className="block text-sm font-bold text-gray-700 mb-1">Imóvel *</label>
+            <label className="block text-sm font-bold text-content mb-1">Imóvel *</label>
             <select
               value={formData.imovel_id}
               onChange={(e) => setFormData({ ...formData, imovel_id: e.target.value })}
               required
-              className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-green-200 focus:border-green-400 outline-none"
+              className="w-full px-3 py-2 border border-edge rounded-lg text-sm text-content bg-surface focus:ring-2 focus:ring-green-500 focus:border-transparent outline-none"
             >
               <option value="">Selecione o imóvel...</option>
               {imoveis.map(imovel => (
@@ -498,12 +498,12 @@ export default function AgendamentosPage() {
           </div>
 
           <div>
-            <label className="block text-sm font-bold text-gray-700 mb-1">Corretor *</label>
+            <label className="block text-sm font-bold text-content mb-1">Corretor *</label>
             <select
               value={formData.corretor_id}
               onChange={(e) => setFormData({ ...formData, corretor_id: e.target.value })}
               required
-              className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-green-200 focus:border-green-400 outline-none"
+              className="w-full px-3 py-2 border border-edge rounded-lg text-sm text-content bg-surface focus:ring-2 focus:ring-green-500 focus:border-transparent outline-none"
             >
               <option value="">Selecione o corretor...</option>
               {corretores.map(c => (
@@ -514,35 +514,35 @@ export default function AgendamentosPage() {
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-bold text-gray-700 mb-1">Data *</label>
+              <label className="block text-sm font-bold text-content mb-1">Data *</label>
               <input
                 type="date"
                 value={formData.data_visita}
                 onChange={(e) => setFormData({ ...formData, data_visita: e.target.value })}
                 required
                 min={new Date().toISOString().split('T')[0]}
-                className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-green-200 focus:border-green-400 outline-none"
+                className="w-full px-3 py-2 border border-edge rounded-lg text-sm text-content bg-surface focus:ring-2 focus:ring-green-500 focus:border-transparent outline-none"
               />
             </div>
             <div>
-              <label className="block text-sm font-bold text-gray-700 mb-1">Horário *</label>
+              <label className="block text-sm font-bold text-content mb-1">Horário *</label>
               <input
                 type="time"
                 value={formData.hora_visita}
                 onChange={(e) => setFormData({ ...formData, hora_visita: e.target.value })}
                 required
-                className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-green-200 focus:border-green-400 outline-none"
+                className="w-full px-3 py-2 border border-edge rounded-lg text-sm text-content bg-surface focus:ring-2 focus:ring-green-500 focus:border-transparent outline-none"
               />
             </div>
           </div>
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-bold text-gray-700 mb-1">Tipo de Visita</label>
+              <label className="block text-sm font-bold text-content mb-1">Tipo de Visita</label>
               <select
                 value={formData.tipo_visita}
                 onChange={(e) => setFormData({ ...formData, tipo_visita: e.target.value as any })}
-                className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-green-200 focus:border-green-400 outline-none"
+                className="w-full px-3 py-2 border border-edge rounded-lg text-sm text-content bg-surface focus:ring-2 focus:ring-green-500 focus:border-transparent outline-none"
               >
                 {Object.entries(TIPO_VISITA_CONFIG).map(([value, config]) => (
                   <option key={value} value={value}>{config.icon} {config.label}</option>
@@ -550,11 +550,11 @@ export default function AgendamentosPage() {
               </select>
             </div>
             <div>
-              <label className="block text-sm font-bold text-gray-700 mb-1">Duração (min)</label>
+              <label className="block text-sm font-bold text-content mb-1">Duração (min)</label>
               <select
                 value={formData.duracao_minutos}
                 onChange={(e) => setFormData({ ...formData, duracao_minutos: e.target.value })}
-                className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-green-200 focus:border-green-400 outline-none"
+                className="w-full px-3 py-2 border border-edge rounded-lg text-sm text-content bg-surface focus:ring-2 focus:ring-green-500 focus:border-transparent outline-none"
               >
                 <option value="30">30 minutos</option>
                 <option value="60">1 hora</option>
@@ -565,13 +565,13 @@ export default function AgendamentosPage() {
           </div>
 
           <div>
-            <label className="block text-sm font-bold text-gray-700 mb-1">Observações</label>
+            <label className="block text-sm font-bold text-content mb-1">Observações</label>
             <textarea
               value={formData.observacoes}
               onChange={(e) => setFormData({ ...formData, observacoes: e.target.value })}
               rows={3}
               placeholder="Observações sobre a visita..."
-              className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-green-200 focus:border-green-400 outline-none resize-none"
+              className="w-full px-3 py-2 border border-edge rounded-lg text-sm text-content bg-surface placeholder:text-content-tertiary focus:ring-2 focus:ring-green-500 focus:border-transparent outline-none resize-none"
             />
           </div>
 
@@ -579,13 +579,13 @@ export default function AgendamentosPage() {
             <button
               type="button"
               onClick={() => setShowModal(false)}
-              className="flex-1 px-4 py-2.5 border border-gray-200 text-gray-700 rounded-lg font-bold hover:bg-gray-50 transition-colors"
+              className="flex-1 px-4 py-2.5 border border-edge text-content rounded-lg font-bold hover:bg-surface-secondary transition-colors"
             >
               Cancelar
             </button>
             <button
               type="submit"
-              className="flex-1 px-4 py-2.5 bg-gradient-to-r from-[#8FD14F] to-[#7AB93F] text-white rounded-lg font-bold hover:opacity-90 transition-opacity"
+              className="flex-1 px-4 py-2.5 bg-green-600 text-white rounded-lg font-bold hover:bg-green-700 transition-colors"
             >
               Agendar Visita
             </button>
@@ -621,28 +621,28 @@ export default function AgendamentosPage() {
             </div>
 
             {/* Lead */}
-            <div className="bg-gray-50 rounded-lg p-4">
-              <p className="text-xs text-gray-500 font-bold uppercase mb-1">Lead</p>
-              <p className="font-bold text-gray-800">{selectedAgendamento.lead.nome}</p>
-              <p className="text-sm text-gray-600">{selectedAgendamento.lead.telefone}</p>
+            <div className="bg-surface-secondary rounded-lg p-4">
+              <p className="text-xs text-content-secondary font-bold uppercase mb-1">Lead</p>
+              <p className="font-bold text-content">{selectedAgendamento.lead.nome}</p>
+              <p className="text-sm text-content-secondary">{selectedAgendamento.lead.telefone}</p>
               {selectedAgendamento.lead.email && (
-                <p className="text-sm text-gray-600">{selectedAgendamento.lead.email}</p>
+                <p className="text-sm text-content-secondary">{selectedAgendamento.lead.email}</p>
               )}
             </div>
 
             {/* Imóvel */}
-            <div className="bg-gray-50 rounded-lg p-4">
-              <p className="text-xs text-gray-500 font-bold uppercase mb-1">Imóvel</p>
-              <p className="font-bold text-gray-800">{selectedAgendamento.imovel.titulo}</p>
-              <p className="text-sm text-gray-600">Código: {selectedAgendamento.imovel.codigo}</p>
-              <p className="text-sm text-gray-600">{getEndereco(selectedAgendamento.imovel.endereco)}</p>
+            <div className="bg-surface-secondary rounded-lg p-4">
+              <p className="text-xs text-content-secondary font-bold uppercase mb-1">Imóvel</p>
+              <p className="font-bold text-content">{selectedAgendamento.imovel.titulo}</p>
+              <p className="text-sm text-content-secondary">Código: {selectedAgendamento.imovel.codigo}</p>
+              <p className="text-sm text-content-secondary">{getEndereco(selectedAgendamento.imovel.endereco)}</p>
             </div>
 
             {/* Corretor */}
-            <div className="bg-gray-50 rounded-lg p-4">
-              <p className="text-xs text-gray-500 font-bold uppercase mb-1">Corretor</p>
-              <p className="font-bold text-gray-800">{selectedAgendamento.corretor.user.nome}</p>
-              <p className="text-sm text-gray-600">{selectedAgendamento.corretor.user.email}</p>
+            <div className="bg-surface-secondary rounded-lg p-4">
+              <p className="text-xs text-content-secondary font-bold uppercase mb-1">Corretor</p>
+              <p className="font-bold text-content">{selectedAgendamento.corretor.user.nome}</p>
+              <p className="text-sm text-content-secondary">{selectedAgendamento.corretor.user.email}</p>
             </div>
 
             {/* Confirmações */}
@@ -652,11 +652,11 @@ export default function AgendamentosPage() {
                 <div className="flex gap-4">
                   <div className="flex items-center gap-2">
                     {selectedAgendamento.confirmado_lead ? <CheckCircle2 className="w-4 h-4 text-green-500" /> : <Clock className="w-4 h-4 text-yellow-500" />}
-                    <span className="text-sm text-gray-700">Lead</span>
+                    <span className="text-sm text-content">Lead</span>
                   </div>
                   <div className="flex items-center gap-2">
                     {selectedAgendamento.confirmado_corretor ? <CheckCircle2 className="w-4 h-4 text-green-500" /> : <Clock className="w-4 h-4 text-yellow-500" />}
-                    <span className="text-sm text-gray-700">Corretor</span>
+                    <span className="text-sm text-content">Corretor</span>
                   </div>
                 </div>
               </div>
@@ -664,9 +664,9 @@ export default function AgendamentosPage() {
 
             {/* Observações */}
             {selectedAgendamento.observacoes && (
-              <div className="bg-gray-50 rounded-lg p-4">
-                <p className="text-xs text-gray-500 font-bold uppercase mb-1">Observações</p>
-                <p className="text-sm text-gray-700">{selectedAgendamento.observacoes}</p>
+              <div className="bg-surface-secondary rounded-lg p-4">
+                <p className="text-xs text-content-secondary font-bold uppercase mb-1">Observações</p>
+                <p className="text-sm text-content">{selectedAgendamento.observacoes}</p>
               </div>
             )}
 
@@ -674,7 +674,7 @@ export default function AgendamentosPage() {
             {selectedAgendamento.feedback_corretor && (
               <div className="bg-purple-50 rounded-lg p-4">
                 <p className="text-xs text-purple-600 font-bold uppercase mb-1">Feedback do Corretor</p>
-                <p className="text-sm text-gray-700">{selectedAgendamento.feedback_corretor}</p>
+                <p className="text-sm text-content">{selectedAgendamento.feedback_corretor}</p>
               </div>
             )}
             {selectedAgendamento.nota_lead && (
@@ -691,7 +691,7 @@ export default function AgendamentosPage() {
             {selectedAgendamento.motivo_cancelamento && (
               <div className="bg-red-50 rounded-lg p-4">
                 <p className="text-xs text-red-600 font-bold uppercase mb-1">Motivo do Cancelamento</p>
-                <p className="text-sm text-gray-700">{selectedAgendamento.motivo_cancelamento}</p>
+                <p className="text-sm text-content">{selectedAgendamento.motivo_cancelamento}</p>
               </div>
             )}
 
@@ -751,24 +751,24 @@ export default function AgendamentosPage() {
       {/* Modal - Cancelar Agendamento */}
       <Modal isOpen={showCancelarModal} onClose={() => { setShowCancelarModal(false); setMotivoCancelamento('') }} title="Cancelar Agendamento">
         <div className="space-y-4">
-          <p className="text-sm text-gray-600">
+          <p className="text-sm text-content-secondary">
             Tem certeza que deseja cancelar este agendamento? Esta ação não pode ser desfeita.
           </p>
           <div>
-            <label className="block text-sm font-bold text-gray-700 mb-1">Motivo do cancelamento *</label>
+            <label className="block text-sm font-bold text-content mb-1">Motivo do cancelamento *</label>
             <textarea
               value={motivoCancelamento}
               onChange={(e) => setMotivoCancelamento(e.target.value)}
               rows={3}
               required
               placeholder="Descreva o motivo do cancelamento..."
-              className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-red-200 focus:border-red-400 outline-none resize-none"
+              className="w-full px-3 py-2 border border-edge rounded-lg text-sm text-content bg-surface placeholder:text-content-tertiary focus:ring-2 focus:ring-red-300 focus:border-transparent outline-none resize-none"
             />
           </div>
           <div className="flex gap-3">
             <button
               onClick={() => { setShowCancelarModal(false); setMotivoCancelamento('') }}
-              className="flex-1 px-4 py-2.5 border border-gray-200 text-gray-700 rounded-lg font-bold hover:bg-gray-50 transition-colors"
+              className="flex-1 px-4 py-2.5 border border-edge text-content rounded-lg font-bold hover:bg-surface-secondary transition-colors"
             >
               Voltar
             </button>
@@ -787,14 +787,14 @@ export default function AgendamentosPage() {
       <Modal isOpen={showFeedbackModal} onClose={() => { setShowFeedbackModal(false); setFeedbackData({ feedback_corretor: '', feedback_lead: '', nota_lead: 5 }) }} title="Feedback da Visita">
         <div className="space-y-4">
           <div>
-            <label className="block text-sm font-bold text-gray-700 mb-1">Nota do Lead (1-5)</label>
+            <label className="block text-sm font-bold text-content mb-1">Nota do Lead (1-5)</label>
             <div className="flex gap-2">
               {[1, 2, 3, 4, 5].map(nota => (
                 <button
                   key={nota}
                   type="button"
                   onClick={() => setFeedbackData({ ...feedbackData, nota_lead: nota })}
-                  className={`text-2xl transition-colors ${nota <= feedbackData.nota_lead ? 'text-yellow-400' : 'text-gray-300'}`}
+                  className={`text-2xl transition-colors ${nota <= feedbackData.nota_lead ? 'text-yellow-400' : 'text-content-tertiary'}`}
                 >
                   ★
                 </button>
@@ -803,37 +803,37 @@ export default function AgendamentosPage() {
           </div>
 
           <div>
-            <label className="block text-sm font-bold text-gray-700 mb-1">Feedback do Corretor</label>
+            <label className="block text-sm font-bold text-content mb-1">Feedback do Corretor</label>
             <textarea
               value={feedbackData.feedback_corretor}
               onChange={(e) => setFeedbackData({ ...feedbackData, feedback_corretor: e.target.value })}
               rows={3}
               placeholder="Como foi a visita? O lead demonstrou interesse?"
-              className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-green-200 focus:border-green-400 outline-none resize-none"
+              className="w-full px-3 py-2 border border-edge rounded-lg text-sm text-content bg-surface placeholder:text-content-tertiary focus:ring-2 focus:ring-green-500 focus:border-transparent outline-none resize-none"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-bold text-gray-700 mb-1">Feedback do Lead</label>
+            <label className="block text-sm font-bold text-content mb-1">Feedback do Lead</label>
             <textarea
               value={feedbackData.feedback_lead}
               onChange={(e) => setFeedbackData({ ...feedbackData, feedback_lead: e.target.value })}
               rows={3}
               placeholder="O que o lead achou do imóvel?"
-              className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-green-200 focus:border-green-400 outline-none resize-none"
+              className="w-full px-3 py-2 border border-edge rounded-lg text-sm text-content bg-surface placeholder:text-content-tertiary focus:ring-2 focus:ring-green-500 focus:border-transparent outline-none resize-none"
             />
           </div>
 
           <div className="flex gap-3 pt-2">
             <button
               onClick={() => { setShowFeedbackModal(false); setFeedbackData({ feedback_corretor: '', feedback_lead: '', nota_lead: 5 }) }}
-              className="flex-1 px-4 py-2.5 border border-gray-200 text-gray-700 rounded-lg font-bold hover:bg-gray-50 transition-colors"
+              className="flex-1 px-4 py-2.5 border border-edge text-content rounded-lg font-bold hover:bg-surface-secondary transition-colors"
             >
               Cancelar
             </button>
             <button
               onClick={handleFeedback}
-              className="flex-1 px-4 py-2.5 bg-gradient-to-r from-[#8FD14F] to-[#7AB93F] text-white rounded-lg font-bold hover:opacity-90 transition-opacity"
+              className="flex-1 px-4 py-2.5 bg-green-600 text-white rounded-lg font-bold hover:bg-green-700 transition-colors"
             >
               Enviar Feedback
             </button>
