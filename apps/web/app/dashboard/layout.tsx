@@ -325,9 +325,9 @@ export default function DashboardLayout({
               <Image
                 src="/logoIntegrius.png"
                 alt="Integrius"
-                width={140}
-                height={40}
-                className="h-9 w-auto"
+                width={182}
+                height={52}
+                className="h-12 w-auto"
                 priority
               />
             </Link>
@@ -336,9 +336,9 @@ export default function DashboardLayout({
               <Image
                 src="/logoIntegrius.png"
                 alt="Integrius"
-                width={32}
-                height={32}
-                className="h-8 w-8 object-contain"
+                width={42}
+                height={42}
+                className="h-10 w-10 object-contain"
                 priority
               />
             </Link>
@@ -396,9 +396,9 @@ export default function DashboardLayout({
                 <Image
                   src="/logoIntegrius.png"
                   alt="Integrius"
-                  width={140}
-                  height={40}
-                  className="h-9 w-auto"
+                  width={182}
+                  height={52}
+                  className="h-12 w-auto"
                   priority
                 />
               </Link>
@@ -415,9 +415,9 @@ export default function DashboardLayout({
       {/* Main Content Area */}
       <main className="flex-1 flex flex-col h-screen overflow-hidden bg-surface-secondary">
         {/* Header */}
-        <header className="h-14 bg-surface border-b border-edge flex items-center justify-between px-4 md:px-6">
-          <div className="flex items-center gap-3">
-            {/* Mobile Menu Button */}
+        <header className="h-14 bg-surface border-b border-edge flex items-center px-4 md:px-6 relative">
+          {/* Left */}
+          <div className="flex items-center">
             <button
               onClick={() => setSidebarOpen(!sidebarOpen)}
               className="md:hidden text-content-secondary hover:text-content"
@@ -426,8 +426,13 @@ export default function DashboardLayout({
             </button>
           </div>
 
-          <div className="flex items-center gap-3">
+          {/* Center — Trial Warning */}
+          <div className="absolute left-1/2 -translate-x-1/2">
             <TrialWarning />
+          </div>
+
+          {/* Right */}
+          <div className="flex items-center gap-3 ml-auto pr-4 md:pr-6">
             <NotificationBell />
             <ThemeToggle />
 
