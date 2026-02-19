@@ -443,22 +443,22 @@ export default function LeadsPage() {
 
           {/* Ações Rápidas */}
           <div className="bg-surface p-5 rounded-xl shadow-sm border border-edge-light">
-            <h3 className="font-bold text-gray-900 text-sm mb-3">Ações Rápidas</h3>
+            <h3 className="font-bold text-content text-sm mb-3">Ações Rápidas</h3>
             <div className="space-y-2">
               <Link
                 href="/dashboard/leads/importar"
-                className="flex items-center gap-3 px-3 py-2.5 text-sm font-semibold text-gray-700 hover:bg-gray-50 rounded-lg transition-colors"
+                className="flex items-center gap-3 px-3 py-2.5 text-sm font-semibold text-content hover:bg-surface-secondary rounded-lg transition-colors"
               >
-                <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 text-content-secondary flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
                 </svg>
                 Importar CSV
               </Link>
               <button
                 onClick={openCreateModal}
-                className="flex items-center gap-3 px-3 py-2.5 text-sm font-semibold text-gray-700 hover:bg-gray-50 rounded-lg transition-colors w-full text-left"
+                className="flex items-center gap-3 px-3 py-2.5 text-sm font-semibold text-content hover:bg-surface-secondary rounded-lg transition-colors w-full text-left"
               >
-                <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 text-content-secondary flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
                 </svg>
                 Cadastrar Manualmente
