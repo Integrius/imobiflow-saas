@@ -409,9 +409,9 @@ export default function NegociacoesPage() {
     <div>
       <div className="flex justify-between items-center mb-8">
         <div>
-          <h2 className="text-4xl font-bold text-[#064E3B] tracking-tight">Negociações</h2>
-          <p className="text-sm text-[#374151] mt-2 font-semibold">
-            <span className="text-[#00C48C] text-lg font-bold">{negociacoes.length}</span> negociações cadastradas
+          <h2 className="text-2xl font-bold text-content tracking-tight">Negociações</h2>
+          <p className="text-sm text-content-secondary mt-1 font-medium">
+            <span className="text-brand font-bold">{negociacoes.length}</span> negociações cadastradas
           </p>
         </div>
         <button
@@ -432,48 +432,48 @@ export default function NegociacoesPage() {
           placeholder="Buscar por código, cliente ou imóvel..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          className="input-modern"
+          className="w-full px-4 py-2.5 border border-edge rounded-lg text-sm font-medium text-content bg-surface placeholder:text-content-tertiary placeholder:font-normal focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
         />
       </div>
 
       {/* Tabela */}
-      <div className="card-clean shadow-xl overflow-hidden">
-        <table className="min-w-full divide-y divide-slate-600">
-          <thead className="bg-gradient-to-r from-[#059669] to-[#059669]">
+      <div className="bg-surface rounded-xl border-2 border-gray-200 overflow-hidden">
+        <table className="min-w-full divide-y divide-edge">
+          <thead className="bg-surface-tertiary">
             <tr>
-              <th className="px-6 py-4 text-left text-xs font-bold text-white uppercase tracking-wider">Código</th>
-              <th className="px-6 py-4 text-left text-xs font-bold text-white uppercase tracking-wider">Cliente</th>
-              <th className="px-6 py-4 text-left text-xs font-bold text-white uppercase tracking-wider">Imóvel</th>
-              <th className="px-6 py-4 text-left text-xs font-bold text-white uppercase tracking-wider">Corretor</th>
-              <th className="px-6 py-4 text-left text-xs font-bold text-white uppercase tracking-wider">Valor Proposta</th>
-              <th className="px-6 py-4 text-left text-xs font-bold text-white uppercase tracking-wider">Status</th>
-              <th className="px-6 py-4 text-left text-xs font-bold text-white uppercase tracking-wider">Ações</th>
+              <th className="px-6 py-3 text-left text-xs font-bold text-content uppercase tracking-wider">Código</th>
+              <th className="px-6 py-3 text-left text-xs font-bold text-content uppercase tracking-wider">Cliente</th>
+              <th className="px-6 py-3 text-left text-xs font-bold text-content uppercase tracking-wider">Imóvel</th>
+              <th className="px-6 py-3 text-left text-xs font-bold text-content uppercase tracking-wider">Corretor</th>
+              <th className="px-6 py-3 text-left text-xs font-bold text-content uppercase tracking-wider">Valor Proposta</th>
+              <th className="px-6 py-3 text-left text-xs font-bold text-content uppercase tracking-wider">Status</th>
+              <th className="px-6 py-3 text-left text-xs font-bold text-content uppercase tracking-wider">Ações</th>
             </tr>
           </thead>
-          <tbody className="bg-surface divide-y divide-[rgba(169,126,111,0.1)]">
+          <tbody className="bg-surface divide-y divide-edge-light">
             {filteredNegociacoes.length === 0 ? (
               <tr>
-                <td colSpan={7} className="px-6 py-12 text-center text-[#4B5563]">
+                <td colSpan={7} className="px-6 py-12 text-center text-content-secondary">
                   <div className="text-lg font-medium">{searchTerm ? 'Nenhuma negociação encontrada' : 'Nenhuma negociação cadastrada'}</div>
-                  <p className="text-sm text-[#4B5563] mt-2">Clique em &ldquo;+ Nova Negociação&rdquo; para adicionar</p>
+                  <p className="text-sm text-content-secondary mt-2">Clique em &ldquo;+ Nova Negociação&rdquo; para adicionar</p>
                 </td>
               </tr>
             ) : (
-              filteredNegociacoes.map((negociacao, index) => (
-                <tr key={negociacao.id} className={`hover:bg-[#F9FAFB] transition-colors ${index % 2 === 0 ? 'bg-white' : 'bg-white/70'}`}>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-bold text-[#064E3B]">
-                    <span className="px-2 py-1 bg-[#059669]/20 text-[#059669] rounded-md font-mono text-xs border border-[#059669]/50">{negociacao.codigo}</span>
+              filteredNegociacoes.map((negociacao) => (
+                <tr key={negociacao.id} className="hover:bg-surface-secondary transition-colors">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm font-bold">
+                    <span className="px-2 py-1 bg-brand-light text-brand rounded-md font-mono text-xs border border-brand/30">{negociacao.codigo}</span>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-[#374151] font-semibold">
-                    <User className="w-3.5 h-3.5 inline mr-0.5" /> {negociacao.lead?.nome || 'N/A'}
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-content font-semibold">
+                    <User className="w-3.5 h-3.5 inline mr-0.5 text-content-secondary" /> {negociacao.lead?.nome || 'N/A'}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-[#374151] font-semibold">
-                    <Building2 className="w-3.5 h-3.5 inline mr-0.5" /> {negociacao.imovel?.titulo || 'N/A'}
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-content font-semibold">
+                    <Building2 className="w-3.5 h-3.5 inline mr-0.5 text-content-secondary" /> {negociacao.imovel?.titulo || 'N/A'}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-[#374151] font-medium">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-content-secondary font-medium">
                     {negociacao.corretor?.nome || '-'}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-100 font-bold">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-content font-bold">
                     R$ {Number(negociacao.valor_proposta).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
