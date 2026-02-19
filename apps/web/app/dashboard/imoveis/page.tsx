@@ -355,7 +355,7 @@ export default function ImoveisPage() {
   if (loading) {
     return (
       <div className="flex justify-center items-center min-h-[400px]">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#00C48C]"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-brand"></div>
       </div>
     );
   }
@@ -364,9 +364,9 @@ export default function ImoveisPage() {
     <div>
       <div className="flex justify-between items-center gap-4 mb-6">
         <div>
-          <h2 className="text-4xl font-bold text-[#064E3B] tracking-tight">Imóveis</h2>
-          <p className="text-sm text-[#374151] mt-2 font-semibold">
-            <span className="text-[#00C48C] text-lg font-bold">{imoveis.length}</span> imóveis cadastrados
+          <h2 className="text-2xl font-bold text-content tracking-tight">Imóveis</h2>
+          <p className="text-sm text-content-secondary mt-1 font-semibold">
+            <span className="text-brand text-lg font-bold">{imoveis.length}</span> imóveis cadastrados
           </p>
         </div>
 
@@ -377,7 +377,7 @@ export default function ImoveisPage() {
             placeholder="Buscar por título, endereço ou cidade..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="input-modern"
+            className="w-full px-4 py-2 border border-edge rounded-lg text-sm text-content bg-surface placeholder:text-content-tertiary focus:outline-none focus:ring-2 focus:ring-brand/30"
           />
         </div>
 
@@ -392,13 +392,13 @@ export default function ImoveisPage() {
       {/* Grid de Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {filteredImoveis.length === 0 ? (
-          <div className="col-span-full card-clean p-12 text-center text-[#4B5563]">
+          <div className="col-span-full bg-surface border border-edge-light rounded-xl p-12 text-center text-content-secondary">
             <div className="text-lg font-medium">{searchTerm ? 'Nenhum imóvel encontrado' : 'Nenhum imóvel cadastrado'}</div>
-            <p className="text-sm text-[#4B5563] mt-2">Clique em &ldquo;+ Novo Imóvel&rdquo; para adicionar</p>
+            <p className="text-sm text-content-tertiary mt-2">Clique em &ldquo;+ Novo Imóvel&rdquo; para adicionar</p>
           </div>
         ) : (
           filteredImoveis.map((imovel) => (
-            <div key={imovel.id} className="card-clean overflow-hidden hover:shadow-2xl transition-all duration-300 hover:scale-105">
+            <div key={imovel.id} className="bg-surface border border-edge-light rounded-xl overflow-hidden hover:shadow-lg transition-all duration-300 hover:scale-105">
               <div className="h-56 bg-gradient-to-br from-slate-600 to-slate-500 flex items-center justify-center overflow-hidden relative">
                 {imovel.fotos && imovel.fotos.length > 0 ? (
                   <img
@@ -408,20 +408,20 @@ export default function ImoveisPage() {
                     onError={(e) => {
                       e.currentTarget.src = '';
                       e.currentTarget.style.display = 'none';
-                      e.currentTarget.parentElement!.innerHTML = '<div class="flex flex-col items-center justify-center h-full"><span class="text-[#4B5563] font-semibold">Imagem indisponível</span></div>';
+                      e.currentTarget.parentElement!.innerHTML = '<div class="flex flex-col items-center justify-center h-full"><span class="text-slate-300 font-semibold">Imagem indisponível</span></div>';
                     }}
                   />
                 ) : (
                   <div className="flex flex-col items-center justify-center">
                     <Building2 className="w-16 h-16 text-gray-300 mb-3" />
-                    <span className="text-[#4B5563] font-semibold">Sem imagem</span>
+                    <span className="text-slate-300 font-semibold">Sem imagem</span>
                   </div>
                 )}
                 <div className="absolute top-3 right-3">
                   <span className={`px-3 py-1.5 text-xs font-bold rounded-full border-2 backdrop-blur-sm ${
-                    imovel.status === 'DISPONIVEL' ? 'bg-[#00C48C]/90 text-white border-[#00C48C]' :
-                    imovel.status === 'VENDIDO' ? 'bg-[#4B5563]/90 text-white border-[#4B5563]' :
-                    'bg-[#FFB627]/90 text-white border-[#FFB627]'
+                    imovel.status === 'DISPONIVEL' ? 'bg-emerald-500/90 text-white border-emerald-500' :
+                    imovel.status === 'VENDIDO' ? 'bg-slate-500/90 text-white border-slate-500' :
+                    'bg-amber-500/90 text-white border-amber-500'
                   }`}>
                     {imovel.status}
                   </span>
@@ -429,31 +429,31 @@ export default function ImoveisPage() {
               </div>
               <div className="p-5">
                 <div className="mb-3">
-                  <h3 className="text-xl font-bold text-[#064E3B] mb-1">
+                  <h3 className="text-xl font-bold text-content mb-1">
                     {imovel.titulo}
                   </h3>
-                  <p className="text-xs font-semibold text-[#00C48C] uppercase tracking-wider bg-[#00C48C]/20 px-2 py-1 rounded-md inline-block border border-[#00C48C]/50">{imovel.tipo}</p>
+                  <p className="text-xs font-semibold text-brand uppercase tracking-wider bg-brand-light px-2 py-1 rounded-md inline-block border border-brand/30">{imovel.tipo}</p>
                 </div>
-                <p className="text-sm text-[#374151] mb-1 font-semibold flex items-center gap-1"><MapPin className="w-3.5 h-3.5 text-gray-400" /> {imovel.endereco?.logradouro}, {imovel.endereco?.numero}</p>
-                <p className="text-xs text-[#4B5563] font-medium mb-4">{imovel.endereco?.cidade} - {imovel.endereco?.estado}</p>
+                <p className="text-sm text-content mb-1 font-semibold flex items-center gap-1"><MapPin className="w-3.5 h-3.5 text-content-tertiary" /> {imovel.endereco?.logradouro}, {imovel.endereco?.numero}</p>
+                <p className="text-xs text-content-secondary font-medium mb-4">{imovel.endereco?.cidade} - {imovel.endereco?.estado}</p>
 
-                <div className="flex flex-wrap gap-2 text-xs text-[#064E3B] mb-4">
+                <div className="flex flex-wrap gap-2 text-xs text-brand mb-4">
                   {imovel.caracteristicas?.area_total && (
-                    <span className="px-2 py-1 bg-[#059669]/20 rounded-md font-bold border border-[#059669]/50 flex items-center gap-1"><Ruler className="w-3.5 h-3.5" /> {imovel.caracteristicas.area_total}m²</span>
+                    <span className="px-2 py-1 bg-brand-light rounded-md font-bold border border-brand/30 flex items-center gap-1"><Ruler className="w-3.5 h-3.5" /> {imovel.caracteristicas.area_total}m²</span>
                   )}
                   {imovel.caracteristicas?.quartos && (
-                    <span className="px-2 py-1 bg-[#059669]/20 rounded-md font-bold border border-[#059669]/50 flex items-center gap-1"><BedDouble className="w-3.5 h-3.5" /> {imovel.caracteristicas.quartos} quartos</span>
+                    <span className="px-2 py-1 bg-brand-light rounded-md font-bold border border-brand/30 flex items-center gap-1"><BedDouble className="w-3.5 h-3.5" /> {imovel.caracteristicas.quartos} quartos</span>
                   )}
                   {imovel.caracteristicas?.banheiros && (
-                    <span className="px-2 py-1 bg-[#059669]/20 rounded-md font-bold border border-[#059669]/50 flex items-center gap-1"><Bath className="w-3.5 h-3.5" /> {imovel.caracteristicas.banheiros} banheiros</span>
+                    <span className="px-2 py-1 bg-brand-light rounded-md font-bold border border-brand/30 flex items-center gap-1"><Bath className="w-3.5 h-3.5" /> {imovel.caracteristicas.banheiros} banheiros</span>
                   )}
                   {imovel.caracteristicas?.vagas_garagem && (
-                    <span className="px-2 py-1 bg-[#059669]/20 rounded-md font-bold border border-[#059669]/50 flex items-center gap-1"><Car className="w-3.5 h-3.5" /> {imovel.caracteristicas.vagas_garagem} vagas</span>
+                    <span className="px-2 py-1 bg-brand-light rounded-md font-bold border border-brand/30 flex items-center gap-1"><Car className="w-3.5 h-3.5" /> {imovel.caracteristicas.vagas_garagem} vagas</span>
                   )}
                 </div>
 
                 <div className="mb-4">
-                  <span className="text-2xl font-bold text-[#00C48C]">
+                  <span className="text-2xl font-bold text-brand">
                     R$ {Number(imovel.valor || imovel.preco || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
                   </span>
                 </div>
@@ -462,17 +462,17 @@ export default function ImoveisPage() {
                 <div className="mb-4 space-y-2">
                   {/* Proprietário */}
                   <div className="text-sm">
-                    <span className="font-bold text-[#064E3B]">Proprietário:</span>{' '}
-                    <span className="text-[#374151] font-medium">{imovel.proprietario?.nome || 'Não informado'}</span>
+                    <span className="font-bold text-content">Proprietário:</span>{' '}
+                    <span className="text-content-secondary font-medium">{imovel.proprietario?.nome || 'Não informado'}</span>
                   </div>
 
                   {/* Corretor Responsável */}
                   <div className="text-sm">
-                    <span className="font-bold text-[#064E3B]">Corretor Responsável:</span>
+                    <span className="font-bold text-content">Corretor Responsável:</span>
                     <select
                       value={imovel.corretor_responsavel?.id || ''}
                       onChange={(e) => handleChangeCorretor(imovel.id, e.target.value)}
-                      className="ml-2 px-2 py-1 border border-edge rounded-md text-sm"
+                      className="ml-2 px-2 py-1 border border-edge rounded-md text-sm text-content bg-surface"
                     >
                       <option value="">Sem corretor</option>
                       {corretores.map(corretor => (
@@ -487,7 +487,7 @@ export default function ImoveisPage() {
                 {/* Botão Nova Proposta */}
                 <button
                   onClick={() => window.location.href = `/dashboard/negociacoes?imovel=${imovel.id}&proprietario=${imovel.proprietario_id}&corretor=${imovel.corretor_responsavel?.id || ''}`}
-                  className="w-full mb-3 px-4 py-2.5 text-sm bg-gradient-to-r from-[#FFB627] to-[#F59E0B] text-white rounded-lg hover:shadow-lg font-bold transition-all"
+                  className="w-full mb-3 px-4 py-2.5 text-sm bg-amber-500 hover:bg-amber-600 text-white rounded-lg font-bold transition-all"
                 >
                   <Briefcase className="w-3.5 h-3.5 inline" /> Nova Proposta
                 </button>
@@ -495,7 +495,7 @@ export default function ImoveisPage() {
                 <div className="flex gap-2">
                   <button
                     onClick={() => openEditModal(imovel)}
-                    className="flex-1 px-4 py-2.5 text-sm bg-gradient-to-r from-[#00C48C] to-[#059669] text-white rounded-lg hover:shadow-lg font-bold transition-all"
+                    className="flex-1 px-4 py-2.5 text-sm bg-brand hover:bg-brand/90 text-white rounded-lg font-bold transition-all"
                   >
                     <Pencil className="w-3.5 h-3.5 inline" /> Editar
                   </button>
@@ -504,7 +504,7 @@ export default function ImoveisPage() {
                       setDeletingImovel(imovel);
                       setDeleteModalOpen(true);
                     }}
-                    className="flex-1 px-4 py-2.5 text-sm bg-[#EF4444] text-white rounded-lg hover:bg-[#DC2626] font-bold transition-all"
+                    className="flex-1 px-4 py-2.5 text-sm bg-red-500 text-white rounded-lg hover:bg-red-600 font-bold transition-all"
                   >
                     <Trash2 className="w-3.5 h-3.5 inline" /> Excluir
                   </button>
@@ -525,7 +525,7 @@ export default function ImoveisPage() {
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="grid grid-cols-2 gap-4">
             <div className="col-span-2">
-              <label className="block text-sm font-bold text-[#064E3B] mb-2">
+              <label className="block text-sm font-bold text-content mb-2">
                 Título *
               </label>
               <input
@@ -533,18 +533,18 @@ export default function ImoveisPage() {
                 required
                 value={formData.titulo}
                 onChange={(e) => handleFormChange('titulo', e.target.value)}
-                className="w-full px-3 py-2 border border-edge rounded-lg focus:ring-2 focus:ring-emerald-600 focus:border-transparent"
+                className="w-full px-3 py-2 border border-edge rounded-lg text-content bg-surface focus:ring-2 focus:ring-brand/30 focus:border-transparent"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-bold text-[#064E3B] mb-2">
+              <label className="block text-sm font-bold text-content mb-2">
                 Tipo *
               </label>
               <select
                 value={formData.tipo}
                 onChange={(e) => handleFormChange('tipo', e.target.value)}
-                className="w-full px-3 py-2 border border-edge rounded-lg focus:ring-2 focus:ring-emerald-600 focus:border-transparent"
+                className="w-full px-3 py-2 border border-edge rounded-lg text-content bg-surface focus:ring-2 focus:ring-brand/30 focus:border-transparent"
               >
                 <option value="APARTAMENTO">Apartamento</option>
                 <option value="CASA">Casa</option>
@@ -555,13 +555,13 @@ export default function ImoveisPage() {
             </div>
 
             <div>
-              <label className="block text-sm font-bold text-[#064E3B] mb-2">
+              <label className="block text-sm font-bold text-content mb-2">
                 Status *
               </label>
               <select
                 value={formData.status}
                 onChange={(e) => handleFormChange('status', e.target.value)}
-                className="w-full px-3 py-2 border border-edge rounded-lg focus:ring-2 focus:ring-emerald-600 focus:border-transparent"
+                className="w-full px-3 py-2 border border-edge rounded-lg text-content bg-surface focus:ring-2 focus:ring-brand/30 focus:border-transparent"
               >
                 <option value="DISPONIVEL">Disponível</option>
                 <option value="RESERVADO">Reservado</option>
@@ -570,14 +570,14 @@ export default function ImoveisPage() {
             </div>
 
             <div>
-              <label className="block text-sm font-bold text-[#064E3B] mb-2">
+              <label className="block text-sm font-bold text-content mb-2">
                 Proprietário *
               </label>
               <select
                 required
                 value={formData.proprietario_id}
                 onChange={(e) => handleFormChange('proprietario_id', e.target.value)}
-                className="w-full px-3 py-2 border border-edge rounded-lg focus:ring-2 focus:ring-emerald-600 focus:border-transparent"
+                className="w-full px-3 py-2 border border-edge rounded-lg text-content bg-surface focus:ring-2 focus:ring-brand/30 focus:border-transparent"
               >
                 <option value="">Selecione...</option>
                 {proprietarios.map((prop) => (
@@ -589,7 +589,7 @@ export default function ImoveisPage() {
             </div>
 
             <div>
-              <label className="block text-sm font-bold text-[#064E3B] mb-2">
+              <label className="block text-sm font-bold text-content mb-2">
                 Valor (R$) *
               </label>
               <input
@@ -598,12 +598,12 @@ export default function ImoveisPage() {
                 placeholder="0,00"
                 value={formData.valor}
                 onChange={(e) => handleFormChange('valor', e.target.value)}
-                className="w-full px-3 py-2 border border-edge rounded-lg focus:ring-2 focus:ring-emerald-600 focus:border-transparent"
+                className="w-full px-3 py-2 border border-edge rounded-lg text-content bg-surface focus:ring-2 focus:ring-brand/30 focus:border-transparent"
               />
             </div>
 
             <div className="col-span-2">
-              <label className="block text-sm font-bold text-[#064E3B] mb-2">
+              <label className="block text-sm font-bold text-content mb-2">
                 Endereço *
               </label>
               <input
@@ -611,12 +611,12 @@ export default function ImoveisPage() {
                 required
                 value={formData.endereco}
                 onChange={(e) => handleFormChange('endereco', e.target.value)}
-                className="w-full px-3 py-2 border border-edge rounded-lg focus:ring-2 focus:ring-emerald-600 focus:border-transparent"
+                className="w-full px-3 py-2 border border-edge rounded-lg text-content bg-surface focus:ring-2 focus:ring-brand/30 focus:border-transparent"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-bold text-[#064E3B] mb-2">
+              <label className="block text-sm font-bold text-content mb-2">
                 Cidade *
               </label>
               <input
@@ -624,12 +624,12 @@ export default function ImoveisPage() {
                 required
                 value={formData.cidade}
                 onChange={(e) => handleFormChange('cidade', e.target.value)}
-                className="w-full px-3 py-2 border border-edge rounded-lg focus:ring-2 focus:ring-emerald-600 focus:border-transparent"
+                className="w-full px-3 py-2 border border-edge rounded-lg text-content bg-surface focus:ring-2 focus:ring-brand/30 focus:border-transparent"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-bold text-[#064E3B] mb-2">
+              <label className="block text-sm font-bold text-content mb-2">
                 Estado *
               </label>
               <input
@@ -637,14 +637,14 @@ export default function ImoveisPage() {
                 required
                 value={formData.estado}
                 onChange={(e) => handleFormChange('estado', e.target.value)}
-                className="w-full px-3 py-2 border border-edge rounded-lg focus:ring-2 focus:ring-emerald-600 focus:border-transparent"
+                className="w-full px-3 py-2 border border-edge rounded-lg text-content bg-surface focus:ring-2 focus:ring-brand/30 focus:border-transparent"
                 placeholder="UF"
                 maxLength={2}
               />
             </div>
 
             <div>
-              <label className="block text-sm font-bold text-[#064E3B] mb-2">
+              <label className="block text-sm font-bold text-content mb-2">
                 CEP *
               </label>
               <input
@@ -653,12 +653,12 @@ export default function ImoveisPage() {
                 placeholder="00000-000"
                 value={formData.cep}
                 onChange={(e) => handleFormChange('cep', e.target.value)}
-                className="w-full px-3 py-2 border border-edge rounded-lg focus:ring-2 focus:ring-emerald-600 focus:border-transparent"
+                className="w-full px-3 py-2 border border-edge rounded-lg text-content bg-surface focus:ring-2 focus:ring-brand/30 focus:border-transparent"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-bold text-[#064E3B] mb-2">
+              <label className="block text-sm font-bold text-content mb-2">
                 Área (m²)
               </label>
               <input
@@ -667,12 +667,12 @@ export default function ImoveisPage() {
                 min="0"
                 value={formData.area}
                 onChange={(e) => handleFormChange('area', e.target.value)}
-                className="w-full px-3 py-2 border border-edge rounded-lg focus:ring-2 focus:ring-emerald-600 focus:border-transparent"
+                className="w-full px-3 py-2 border border-edge rounded-lg text-content bg-surface focus:ring-2 focus:ring-brand/30 focus:border-transparent"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-bold text-[#064E3B] mb-2">
+              <label className="block text-sm font-bold text-content mb-2">
                 Quartos
               </label>
               <input
@@ -680,12 +680,12 @@ export default function ImoveisPage() {
                 min="0"
                 value={formData.quartos}
                 onChange={(e) => handleFormChange('quartos', e.target.value)}
-                className="w-full px-3 py-2 border border-edge rounded-lg focus:ring-2 focus:ring-emerald-600 focus:border-transparent"
+                className="w-full px-3 py-2 border border-edge rounded-lg text-content bg-surface focus:ring-2 focus:ring-brand/30 focus:border-transparent"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-bold text-[#064E3B] mb-2">
+              <label className="block text-sm font-bold text-content mb-2">
                 Banheiros
               </label>
               <input
@@ -693,12 +693,12 @@ export default function ImoveisPage() {
                 min="0"
                 value={formData.banheiros}
                 onChange={(e) => handleFormChange('banheiros', e.target.value)}
-                className="w-full px-3 py-2 border border-edge rounded-lg focus:ring-2 focus:ring-emerald-600 focus:border-transparent"
+                className="w-full px-3 py-2 border border-edge rounded-lg text-content bg-surface focus:ring-2 focus:ring-brand/30 focus:border-transparent"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-bold text-[#064E3B] mb-2">
+              <label className="block text-sm font-bold text-content mb-2">
                 Vagas de Garagem
               </label>
               <input
@@ -706,19 +706,19 @@ export default function ImoveisPage() {
                 min="0"
                 value={formData.vagas}
                 onChange={(e) => handleFormChange('vagas', e.target.value)}
-                className="w-full px-3 py-2 border border-edge rounded-lg focus:ring-2 focus:ring-emerald-600 focus:border-transparent"
+                className="w-full px-3 py-2 border border-edge rounded-lg text-content bg-surface focus:ring-2 focus:ring-brand/30 focus:border-transparent"
               />
             </div>
 
             <div className="col-span-2">
-              <label className="block text-sm font-bold text-[#064E3B] mb-2">
+              <label className="block text-sm font-bold text-content mb-2">
                 Descrição
               </label>
               <textarea
                 rows={3}
                 value={formData.descricao}
                 onChange={(e) => handleFormChange('descricao', e.target.value)}
-                className="w-full px-3 py-2 border border-edge rounded-lg focus:ring-2 focus:ring-emerald-600 focus:border-transparent"
+                className="w-full px-3 py-2 border border-edge rounded-lg text-content bg-surface focus:ring-2 focus:ring-brand/30 focus:border-transparent"
               />
             </div>
 
@@ -756,17 +756,17 @@ export default function ImoveisPage() {
                 />
               ) : (
                 <div>
-                  <label className="block text-sm font-bold text-[#064E3B] mb-2">
+                  <label className="block text-sm font-bold text-content mb-2">
                     URLs das Fotos (uma por linha)
                   </label>
                   <textarea
                     rows={4}
                     value={formData.fotos}
                     onChange={(e) => handleFormChange('fotos', e.target.value)}
-                    className="w-full px-3 py-2 border border-edge rounded-lg focus:ring-2 focus:ring-[#00C48C] focus:border-[#00C48C] bg-[#F4F6F8] text-[#064E3B]"
+                    className="w-full px-3 py-2 border border-edge rounded-lg text-content bg-surface-secondary focus:ring-2 focus:ring-brand/30 focus:border-transparent"
                     placeholder="https://exemplo.com/foto1.jpg&#10;https://exemplo.com/foto2.jpg"
                   />
-                  <p className="text-xs text-[#4B5563] mt-1">
+                  <p className="text-xs text-content-tertiary mt-1">
                     Adicione o imóvel primeiro para fazer upload de fotos. Ou cole URLs de imagens externas.
                   </p>
                 </div>
@@ -776,44 +776,44 @@ export default function ImoveisPage() {
 
           {/* Vinculações - Apenas quando editando */}
           {editingImovel && (
-            <div className="space-y-4 bg-gradient-to-r from-[#F0FDF4] to-[#EFF6FF] p-4 rounded-lg border-2 border-[#00C48C]/30">
-              <h4 className="text-md font-bold text-[#064E3B] border-b border-[#00C48C]/30 pb-2 flex items-center gap-2">
+            <div className="space-y-4 bg-surface-secondary p-4 rounded-lg border border-edge-light">
+              <h4 className="text-md font-bold text-content border-b border-edge-light pb-2 flex items-center gap-2">
                 <Link2 className="w-4 h-4 inline mr-1" /> Vinculações
               </h4>
 
               {loadingPropostas ? (
                 <div className="flex justify-center py-4">
-                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#00C48C]"></div>
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-brand"></div>
                 </div>
               ) : (
                 <div className="grid grid-cols-3 gap-4">
                   {/* Proprietário */}
-                  <div className="bg-surface p-3 rounded-lg border-2 border-[#FFB627]/30">
-                    <div className="text-xs font-bold text-[#374151] mb-1"><Home className="w-3 h-3 inline mr-1" />PROPRIETÁRIO</div>
+                  <div className="bg-surface p-3 rounded-lg border border-edge-light">
+                    <div className="text-xs font-bold text-content-secondary mb-1"><Home className="w-3 h-3 inline mr-1" />PROPRIETÁRIO</div>
                     {editingImovel.proprietario ? (
-                      <div className="text-sm font-bold text-[#064E3B]">{editingImovel.proprietario.nome}</div>
+                      <div className="text-sm font-bold text-content">{editingImovel.proprietario.nome}</div>
                     ) : (
-                      <div className="text-sm text-[#6B7280] font-medium">Não informado</div>
+                      <div className="text-sm text-content-tertiary font-medium">Não informado</div>
                     )}
                   </div>
 
                   {/* Corretor Responsável */}
-                  <div className="bg-surface p-3 rounded-lg border-2 border-[#A97E6F]/30">
-                    <div className="text-xs font-bold text-[#374151] mb-1"><User className="w-3 h-3 inline mr-1" />CORRETOR</div>
+                  <div className="bg-surface p-3 rounded-lg border border-edge-light">
+                    <div className="text-xs font-bold text-content-secondary mb-1"><User className="w-3 h-3 inline mr-1" />CORRETOR</div>
                     {editingImovel.corretor_responsavel ? (
-                      <div className="text-sm font-bold text-[#064E3B]">{editingImovel.corretor_responsavel.user.nome}</div>
+                      <div className="text-sm font-bold text-content">{editingImovel.corretor_responsavel.user.nome}</div>
                     ) : (
-                      <div className="text-sm text-[#6B7280] font-medium">Não atribuído</div>
+                      <div className="text-sm text-content-tertiary font-medium">Não atribuído</div>
                     )}
                   </div>
 
                   {/* Total de Propostas */}
-                  <div className="bg-surface p-3 rounded-lg border-2 border-[#00C48C]/30">
-                    <div className="text-xs font-bold text-[#374151] mb-1"><ClipboardList className="w-3 h-3 inline mr-1" />PROPOSTAS</div>
-                    <div className="text-3xl font-bold text-[#00C48C]">
+                  <div className="bg-surface p-3 rounded-lg border border-edge-light">
+                    <div className="text-xs font-bold text-content-secondary mb-1"><ClipboardList className="w-3 h-3 inline mr-1" />PROPOSTAS</div>
+                    <div className="text-3xl font-bold text-brand">
                       {totalPropostas}
                     </div>
-                    <div className="text-xs text-[#4B5563] font-medium">propostas recebidas</div>
+                    <div className="text-xs text-content-tertiary font-medium">propostas recebidas</div>
                   </div>
                 </div>
               )}
@@ -824,14 +824,14 @@ export default function ImoveisPage() {
             <button
               type="button"
               onClick={handleCloseModal}
-              className="px-6 py-2.5 text-[#059669] border-2 border-[#059669] rounded-lg hover:bg-[#059669] hover:text-white font-bold transition-all"
+              className="px-6 py-2.5 text-content-secondary border border-edge rounded-lg hover:bg-surface-secondary font-bold transition-all"
             >
               Cancelar
             </button>
             <button
               type="submit"
               disabled={submitting}
-              className="px-6 py-2.5 bg-gradient-to-r from-[#00C48C] to-[#059669] text-white rounded-lg hover:shadow-lg font-bold transition-all disabled:opacity-50"
+              className="px-6 py-2.5 bg-brand hover:bg-brand/90 text-white rounded-lg font-bold transition-all disabled:opacity-50"
             >
               {submitting ? 'Salvando...' : 'Salvar'}
             </button>
@@ -847,22 +847,22 @@ export default function ImoveisPage() {
         size="sm"
       >
         <div className="space-y-4">
-          <p className="text-[#064E3B] text-base font-medium">
-            Tem certeza que deseja excluir o imóvel <strong className="text-[#059669]">{deletingImovel?.titulo}</strong>?
+          <p className="text-content text-base font-medium">
+            Tem certeza que deseja excluir o imóvel <strong className="text-brand">{deletingImovel?.titulo}</strong>?
           </p>
-          <p className="text-sm text-[#4B5563] font-medium">Esta ação não pode ser desfeita.</p>
+          <p className="text-sm text-content-secondary font-medium">Esta ação não pode ser desfeita.</p>
 
           <div className="flex justify-end gap-3 pt-6 border-t border-edge mt-6">
             <button
               onClick={() => setDeleteModalOpen(false)}
-              className="px-6 py-2.5 text-[#059669] border-2 border-[#059669] rounded-lg hover:bg-[#059669] hover:text-white font-bold transition-all"
+              className="px-6 py-2.5 text-content-secondary border border-edge rounded-lg hover:bg-surface-secondary font-bold transition-all"
             >
               Cancelar
             </button>
             <button
               onClick={handleDelete}
               disabled={submitting}
-              className="px-6 py-2.5 bg-[#EF4444] text-white rounded-lg hover:bg-[#DC2626] font-bold transition-all disabled:opacity-50"
+              className="px-6 py-2.5 bg-red-500 text-white rounded-lg hover:bg-red-600 font-bold transition-all disabled:opacity-50"
             >
               {submitting ? 'Excluindo...' : 'Excluir'}
             </button>

@@ -112,6 +112,50 @@ Conectar leads (pessoas procurando imóveis) com corretores e imobiliárias de f
 ### Framework e Estilização
 - **Tailwind CSS é obrigatório**. Não use CSS puro ou estilo inline se houver uma classe Tailwind disponível.
 - Componentes devem seguir os padrões definidos no design system.
+- **Dark/Light mode**: implementado via `next-themes` (`darkMode: 'class'` no Tailwind). **NÃO use cores hardcoded** — sempre use tokens semânticos.
+
+### Tokens Semânticos (Dark/Light Mode) — PADRÃO OBRIGATÓRIO
+
+A partir da v1.17.0, todas as páginas usam tokens semânticos que se adaptam automaticamente ao tema:
+
+| Token Tailwind | Uso |
+|---|---|
+| `bg-surface` | Fundo principal (cards, modais, tabelas) |
+| `bg-surface-secondary` | Fundo secundário (hover, inputs, seções) |
+| `bg-surface-tertiary` | Fundo terciário (cabeçalhos de tabela) |
+| `text-content` | Texto principal (títulos, valores importantes) |
+| `text-content-secondary` | Texto secundário (subtítulos, emails, colunas) |
+| `text-content-tertiary` | Texto auxiliar (placeholders, hints, labels menores) |
+| `border-edge` | Borda normal |
+| `border-edge-light` | Borda suave (divisores, cards) |
+| `text-brand` | Cor da marca (contadores, badges, preços, links) |
+| `bg-brand-light` | Fundo de badge da marca |
+| `border-brand/30` | Borda da marca com opacidade |
+
+**Regras de conversão:**
+- `text-gray-900` / `text-[#064E3B]` → `text-content`
+- `text-gray-700` / `text-[#374151]` → `text-content-secondary`
+- `text-gray-500` / `text-[#4B5563]` → `text-content-tertiary`
+- `bg-white` / `card-clean` → `bg-surface border border-edge-light rounded-xl`
+- `bg-gray-50` / `bg-[#F9FAFB]` → `bg-surface-secondary`
+- `hover:bg-gray-50` → `hover:bg-surface-secondary`
+- `border-gray-200` → `border-edge-light`
+- `text-[#00C48C]` / `text-[#059669]` → `text-brand`
+- `bg-[#059669]/20 border-[#059669]/50` → `bg-brand-light border-brand/30`
+- `input-modern` → `w-full px-4 py-2.5 border border-edge rounded-lg text-sm text-content bg-surface placeholder:text-content-tertiary focus:outline-none focus:ring-2 focus:ring-brand/30`
+- Cabeçalho de tabela gradiente verde → `bg-surface-tertiary text-content`
+- Spinner `border-[#00C48C]` → `border-brand`
+
+**Botões padrão:**
+- Cancelar: `px-6 py-2.5 text-content-secondary border border-edge rounded-lg hover:bg-surface-secondary font-bold transition-all`
+- Salvar: `px-6 py-2.5 bg-brand hover:bg-brand/90 text-white rounded-lg font-bold transition-all disabled:opacity-50`
+- Excluir: `bg-red-500 text-white rounded-lg hover:bg-red-600`
+
+**Arquivos de configuração do tema:**
+- `apps/web/app/globals.css` — variáveis CSS `:root` e `.dark`
+- `apps/web/tailwind.config.ts` — mapeamento de tokens
+- `apps/web/components/ThemeProvider.tsx` — wrapper `next-themes`
+- `apps/web/components/ThemeToggle.tsx` — toggle Light/Dark/System no header
 
 ### Cores da Marca
 
@@ -4862,6 +4906,35 @@ Conforme Art. 39 da LGPD: *"O operador deverá realizar o tratamento segundo as 
 - WhatsApp desabilitado para tenants da campanha (`checkWhatsAppAccess()` em whatsapp.routes.ts)
 - `data_expiracao` adicionado ao `updateTenantSchema` para permitir atualização via API
 - Banco de dados migrado de volta para PostgreSQL no Render (não usar mais Supabase)
+
+**Versão 1.6.1** (fevereiro de 2026):
+- Profissionalização completa de TODAS as páginas do dashboard e componentes
+  - ~150 emojis substituídos por ícones Lucide React SVG em 16 páginas do dashboard
+  - 8 componentes compartilhados atualizados (TimelineInteracoes, TarefasWidget, NotificationBell, RegistrarAtividade, TrialWarning, MetaWidget, DataExportButton, CookieBanner)
+  - Páginas atualizadas: page, meu-desempenho, gerencial, corretores, tarefas, imoveis, negociacoes, metas, proprietarios, agendamentos, administracao, cancelar-assinatura, whatsapp, logs, admin/logs, admin/tenants
+  - Ícones consistentes: w-4 h-4 para inline, w-5 h-5 para cards/headers, text-gray-400 para decorativos
+  - Placeholders de busca sem emoji (antes: "🔍 Buscar...", agora: "Buscar...")
+  - Badges de tipo sem emoji (Admin, Gestor, Corretor em vez de 👑📋🏠)
+  - Temperatura de leads: texto "Q/M/F" em vez de 🔥⚡❄️
+
+**Versão 1.17.0** (fevereiro de 2026):
+- Implementação completa de **Dark/Light mode** com `next-themes`
+  - `ThemeProvider.tsx`: wrapper com `attribute="class"`, `defaultTheme="light"`, `enableSystem`
+  - `ThemeToggle.tsx`: dropdown com 3 opções (Light/Dark/System) via Lucide icons no header
+  - `tailwind.config.ts`: `darkMode: 'class'` + tokens semânticos via CSS variables
+  - `globals.css`: variáveis CSS `:root` (light) e `.dark` para todos os tokens semânticos
+- **Padronização visual completa** de todas as páginas do dashboard com tokens semânticos
+  - Páginas padronizadas: `leads`, `negociacoes`, `agendamentos`, `imoveis`, `proprietarios`
+  - Substituição de todos os hardcoded hex colors (`#064E3B`, `#374151`, etc.) por tokens
+  - Utilitários legados removidos: `card-clean`, `input-modern` → classes inline semânticas
+  - Cabeçalhos de tabela: gradiente verde + `text-white` → `bg-surface-tertiary text-content`
+  - Hover de linhas: `hover:bg-[#F9FAFB]` → `hover:bg-surface-secondary`
+- **Melhorias no layout do dashboard** (`apps/web/app/dashboard/layout.tsx`):
+  - Logo aumentado em 30% (h-9 → h-12)
+  - Header reestruturado: 3 zonas (left/center/right) — TrialWarning centralizado via `absolute`
+  - Botão de logout: visível com estilo red (`bg-red-50 text-red-600 hover:bg-red-600`) + label "Sair"
+  - Favicon alterado: `/logoIntegrius.png` → `/favicon.png`
+- **Fix gráfico dashboard**: hover do Recharts corrigido com `cursor={{ fill: 'rgba(0,0,0,0.04)' }}` e `activeBar` props
 
 **Versão 1.6.1** (fevereiro de 2026):
 - Profissionalização completa de TODAS as páginas do dashboard e componentes

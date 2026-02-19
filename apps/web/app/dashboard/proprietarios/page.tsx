@@ -62,7 +62,7 @@ export default function ProprietariosPage() {
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const [originalFormData, setOriginalFormData] = useState<any>(null);
 
-  const formatPhone = (phone: string) => {
+  const formatPhoneLocal = (phone: string) => {
     const cleaned = phone.replace(/\D/g, '');
     if (cleaned.length === 11) {
       return `(${cleaned.slice(0, 2)}) ${cleaned.slice(2, 7)}-${cleaned.slice(7)}`;
@@ -114,7 +114,7 @@ export default function ProprietariosPage() {
   const handleFormChange = (field: string, value: any) => {
     // Aplica formatação automática para telefone e CPF/CNPJ
     if (field === 'telefone') {
-      value = formatPhone(value);
+      value = formatPhoneLocal(value);
     }
     if (field === 'cpf_cnpj') {
       // Aplica formatação CPF ou CNPJ dependendo do tipo de pessoa
@@ -197,7 +197,7 @@ export default function ProprietariosPage() {
     const formDataToSet = {
       nome: proprietario.nome,
       email: proprietario.contato?.email || '',
-      telefone: formatPhone(proprietario.contato?.telefone_principal || ''),
+      telefone: formatPhoneLocal(proprietario.contato?.telefone_principal || ''),
       cpf_cnpj: proprietario.tipo_pessoa === 'FISICA'
         ? formatCPF(proprietario.cpf_cnpj)
         : formatCNPJ(proprietario.cpf_cnpj),
@@ -306,26 +306,23 @@ export default function ProprietariosPage() {
   if (loading) {
     return (
       <div className="flex justify-center items-center min-h-[400px]">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#00C48C]"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-brand"></div>
       </div>
     );
   }
 
   return (
     <div>
-      <div className="flex justify-between items-center mb-8">
+      <div className="flex justify-between items-center mb-6">
         <div>
-          <h2 className="text-4xl font-bold text-content tracking-tight">Proprietários</h2>
-          <p className="text-sm text-content-secondary mt-2 font-semibold">
-            <span className="text-[#00C48C] text-lg font-bold">{proprietarios.length}</span> proprietários cadastrados
+          <h2 className="text-2xl font-bold text-content tracking-tight">Proprietários</h2>
+          <p className="text-sm text-content-secondary mt-1 font-semibold">
+            <span className="text-brand text-lg font-bold">{proprietarios.length}</span> proprietários cadastrados
           </p>
         </div>
         <button
           onClick={openCreateModal}
           className="px-6 py-3 btn-primary"
-          style={{
-            boxShadow: 'inset 0 -2px 4px rgba(0, 0, 0, 0.2), 0 4px 8px rgba(0, 0, 0, 0.2)'
-          }}
         >
           + Novo Proprietário
         </button>
@@ -338,55 +335,51 @@ export default function ProprietariosPage() {
           placeholder="Buscar por nome, email ou CPF/CNPJ..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          className="input-modern"
+          className="w-full px-4 py-2.5 border border-edge rounded-lg text-sm font-medium text-content bg-surface placeholder:text-content-tertiary focus:outline-none focus:ring-2 focus:ring-brand/30"
         />
       </div>
 
       {/* Tabela */}
-      <div className="card-clean shadow-xl overflow-hidden">
-        <table className="min-w-full divide-y divide-slate-600">
-          <thead className="bg-gradient-to-r from-[#059669] to-[#059669]">
+      <div className="bg-surface rounded-xl border-2 border-gray-200 overflow-hidden">
+        <table className="min-w-full divide-y divide-edge">
+          <thead className="bg-surface-tertiary">
             <tr>
-              <th className="px-6 py-4 text-left text-xs font-bold text-white uppercase tracking-wider">Nome</th>
-              <th className="px-6 py-4 text-left text-xs font-bold text-white uppercase tracking-wider">Email</th>
-              <th className="px-6 py-4 text-left text-xs font-bold text-white uppercase tracking-wider">CPF/CNPJ</th>
-              <th className="px-6 py-4 text-left text-xs font-bold text-white uppercase tracking-wider">Tipo</th>
-              <th className="px-6 py-4 text-left text-xs font-bold text-white uppercase tracking-wider">Telefone</th>
-              <th className="px-6 py-4 text-left text-xs font-bold text-white uppercase tracking-wider">Ações</th>
+              <th className="px-6 py-4 text-left text-xs font-bold text-content uppercase tracking-wider">Nome</th>
+              <th className="px-6 py-4 text-left text-xs font-bold text-content uppercase tracking-wider">Email</th>
+              <th className="px-6 py-4 text-left text-xs font-bold text-content uppercase tracking-wider">CPF/CNPJ</th>
+              <th className="px-6 py-4 text-left text-xs font-bold text-content uppercase tracking-wider">Tipo</th>
+              <th className="px-6 py-4 text-left text-xs font-bold text-content uppercase tracking-wider">Telefone</th>
+              <th className="px-6 py-4 text-left text-xs font-bold text-content uppercase tracking-wider">Ações</th>
             </tr>
           </thead>
-          <tbody className="bg-surface divide-y divide-[rgba(169,126,111,0.1)]">
+          <tbody className="bg-surface divide-y divide-edge-light">
             {filteredProprietarios.length === 0 ? (
               <tr>
-                <td colSpan={6} className="px-6 py-12 text-center text-[#4B5563]">
+                <td colSpan={6} className="px-6 py-12 text-center text-content-secondary">
                   <div className="text-lg font-medium">{searchTerm ? 'Nenhum proprietário encontrado' : 'Nenhum proprietário cadastrado'}</div>
-                  <p className="text-sm text-[#4B5563] mt-2">Clique em &ldquo;+ Novo Proprietário&rdquo; para adicionar</p>
+                  <p className="text-sm text-content-tertiary mt-2">Clique em &ldquo;+ Novo Proprietário&rdquo; para adicionar</p>
                 </td>
               </tr>
             ) : (
               filteredProprietarios.map((proprietario, index) => (
-                <tr key={proprietario.id} className={`hover:bg-[#F9FAFB] transition-colors ${index % 2 === 0 ? 'bg-surface' : 'bg-surface/70'}`}>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-bold text-[#064E3B]">
+                <tr key={proprietario.id} className={`hover:bg-surface-secondary transition-colors ${index % 2 === 0 ? 'bg-surface' : 'bg-surface/70'}`}>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm font-bold text-content">
                     {proprietario.nome}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-[#374151] font-medium">{proprietario.contato?.email || '-'}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-[#374151] font-medium">
-                    <span className="px-2 py-1 bg-slate-600 text-slate-200 rounded-md font-mono text-xs font-bold border border-slate-500">{proprietario.cpf_cnpj}</span>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-content-secondary font-medium">{proprietario.contato?.email || '-'}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-content-secondary font-medium">
+                    <span className="px-2 py-1 bg-surface-tertiary text-content border border-edge rounded-md font-mono text-xs font-bold">{proprietario.cpf_cnpj}</span>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-[#374151] font-medium">
-                    <span className={`px-3 py-1.5 text-xs font-bold rounded-full border-2 ${
-                      proprietario.tipo_pessoa === 'FISICA'
-                        ? 'bg-[#059669]/20 text-[#059669] border-[#059669]/50'
-                        : 'bg-[#059669]/20 text-[#059669] border-[#059669]/50'
-                    }`}>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-content-secondary font-medium">
+                    <span className="px-3 py-1.5 text-xs font-bold rounded-full border bg-brand-light text-brand border-brand/30">
                       {proprietario.tipo_pessoa === 'FISICA' ? 'Pessoa Física' : 'Pessoa Jurídica'}
                     </span>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-[#374151] font-semibold">{formatPhone(proprietario.contato?.telefone_principal || '')}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-content-secondary font-semibold">{formatPhoneLocal(proprietario.contato?.telefone_principal || '')}</td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm">
                     <button
                       onClick={() => openEditModal(proprietario)}
-                      className="text-[#00C48C] hover:text-[#059669] mr-4 font-bold hover:underline transition-all"
+                      className="text-brand hover:text-brand/80 mr-4 font-bold hover:underline transition-all"
                     >
                       <Eye className="w-3.5 h-3.5 inline mr-0.5" /> Consultar
                     </button>
@@ -395,7 +388,7 @@ export default function ProprietariosPage() {
                         setDeletingProprietario(proprietario);
                         setDeleteModalOpen(true);
                       }}
-                      className="text-[#FF6B6B] hover:text-[#FF006E] font-bold hover:underline transition-all"
+                      className="text-red-500 hover:text-red-700 font-bold hover:underline transition-all"
                     >
                       <Trash2 className="w-3.5 h-3.5 inline mr-0.5" /> Excluir
                     </button>
@@ -416,30 +409,30 @@ export default function ProprietariosPage() {
       >
         {/* Resumo de Vinculações - apenas quando editando */}
         {editingProprietario && (
-          <div className="bg-gradient-to-r from-[#F0FDF4] to-[#EFF6FF] p-4 rounded-lg border-2 border-[#00C48C]/30 mb-6">
+          <div className="bg-surface-secondary p-4 rounded-lg border border-edge-light mb-6">
             {loadingImoveis || loadingPropostas ? (
               <div className="flex justify-center py-2">
-                <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-[#00C48C]"></div>
+                <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-brand"></div>
               </div>
             ) : (
               <div className="flex items-center gap-4 justify-center">
                 <div className="text-center">
-                  <div className="text-xs text-[#374151] font-semibold mb-1"><User className="w-3 h-3 inline mr-1" />CORRETOR</div>
+                  <div className="text-xs text-content-secondary font-semibold mb-1"><User className="w-3 h-3 inline mr-1" />CORRETOR</div>
                   {editingProprietario.corretor ? (
-                    <div className="text-sm font-bold text-[#A97E6F]">{editingProprietario.corretor.user.nome}</div>
+                    <div className="text-sm font-bold text-content">{editingProprietario.corretor.user.nome}</div>
                   ) : (
-                    <div className="text-sm text-[#9CA3AF]">Não atribuído</div>
+                    <div className="text-sm text-content-tertiary">Não atribuído</div>
                   )}
                 </div>
-                <div className="h-10 w-px bg-[#00C48C]/30"></div>
+                <div className="h-10 w-px bg-edge"></div>
                 <div className="text-center">
-                  <div className="text-3xl font-bold text-[#059669]">{proprietarioImoveis.length}</div>
-                  <div className="text-xs text-[#374151] font-semibold">Imóveis</div>
+                  <div className="text-3xl font-bold text-brand">{proprietarioImoveis.length}</div>
+                  <div className="text-xs text-content-secondary font-semibold">Imóveis</div>
                 </div>
-                <div className="h-10 w-px bg-[#00C48C]/30"></div>
+                <div className="h-10 w-px bg-edge"></div>
                 <div className="text-center">
-                  <div className="text-3xl font-bold text-[#00C48C]">{totalPropostas}</div>
-                  <div className="text-xs text-[#374151] font-semibold">Propostas</div>
+                  <div className="text-3xl font-bold text-brand">{totalPropostas}</div>
+                  <div className="text-xs text-content-secondary font-semibold">Propostas</div>
                 </div>
               </div>
             )}
@@ -454,8 +447,8 @@ export default function ProprietariosPage() {
               onClick={() => setActiveTab('dados')}
               className={`px-6 py-3 font-bold transition-all ${
                 activeTab === 'dados'
-                  ? 'border-b-4 border-[#00C48C] text-[#00C48C]'
-                  : 'text-[#4B5563] hover:text-[#00C48C]'
+                  ? 'border-b-4 border-brand text-brand'
+                  : 'text-content-tertiary hover:text-brand'
               }`}
             >
               <ClipboardList className="w-4 h-4 inline mr-1" /> Dados
@@ -465,8 +458,8 @@ export default function ProprietariosPage() {
               onClick={() => setActiveTab('imoveis')}
               className={`px-6 py-3 font-bold transition-all ${
                 activeTab === 'imoveis'
-                  ? 'border-b-4 border-[#00C48C] text-[#00C48C]'
-                  : 'text-[#4B5563] hover:text-[#00C48C]'
+                  ? 'border-b-4 border-brand text-brand'
+                  : 'text-content-tertiary hover:text-brand'
               }`}
             >
               <Building2 className="w-4 h-4 inline mr-1" /> Imóveis ({proprietarioImoveis.length})
@@ -479,7 +472,7 @@ export default function ProprietariosPage() {
           <form onSubmit={handleSubmit} className="space-y-4">
           <div className="grid grid-cols-2 gap-4">
             <div className="col-span-2">
-              <label className="block text-sm font-bold text-[#064E3B] mb-2">
+              <label className="block text-sm font-bold text-content mb-2">
                 Nome *
               </label>
               <input
@@ -487,18 +480,18 @@ export default function ProprietariosPage() {
                 required
                 value={formData.nome}
                 onChange={(e) => handleFormChange('nome', e.target.value)}
-                className="w-full px-3 py-2 border border-edge rounded-lg focus:ring-2 focus:ring-emerald-600 focus:border-transparent"
+                className="w-full px-3 py-2 border border-edge rounded-lg text-content bg-surface focus:ring-2 focus:ring-brand/30 focus:border-transparent"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-bold text-[#064E3B] mb-2">
+              <label className="block text-sm font-bold text-content mb-2">
                 Tipo *
               </label>
               <select
                 value={formData.tipo_pessoa}
                 onChange={(e) => handleFormChange('tipo_pessoa', e.target.value)}
-                className="w-full px-3 py-2 border border-edge rounded-lg focus:ring-2 focus:ring-emerald-600 focus:border-transparent"
+                className="w-full px-3 py-2 border border-edge rounded-lg text-content bg-surface focus:ring-2 focus:ring-brand/30 focus:border-transparent"
               >
                 <option value="FISICA">Pessoa Física</option>
                 <option value="JURIDICA">Pessoa Jurídica</option>
@@ -506,7 +499,7 @@ export default function ProprietariosPage() {
             </div>
 
             <div>
-              <label className="block text-sm font-bold text-[#064E3B] mb-2">
+              <label className="block text-sm font-bold text-content mb-2">
                 {formData.tipo_pessoa === 'FISICA' ? 'CPF *' : 'CNPJ *'}
               </label>
               <input
@@ -514,13 +507,13 @@ export default function ProprietariosPage() {
                 required
                 value={formData.cpf_cnpj}
                 onChange={(e) => handleFormChange('cpf_cnpj', e.target.value)}
-                className="w-full px-3 py-2 border border-edge rounded-lg focus:ring-2 focus:ring-emerald-600 focus:border-transparent"
+                className="w-full px-3 py-2 border border-edge rounded-lg text-content bg-surface focus:ring-2 focus:ring-brand/30 focus:border-transparent"
                 placeholder={formData.tipo_pessoa === 'FISICA' ? '000.000.000-00' : '00.000.000/0000-00'}
               />
             </div>
 
             <div>
-              <label className="block text-sm font-bold text-[#064E3B] mb-2">
+              <label className="block text-sm font-bold text-content mb-2">
                 Email *
               </label>
               <input
@@ -528,12 +521,12 @@ export default function ProprietariosPage() {
                 required
                 value={formData.email}
                 onChange={(e) => handleFormChange('email', e.target.value)}
-                className="w-full px-3 py-2 border border-edge rounded-lg focus:ring-2 focus:ring-emerald-600 focus:border-transparent"
+                className="w-full px-3 py-2 border border-edge rounded-lg text-content bg-surface focus:ring-2 focus:ring-brand/30 focus:border-transparent"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-bold text-[#064E3B] mb-2">
+              <label className="block text-sm font-bold text-content mb-2">
                 Telefone *
               </label>
               <input
@@ -541,20 +534,20 @@ export default function ProprietariosPage() {
                 required
                 value={formData.telefone}
                 onChange={(e) => handleFormChange('telefone', e.target.value)}
-                className="w-full px-3 py-2 border border-edge rounded-lg focus:ring-2 focus:ring-emerald-600 focus:border-transparent"
+                className="w-full px-3 py-2 border border-edge rounded-lg text-content bg-surface focus:ring-2 focus:ring-brand/30 focus:border-transparent"
                 placeholder="(11) 99999-9999"
               />
             </div>
 
             <div className="col-span-2">
-              <label className="block text-sm font-bold text-[#064E3B] mb-2">
+              <label className="block text-sm font-bold text-content mb-2">
                 Endereço
               </label>
               <input
                 type="text"
                 value={formData.endereco}
                 onChange={(e) => handleFormChange('endereco', e.target.value)}
-                className="w-full px-3 py-2 border border-edge rounded-lg focus:ring-2 focus:ring-emerald-600 focus:border-transparent"
+                className="w-full px-3 py-2 border border-edge rounded-lg text-content bg-surface focus:ring-2 focus:ring-brand/30 focus:border-transparent"
               />
             </div>
           </div>
@@ -563,14 +556,14 @@ export default function ProprietariosPage() {
             <button
               type="button"
               onClick={handleCloseModal}
-              className="px-6 py-2.5 text-[#059669] border-2 border-[#059669] rounded-lg hover:bg-[#059669] hover:text-white font-bold transition-all"
+              className="px-6 py-2.5 text-content-secondary border border-edge rounded-lg hover:bg-surface-secondary font-bold transition-all"
             >
               Cancelar
             </button>
             <button
               type="submit"
               disabled={submitting}
-              className="px-6 py-2.5 bg-gradient-to-r from-[#00C48C] to-[#059669] text-white rounded-lg hover:shadow-lg font-bold transition-all disabled:opacity-50"
+              className="px-6 py-2.5 bg-brand hover:bg-brand/90 text-white rounded-lg font-bold transition-all disabled:opacity-50"
             >
               {submitting ? 'Salvando...' : 'Salvar'}
             </button>
@@ -583,18 +576,18 @@ export default function ProprietariosPage() {
           <div className="space-y-4">
             {loadingImoveis ? (
               <div className="flex justify-center items-center py-12">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#00C48C]"></div>
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-brand"></div>
               </div>
             ) : proprietarioImoveis.length === 0 ? (
               <div className="text-center py-12">
-                <p className="text-[#4B5563] text-lg">Nenhum imóvel registrado para este proprietário</p>
+                <p className="text-content-secondary text-lg">Nenhum imóvel registrado para este proprietário</p>
               </div>
             ) : (
               <div className="max-h-[500px] overflow-y-auto space-y-3">
                 {proprietarioImoveis.map((imovel) => (
                   <div
                     key={imovel.id}
-                    className="flex gap-4 p-4 border-2 border-edge rounded-lg hover:border-[#00C48C] hover:shadow-lg transition-all bg-surface"
+                    className="flex gap-4 p-4 border border-edge-light rounded-lg hover:border-brand/30 hover:bg-surface-secondary transition-all bg-surface"
                   >
                     {/* Foto */}
                     {imovel.fotoPrincipal ? (
@@ -604,33 +597,33 @@ export default function ProprietariosPage() {
                         className="w-24 h-24 object-cover rounded-lg"
                       />
                     ) : (
-                      <div className="w-24 h-24 bg-[#F9FAFB] rounded-lg flex items-center justify-center border-2 border-[#059669]/20">
-                        <Building2 className="w-10 h-10 text-gray-300" />
+                      <div className="w-24 h-24 bg-surface-tertiary rounded-lg flex items-center justify-center border border-edge-light">
+                        <Building2 className="w-10 h-10 text-content-tertiary" />
                       </div>
                     )}
 
                     {/* Informações */}
                     <div className="flex-1">
-                      <h4 className="font-bold text-[#064E3B] text-lg">{imovel.titulo}</h4>
+                      <h4 className="font-bold text-content text-lg">{imovel.titulo}</h4>
                       <div className="flex gap-4 mt-2 text-sm">
-                        <span className="px-2 py-1 bg-[#059669]/20 text-[#059669] rounded-md font-bold">
+                        <span className="px-2 py-1 bg-brand-light text-brand rounded-md font-bold">
                           {imovel.tipo}
                         </span>
                         <span className={`px-2 py-1 rounded-md font-bold ${
                           imovel.status === 'DISPONIVEL'
-                            ? 'bg-[#00C48C]/20 text-[#4A6B29]'
+                            ? 'bg-emerald-100 text-emerald-700'
                             : imovel.status === 'RESERVADO'
-                            ? 'bg-[#FFB627]/20 text-[#FFB627]'
-                            : 'bg-[#FF6B6B]/20 text-[#FF006E]'
+                            ? 'bg-amber-100 text-amber-700'
+                            : 'bg-red-100 text-red-700'
                         }`}>
                           {imovel.status}
                         </span>
                       </div>
-                      <p className="text-[#00C48C] font-bold text-xl mt-2">
+                      <p className="text-brand font-bold text-xl mt-2">
                         R$ {imovel.preco.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
                       </p>
                       {imovel.endereco && (
-                        <p className="text-[#374151] text-sm font-medium mt-1">
+                        <p className="text-content-secondary text-sm font-medium mt-1">
                           <MapPin className="w-3.5 h-3.5 inline mr-0.5" /> {imovel.endereco.cidade}, {imovel.endereco.estado}
                         </p>
                       )}
@@ -651,22 +644,22 @@ export default function ProprietariosPage() {
         size="sm"
       >
         <div className="space-y-4">
-          <p className="text-[#064E3B] text-base">
-            Tem certeza que deseja excluir o proprietário <strong className="text-[#059669]">{deletingProprietario?.nome}</strong>?
+          <p className="text-content text-base">
+            Tem certeza que deseja excluir o proprietário <strong className="text-brand">{deletingProprietario?.nome}</strong>?
           </p>
-          <p className="text-sm text-[#374151] font-medium">Esta ação não pode ser desfeita.</p>
+          <p className="text-sm text-content-secondary font-medium">Esta ação não pode ser desfeita.</p>
 
           <div className="flex justify-end gap-3 pt-6 border-t border-edge mt-6">
             <button
               onClick={() => setDeleteModalOpen(false)}
-              className="px-6 py-2.5 text-[#059669] border-2 border-[#059669] rounded-lg hover:bg-[#059669] hover:text-white font-bold transition-all"
+              className="px-6 py-2.5 text-content-secondary border border-edge rounded-lg hover:bg-surface-secondary font-bold transition-all"
             >
               Cancelar
             </button>
             <button
               onClick={handleDelete}
               disabled={submitting}
-              className="px-6 py-2.5 bg-[#FF6B6B] text-white rounded-lg hover:bg-[#FF006E] font-bold transition-all disabled:opacity-50"
+              className="px-6 py-2.5 bg-red-500 text-white rounded-lg hover:bg-red-600 font-bold transition-all disabled:opacity-50"
             >
               {submitting ? 'Excluindo...' : 'Excluir'}
             </button>
