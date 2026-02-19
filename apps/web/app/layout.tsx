@@ -27,7 +27,7 @@ export const metadata: Metadata = {
   creator: 'Integrius',
   publisher: 'Integrius',
   icons: {
-    icon: '/logoIntegrius.png',
+    icon: '/favicon.png',
   },
 
   // Open Graph
