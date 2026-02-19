@@ -245,6 +245,7 @@ export default function DashboardPage() {
                   <XAxis dataKey="mes" stroke="#6B7280" fontSize={12} />
                   <YAxis stroke="#6B7280" fontSize={12} />
                   <Tooltip
+                    cursor={{ fill: 'rgba(0,0,0,0.04)' }}
                     contentStyle={{
                       backgroundColor: '#fff',
                       border: '1px solid #E5E7EB',
@@ -253,8 +254,8 @@ export default function DashboardPage() {
                     }}
                   />
                   <Legend wrapperStyle={{ fontSize: '12px' }} />
-                  <Bar dataKey="leads" fill="#22c55e" name="Leads" radius={[4, 4, 0, 0]} />
-                  <Bar dataKey="negociacoes" fill="#4f46e5" name="Negociações" radius={[4, 4, 0, 0]} />
+                  <Bar dataKey="leads" fill="#22c55e" name="Leads" radius={[4, 4, 0, 0]} activeBar={{ fill: '#22c55e', opacity: 0.85 }} />
+                  <Bar dataKey="negociacoes" fill="#4f46e5" name="Negociações" radius={[4, 4, 0, 0]} activeBar={{ fill: '#4f46e5', opacity: 0.85 }} />
                 </BarChart>
               </ResponsiveContainer>
             </div>
