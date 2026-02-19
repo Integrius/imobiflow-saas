@@ -65,14 +65,16 @@ Conectar leads (pessoas procurando imóveis) com corretores e imobiliárias de f
 - **Linguagem**: TypeScript
 - **Estilização**: TailwindCSS
 - **UI Components**: Componentes customizados
-- **Hospedagem**: Render.com
+- **Hospedagem**: Render.com — Static Site (`imobiflow-web`)
+- **Config deploy**: `apps/web/render.yaml`
 
 #### Backend (API)
 - **Framework**: Fastify (Node.js)
 - **Linguagem**: TypeScript
 - **ORM**: Prisma
 - **Banco de Dados**: PostgreSQL (Render)
-- **Hospedagem**: Render.com
+- **Hospedagem**: Render.com — Docker (`imobiflow-saas-1`)
+- **Config deploy**: `render.yaml` (raiz) + `Dockerfile`
 
 #### Inteligência Artificial
 - **Provedor Principal**: Anthropic Claude (Sonnet 4.5)
