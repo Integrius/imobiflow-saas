@@ -1,0 +1,16 @@
+# Ignorar metadados do Windows que poluem o WSL
+**/*.Zone.Identifier
+
+# Ignorar todos os emoticons e imagens (já que estamos reestruturando)
+**/public/*.png
+**/public/*.jpg
+**/public/*.jpeg
+**/public/*.svg
+**/public/*.gif
+**/public/*.mp4
+
+# Ignorar pastas de dependências e builds
+node_modules/
+.next/
+dist/
+build/
