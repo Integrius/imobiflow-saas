@@ -418,27 +418,27 @@ export default function CorretoresPage() {
   if (loading) {
     return (
       <div className="flex justify-center items-center min-h-[400px]">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#00C48C]"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-brand"></div>
       </div>
     );
   }
 
   return (
     <div>
-      <div className="mb-8">
+      <div className="mb-6">
         {/* Header */}
-        <div className="flex justify-between items-center mb-6">
+        <div className="flex justify-between items-center mb-4">
           <div>
-            <h2 className="text-4xl font-bold text-[#064E3B] tracking-tight">Corretores</h2>
-            <p className="text-sm text-[#4B5563] mt-2 font-medium">
-              <span className="text-[#00C48C] text-lg font-bold">{corretores.length}</span> corretores cadastrados
+            <h2 className="text-2xl font-bold text-content tracking-tight">Corretores</h2>
+            <p className="text-sm text-content-secondary mt-1 font-medium">
+              <span className="text-brand text-lg font-bold">{corretores.length}</span> corretores cadastrados
             </p>
           </div>
         </div>
 
         {/* Painel de Controle */}
-        <div className="bg-gradient-to-br from-slate-50 to-slate-100 rounded-xl p-4 border-2 border-slate-200 shadow-sm">
-          <h3 className="text-sm font-bold text-slate-700 uppercase tracking-wide mb-3">Painel de Controle</h3>
+        <div className="bg-surface-secondary rounded-xl p-4 border border-edge-light">
+          <h3 className="text-sm font-bold text-content-secondary uppercase tracking-wide mb-3">Painel de Controle</h3>
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
             {/* Botão: Ativar */}
             <button
@@ -446,14 +446,9 @@ export default function CorretoresPage() {
               disabled={selectedCorretores.length === 0}
               className={`px-4 py-2.5 rounded-lg font-semibold text-sm transition-all duration-200 ${
                 selectedCorretores.length === 0
-                  ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                  : 'bg-gradient-to-r from-[#00C48C] to-[#00A374] text-white hover:scale-105'
+                  ? 'bg-surface-tertiary text-content-tertiary cursor-not-allowed'
+                  : 'bg-brand hover:bg-brand/90 text-white hover:scale-105'
               }`}
-              style={{
-                boxShadow: selectedCorretores.length > 0
-                  ? 'inset 0 -2px 4px rgba(0, 0, 0, 0.2), 0 4px 8px rgba(0, 0, 0, 0.2)'
-                  : 'none'
-              }}
             >
               <span className="flex items-center justify-center gap-1.5">
                 <span className="inline-block w-2.5 h-2.5 rounded-full bg-green-400 ring-2 ring-white"></span>
@@ -467,17 +462,12 @@ export default function CorretoresPage() {
               disabled={selectedCorretores.length === 0}
               className={`px-4 py-2.5 rounded-lg font-semibold text-sm transition-all duration-200 ${
                 selectedCorretores.length === 0
-                  ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                  : 'bg-gradient-to-r from-[#FF9500] to-[#FF7A00] text-white hover:scale-105'
+                  ? 'bg-surface-tertiary text-content-tertiary cursor-not-allowed'
+                  : 'bg-amber-500 hover:bg-amber-600 text-white hover:scale-105'
               }`}
-              style={{
-                boxShadow: selectedCorretores.length > 0
-                  ? 'inset 0 -2px 4px rgba(0, 0, 0, 0.2), 0 4px 8px rgba(0, 0, 0, 0.2)'
-                  : 'none'
-              }}
             >
               <span className="flex items-center justify-center gap-1.5">
-                <span className="inline-block w-2.5 h-2.5 rounded-full bg-orange-400 ring-2 ring-white"></span>
+                <span className="inline-block w-2.5 h-2.5 rounded-full bg-orange-300 ring-2 ring-white"></span>
                 Suspender {selectedCorretores.length > 0 && `(${selectedCorretores.length})`}
               </span>
             </button>
@@ -488,17 +478,12 @@ export default function CorretoresPage() {
               disabled={selectedCorretores.length === 0}
               className={`px-4 py-2.5 rounded-lg font-semibold text-sm transition-all duration-200 ${
                 selectedCorretores.length === 0
-                  ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                  : 'bg-gradient-to-r from-[#EF4444] to-[#DC2626] text-white hover:scale-105'
+                  ? 'bg-surface-tertiary text-content-tertiary cursor-not-allowed'
+                  : 'bg-red-500 hover:bg-red-600 text-white hover:scale-105'
               }`}
-              style={{
-                boxShadow: selectedCorretores.length > 0
-                  ? 'inset 0 -2px 4px rgba(0, 0, 0, 0.2), 0 4px 8px rgba(0, 0, 0, 0.2)'
-                  : 'none'
-              }}
             >
               <span className="flex items-center justify-center gap-1.5">
-                <span className="inline-block w-2.5 h-2.5 rounded-full bg-red-400 ring-2 ring-white"></span>
+                <span className="inline-block w-2.5 h-2.5 rounded-full bg-red-300 ring-2 ring-white"></span>
                 Cancelar {selectedCorretores.length > 0 && `(${selectedCorretores.length})`}
               </span>
             </button>
@@ -509,14 +494,9 @@ export default function CorretoresPage() {
               disabled={selectedCorretores.length === 0}
               className={`px-4 py-2.5 rounded-lg font-semibold text-sm transition-all duration-200 ${
                 selectedCorretores.length === 0
-                  ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                  : 'bg-gradient-to-r from-[#059669] to-[#047857] text-white hover:scale-105'
+                  ? 'bg-surface-tertiary text-content-tertiary cursor-not-allowed'
+                  : 'bg-brand hover:bg-brand/90 text-white hover:scale-105'
               }`}
-              style={{
-                boxShadow: selectedCorretores.length > 0
-                  ? 'inset 0 -2px 4px rgba(0, 0, 0, 0.2), 0 4px 8px rgba(0, 0, 0, 0.2)'
-                  : 'none'
-              }}
             >
               <span className="flex items-center justify-center gap-1.5"><Mail className="w-4 h-4" /> Reenviar {selectedCorretores.length > 0 && `(${selectedCorretores.length})`}</span>
             </button>
@@ -527,14 +507,9 @@ export default function CorretoresPage() {
               disabled={selectedCorretores.length === 0 || loadingComissoes}
               className={`px-4 py-2.5 rounded-lg font-semibold text-sm transition-all duration-200 ${
                 selectedCorretores.length === 0 || loadingComissoes
-                  ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                  : 'bg-gradient-to-r from-[#FFB627] to-[#FF9500] text-white hover:scale-105'
+                  ? 'bg-surface-tertiary text-content-tertiary cursor-not-allowed'
+                  : 'bg-amber-500 hover:bg-amber-600 text-white hover:scale-105'
               }`}
-              style={{
-                boxShadow: selectedCorretores.length > 0 && !loadingComissoes
-                  ? 'inset 0 -2px 4px rgba(0, 0, 0, 0.2), 0 4px 8px rgba(0, 0, 0, 0.2)'
-                  : 'none'
-              }}
             >
               {loadingComissoes ? (
                 <span className="flex items-center justify-center gap-2">
@@ -553,9 +528,6 @@ export default function CorretoresPage() {
             <button
               onClick={openCreateModal}
               className="px-4 py-2.5 btn-primary text-sm"
-              style={{
-                boxShadow: 'inset 0 -2px 4px rgba(0, 0, 0, 0.2), 0 4px 8px rgba(0, 0, 0, 0.2)'
-              }}
             >
               + Novo Corretor
             </button>
@@ -570,33 +542,33 @@ export default function CorretoresPage() {
           placeholder="Buscar por nome, email ou CRECI..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          className="input-modern"
+          className="w-full px-4 py-2.5 border border-edge rounded-lg text-sm font-medium text-content bg-surface placeholder:text-content-tertiary focus:outline-none focus:ring-2 focus:ring-brand/30"
         />
       </div>
 
       {/* Tabela */}
-      <div className="card-clean shadow-xl overflow-hidden">
-        <table className="min-w-full divide-y divide-slate-600">
-          <thead className="bg-gradient-to-r from-[#059669] to-[#059669]">
+      <div className="bg-surface rounded-xl border-2 border-gray-200 overflow-hidden">
+        <table className="min-w-full divide-y divide-edge">
+          <thead className="bg-surface-tertiary">
             <tr>
               <th className="px-4 py-4 text-center">
                 <input
                   type="checkbox"
                   checked={selectedCorretores.length === filteredCorretores.length && filteredCorretores.length > 0}
                   onChange={toggleSelectAll}
-                  className="w-5 h-5 text-[#00C48C] bg-white border-gray-300 rounded focus:ring-[#00C48C] cursor-pointer"
+                  className="w-5 h-5 text-brand bg-surface border-edge rounded focus:ring-brand/30 cursor-pointer"
                 />
               </th>
-              <th className="px-6 py-4 text-left text-xs font-bold text-white uppercase tracking-wider">Nome</th>
-              <th className="px-6 py-4 text-left text-xs font-bold text-white uppercase tracking-wider">Categoria</th>
-              <th className="px-6 py-4 text-left text-xs font-bold text-white uppercase tracking-wider">Email</th>
-              <th className="px-6 py-4 text-left text-xs font-bold text-white uppercase tracking-wider">CRECI</th>
-              <th className="px-6 py-4 text-left text-xs font-bold text-white uppercase tracking-wider">Telefone</th>
-              <th className="px-6 py-4 text-left text-xs font-bold text-white uppercase tracking-wider">Comissão</th>
-              <th className="px-6 py-4 text-left text-xs font-bold text-white uppercase tracking-wider">Ações</th>
+              <th className="px-6 py-4 text-left text-xs font-bold text-content uppercase tracking-wider">Nome</th>
+              <th className="px-6 py-4 text-left text-xs font-bold text-content uppercase tracking-wider">Categoria</th>
+              <th className="px-6 py-4 text-left text-xs font-bold text-content uppercase tracking-wider">Email</th>
+              <th className="px-6 py-4 text-left text-xs font-bold text-content uppercase tracking-wider">CRECI</th>
+              <th className="px-6 py-4 text-left text-xs font-bold text-content uppercase tracking-wider">Telefone</th>
+              <th className="px-6 py-4 text-left text-xs font-bold text-content uppercase tracking-wider">Comissão</th>
+              <th className="px-6 py-4 text-left text-xs font-bold text-content uppercase tracking-wider">Ações</th>
             </tr>
           </thead>
-          <tbody className="bg-white divide-y divide-[rgba(169,126,111,0.1)]">
+          <tbody className="bg-surface divide-y divide-edge-light">
             {filteredCorretores.length === 0 ? (
               <tr>
                 <td colSpan={8} className="px-6 py-4">
@@ -614,16 +586,16 @@ export default function CorretoresPage() {
               </tr>
             ) : (
               filteredCorretores.map((corretor, index) => (
-                <tr key={corretor.id} className={`hover:bg-[#F9FAFB] transition-colors ${index % 2 === 0 ? 'bg-white' : 'bg-white/70'}`}>
+                <tr key={corretor.id} className={`hover:bg-surface-secondary transition-colors ${index % 2 === 0 ? 'bg-surface' : 'bg-surface/70'}`}>
                   <td className="px-4 py-4 text-center">
                     <input
                       type="checkbox"
                       checked={selectedCorretores.includes(corretor.id)}
                       onChange={() => toggleCorretorSelection(corretor.id)}
-                      className="w-5 h-5 text-[#00C48C] bg-gray-100 border-gray-300 rounded focus:ring-[#00C48C] cursor-pointer"
+                      className="w-5 h-5 text-brand bg-surface-secondary border-edge rounded focus:ring-brand/30 cursor-pointer"
                     />
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-bold text-[#064E3B]">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm font-bold text-content">
                     <div className="flex items-center gap-3">
                       <CorretorStatusLed
                         ativo={corretor.ativo ?? true}
@@ -639,29 +611,29 @@ export default function CorretoresPage() {
                         ? 'bg-purple-100 text-purple-700 border border-purple-300'
                         : corretor.tipo === 'GESTOR'
                         ? 'bg-blue-100 text-blue-700 border border-blue-300'
-                        : 'bg-gray-100 text-gray-700 border border-gray-300'
+                        : 'bg-surface-tertiary text-content-secondary border border-edge'
                     }`}>
                       {corretor.tipo === 'ADMIN' ? 'Admin' : corretor.tipo === 'GESTOR' ? 'Gestor' : 'Corretor'}
                     </span>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-[#374151] font-medium">{corretor.email}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-[#374151]">
-                    <span className="px-2 py-1 bg-[#059669]/20 text-[#059669] rounded-md font-mono text-xs font-bold border border-[#059669]/50">{corretor.creci}</span>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-content-secondary font-medium">{corretor.email}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-content-secondary">
+                    <span className="px-2 py-1 bg-brand-light text-brand rounded-md font-mono text-xs font-bold border border-brand/30">{corretor.creci}</span>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-[#374151] font-semibold">{formatPhone(corretor.telefone)}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-[#374151]">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-content-secondary font-semibold">{formatPhone(corretor.telefone)}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-content-secondary">
                     {corretor.comissao ? (
-                      <span className="px-3 py-1 bg-[#00C48C]/20 text-[#00C48C] rounded-full font-bold text-xs border-2 border-[#00C48C]/50">
+                      <span className="px-3 py-1 bg-brand-light text-brand rounded-full font-bold text-xs border border-brand/30">
                         {corretor.comissao}%
                       </span>
                     ) : (
-                      <span className="text-[#6B7280] font-medium">-</span>
+                      <span className="text-content-tertiary font-medium">-</span>
                     )}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm">
                     <button
                       onClick={() => openEditModal(corretor)}
-                      className="text-[#00C48C] hover:text-[#059669] mr-4 font-bold hover:underline transition-all"
+                      className="text-brand hover:text-brand/80 mr-4 font-bold hover:underline transition-all"
                     >
                       <Eye className="w-3.5 h-3.5 inline mr-0.5" /> Consultar
                     </button>
@@ -670,7 +642,7 @@ export default function CorretoresPage() {
                         setDeletingCorretor(corretor);
                         setDeleteModalOpen(true);
                       }}
-                      className="text-[#FF6B6B] hover:text-[#FF006E] font-bold hover:underline transition-all"
+                      className="text-red-500 hover:text-red-700 font-bold hover:underline transition-all"
                     >
                       <Trash2 className="w-3.5 h-3.5 inline mr-0.5" /> Excluir
                     </button>
@@ -691,16 +663,16 @@ export default function CorretoresPage() {
       >
         {/* Resumo de Vinculações - apenas quando editando */}
         {editingCorretor && (
-          <div className="bg-gradient-to-r from-[#F0FDF4] to-[#EFF6FF] p-4 rounded-lg border-2 border-[#00C48C]/30 mb-6">
+          <div className="bg-surface-secondary p-4 rounded-lg border border-edge-light mb-6">
             <div className="flex items-center gap-4 justify-center">
               <div className="text-center">
-                <div className="text-2xl font-bold text-[#00C48C]">{corretorLeads.length}</div>
-                <div className="text-xs text-[#4B5563] font-medium">Clientes</div>
+                <div className="text-2xl font-bold text-brand">{corretorLeads.length}</div>
+                <div className="text-xs text-content-secondary font-medium">Clientes</div>
               </div>
-              <div className="h-10 w-px bg-[#00C48C]/30"></div>
+              <div className="h-10 w-px bg-edge"></div>
               <div className="text-center">
-                <div className="text-2xl font-bold text-[#059669]">{corretorImoveis.length}</div>
-                <div className="text-xs text-[#4B5563] font-medium">Imóveis</div>
+                <div className="text-2xl font-bold text-brand">{corretorImoveis.length}</div>
+                <div className="text-xs text-content-secondary font-medium">Imóveis</div>
               </div>
             </div>
           </div>
@@ -708,14 +680,14 @@ export default function CorretoresPage() {
 
         {/* Abas - apenas quando editando */}
         {editingCorretor && (
-          <div className="flex border-b border-gray-300 mb-6">
+          <div className="flex border-b border-edge mb-6">
             <button
               type="button"
               onClick={() => setActiveTab('dados')}
               className={`px-6 py-3 font-bold transition-all ${
                 activeTab === 'dados'
-                  ? 'border-b-4 border-[#00C48C] text-[#00C48C]'
-                  : 'text-[#4B5563] hover:text-[#00C48C]'
+                  ? 'border-b-4 border-brand text-brand'
+                  : 'text-content-tertiary hover:text-brand'
               }`}
             >
               <ClipboardList className="w-4 h-4 inline mr-1" /> Dados
@@ -725,8 +697,8 @@ export default function CorretoresPage() {
               onClick={() => setActiveTab('imoveis')}
               className={`px-6 py-3 font-bold transition-all ${
                 activeTab === 'imoveis'
-                  ? 'border-b-4 border-[#00C48C] text-[#00C48C]'
-                  : 'text-[#4B5563] hover:text-[#00C48C]'
+                  ? 'border-b-4 border-brand text-brand'
+                  : 'text-content-tertiary hover:text-brand'
               }`}
             >
               <Building2 className="w-4 h-4 inline mr-1" /> Imóveis ({corretorImoveis.length})
@@ -736,8 +708,8 @@ export default function CorretoresPage() {
               onClick={() => setActiveTab('clientes')}
               className={`px-6 py-3 font-bold transition-all ${
                 activeTab === 'clientes'
-                  ? 'border-b-4 border-[#00C48C] text-[#00C48C]'
-                  : 'text-[#4B5563] hover:text-[#00C48C]'
+                  ? 'border-b-4 border-brand text-brand'
+                  : 'text-content-tertiary hover:text-brand'
               }`}
             >
               <Users className="w-4 h-4 inline mr-1" /> Clientes ({corretorLeads.length})
@@ -750,20 +722,20 @@ export default function CorretoresPage() {
           <form onSubmit={handleSubmit} className="space-y-4">
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-bold text-[#064E3B] mb-2">
+              <label className="block text-sm font-bold text-content mb-2">
                 Categoria *
               </label>
               <select
                 required
                 value={formData.tipo}
                 onChange={(e) => handleFormChange('tipo', e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-600 focus:border-transparent bg-white"
+                className="w-full px-3 py-2 border border-edge rounded-lg text-content bg-surface focus:ring-2 focus:ring-brand/30 focus:border-transparent"
               >
                 <option value="CORRETOR">Corretor</option>
                 <option value="GESTOR">Gestor</option>
                 <option value="ADMIN">Administrador</option>
               </select>
-              <p className="text-xs text-gray-500 mt-1">
+              <p className="text-xs text-content-tertiary mt-1">
                 {formData.tipo === 'CORRETOR' && 'Acesso apenas aos próprios leads e imóveis'}
                 {formData.tipo === 'GESTOR' && 'Pode gerenciar corretores e ver todos os dados'}
                 {formData.tipo === 'ADMIN' && 'Acesso total ao sistema, incluindo configurações'}
@@ -771,7 +743,7 @@ export default function CorretoresPage() {
             </div>
 
             <div>
-              <label className="block text-sm font-bold text-[#064E3B] mb-2">
+              <label className="block text-sm font-bold text-content mb-2">
                 Nome *
               </label>
               <input
@@ -779,12 +751,12 @@ export default function CorretoresPage() {
                 required
                 value={formData.nome}
                 onChange={(e) => handleFormChange('nome', e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-600 focus:border-transparent"
+                className="w-full px-3 py-2 border border-edge rounded-lg text-content bg-surface focus:ring-2 focus:ring-brand/30 focus:border-transparent"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-bold text-[#064E3B] mb-2">
+              <label className="block text-sm font-bold text-content mb-2">
                 Email *
               </label>
               <input
@@ -792,12 +764,12 @@ export default function CorretoresPage() {
                 required
                 value={formData.email}
                 onChange={(e) => handleFormChange('email', e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-600 focus:border-transparent"
+                className="w-full px-3 py-2 border border-edge rounded-lg text-content bg-surface focus:ring-2 focus:ring-brand/30 focus:border-transparent"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-bold text-[#064E3B] mb-2">
+              <label className="block text-sm font-bold text-content mb-2">
                 Telefone *
               </label>
               <input
@@ -806,12 +778,12 @@ export default function CorretoresPage() {
                 placeholder="(00) 00000-0000"
                 value={formData.telefone}
                 onChange={(e) => handleFormChange('telefone', e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-600 focus:border-transparent"
+                className="w-full px-3 py-2 border border-edge rounded-lg text-content bg-surface focus:ring-2 focus:ring-brand/30 focus:border-transparent"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-bold text-[#064E3B] mb-2">
+              <label className="block text-sm font-bold text-content mb-2">
                 CRECI *
               </label>
               <input
@@ -819,12 +791,12 @@ export default function CorretoresPage() {
                 required
                 value={formData.creci}
                 onChange={(e) => handleFormChange('creci', e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-600 focus:border-transparent"
+                className="w-full px-3 py-2 border border-edge rounded-lg text-content bg-surface focus:ring-2 focus:ring-brand/30 focus:border-transparent"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-bold text-[#064E3B] mb-2">
+              <label className="block text-sm font-bold text-content mb-2">
                 Comissão (%)
               </label>
               <input
@@ -834,36 +806,36 @@ export default function CorretoresPage() {
                 max="100"
                 value={formData.comissao}
                 onChange={(e) => handleFormChange('comissao', e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-600 focus:border-transparent"
+                className="w-full px-3 py-2 border border-edge rounded-lg text-content bg-surface focus:ring-2 focus:ring-brand/30 focus:border-transparent"
               />
             </div>
 
             <div className="col-span-2">
-              <label className="block text-sm font-bold text-[#064E3B] mb-2">
+              <label className="block text-sm font-bold text-content mb-2">
                 Especialidade
               </label>
               <input
                 type="text"
                 value={formData.especialidade}
                 onChange={(e) => handleFormChange('especialidade', e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-600 focus:border-transparent"
+                className="w-full px-3 py-2 border border-edge rounded-lg text-content bg-surface focus:ring-2 focus:ring-brand/30 focus:border-transparent"
                 placeholder="Ex: Imóveis comerciais, Apartamentos de luxo..."
               />
             </div>
           </div>
 
-          <div className="flex justify-end gap-3 pt-6 border-t border-gray-200 mt-6">
+          <div className="flex justify-end gap-3 pt-6 border-t border-edge mt-6">
             <button
               type="button"
               onClick={handleCloseModal}
-              className="px-6 py-2.5 text-[#059669] border-2 border-[#059669] rounded-lg hover:bg-[#059669] hover:text-white font-bold transition-all"
+              className="px-6 py-2.5 text-content-secondary border border-edge rounded-lg hover:bg-surface-secondary font-bold transition-all"
             >
               Cancelar
             </button>
             <button
               type="submit"
               disabled={submitting}
-              className="px-6 py-2.5 bg-gradient-to-r from-[#00C48C] to-[#059669] text-white rounded-lg hover:shadow-lg font-bold transition-all disabled:opacity-50"
+              className="px-6 py-2.5 bg-brand hover:bg-brand/90 text-white rounded-lg font-bold transition-all disabled:opacity-50"
             >
               {submitting ? 'Salvando...' : 'Salvar'}
             </button>
@@ -876,18 +848,18 @@ export default function CorretoresPage() {
           <div className="space-y-4">
             {loadingImoveis ? (
               <div className="flex justify-center items-center py-12">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#00C48C]"></div>
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-brand"></div>
               </div>
             ) : corretorImoveis.length === 0 ? (
               <div className="text-center py-12">
-                <p className="text-[#4B5563] text-lg">Nenhum imóvel sob responsabilidade deste corretor</p>
+                <p className="text-content-secondary text-lg">Nenhum imóvel sob responsabilidade deste corretor</p>
               </div>
             ) : (
               <div className="max-h-[500px] overflow-y-auto space-y-3">
                 {corretorImoveis.map((imovel) => (
                   <div
                     key={imovel.id}
-                    className="flex gap-4 p-4 border-2 border-gray-200 rounded-lg hover:border-[#00C48C] hover:shadow-lg transition-all bg-white"
+                    className="flex gap-4 p-4 border border-edge-light rounded-lg hover:border-brand/30 hover:bg-surface-secondary transition-all bg-surface"
                   >
                     {/* Foto */}
                     {imovel.fotoPrincipal ? (
@@ -897,33 +869,33 @@ export default function CorretoresPage() {
                         className="w-24 h-24 object-cover rounded-lg"
                       />
                     ) : (
-                      <div className="w-24 h-24 bg-[#F9FAFB] rounded-lg flex items-center justify-center border-2 border-[#059669]/20">
-                        <Building2 className="w-10 h-10 text-gray-300" />
+                      <div className="w-24 h-24 bg-surface-tertiary rounded-lg flex items-center justify-center border border-edge-light">
+                        <Building2 className="w-10 h-10 text-content-tertiary" />
                       </div>
                     )}
 
                     {/* Informações */}
                     <div className="flex-1">
-                      <h4 className="font-bold text-[#064E3B] text-lg">{imovel.titulo}</h4>
+                      <h4 className="font-bold text-content text-lg">{imovel.titulo}</h4>
                       <div className="flex gap-4 mt-2 text-sm">
-                        <span className="px-2 py-1 bg-[#059669]/20 text-[#059669] rounded-md font-bold">
+                        <span className="px-2 py-1 bg-brand-light text-brand rounded-md font-bold">
                           {imovel.tipo}
                         </span>
                         <span className={`px-2 py-1 rounded-md font-bold ${
                           imovel.status === 'DISPONIVEL'
-                            ? 'bg-[#00C48C]/20 text-[#4A6B29]'
+                            ? 'bg-emerald-100 text-emerald-700'
                             : imovel.status === 'RESERVADO'
-                            ? 'bg-[#FFB627]/20 text-[#FFB627]'
-                            : 'bg-[#FF6B6B]/20 text-[#FF006E]'
+                            ? 'bg-amber-100 text-amber-700'
+                            : 'bg-red-100 text-red-700'
                         }`}>
                           {imovel.status}
                         </span>
                       </div>
-                      <p className="text-[#00C48C] font-bold text-xl mt-2">
+                      <p className="text-brand font-bold text-xl mt-2">
                         R$ {imovel.preco.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
                       </p>
                       {imovel.endereco && (
-                        <p className="text-[#4B5563] text-sm mt-1">
+                        <p className="text-content-secondary text-sm mt-1">
                           <MapPin className="w-3.5 h-3.5 inline mr-0.5" /> {imovel.endereco.cidade}, {imovel.endereco.estado}
                         </p>
                       )}
@@ -940,22 +912,22 @@ export default function CorretoresPage() {
           <div className="space-y-4">
             {loadingLeads ? (
               <div className="flex justify-center items-center py-12">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#00C48C]"></div>
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-brand"></div>
               </div>
             ) : corretorLeads.length === 0 ? (
               <div className="text-center py-12">
-                <p className="text-[#4B5563] text-lg">Nenhum cliente vinculado a este corretor</p>
+                <p className="text-content-secondary text-lg">Nenhum cliente vinculado a este corretor</p>
               </div>
             ) : (
               <div className="max-h-[500px] overflow-y-auto space-y-3">
                 {corretorLeads.map((lead) => (
                   <div
                     key={lead.id}
-                    className="flex gap-4 p-4 border-2 border-gray-200 rounded-lg hover:border-[#00C48C] hover:shadow-lg transition-all bg-white"
+                    className="flex gap-4 p-4 border border-edge-light rounded-lg hover:border-brand/30 hover:bg-surface-secondary transition-all bg-surface"
                   >
                     {/* Avatar */}
                     <div className="flex-shrink-0">
-                      <div className="w-16 h-16 bg-gradient-to-br from-[#00C48C] to-[#4A6B29] rounded-full flex items-center justify-center">
+                      <div className="w-16 h-16 bg-brand rounded-full flex items-center justify-center">
                         <span className="text-white text-2xl font-bold">
                           {lead.nome.charAt(0).toUpperCase()}
                         </span>
@@ -965,37 +937,37 @@ export default function CorretoresPage() {
                     {/* Informações */}
                     <div className="flex-1">
                       <div className="flex items-center gap-3">
-                        <h4 className="font-bold text-[#064E3B] text-lg">{lead.nome}</h4>
+                        <h4 className="font-bold text-content text-lg">{lead.nome}</h4>
                         <span className={`px-2 py-1 rounded-md text-xs font-bold ${
                           lead.temperatura === 'QUENTE'
-                            ? 'bg-[#FF6B6B]/20 text-[#FF006E]'
+                            ? 'bg-red-100 text-red-700'
                             : lead.temperatura === 'MORNO'
-                            ? 'bg-[#FFB627]/20 text-[#FFB627]'
-                            : 'bg-[#059669]/20 text-[#059669]'
+                            ? 'bg-amber-100 text-amber-700'
+                            : 'bg-blue-100 text-blue-700'
                         }`}>
-                          {lead.temperatura === 'QUENTE' ? 'QUENTE' : lead.temperatura === 'MORNO' ? 'MORNO' : 'FRIO'}
+                          {lead.temperatura}
                         </span>
                       </div>
 
                       <div className="flex gap-4 mt-2">
                         <div className="flex items-center gap-2">
-                          <Mail className="w-3.5 h-3.5 text-[#4B5563]" />
-                          <span className="text-[#4B5563] text-sm">{lead.email}</span>
+                          <Mail className="w-3.5 h-3.5 text-content-tertiary" />
+                          <span className="text-content-secondary text-sm">{lead.email}</span>
                         </div>
                         <div className="flex items-center gap-2">
-                          <Smartphone className="w-3.5 h-3.5 text-[#4B5563]" />
-                          <span className="text-[#4B5563] text-sm">{lead.telefone}</span>
+                          <Smartphone className="w-3.5 h-3.5 text-content-tertiary" />
+                          <span className="text-content-secondary text-sm">{lead.telefone}</span>
                         </div>
                       </div>
 
                       {lead.origem && (
-                        <p className="text-[#4B5563] text-xs mt-2">
+                        <p className="text-content-secondary text-xs mt-2">
                           <MapPin className="w-3.5 h-3.5 inline mr-0.5" /> Origem: {lead.origem}
                         </p>
                       )}
 
-                      <p className="text-[#9CA3AF] text-xs mt-1">
-                        ⏰ Cadastrado em: {new Date(lead.created_at).toLocaleDateString('pt-BR')}
+                      <p className="text-content-tertiary text-xs mt-1">
+                        Cadastrado em: {new Date(lead.created_at).toLocaleDateString('pt-BR')}
                       </p>
                     </div>
                   </div>
@@ -1014,22 +986,22 @@ export default function CorretoresPage() {
         size="sm"
       >
         <div className="space-y-4">
-          <p className="text-[#064E3B] text-base">
-            Tem certeza que deseja excluir o corretor <strong className="text-[#059669]">{deletingCorretor?.nome}</strong>?
+          <p className="text-content text-base">
+            Tem certeza que deseja excluir o corretor <strong className="text-brand">{deletingCorretor?.nome}</strong>?
           </p>
-          <p className="text-sm text-[#4B5563]">Esta ação não pode ser desfeita.</p>
+          <p className="text-sm text-content-secondary">Esta ação não pode ser desfeita.</p>
 
-          <div className="flex justify-end gap-3 pt-6 border-t border-gray-200 mt-6">
+          <div className="flex justify-end gap-3 pt-6 border-t border-edge mt-6">
             <button
               onClick={() => setDeleteModalOpen(false)}
-              className="px-6 py-2.5 text-[#059669] border-2 border-[#059669] rounded-lg hover:bg-[#059669] hover:text-white font-bold transition-all"
+              className="px-6 py-2.5 text-content-secondary border border-edge rounded-lg hover:bg-surface-secondary font-bold transition-all"
             >
               Cancelar
             </button>
             <button
               onClick={handleDelete}
               disabled={submitting}
-              className="px-6 py-2.5 bg-[#FF6B6B] text-white rounded-lg hover:bg-[#FF006E] font-bold transition-all disabled:opacity-50"
+              className="px-6 py-2.5 bg-red-500 text-white rounded-lg hover:bg-red-600 font-bold transition-all disabled:opacity-50"
             >
               {submitting ? 'Excluindo...' : 'Excluir'}
             </button>
@@ -1050,17 +1022,17 @@ export default function CorretoresPage() {
           <div className="space-y-6">
             {/* Resumo Geral */}
             <div className="grid grid-cols-3 gap-4">
-              <div className="bg-gradient-to-br from-[#00C48C]/10 to-[#00C48C]/5 border-2 border-[#00C48C]/30 rounded-lg p-4 text-center">
-                <p className="text-xs text-gray-700 font-bold mb-1">Corretores</p>
-                <p className="text-3xl font-bold text-[#00C48C]">{comissoesData.total_corretores}</p>
+              <div className="bg-surface-secondary border border-edge-light rounded-lg p-4 text-center">
+                <p className="text-xs text-content-secondary font-bold mb-1">Corretores</p>
+                <p className="text-3xl font-bold text-brand">{comissoesData.total_corretores}</p>
               </div>
-              <div className="bg-gradient-to-br from-[#059669]/10 to-[#059669]/5 border-2 border-[#059669]/30 rounded-lg p-4 text-center">
-                <p className="text-xs text-gray-700 font-bold mb-1">Negociações</p>
-                <p className="text-3xl font-bold text-[#059669]">{comissoesData.total_negociacoes}</p>
+              <div className="bg-surface-secondary border border-edge-light rounded-lg p-4 text-center">
+                <p className="text-xs text-content-secondary font-bold mb-1">Negociações</p>
+                <p className="text-3xl font-bold text-brand">{comissoesData.total_negociacoes}</p>
               </div>
-              <div className="bg-gradient-to-br from-[#FFB627]/10 to-[#FFB627]/5 border-2 border-[#FFB627]/30 rounded-lg p-4 text-center">
-                <p className="text-xs text-gray-700 font-bold mb-1">Total Comissões</p>
-                <p className="text-3xl font-bold text-[#FFB627]">
+              <div className="bg-surface-secondary border border-edge-light rounded-lg p-4 text-center">
+                <p className="text-xs text-content-secondary font-bold mb-1">Total Comissões</p>
+                <p className="text-3xl font-bold text-amber-500">
                   R$ {comissoesData.comissoes.reduce((sum: number, c: any) => sum + c.total_comissao, 0).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                 </p>
               </div>
@@ -1069,16 +1041,16 @@ export default function CorretoresPage() {
             {/* Lista de Comissões por Corretor */}
             <div className="space-y-4 max-h-[500px] overflow-y-auto pr-2">
               {comissoesData.comissoes.map((corretor: any) => (
-                <div key={corretor.corretor_id} className="border-2 border-gray-200 rounded-lg p-4 hover:border-[#00C48C]/50 transition-colors">
+                <div key={corretor.corretor_id} className="border border-edge-light rounded-lg p-4 hover:border-brand/30 transition-colors">
                   {/* Header do Corretor */}
                   <div className="flex items-center justify-between mb-3">
                     <div>
-                      <h3 className="text-lg font-bold text-gray-900">{corretor.corretor_nome}</h3>
-                      <p className="text-xs text-gray-500">{corretor.corretor_email}</p>
+                      <h3 className="text-lg font-bold text-content">{corretor.corretor_nome}</h3>
+                      <p className="text-xs text-content-tertiary">{corretor.corretor_email}</p>
                     </div>
                     <div className="text-right">
-                      <p className="text-xs text-gray-600 font-semibold">Total Comissão</p>
-                      <p className="text-xl font-bold text-[#FFB627]">
+                      <p className="text-xs text-content-secondary font-semibold">Total Comissão</p>
+                      <p className="text-xl font-bold text-amber-500">
                         R$ {corretor.total_comissao.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                       </p>
                     </div>
@@ -1086,37 +1058,37 @@ export default function CorretoresPage() {
 
                   {/* Stats do Corretor */}
                   <div className="grid grid-cols-2 gap-3 mb-3">
-                    <div className="bg-gray-50 rounded p-2 text-center">
-                      <p className="text-xs text-gray-700 font-semibold">Total em Vendas</p>
-                      <p className="text-sm font-bold text-gray-900">
+                    <div className="bg-surface-secondary rounded p-2 text-center">
+                      <p className="text-xs text-content-secondary font-semibold">Total em Vendas</p>
+                      <p className="text-sm font-bold text-content">
                         R$ {corretor.total_vendas.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                       </p>
                     </div>
-                    <div className="bg-gray-50 rounded p-2 text-center">
-                      <p className="text-xs text-gray-700 font-semibold">Negociações Fechadas</p>
-                      <p className="text-sm font-bold text-gray-900">{corretor.negociacoes.length}</p>
+                    <div className="bg-surface-secondary rounded p-2 text-center">
+                      <p className="text-xs text-content-secondary font-semibold">Negociações Fechadas</p>
+                      <p className="text-sm font-bold text-content">{corretor.negociacoes.length}</p>
                     </div>
                   </div>
 
                   {/* Lista de Negociações */}
                   <details className="mt-3">
-                    <summary className="cursor-pointer text-sm font-semibold text-[#00C48C] hover:text-[#059669]">
+                    <summary className="cursor-pointer text-sm font-semibold text-brand hover:text-brand/80">
                       Ver {corretor.negociacoes.length} negociação(ões) →
                     </summary>
-                    <div className="mt-3 space-y-2 pl-4 border-l-2 border-gray-200">
+                    <div className="mt-3 space-y-2 pl-4 border-l-2 border-edge-light">
                       {corretor.negociacoes.map((neg: any) => (
-                        <div key={neg.id} className="text-xs bg-gray-50 rounded p-2">
+                        <div key={neg.id} className="text-xs bg-surface-secondary rounded p-2">
                           <div className="flex items-center justify-between mb-1">
-                            <span className="font-mono text-[#059669] font-bold">{neg.codigo}</span>
-                            <span className="text-gray-500">
+                            <span className="font-mono text-brand font-bold">{neg.codigo}</span>
+                            <span className="text-content-tertiary">
                               {new Date(neg.data_fechamento).toLocaleDateString('pt-BR')}
                             </span>
                           </div>
-                          <p className="font-semibold text-gray-900">{neg.imovel_titulo}</p>
-                          <p className="text-gray-600">Cliente: {neg.lead_nome}</p>
+                          <p className="font-semibold text-content">{neg.imovel_titulo}</p>
+                          <p className="text-content-secondary">Cliente: {neg.lead_nome}</p>
                           <div className="flex items-center justify-between mt-2">
-                            <span className="text-gray-700">Valor: <strong>R$ {neg.valor_final.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</strong></span>
-                            <span className="text-[#FFB627] font-bold">Comissão: R$ {neg.valor_comissao.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</span>
+                            <span className="text-content-secondary">Valor: <strong>R$ {neg.valor_final.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</strong></span>
+                            <span className="text-amber-500 font-bold">Comissão: R$ {neg.valor_comissao.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</span>
                           </div>
                         </div>
                       ))}
@@ -1127,13 +1099,13 @@ export default function CorretoresPage() {
             </div>
 
             {/* Botão Fechar */}
-            <div className="flex justify-end pt-4 border-t">
+            <div className="flex justify-end pt-4 border-t border-edge">
               <button
                 onClick={() => {
                   setComissoesModalOpen(false);
                   setComissoesData(null);
                 }}
-                className="px-6 py-2.5 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 font-bold transition-all"
+                className="px-6 py-2.5 text-content-secondary border border-edge rounded-lg hover:bg-surface-secondary font-bold transition-all"
               >
                 Fechar
               </button>
