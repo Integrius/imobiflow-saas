@@ -271,7 +271,7 @@ export default function LeadsPage() {
     <div className="space-y-6">
       {/* Header */}
       <div className="flex justify-between items-center">
-        <h1 className="text-2xl font-bold text-gray-900">Leads</h1>
+        <h1 className="text-2xl font-bold text-content">Leads</h1>
         <button
           onClick={openCreateModal}
           className="bg-green-600 text-white px-4 py-2 rounded-lg text-sm font-semibold flex gap-2 hover:bg-green-700 transition-colors"
@@ -340,33 +340,33 @@ export default function LeadsPage() {
 
           {/* Tabela */}
           <div className="bg-surface rounded-xl shadow-sm border border-edge-light overflow-hidden">
-            <table className="min-w-full divide-y divide-gray-100">
-              <thead className="bg-gray-50">
+            <table className="min-w-full divide-y divide-edge">
+              <thead className="bg-surface-tertiary">
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">Nome</th>
-                  <th className="px-6 py-3 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">Contato</th>
-                  <th className="px-6 py-3 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">Status</th>
-                  <th className="px-6 py-3 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">Ações</th>
+                  <th className="px-6 py-3 text-left text-xs font-bold text-content uppercase tracking-wider">Nome</th>
+                  <th className="px-6 py-3 text-left text-xs font-bold text-content uppercase tracking-wider">Contato</th>
+                  <th className="px-6 py-3 text-left text-xs font-bold text-content uppercase tracking-wider">Status</th>
+                  <th className="px-6 py-3 text-left text-xs font-bold text-content uppercase tracking-wider">Ações</th>
                 </tr>
               </thead>
               <tbody className="bg-surface divide-y divide-edge-light">
                 {filteredLeads.length === 0 ? (
                   <tr>
-                    <td colSpan={4} className="px-6 py-12 text-center text-gray-600">
+                    <td colSpan={4} className="px-6 py-12 text-center text-content-secondary">
                       <div className="text-lg font-semibold">{searchTerm ? 'Nenhum lead encontrado' : 'Nenhum lead cadastrado'}</div>
                       <p className="text-sm mt-1 font-medium">Clique em &quot;Novo Lead&quot; para adicionar</p>
                     </td>
                   </tr>
                 ) : (
                   filteredLeads.map((lead) => (
-                    <tr key={lead.id} className="hover:bg-gray-50 transition-colors">
+                    <tr key={lead.id} className="hover:bg-surface-secondary transition-colors">
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm font-semibold text-gray-900">{lead.nome}</div>
-                        <div className="text-xs font-medium text-gray-500">{lead.origem || 'Site'}</div>
+                        <div className="text-sm font-semibold text-content">{lead.nome}</div>
+                        <div className="text-xs font-medium text-content-secondary">{lead.origem || 'Site'}</div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm font-medium text-gray-900">{lead.email}</div>
-                        <div className="text-xs font-medium text-gray-500">{formatPhone(lead.telefone)}</div>
+                        <div className="text-sm font-medium text-content">{lead.email}</div>
+                        <div className="text-xs font-medium text-content-secondary">{formatPhone(lead.telefone)}</div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <span
