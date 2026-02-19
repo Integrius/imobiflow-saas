@@ -4926,7 +4926,7 @@ Conforme Art. 39 da LGPD: *"O operador deverá realizar o tratamento segundo as 
   - `tailwind.config.ts`: `darkMode: 'class'` + tokens semânticos via CSS variables
   - `globals.css`: variáveis CSS `:root` (light) e `.dark` para todos os tokens semânticos
 - **Padronização visual completa** de todas as páginas do dashboard com tokens semânticos
-  - Páginas padronizadas: `leads`, `negociacoes`, `agendamentos`, `imoveis`, `proprietarios`, `corretores`, `gerencial`
+  - Páginas padronizadas: `leads`, `negociacoes`, `agendamentos`, `imoveis`, `proprietarios`, `corretores`, `gerencial`, `meu-desempenho`
   - Substituição de todos os hardcoded hex colors (`#064E3B`, `#374151`, etc.) por tokens
   - Utilitários legados removidos: `card-clean`, `input-modern` → classes inline semânticas
   - Cabeçalhos de tabela: gradiente verde + `text-white` → `bg-surface-tertiary text-content`
