@@ -323,7 +323,7 @@ export default function DashboardLayout({
           {!sidebarCollapsed ? (
             <Link href="/dashboard" className="flex items-center">
               <Image
-                src="/logoIntegrius.png"
+                src="/logo.png"
                 alt="Integrius"
                 width={182}
                 height={52}
@@ -334,7 +334,7 @@ export default function DashboardLayout({
           ) : (
             <Link href="/dashboard" className="flex items-center justify-center">
               <Image
-                src="/logoIntegrius.png"
+                src="/logo.png"
                 alt="Integrius"
                 width={42}
                 height={42}
@@ -394,7 +394,7 @@ export default function DashboardLayout({
             <div className="h-14 flex items-center px-4 border-b border-edge-light">
               <Link href="/dashboard" className="flex items-center">
                 <Image
-                  src="/logoIntegrius.png"
+                  src="/logo.png"
                   alt="Integrius"
                   width={182}
                   height={52}
