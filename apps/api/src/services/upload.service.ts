@@ -2,6 +2,58 @@ import cloudinary from '../config/cloudinary';
 import { Readable } from 'stream';
 
 export class UploadService {
+  async uploadLogo(file: Buffer, tenantId: string, fileName: string): Promise<string> {
+    return new Promise((resolve, reject) => {
+      const folder = `vivoly/${tenantId}/logo`;
+
+      const uploadStream = cloudinary.uploader.upload_stream(
+        {
+          folder,
+          public_id: `logo-${Date.now()}`,
+          resource_type: 'image',
+          transformation: [
+            { width: 600, height: 200, crop: 'limit' },
+            { quality: 'auto:good' },
+            { fetch_format: 'auto' },
+          ],
+        },
+        (error, result) => {
+          if (error) reject(error);
+          else resolve(result!.secure_url);
+        }
+      );
+
+      const readableStream = Readable.from(file);
+      readableStream.pipe(uploadStream);
+    });
+  }
+
+  async uploadLogoTemp(file: Buffer, fileName: string): Promise<string> {
+    return new Promise((resolve, reject) => {
+      const folder = `vivoly/logos/temp`;
+
+      const uploadStream = cloudinary.uploader.upload_stream(
+        {
+          folder,
+          public_id: `logo-temp-${Date.now()}`,
+          resource_type: 'image',
+          transformation: [
+            { width: 600, height: 200, crop: 'limit' },
+            { quality: 'auto:good' },
+            { fetch_format: 'auto' },
+          ],
+        },
+        (error, result) => {
+          if (error) reject(error);
+          else resolve(result!.secure_url);
+        }
+      );
+
+      const readableStream = Readable.from(file);
+      readableStream.pipe(uploadStream);
+    });
+  }
+
   async uploadImage(
     file: Buffer,
     tenantId: string,

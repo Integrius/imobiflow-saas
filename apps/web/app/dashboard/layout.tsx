@@ -6,7 +6,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { logout, getToken } from '@/lib/auth';
 import ToastContainer from '@/components/ToastContainer';
-import TrialWarning from '@/components/TrialWarning';
+import TenantSubheader from '@/components/TenantSubheader';
 import NotificationBell from '@/components/NotificationBell';
 import { ThemeToggle } from '@/components/ThemeToggle';
 import {
@@ -319,15 +319,15 @@ export default function DashboardLayout({
         `}
       >
         {/* Logo */}
-        <div className="h-14 flex items-center justify-center px-3 border-b border-edge-light">
+        <div className="h-[70px] flex items-center justify-center px-3 border-b border-edge-light">
           {!sidebarCollapsed ? (
             <Link href="/dashboard" className="flex items-center">
               <Image
                 src="/logo.png"
                 alt="Integrius"
-                width={182}
-                height={52}
-                className="h-12 w-auto"
+                width={240}
+                height={68}
+                className="h-[62px] w-auto"
                 priority
               />
             </Link>
@@ -336,9 +336,9 @@ export default function DashboardLayout({
               <Image
                 src="/logo.png"
                 alt="Integrius"
-                width={42}
-                height={42}
-                className="h-10 w-10 object-contain"
+                width={52}
+                height={52}
+                className="h-[52px] w-[52px] object-contain"
                 priority
               />
             </Link>
@@ -391,14 +391,14 @@ export default function DashboardLayout({
             </div>
 
             {/* Logo Mobile */}
-            <div className="h-14 flex items-center px-4 border-b border-edge-light">
+            <div className="h-[70px] flex items-center px-4 border-b border-edge-light">
               <Link href="/dashboard" className="flex items-center">
                 <Image
                   src="/logo.png"
                   alt="Integrius"
-                  width={182}
-                  height={52}
-                  className="h-12 w-auto"
+                  width={240}
+                  height={68}
+                  className="h-[62px] w-auto"
                   priority
                 />
               </Link>
@@ -424,11 +424,6 @@ export default function DashboardLayout({
             >
               <Menu className="h-5 w-5" />
             </button>
-          </div>
-
-          {/* Center — Trial Warning */}
-          <div className="absolute left-1/2 -translate-x-1/2">
-            <TrialWarning />
           </div>
 
           {/* Right */}
@@ -457,6 +452,9 @@ export default function DashboardLayout({
             </button>
           </div>
         </header>
+
+        {/* Sub-header: nome da imobiliária + aviso de trial */}
+        <TenantSubheader />
 
         {/* Content */}
         <div className="flex-1 overflow-y-auto p-4 md:p-6">

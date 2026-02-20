@@ -4932,10 +4932,23 @@ Conforme Art. 39 da LGPD: *"O operador deverá realizar o tratamento segundo as 
   - Cabeçalhos de tabela: gradiente verde + `text-white` → `bg-surface-tertiary text-content`
   - Hover de linhas: `hover:bg-[#F9FAFB]` → `hover:bg-surface-secondary`
 - **Melhorias no layout do dashboard** (`apps/web/app/dashboard/layout.tsx`):
-  - Logo aumentado em 30% (h-9 → h-12)
-  - Header reestruturado: 3 zonas (left/center/right) — TrialWarning centralizado via `absolute`
+  - Logo aumentado em 30% (h-9 → h-12 → agora h-[62px])
+  - Header reestruturado: 3 zonas (left/center/right) — TrialWarning movido para sub-header abaixo
+  - Sub-header (`TenantSubheader.tsx`): mostra nome da imobiliária (esquerda) + badge trial (direita)
   - Botão de logout: visível com estilo red (`bg-red-50 text-red-600 hover:bg-red-600`) + label "Sair"
   - Favicon alterado: `/logoIntegrius.png` → `/favicon.png`
+  - Logo do sistema: `/logoIntegrius.png` → `/logo.png` (nova versão da identidade visual)
+- **Logomarca da imobiliária** (`logo_url` já existia no schema Tenant):
+  - Campo `logo_url String?` no model Tenant do Prisma (já existente)
+  - API: `/tenants/trial-info` retorna `nome` e `logo_url`
+  - API: `PUT /tenants/minha-logo` — upload para Cloudinary (`vivoly/{tenantId}/logo/`), requer ADMIN
+  - API: `DELETE /tenants/minha-logo` — remove logo do tenant
+  - API: `POST /tenants/upload-logo-temp` — upload público para registro (`vivoly/logos/temp/`)
+  - Upload Service: métodos `uploadLogo()` e `uploadLogoTemp()` em `upload.service.ts`
+  - Dashboard admin: aba "Identidade Visual" em Administração/Minha Conta (ADMIN only)
+    - Preview 300×100px, upload/substituir/remover logo
+    - Especificações: PNG/JPG/WebP/SVG, máx 2MB, 600×200px recomendado, fundo transparente
+  - Formulário de registro: campo opcional de logomarca com preview em tempo real
 - **Fix gráfico dashboard**: hover do Recharts corrigido com `cursor={{ fill: 'rgba(0,0,0,0.04)' }}` e `activeBar` props
 
 **Versão 1.6.1** (fevereiro de 2026):

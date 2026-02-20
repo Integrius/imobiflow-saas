@@ -1,8 +1,9 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import Image from 'next/image';
 import { api } from '@/lib/api';
-import { User, Lock, ClipboardList, Settings, RefreshCw, Lightbulb } from 'lucide-react';
+import { User, Lock, ClipboardList, Settings, Upload, Trash2, ImageIcon } from 'lucide-react';
 
 // Tipos
 interface User {
@@ -27,7 +28,7 @@ interface ActivityLog {
   };
 }
 
-type TabType = 'conta' | 'seguranca' | 'logs';
+type TabType = 'conta' | 'identidade' | 'seguranca' | 'logs';
 
 export default function AdministracaoPage() {
   const [user, setUser] = useState<User | null>(null);
@@ -42,17 +43,28 @@ export default function AdministracaoPage() {
   const [confirmarSenha, setConfirmarSenha] = useState('');
   const [alterandoSenha, setAlterandoSenha] = useState(false);
 
+  // Estado para identidade visual
+  const [logoUrl, setLogoUrl] = useState<string | null>(null);
+  const [uploadingLogo, setUploadingLogo] = useState(false);
+  const [removingLogo, setRemovingLogo] = useState(false);
+  const logoInputRef = useRef<HTMLInputElement>(null);
+
   // Estado para logs
   const [logs, setLogs] = useState<ActivityLog[]>([]);
   const [loadingLogs, setLoadingLogs] = useState(false);
 
-  // Carregar dados do usuário
+  // Carregar dados do usuário e logo do tenant
   useEffect(() => {
     const userData = localStorage.getItem('user');
     if (userData) {
       setUser(JSON.parse(userData));
     }
     setLoading(false);
+
+    // Carregar logo atual do tenant
+    api.get('/tenants/trial-info')
+      .then((res) => setLogoUrl(res.data.logo_url || null))
+      .catch(() => {});
   }, []);
 
   // Carregar logs quando a aba for selecionada
@@ -125,18 +137,82 @@ export default function AdministracaoPage() {
     }
   }, [error, success]);
 
+  const handleUploadLogo = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const allowed = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'image/svg+xml'];
+    if (!allowed.includes(file.type)) {
+      setError('Tipo inválido. Use PNG, JPG, WebP ou SVG');
+      return;
+    }
+    if (file.size > 2 * 1024 * 1024) {
+      setError('Arquivo muito grande. Máximo: 2MB');
+      return;
+    }
+
+    setUploadingLogo(true);
+    setError(null);
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+
+      const token = localStorage.getItem('token');
+      const tenantId = localStorage.getItem('tenant_id');
+      const headers: Record<string, string> = { Authorization: `Bearer ${token}` };
+      if (tenantId) headers['X-Tenant-ID'] = tenantId;
+
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/tenants/minha-logo`, {
+        method: 'PUT',
+        headers,
+        body: formData,
+      });
+
+      if (!res.ok) {
+        const err = await res.json();
+        throw new Error(err.error || 'Erro ao fazer upload');
+      }
+
+      const data = await res.json();
+      setLogoUrl(data.url);
+      setSuccess('Logo atualizada com sucesso!');
+    } catch (err: any) {
+      setError(err.message || 'Erro ao fazer upload da logo');
+    } finally {
+      setUploadingLogo(false);
+      if (logoInputRef.current) logoInputRef.current.value = '';
+    }
+  };
+
+  const handleRemoveLogo = async () => {
+    if (!confirm('Remover a logo da sua imobiliária?')) return;
+    setRemovingLogo(true);
+    setError(null);
+    try {
+      await api.delete('/tenants/minha-logo');
+      setLogoUrl(null);
+      setSuccess('Logo removida com sucesso!');
+    } catch (err: any) {
+      setError(err.response?.data?.error || 'Erro ao remover logo');
+    } finally {
+      setRemovingLogo(false);
+    }
+  };
+
   const canViewLogs = user?.tipo === 'ADMIN' || user?.tipo === 'GESTOR';
+  const isAdmin = user?.tipo === 'ADMIN';
 
   const tabs = [
-    { id: 'conta' as TabType, label: 'Minha Conta', icon: '' },
-    { id: 'seguranca' as TabType, label: 'Segurança', icon: '' },
-    ...(canViewLogs ? [{ id: 'logs' as TabType, label: 'Logs de Atividade', icon: '' }] : [])
+    { id: 'conta' as TabType, label: 'Minha Conta' },
+    ...(isAdmin ? [{ id: 'identidade' as TabType, label: 'Identidade Visual' }] : []),
+    { id: 'seguranca' as TabType, label: 'Segurança' },
+    ...(canViewLogs ? [{ id: 'logs' as TabType, label: 'Logs de Atividade' }] : [])
   ];
 
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#00C48C]"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-brand"></div>
       </div>
     );
   }
@@ -162,14 +238,13 @@ export default function AdministracaoPage() {
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
-                className={`flex items-center gap-2 px-6 py-4 text-sm font-semibold border-b-2 transition-colors ${
+                className={`px-6 py-4 text-sm font-semibold border-b-2 transition-colors ${
                   activeTab === tab.id
-                    ? 'border-[#00C48C] text-[#00C48C]'
+                    ? 'border-brand text-brand'
                     : 'border-transparent text-content-secondary hover:text-content hover:border-edge'
                 }`}
               >
-                <span>{tab.icon}</span>
-                <span>{tab.label}</span>
+                {tab.label}
               </button>
             ))}
           </nav>
@@ -244,6 +319,76 @@ export default function AdministracaoPage() {
                 <p className="text-sm text-content-secondary">
                   Para alterar seus dados de perfil, entre em contato com o administrador do sistema.
                 </p>
+              </div>
+            </div>
+          )}
+
+          {/* Aba: Identidade Visual (ADMIN only) */}
+          {activeTab === 'identidade' && isAdmin && (
+            <div className="space-y-6">
+              <div>
+                <h2 className="text-lg font-bold text-content">Logomarca da Imobiliária</h2>
+                <p className="text-sm text-content-secondary mt-1">
+                  Exibida no topo do sistema. Recomendado: PNG ou SVG transparente, proporção 3:1, mínimo 300×100px, máximo 600×200px, até 2MB.
+                </p>
+              </div>
+
+              {/* Preview da logo atual */}
+              <div className="flex flex-col items-start gap-4">
+                <div className="w-[300px] h-[100px] rounded-xl border-2 border-dashed border-edge flex items-center justify-center bg-surface-secondary overflow-hidden">
+                  {logoUrl ? (
+                    <img
+                      src={logoUrl}
+                      alt="Logo da imobiliária"
+                      className="max-h-full max-w-full object-contain p-2"
+                    />
+                  ) : (
+                    <div className="flex flex-col items-center gap-2 text-content-tertiary">
+                      <ImageIcon className="w-8 h-8" />
+                      <span className="text-xs">Sem logo cadastrada</span>
+                    </div>
+                  )}
+                </div>
+
+                <div className="flex gap-3">
+                  <input
+                    ref={logoInputRef}
+                    type="file"
+                    accept="image/png,image/jpeg,image/jpg,image/webp,image/svg+xml"
+                    onChange={handleUploadLogo}
+                    className="hidden"
+                  />
+                  <button
+                    onClick={() => logoInputRef.current?.click()}
+                    disabled={uploadingLogo}
+                    className="flex items-center gap-2 px-4 py-2 bg-brand text-white text-sm font-semibold rounded-lg hover:bg-brand/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                  >
+                    {uploadingLogo ? (
+                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white" />
+                    ) : (
+                      <Upload className="w-4 h-4" />
+                    )}
+                    {uploadingLogo ? 'Enviando...' : logoUrl ? 'Substituir logo' : 'Enviar logo'}
+                  </button>
+
+                  {logoUrl && (
+                    <button
+                      onClick={handleRemoveLogo}
+                      disabled={removingLogo}
+                      className="flex items-center gap-2 px-4 py-2 border border-red-300 text-red-600 text-sm font-semibold rounded-lg hover:bg-red-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                      {removingLogo ? 'Removendo...' : 'Remover'}
+                    </button>
+                  )}
+                </div>
+
+                <div className="text-xs text-content-tertiary space-y-0.5">
+                  <p>• Formatos aceitos: PNG, JPG, WebP, SVG</p>
+                  <p>• Tamanho máximo: 2MB</p>
+                  <p>• Dimensões recomendadas: 600×200px (proporção 3:1)</p>
+                  <p>• Fundo transparente (PNG ou SVG) recomendado para melhor exibição</p>
+                </div>
               </div>
             </div>
           )}

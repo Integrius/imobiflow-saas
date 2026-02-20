@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -12,6 +12,10 @@ export default function RegisterPage() {
   const [checkingSlug, setCheckingSlug] = useState(false);
   const [slugAvailable, setSlugAvailable] = useState<boolean | null>(null);
   const [campanha, setCampanha] = useState<{ ativa: boolean; vagas_restantes: number; vagas_total: number; dias_gratis: number } | null>(null);
+  const [logoUrl, setLogoUrl] = useState<string | null>(null);
+  const [logoPreview, setLogoPreview] = useState<string | null>(null);
+  const [uploadingLogo, setUploadingLogo] = useState(false);
+  const logoInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     api.get('/tenants/campanha-lancamento')
@@ -88,6 +92,46 @@ export default function RegisterPage() {
     }
   };
 
+  const handleLogoSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const allowed = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'image/svg+xml'];
+    if (!allowed.includes(file.type)) {
+      setErrors((prev: any) => ({ ...prev, logo: 'Tipo inválido. Use PNG, JPG, WebP ou SVG' }));
+      return;
+    }
+    if (file.size > 2 * 1024 * 1024) {
+      setErrors((prev: any) => ({ ...prev, logo: 'Arquivo muito grande. Máximo: 2MB' }));
+      return;
+    }
+
+    // Preview local
+    const reader = new FileReader();
+    reader.onload = (ev) => setLogoPreview(ev.target?.result as string);
+    reader.readAsDataURL(file);
+
+    setUploadingLogo(true);
+    setErrors((prev: any) => ({ ...prev, logo: undefined }));
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/tenants/upload-logo-temp`, {
+        method: 'POST',
+        body: formData,
+      });
+      if (!res.ok) throw new Error('Erro ao fazer upload');
+      const data = await res.json();
+      setLogoUrl(data.url);
+    } catch {
+      setLogoUrl(null);
+      setLogoPreview(null);
+      setErrors((prev: any) => ({ ...prev, logo: 'Falha no upload. Tente novamente.' }));
+    } finally {
+      setUploadingLogo(false);
+    }
+  };
+
   const handleSlugChange = (slug: string) => {
     const cleanSlug = generateSlug(slug);
     setFormData({ ...formData, slug: cleanSlug });
@@ -152,6 +196,7 @@ export default function RegisterPage() {
         email: formData.email,
         telefone: formData.telefone || undefined,
         plano: formData.plano,
+        logo_url: logoUrl || undefined,
         // Dados do admin
         adminNome: formData.adminNome,
         adminEmail: formData.adminEmail,
@@ -437,6 +482,43 @@ export default function RegisterPage() {
                       <div className="text-xs text-[#8B7F76] mt-1">Usuários ilimitados</div>
                       <div className="text-xs text-[#A97E6F] mt-2 font-medium">Sob consulta</div>
                     </button>
+                  </div>
+                </div>
+
+                {/* Logomarca (opcional) */}
+                <div>
+                  <label className="block text-sm font-semibold text-[#2C2C2C] mb-2">
+                    Logomarca <span className="font-normal text-[#8B7F76]">(opcional — você pode adicionar depois)</span>
+                  </label>
+                  <div className="flex items-start gap-4">
+                    <div className="w-[150px] h-[50px] rounded-lg border-2 border-dashed border-[rgba(169,126,111,0.3)] bg-white flex items-center justify-center overflow-hidden shrink-0">
+                      {logoPreview ? (
+                        <img src={logoPreview} alt="Preview" className="max-h-full max-w-full object-contain p-1" />
+                      ) : (
+                        <span className="text-[10px] text-[#8B7F76] text-center px-1">Sem logo</span>
+                      )}
+                    </div>
+                    <div className="flex-1">
+                      <input
+                        ref={logoInputRef}
+                        type="file"
+                        accept="image/png,image/jpeg,image/jpg,image/webp,image/svg+xml"
+                        onChange={handleLogoSelect}
+                        className="hidden"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => logoInputRef.current?.click()}
+                        disabled={uploadingLogo}
+                        className="px-4 py-2 border-2 border-[rgba(169,126,111,0.3)] rounded-lg text-sm font-semibold text-[#2C2C2C] hover:border-[#8FD14F] transition-colors disabled:opacity-50"
+                      >
+                        {uploadingLogo ? 'Enviando...' : logoPreview ? 'Substituir' : 'Selecionar arquivo'}
+                      </button>
+                      <p className="text-xs text-[#8B7F76] mt-1.5">PNG, JPG, WebP ou SVG • Máx 2MB • 600×200px</p>
+                      {errors.logo && (
+                        <p className="text-[#FF6B6B] text-xs mt-1">{errors.logo}</p>
+                      )}
+                    </div>
                   </div>
                 </div>
               </div>

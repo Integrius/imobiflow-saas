@@ -3,6 +3,7 @@ import { tenantMiddleware } from '../../shared/middlewares/tenant.middleware'
 import { authMiddleware } from '../../shared/middlewares/auth.middleware'
 import { prisma } from '../../shared/database/prisma.service'
 import { TenantController } from './tenant.controller'
+import { uploadService } from '../../services/upload.service'
 
 export async function tenantRoutes(server: FastifyInstance) {
   const tenantController = new TenantController(prisma)
@@ -123,10 +124,12 @@ export async function tenantRoutes(server: FastifyInstance) {
         const tenant = await prisma.tenant.findUnique({
           where: { id: tenantId },
           select: {
+            nome: true,
             status: true,
             data_expiracao: true,
             plano: true,
-            configuracoes: true
+            configuracoes: true,
+            logo_url: true
           }
         })
 
@@ -137,13 +140,15 @@ export async function tenantRoutes(server: FastifyInstance) {
         const config = tenant.configuracoes as Record<string, any> | null
         const isCampanha = config?.campanha_lancamento === true
 
-        // Se não está em trial, retornar sem informações
+        // Se não está em trial, retornar sem informações de trial
         if (tenant.status !== 'TRIAL') {
           return reply.send({
             isTrial: false,
             status: tenant.status,
             plano: tenant.plano,
-            campanha_lancamento: isCampanha
+            campanha_lancamento: isCampanha,
+            nome: tenant.nome,
+            logo_url: tenant.logo_url
           })
         }
 
@@ -165,7 +170,9 @@ export async function tenantRoutes(server: FastifyInstance) {
           dias_restantes: diasRestantes > 0 ? diasRestantes : 0,
           expirado: diasRestantes <= 0,
           campanha_lancamento: isCampanha,
-          trial_days: isCampanha ? 60 : 14
+          trial_days: isCampanha ? 60 : 14,
+          nome: tenant.nome,
+          logo_url: tenant.logo_url
         })
       } catch (error) {
         server.log.error({ error }, 'Erro ao buscar informações do trial')
@@ -203,4 +210,120 @@ export async function tenantRoutes(server: FastifyInstance) {
   }, async (request, reply) => {
     return tenantController.cancelAssinatura(request, reply)
   })
+
+  /**
+   * POST /api/v1/tenants/upload-logo-temp
+   * Upload temporário de logo (público, para formulário de registro)
+   * Medidas: largura máx 600px, altura máx 200px, PNG/JPG/WebP, até 2MB
+   */
+  server.post('/upload-logo-temp', async (request, reply) => {
+    try {
+      const data = await request.file()
+      if (!data) {
+        return reply.status(400).send({ error: 'Nenhum arquivo enviado' })
+      }
+
+      const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'image/svg+xml']
+      if (!allowedTypes.includes(data.mimetype)) {
+        return reply.status(400).send({ error: 'Tipo inválido. Use PNG, JPG, WebP ou SVG' })
+      }
+
+      const chunks: Buffer[] = []
+      for await (const chunk of data.file) {
+        chunks.push(chunk)
+      }
+      const buffer = Buffer.concat(chunks)
+
+      if (buffer.length > 2 * 1024 * 1024) {
+        return reply.status(400).send({ error: 'Arquivo muito grande. Máximo: 2MB' })
+      }
+
+      const url = await uploadService.uploadLogoTemp(buffer, data.filename)
+      return reply.send({ url })
+    } catch (error) {
+      server.log.error({ error }, 'Erro ao fazer upload de logo temp')
+      return reply.status(500).send({ error: 'Erro ao fazer upload da logo' })
+    }
+  })
+
+  /**
+   * PUT /api/v1/tenants/minha-logo
+   * Atualiza a logo do tenant atual (requer auth ADMIN)
+   * Medidas: largura máx 600px, altura máx 200px, PNG/JPG/WebP/SVG, até 2MB
+   */
+  server.put(
+    '/minha-logo',
+    { preHandler: [tenantMiddleware, authMiddleware] },
+    async (request, reply) => {
+      try {
+        const user = (request as any).user
+        if (user.tipo !== 'ADMIN') {
+          return reply.status(403).send({ error: 'Apenas administradores podem alterar a logo' })
+        }
+
+        const tenantId = (request as any).tenantId
+
+        const data = await request.file()
+        if (!data) {
+          return reply.status(400).send({ error: 'Nenhum arquivo enviado' })
+        }
+
+        const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'image/svg+xml']
+        if (!allowedTypes.includes(data.mimetype)) {
+          return reply.status(400).send({ error: 'Tipo inválido. Use PNG, JPG, WebP ou SVG' })
+        }
+
+        const chunks: Buffer[] = []
+        for await (const chunk of data.file) {
+          chunks.push(chunk)
+        }
+        const buffer = Buffer.concat(chunks)
+
+        if (buffer.length > 2 * 1024 * 1024) {
+          return reply.status(400).send({ error: 'Arquivo muito grande. Máximo: 2MB' })
+        }
+
+        const url = await uploadService.uploadLogo(buffer, tenantId, data.filename)
+
+        await prisma.tenant.update({
+          where: { id: tenantId },
+          data: { logo_url: url }
+        })
+
+        return reply.send({ url, message: 'Logo atualizada com sucesso' })
+      } catch (error) {
+        server.log.error({ error }, 'Erro ao atualizar logo do tenant')
+        return reply.status(500).send({ error: 'Erro ao atualizar logo' })
+      }
+    }
+  )
+
+  /**
+   * DELETE /api/v1/tenants/minha-logo
+   * Remove a logo do tenant atual (requer auth ADMIN)
+   */
+  server.delete(
+    '/minha-logo',
+    { preHandler: [tenantMiddleware, authMiddleware] },
+    async (request, reply) => {
+      try {
+        const user = (request as any).user
+        if (user.tipo !== 'ADMIN') {
+          return reply.status(403).send({ error: 'Apenas administradores podem alterar a logo' })
+        }
+
+        const tenantId = (request as any).tenantId
+
+        await prisma.tenant.update({
+          where: { id: tenantId },
+          data: { logo_url: null }
+        })
+
+        return reply.send({ message: 'Logo removida com sucesso' })
+      } catch (error) {
+        server.log.error({ error }, 'Erro ao remover logo do tenant')
+        return reply.status(500).send({ error: 'Erro ao remover logo' })
+      }
+    }
+  )
 }
