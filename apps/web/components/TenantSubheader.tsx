@@ -30,23 +30,23 @@ export default function TenantSubheader() {
   let badge: React.ReactNode = null;
   if (isTrial && dias_restantes !== undefined) {
     let color = 'text-brand';
-    let icon: React.ReactNode = <CheckCircle2 className="w-3.5 h-3.5" />;
+    let icon: React.ReactNode = <CheckCircle2 className="w-5 h-5" />;
 
     if (campanha_lancamento) {
       if (dias_restantes > 10) {
-        color = 'text-brand'; icon = <PartyPopper className="w-3.5 h-3.5" />;
+        color = 'text-brand'; icon = <PartyPopper className="w-5 h-5" />;
       } else if (dias_restantes >= 4) {
-        color = 'text-amber-500'; icon = <Clock className="w-3.5 h-3.5" />;
+        color = 'text-amber-500'; icon = <Clock className="w-5 h-5" />;
       } else {
-        color = 'text-red-500'; icon = <AlertTriangle className="w-3.5 h-3.5" />;
+        color = 'text-red-500'; icon = <AlertTriangle className="w-5 h-5" />;
       }
     } else {
       if (dias_restantes > 7) {
-        color = 'text-brand'; icon = <CheckCircle2 className="w-3.5 h-3.5" />;
+        color = 'text-brand'; icon = <CheckCircle2 className="w-5 h-5" />;
       } else if (dias_restantes >= 4) {
-        color = 'text-amber-500'; icon = <Clock className="w-3.5 h-3.5" />;
+        color = 'text-amber-500'; icon = <Clock className="w-5 h-5" />;
       } else {
-        color = 'text-red-500'; icon = <AlertTriangle className="w-3.5 h-3.5" />;
+        color = 'text-red-500'; icon = <AlertTriangle className="w-5 h-5" />;
       }
     }
 
@@ -57,7 +57,7 @@ export default function TenantSubheader() {
       : `Trial: ${dias_restantes} ${dias_restantes === 1 ? 'dia' : 'dias'}`;
 
     badge = (
-      <div className={`flex items-center gap-1.5 text-xs font-semibold ${color}`}>
+      <div className={`flex items-center gap-2 text-lg font-semibold ${color}`}>
         {icon}
         <span>{label}</span>
       </div>
@@ -65,9 +65,9 @@ export default function TenantSubheader() {
   }
 
   return (
-    <div className="bg-surface-secondary border-b border-edge-light px-4 md:px-6 py-1.5 flex items-center justify-between min-h-[32px]">
+    <div className="bg-surface-secondary border-b border-edge-light px-4 md:px-6 py-2 flex items-center justify-between min-h-[48px]">
       {nome ? (
-        <span className="text-xs font-semibold text-content-secondary truncate">{nome}</span>
+        <span className="text-2xl font-semibold text-content-secondary truncate">{nome}</span>
       ) : (
         <span />
       )}
