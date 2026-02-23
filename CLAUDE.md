@@ -4945,9 +4945,11 @@ Conforme Art. 39 da LGPD: *"O operador deverá realizar o tratamento segundo as 
   - API: `DELETE /tenants/minha-logo` — remove logo do tenant
   - API: `POST /tenants/upload-logo-temp` — upload público para registro (`vivoly/logos/temp/`)
   - Upload Service: métodos `uploadLogo()` e `uploadLogoTemp()` em `upload.service.ts`
+    - `uploadLogo()`: public_id fixo por tenant (`vivoly/{tenantId}/logo/logo`) com `overwrite: true, invalidate: true` — substitui logo anterior e invalida cache CDN
   - Dashboard admin: aba "Identidade Visual" em Administração/Minha Conta (ADMIN only)
     - Preview 300×100px, upload/substituir/remover logo
-    - Especificações: PNG/JPG/WebP/SVG, máx 2MB, 600×200px recomendado, fundo transparente
+    - Validações com **modal** (não inline): formato inválido, tamanho >2MB, dimensões mínimas (120×40px); logo anterior mantida inalterada em caso de erro
+    - Especificações: PNG/JPG/WebP/SVG, máx 2MB, 600×200px recomendado, mín 300×100px, fundo transparente
   - Formulário de registro: campo opcional de logomarca com preview em tempo real
 - **Fix gráfico dashboard**: hover do Recharts corrigido com `cursor={{ fill: 'rgba(0,0,0,0.04)' }}` e `activeBar` props
 

@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from 'react';
 import Image from 'next/image';
 import { api } from '@/lib/api';
-import { User, Lock, ClipboardList, Settings, Upload, Trash2, ImageIcon } from 'lucide-react';
+import { User, Lock, ClipboardList, Settings, Upload, Trash2, ImageIcon, AlertCircle } from 'lucide-react';
 
 // Tipos
 interface User {
@@ -47,6 +47,7 @@ export default function AdministracaoPage() {
   const [logoUrl, setLogoUrl] = useState<string | null>(null);
   const [uploadingLogo, setUploadingLogo] = useState(false);
   const [removingLogo, setRemovingLogo] = useState(false);
+  const [validationModal, setValidationModal] = useState<{ open: boolean; message: string }>({ open: false, message: '' });
   const logoInputRef = useRef<HTMLInputElement>(null);
 
   // Estado para logs
@@ -137,18 +138,56 @@ export default function AdministracaoPage() {
     }
   }, [error, success]);
 
+  // Helper: lê dimensões de um arquivo de imagem no browser
+  const getImageDimensions = (file: File): Promise<{ width: number; height: number }> =>
+    new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        const img = new window.Image();
+        img.onload = () => resolve({ width: img.width, height: img.height });
+        img.onerror = reject;
+        img.src = ev.target?.result as string;
+      };
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
+
+  const showLogoValidationError = (message: string) => {
+    setValidationModal({ open: true, message });
+    if (logoInputRef.current) logoInputRef.current.value = '';
+  };
+
   const handleUploadLogo = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
+    // Validação de formato — modal em caso de erro
     const allowed = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'image/svg+xml'];
     if (!allowed.includes(file.type)) {
-      setError('Tipo inválido. Use PNG, JPG, WebP ou SVG');
+      showLogoValidationError('Formato inválido. Use PNG, JPG, WebP ou SVG.');
       return;
     }
+
+    // Validação de tamanho — modal em caso de erro
     if (file.size > 2 * 1024 * 1024) {
-      setError('Arquivo muito grande. Máximo: 2MB');
+      const sizeMB = (file.size / (1024 * 1024)).toFixed(1);
+      showLogoValidationError(`Arquivo muito grande (${sizeMB} MB). O tamanho máximo permitido é 2 MB.`);
       return;
+    }
+
+    // Validação de dimensões mínimas (ignora SVG — formato vetorial)
+    if (file.type !== 'image/svg+xml') {
+      try {
+        const { width, height } = await getImageDimensions(file);
+        if (width < 120 || height < 40) {
+          showLogoValidationError(
+            `Imagem muito pequena (${width}×${height}px). O mínimo recomendado é 300×100px com proporção 3:1.`
+          );
+          return;
+        }
+      } catch {
+        // Se não conseguir ler as dimensões, prossegue com o upload
+      }
     }
 
     setUploadingLogo(true);
@@ -218,6 +257,7 @@ export default function AdministracaoPage() {
   }
 
   return (
+    <>
     <div className="space-y-6">
       {/* Header */}
       <div className="bg-surface rounded-xl shadow-sm border border-edge p-6">
@@ -553,5 +593,37 @@ export default function AdministracaoPage() {
         </div>
       </div>
     </div>
+
+      {/* Modal de validação de logomarca */}
+      {validationModal.open && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4">
+          <div className="bg-surface rounded-xl shadow-xl border border-edge p-6 max-w-sm w-full">
+            <div className="flex items-start gap-3 mb-4">
+              <AlertCircle className="w-5 h-5 text-amber-500 flex-shrink-0 mt-0.5" />
+              <div>
+                <h3 className="text-sm font-bold text-content mb-1">Imagem não aceita</h3>
+                <p className="text-sm text-content-secondary">{validationModal.message}</p>
+              </div>
+            </div>
+            <div className="bg-surface-secondary rounded-lg p-3 text-xs text-content-tertiary space-y-0.5 mb-4">
+              <p className="font-semibold text-content-secondary mb-1">Especificações da logomarca:</p>
+              <p>• Formatos aceitos: PNG, JPG, WebP, SVG</p>
+              <p>• Tamanho máximo: 2 MB</p>
+              <p>• Dimensões recomendadas: 600×200px (proporção 3:1)</p>
+              <p>• Mínimo: 300×100px</p>
+              <p>• Fundo transparente (PNG/SVG) para melhor resultado</p>
+            </div>
+            <div className="flex justify-end">
+              <button
+                onClick={() => setValidationModal({ open: false, message: '' })}
+                className="px-4 py-2 bg-brand text-white text-sm font-semibold rounded-lg hover:bg-brand/90 transition-colors"
+              >
+                Entendido
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </>
   );
 }
