@@ -75,6 +75,7 @@ export class TenantService {
             email: data.email,
             telefone: data.telefone,
             plano: data.plano,
+            logo_url: data.logo_url || null,
             status: 'TRIAL',
             data_expiracao: dataExpiracao,
             configuracoes,

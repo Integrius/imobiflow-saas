@@ -4953,7 +4953,7 @@ Conforme Art. 39 da LGPD: *"O operador deverá realizar o tratamento segundo as 
     - Preview 300×100px, upload/substituir/remover logo
     - Validações com **modal** (não inline): formato inválido, tamanho >2MB, dimensões mínimas (120×40px); logo anterior mantida inalterada em caso de erro
     - Especificações: PNG/JPG/WebP/SVG, máx 2MB, 600×200px recomendado, mín 300×100px, fundo transparente
-  - Formulário de registro: campo opcional de logomarca com preview em tempo real
+  - Formulário de registro: campo opcional de logomarca com preview em tempo real; `logo_url` salva no tenant na criação (bug: campo era ignorado no `tx.tenant.create`, corrigido)
 - **Fix gráfico dashboard**: hover do Recharts corrigido com `cursor={{ fill: 'rgba(0,0,0,0.04)' }}` e `activeBar` props
 
 **Versão 1.6.1** (fevereiro de 2026):
