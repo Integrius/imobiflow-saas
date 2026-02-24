@@ -107,8 +107,8 @@ export async function login(data: LoginData): Promise<AuthResponse> {
     // Armazenar token em localStorage (para getToken() e axios interceptor)
     localStorage.setItem('token', response.data.token);
 
-    // Setar token como cookie no domínio do frontend (para Next.js middleware)
-    document.cookie = `token=${response.data.token}; path=/; max-age=${7 * 24 * 60 * 60}; SameSite=Lax`;
+    // Setar token como cookie de sessão (sem max-age/expires = destruído ao fechar o browser)
+    document.cookie = `token=${response.data.token}; path=/; SameSite=Lax`;
 
     // Armazenar tenant_id (do subdomínio OU da resposta do backend)
     const finalTenantId = tenantId || response.data.user?.tenant_id;
