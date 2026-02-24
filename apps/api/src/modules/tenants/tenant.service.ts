@@ -124,7 +124,8 @@ export class TenantService {
               nomeUsuario: adminNome,
               emailUsuario: adminEmail,
               nomeTenant: tenant.nome,
-              dataExpiracao: dataExpiracao
+              dataExpiracao: dataExpiracao,
+              trialDays: trialDays
             })
             console.log(`✅ Email de boas-vindas enviado para ${adminEmail}`)
           } catch (error) {

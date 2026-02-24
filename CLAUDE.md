@@ -4957,6 +4957,12 @@ Conforme Art. 39 da LGPD: *"O operador deverá realizar o tratamento segundo as 
 - **Fix gráfico dashboard**: hover do Recharts corrigido com `cursor={{ fill: 'rgba(0,0,0,0.04)' }}` e `activeBar` props
 - **Cookie de sessão**: token armazenado como session cookie (sem max-age), destruído ao fechar o browser ou fazer logout. `last_tenant` cookie (90 dias) preservado no logout para redirecionar ao /login do tenant correto na próxima visita.
 
+**Versão 1.6.3** (fevereiro de 2026):
+- **Fix email de boas-vindas**: número de dias do trial agora é dinâmico
+  - `enviarEmailBoasVindasRegistro` aceita `trialDays?: number` (padrão: 14)
+  - Assunto, corpo e seção de pagamentos mostram "60 dias" para campanha ou "14 dias" para trial normal
+  - `tenant.service.ts` passa `trialDays` calculado ao enviar o email
+
 **Versão 1.6.2** (fevereiro de 2026):
 - Substituição completa de "Lead/Leads" por "Cliente/Clientes" em toda a interface do usuário (frontend only)
   - 15 arquivos alterados: layout.tsx, dashboard/page.tsx, leads/page.tsx, leads/importar/page.tsx, agendamentos/page.tsx, negociacoes/page.tsx, metas/page.tsx, tarefas/page.tsx, whatsapp/page.tsx, gerencial/page.tsx, meu-desempenho/page.tsx, MetaWidget.tsx, ReportDownloadButton.tsx, app/layout.tsx, login/page.tsx

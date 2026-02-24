@@ -1405,7 +1405,9 @@ class SendGridService {
     emailUsuario: string;
     nomeTenant: string;
     dataExpiracao: Date;
+    trialDays?: number;
   }): Promise<boolean> {
+    const trialDays = data.trialDays ?? 14;
     const primeiroNome = data.nomeUsuario.split(' ')[0];
 
     const dataFormatada = data.dataExpiracao.toLocaleDateString('pt-BR', {
@@ -1574,7 +1576,7 @@ class SendGridService {
           Período de Teste Gratuito
         </h2>
         <p style="margin: 10px 0; color: #555; font-size: 16px;">
-          Você tem <span class="highlight">14 dias</span> para explorar todas as funcionalidades do Integrius sem nenhum custo!
+          Você tem <span class="highlight">${trialDays} dias</span> para explorar todas as funcionalidades do Integrius sem nenhum custo!
         </p>
         <p style="margin: 10px 0; color: #666; font-size: 15px;">
           📅 Seu período trial expira em: <strong>${dataFormatada}</strong>
@@ -1585,7 +1587,7 @@ class SendGridService {
         <h3>💳 Como Funcionam os Pagamentos?</h3>
         <ul>
           <li>
-            <strong>Durante o trial (14 dias):</strong> Use todas as funcionalidades gratuitamente, sem cartão de crédito!
+            <strong>Durante o trial (${trialDays} dias):</strong> Use todas as funcionalidades gratuitamente, sem cartão de crédito!
           </li>
           <li>
             <strong>Antes do último dia:</strong> Informe seus dados de pagamento para continuar usando o sistema.
@@ -1645,7 +1647,7 @@ class SendGridService {
 
     return this.sendEmail({
       to: data.emailUsuario,
-      subject: `🎉 Bem-vindo ao Integrius, ${primeiroNome}! Seu trial de 14 dias começou`,
+      subject: `🎉 Bem-vindo ao Integrius, ${primeiroNome}! Seu trial de ${trialDays} dias começou`,
       html
     });
   }
