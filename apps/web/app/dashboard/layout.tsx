@@ -5,6 +5,7 @@ import { useRouter, usePathname } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
 import { logout, getToken } from '@/lib/auth';
+import { api } from '@/lib/api';
 import ToastContainer from '@/components/ToastContainer';
 import TenantSubheader from '@/components/TenantSubheader';
 import NotificationBell from '@/components/NotificationBell';
@@ -60,6 +61,8 @@ export default function DashboardLayout({
   const [user, setUser] = useState<any>(null);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [isVivolyAdmin, setIsVivolyAdmin] = useState(false);
+  const [isVivolyTenant, setIsVivolyTenant] = useState(false);
+  const [tenantLogoUrl, setTenantLogoUrl] = useState<string | null>(null);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [expandedSections, setExpandedSections] = useState<Set<string>>(
     new Set(['comercial', 'equipe', 'produtividade'])
@@ -88,9 +91,11 @@ export default function DashboardLayout({
       const hostname = window.location.hostname;
       const subdomain = hostname.split('.')[0];
 
+      const vivolyTenant = subdomain === 'vivoly';
+      setIsVivolyTenant(vivolyTenant);
       setIsVivolyAdmin(
         parsedUser.tipo === 'ADMIN' &&
-        (subdomain === 'vivoly' || hostname.includes('vivoly'))
+        (vivolyTenant || hostname.includes('vivoly'))
       );
     }
 
@@ -98,6 +103,13 @@ export default function DashboardLayout({
     const savedCollapsed = localStorage.getItem('sidebar-collapsed');
     if (savedCollapsed === 'true') setSidebarCollapsed(true);
   }, [router, pathname]);
+
+  // Carregar logo do tenant para exibir na sidebar
+  useEffect(() => {
+    api.get('/tenants/trial-info')
+      .then((res) => setTenantLogoUrl(res.data.logo_url || null))
+      .catch(() => {});
+  }, []);
 
   const isAdmin = user?.tipo === 'ADMIN' || user?.tipo === 'GESTOR';
 
@@ -322,25 +334,47 @@ export default function DashboardLayout({
         <div className="h-[70px] flex items-center justify-center px-3 border-b border-edge-light">
           {!sidebarCollapsed ? (
             <Link href="/dashboard" className="flex items-center">
-              <Image
-                src="/logo.png"
-                alt="Integrius"
-                width={240}
-                height={68}
-                className="h-[62px] w-auto"
-                priority
-              />
+              {isVivolyTenant ? (
+                <Image
+                  src="/logo.png"
+                  alt="Integrius"
+                  width={240}
+                  height={68}
+                  className="h-[62px] w-auto"
+                  priority
+                />
+              ) : tenantLogoUrl ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  src={tenantLogoUrl}
+                  alt="Logo"
+                  className="h-[62px] w-auto max-w-[200px] object-contain"
+                />
+              ) : (
+                <div className="h-[62px]" />
+              )}
             </Link>
           ) : (
             <Link href="/dashboard" className="flex items-center justify-center">
-              <Image
-                src="/logo.png"
-                alt="Integrius"
-                width={52}
-                height={52}
-                className="h-[52px] w-[52px] object-contain"
-                priority
-              />
+              {isVivolyTenant ? (
+                <Image
+                  src="/logo.png"
+                  alt="Integrius"
+                  width={52}
+                  height={52}
+                  className="h-[52px] w-[52px] object-contain"
+                  priority
+                />
+              ) : tenantLogoUrl ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  src={tenantLogoUrl}
+                  alt="Logo"
+                  className="h-[42px] w-[42px] object-contain"
+                />
+              ) : (
+                <div className="h-[42px] w-[42px]" />
+              )}
             </Link>
           )}
         </div>
@@ -393,14 +427,25 @@ export default function DashboardLayout({
             {/* Logo Mobile */}
             <div className="h-[70px] flex items-center px-4 border-b border-edge-light">
               <Link href="/dashboard" className="flex items-center">
-                <Image
-                  src="/logo.png"
-                  alt="Integrius"
-                  width={240}
-                  height={68}
-                  className="h-[62px] w-auto"
-                  priority
-                />
+                {isVivolyTenant ? (
+                  <Image
+                    src="/logo.png"
+                    alt="Integrius"
+                    width={240}
+                    height={68}
+                    className="h-[62px] w-auto"
+                    priority
+                  />
+                ) : tenantLogoUrl ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    src={tenantLogoUrl}
+                    alt="Logo"
+                    className="h-[62px] w-auto max-w-[200px] object-contain"
+                  />
+                ) : (
+                  <div className="h-[62px]" />
+                )}
               </Link>
             </div>
 
