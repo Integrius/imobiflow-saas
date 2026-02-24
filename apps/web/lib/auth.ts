@@ -152,10 +152,10 @@ export async function logout() {
   localStorage.removeItem('user');
   localStorage.removeItem('tenant_id');
 
-  // ✅ SEGURANÇA: Cookie httpOnly é limpo automaticamente pelo backend
-  // Limpeza manual abaixo é apenas fallback para compatibilidade
+  // Limpar cookie de sessão do token
   document.cookie = 'token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
-  document.cookie = 'last_tenant=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
+  // NOTA: last_tenant NÃO é removido — serve para redirecionar ao /login do
+  // tenant correto na próxima visita, sem iniciar sessão automaticamente.
 
   // Redirecionar para landing page
   window.location.href = '/';

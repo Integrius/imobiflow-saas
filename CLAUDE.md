@@ -4644,8 +4644,9 @@ Conforme Art. 39 da LGPD: *"O operador deverá realizar o tratamento segundo as 
 - ✅ **Armazenamento Seguro de Token**
   - Duplo armazenamento: localStorage + cookie
   - localStorage: para requisições API via axios
-  - Cookie (SameSite=Lax): para middleware Next.js
-  - Remoção completa no logout (ambos os storages)
+  - Cookie `token` (SameSite=Lax, **sem max-age** = session cookie): destruído ao fechar o browser ou no logout
+  - Cookie `last_tenant` (90 dias): preservado no logout — redireciona ao `/login` do tenant correto na próxima visita (nunca à raiz, para evitar redirect automático ao dashboard)
+  - No logout: `token` é removido; `last_tenant` é mantido intencionalmente
 
 - ✅ **Página de Login Melhorada**
   - Login tradicional (email + senha) funcionando

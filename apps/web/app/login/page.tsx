@@ -70,10 +70,11 @@ export default function LoginPage() {
             // Redirecionar para o subdomínio do último tenant usado
             console.log(`🔄 Redirecionando para último tenant usado: ${lastTenant}`);
 
-            // Construir URL do tenant (garantir que não é localhost)
+            // Redirecionar direto para /login do tenant (nunca para a raiz,
+            // para evitar que o middleware envie para /dashboard se houver token residual)
             const baseDomain = hostname.includes('localhost') ? 'localhost:3000' : 'integrius.com.br';
             const tenantUrl = `${window.location.protocol}//${lastTenant}.${baseDomain}`;
-            window.location.href = tenantUrl;
+            window.location.href = `${tenantUrl}/login`;
           }
         }
       } else if (subdomain) {
