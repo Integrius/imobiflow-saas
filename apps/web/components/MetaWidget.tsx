@@ -129,11 +129,11 @@ export default function MetaWidget() {
 
       {/* Progress bars */}
       <div className="space-y-3">
-        {/* Leads */}
+        {/* Clientes */}
         {meta.meta_leads && (
           <div>
             <div className="flex justify-between text-sm mb-1">
-              <span className="text-[#4B5563]">Leads</span>
+              <span className="text-[#4B5563]">Clientes</span>
               <span className="font-semibold">{meta.progresso_leads}/{meta.meta_leads}</span>
             </div>
             <div className="w-full bg-gray-200 rounded-full h-2">

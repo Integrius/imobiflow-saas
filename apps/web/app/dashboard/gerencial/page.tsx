@@ -226,7 +226,7 @@ export default function DashboardGerencialPage() {
             <div className="p-3 bg-emerald-700 rounded-xl">
               <ClipboardList className="w-5 h-5 text-white" />
             </div>
-            <span className="text-xs font-bold text-emerald-700 uppercase">Leads</span>
+            <span className="text-xs font-bold text-emerald-700 uppercase">Clientes</span>
           </div>
           <div className="text-3xl font-bold text-content">{data.metricas.totalLeads}</div>
           <p className="text-sm text-content-secondary font-medium mt-1">
@@ -267,7 +267,7 @@ export default function DashboardGerencialPage() {
         <div className="grid grid-cols-3 gap-6 text-center">
           <div>
             <div className="text-3xl font-bold">{data.metricas.mediaPorCorretor.leads}</div>
-            <p className="text-sm opacity-80">Leads</p>
+            <p className="text-sm opacity-80">Clientes</p>
           </div>
           <div>
             <div className="text-3xl font-bold">{data.metricas.mediaPorCorretor.negociacoes}</div>
@@ -284,7 +284,7 @@ export default function DashboardGerencialPage() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Distribuição de Temperatura */}
         <div className="bg-surface rounded-xl p-6 shadow-sm border border-edge-light">
-          <h3 className="text-lg font-bold text-content mb-4">Distribuição de Leads</h3>
+          <h3 className="text-lg font-bold text-content mb-4">Distribuição de Clientes</h3>
           <ResponsiveContainer width="100%" height={200}>
             <PieChart>
               <Pie
@@ -402,7 +402,7 @@ export default function DashboardGerencialPage() {
                   <tr className="text-left text-sm text-content-secondary border-b border-edge">
                     <th className="pb-3 font-bold">#</th>
                     <th className="pb-3 font-bold">Corretor</th>
-                    <th className="pb-3 font-bold text-center">Leads</th>
+                    <th className="pb-3 font-bold text-center">Clientes</th>
                     <th className="pb-3 font-bold text-center">Negociações</th>
                     <th className="pb-3 font-bold text-center">Fechamentos</th>
                     <th className="pb-3 font-bold text-center">Conversão</th>

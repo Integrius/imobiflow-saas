@@ -271,7 +271,7 @@ export default function LeadsPage() {
     <div className="space-y-6">
       {/* Header */}
       <div className="flex justify-between items-center">
-        <h1 className="text-2xl font-bold text-content">Leads</h1>
+        <h1 className="text-2xl font-bold text-content">Clientes</h1>
         <button
           onClick={openCreateModal}
           className="bg-green-600 text-white px-4 py-2 rounded-lg text-sm font-semibold flex gap-2 hover:bg-green-700 transition-colors"
@@ -279,7 +279,7 @@ export default function LeadsPage() {
           <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
           </svg>
-          Novo Lead
+          Novo Cliente
         </button>
       </div>
 
@@ -353,8 +353,8 @@ export default function LeadsPage() {
                 {filteredLeads.length === 0 ? (
                   <tr>
                     <td colSpan={4} className="px-6 py-12 text-center text-content-secondary">
-                      <div className="text-lg font-semibold">{searchTerm ? 'Nenhum lead encontrado' : 'Nenhum lead cadastrado'}</div>
-                      <p className="text-sm mt-1 font-medium">Clique em &quot;Novo Lead&quot; para adicionar</p>
+                      <div className="text-lg font-semibold">{searchTerm ? 'Nenhum cliente encontrado' : 'Nenhum cliente cadastrado'}</div>
+                      <p className="text-sm mt-1 font-medium">Clique em &quot;Novo Cliente&quot; para adicionar</p>
                     </td>
                   </tr>
                 ) : (
@@ -421,22 +421,22 @@ export default function LeadsPage() {
               </div>
               {leadsQuentes > 0 ? (
                 <p className="text-sm font-medium opacity-95 mb-3">
-                  &quot;Você tem {leadsQuentes} lead{leadsQuentes > 1 ? 's' : ''} quente{leadsQuentes > 1 ? 's' : ''} aguardando contato. Priorize-os!&quot;
+                  &quot;Você tem {leadsQuentes} cliente{leadsQuentes > 1 ? 's' : ''} quente{leadsQuentes > 1 ? 's' : ''} aguardando contato. Priorize-os!&quot;
                 </p>
               ) : leadsMornos > 0 ? (
                 <p className="text-sm font-medium opacity-95 mb-3">
-                  &quot;{leadsMornos} lead{leadsMornos > 1 ? 's' : ''} morno{leadsMornos > 1 ? 's' : ''} pode{leadsMornos > 1 ? 'm' : ''} esfriar. Faça um follow-up.&quot;
+                  &quot;{leadsMornos} cliente{leadsMornos > 1 ? 's' : ''} morno{leadsMornos > 1 ? 's' : ''} pode{leadsMornos > 1 ? 'm' : ''} esfriar. Faça um follow-up.&quot;
                 </p>
               ) : (
                 <p className="text-sm font-medium opacity-95 mb-3">
-                  &quot;Sua base está organizada. Continue captando novos leads!&quot;
+                  &quot;Sua base está organizada. Continue captando novos clientes!&quot;
                 </p>
               )}
               <button
                 onClick={openCreateModal}
                 className="w-full py-2 bg-white text-indigo-600 font-bold text-sm rounded-lg hover:bg-indigo-50 transition-colors"
               >
-                Adicionar Lead
+                Adicionar Cliente
               </button>
             </div>
           </div>
@@ -495,7 +495,7 @@ export default function LeadsPage() {
       <Modal
         isOpen={modalOpen}
         onClose={handleCloseModal}
-        title={editingLead ? 'Detalhes do Lead' : 'Novo Lead'}
+        title={editingLead ? 'Detalhes do Cliente' : 'Novo Cliente'}
         size="lg"
       >
         <form onSubmit={handleSubmit} className="space-y-6">
@@ -792,7 +792,7 @@ export default function LeadsPage() {
       >
         <div className="space-y-4">
           <p className="text-gray-700 text-sm font-medium">
-            Tem certeza que deseja excluir o lead <strong className="text-gray-900">{deletingLead?.nome}</strong>?
+            Tem certeza que deseja excluir o cliente <strong className="text-gray-900">{deletingLead?.nome}</strong>?
           </p>
           <p className="text-xs font-medium text-gray-500">Esta ação não pode ser desfeita.</p>
 

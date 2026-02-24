@@ -619,7 +619,7 @@ export default function NegociacoesPage() {
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-[#064E3B] mb-1">
-                Cliente (Lead) *
+                Cliente *
               </label>
               <select
                 required

@@ -445,7 +445,7 @@ export default function MeuDesempenhoPage() {
 
   // Dados para o Funil de Vendas
   const funnelData = [
-    { name: 'Leads Totais', value: data.leads.total, color: '#94a3b8' },
+    { name: 'Clientes Totais', value: data.leads.total, color: '#94a3b8' },
     { name: 'Em Negociação', value: data.negociacoes.ativas + data.negociacoes.fechadas, color: '#60a5fa' },
     { name: 'Fechados', value: data.negociacoes.fechadas, color: '#00C48C' },
   ];
@@ -680,7 +680,7 @@ export default function MeuDesempenhoPage() {
                   />
                   <Legend />
                   <Bar yAxisId="left" dataKey="valor" name="Vendas (R$)" fill="#00C48C" radius={[4, 4, 0, 0]} barSize={30} />
-                  <Line yAxisId="right" type="monotone" dataKey="leads" name="Total Leads" stroke="#3b82f6" strokeWidth={2} />
+                  <Line yAxisId="right" type="monotone" dataKey="leads" name="Total Clientes" stroke="#3b82f6" strokeWidth={2} />
                 </ComposedChart>
               </ResponsiveContainer>
             </div>
@@ -750,7 +750,7 @@ export default function MeuDesempenhoPage() {
               <div className="text-3xl font-bold text-blue-600">
                 {ranking.posicao.leads}º
               </div>
-              <p className="text-xs text-blue-700 font-medium">Leads Captados</p>
+              <p className="text-xs text-blue-700 font-medium">Clientes Captados</p>
               <p className="text-xs text-content-tertiary mt-1">
                 {ranking.meuDesempenho?.leadsMes || 0} este mês
               </p>
@@ -796,7 +796,7 @@ export default function MeuDesempenhoPage() {
 
                 <div>
                   <div className="flex justify-between text-xs mb-1">
-                    <span className="text-content-secondary">Leads Captados</span>
+                    <span className="text-content-secondary">Clientes Captados</span>
                     <span className="font-medium text-content">
                       {ranking.meuDesempenho?.leadsMes || 0} / {ranking.mediaEquipe.leads} (média)
                     </span>
@@ -873,7 +873,7 @@ export default function MeuDesempenhoPage() {
                 </div>
                 <div className="text-center p-2 bg-surface-secondary rounded-lg">
                   <p className="text-lg font-bold text-content">{ranking.comparativoMesAnterior.leads}</p>
-                  <p className="text-[10px] text-content-tertiary">Leads</p>
+                  <p className="text-[10px] text-content-tertiary">Clientes</p>
                   {ranking.meuDesempenho && (
                     <span className={`text-[10px] font-medium ${
                       (ranking.meuDesempenho.leadsMes || 0) >= ranking.comparativoMesAnterior.leads
@@ -904,11 +904,11 @@ export default function MeuDesempenhoPage() {
       {/* Seção de Métricas Detalhadas */}
       {metricas && (
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Leads Sem Contato - Alerta */}
+          {/* Clientes Sem Contato - Alerta */}
           <div className="bg-surface border border-edge-light rounded-xl p-6">
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-lg font-bold text-content flex items-center gap-2">
-                <AlertTriangle className="w-4 h-4 text-amber-500" /> Leads Sem Contato
+                <AlertTriangle className="w-4 h-4 text-amber-500" /> Clientes Sem Contato
               </h3>
               <span className={`text-xs px-2 py-1 rounded-full ${
                 metricas.leadsSemContato.length > 5
@@ -1023,9 +1023,9 @@ export default function MeuDesempenhoPage() {
                 </div>
               </div>
 
-              {/* Leads por Origem */}
+              {/* Clientes por Origem */}
               <div className="pt-2">
-                <p className="text-xs font-bold text-content-secondary uppercase mb-2">Leads por Origem</p>
+                <p className="text-xs font-bold text-content-secondary uppercase mb-2">Clientes por Origem</p>
                 <div className="space-y-1">
                   {metricas.leadsPorOrigem.slice(0, 4).map((origem) => (
                     <div key={origem.origem} className="flex items-center justify-between text-xs">

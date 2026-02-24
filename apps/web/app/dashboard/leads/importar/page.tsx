@@ -221,9 +221,9 @@ export default function ImportarLeadsPage() {
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-[#2C2C2C]">Importar Leads</h1>
+          <h1 className="text-2xl font-bold text-[#2C2C2C]">Importar Clientes</h1>
           <p className="text-[#8B7F76] text-sm mt-1">
-            Importe leads em massa a partir de um arquivo CSV
+            Importe clientes em massa a partir de um arquivo CSV
           </p>
         </div>
         <div className="flex gap-2">
@@ -552,7 +552,7 @@ export default function ImportarLeadsPage() {
                 </>
               ) : (
                 <>
-                  Importar {analysis.totalRows} Leads
+                  Importar {analysis.totalRows} Clientes
                   <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                   </svg>
@@ -650,7 +650,7 @@ export default function ImportarLeadsPage() {
               onClick={() => router.push('/dashboard/leads')}
               className="px-6 py-2 bg-gradient-to-r from-[#8FD14F] to-[#6E9B3B] text-white rounded-lg hover:opacity-90 transition-colors flex items-center gap-2"
             >
-              Ver Leads
+              Ver Clientes
               <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
               </svg>

@@ -89,8 +89,8 @@ export default function DashboardPage() {
     if (dashboardData.leads.quentes > 0) {
       setSofiaInsight({
         tipo: 'leads_quentes',
-        mensagem: `Você tem ${dashboardData.leads.quentes} lead${dashboardData.leads.quentes > 1 ? 's' : ''} quente${dashboardData.leads.quentes > 1 ? 's' : ''} aguardando contato. Priorize-os para aumentar sua conversão!`,
-        acao: 'Ver Leads Quentes'
+        mensagem: `Você tem ${dashboardData.leads.quentes} cliente${dashboardData.leads.quentes > 1 ? 's' : ''} quente${dashboardData.leads.quentes > 1 ? 's' : ''} aguardando contato. Priorize-os para aumentar sua conversão!`,
+        acao: 'Ver Clientes Quentes'
       });
     } else if (dashboardData.negociacoes.taxaConversao < 15) {
       setSofiaInsight({
@@ -101,7 +101,7 @@ export default function DashboardPage() {
     } else {
       setSofiaInsight({
         tipo: 'geral',
-        mensagem: 'Ótimo trabalho! Continue acompanhando seus leads e mantenha o ritmo de conversões.',
+        mensagem: 'Ótimo trabalho! Continue acompanhando seus clientes e mantenha o ritmo de conversões.',
         acao: 'Ver Dashboard'
       });
     }
@@ -164,7 +164,7 @@ export default function DashboardPage() {
           className="bg-green-600 text-white px-4 py-2.5 rounded-lg text-sm font-semibold flex items-center gap-2 hover:bg-green-700 transition-colors"
         >
           <span>+</span>
-          <span>Novo Lead</span>
+          <span>Novo Cliente</span>
         </Link>
       </div>
 
@@ -177,9 +177,9 @@ export default function DashboardPage() {
           {/* KPI Cards */}
           {data && (
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              {/* Leads Total */}
+              {/* Clientes Total */}
               <div className="bg-surface p-4 rounded-xl shadow-sm border border-edge-light">
-                <span className="text-xs font-bold text-content-secondary uppercase">Leads</span>
+                <span className="text-xs font-bold text-content-secondary uppercase">Clientes</span>
                 <div className="text-3xl font-bold text-content mt-1">{data.leads.total}</div>
                 <div className="flex items-center gap-1 mt-2">
                   <span className="text-xs text-red-500 font-semibold">{data.leads.quentes} quentes</span>
@@ -254,7 +254,7 @@ export default function DashboardPage() {
                     }}
                   />
                   <Legend wrapperStyle={{ fontSize: '12px' }} />
-                  <Bar dataKey="leads" fill="#22c55e" name="Leads" radius={[4, 4, 0, 0]} activeBar={{ fill: '#22c55e', opacity: 0.85 }} />
+                  <Bar dataKey="leads" fill="#22c55e" name="Clientes" radius={[4, 4, 0, 0]} activeBar={{ fill: '#22c55e', opacity: 0.85 }} />
                   <Bar dataKey="negociacoes" fill="#4f46e5" name="Negociações" radius={[4, 4, 0, 0]} activeBar={{ fill: '#4f46e5', opacity: 0.85 }} />
                 </BarChart>
               </ResponsiveContainer>
@@ -266,7 +266,7 @@ export default function DashboardPage() {
             {/* Leads por Temperatura */}
             {data && (
               <div className="bg-surface p-5 rounded-xl shadow-sm border border-edge-light">
-                <h3 className="font-bold text-gray-900 text-sm mb-4">Leads por Temperatura</h3>
+                <h3 className="font-bold text-gray-900 text-sm mb-4">Clientes por Temperatura</h3>
                 <div className="space-y-3">
                   <div className="flex items-center justify-between">
                     <span className="text-sm text-gray-700 font-medium flex items-center gap-2">
@@ -313,7 +313,7 @@ export default function DashboardPage() {
                   </div>
                   {meta.meta_leads && (
                     <div className="flex items-center justify-between text-xs">
-                      <span className="text-gray-600 font-medium">Leads</span>
+                      <span className="text-gray-600 font-medium">Clientes</span>
                       <span className="text-gray-800 font-semibold">{meta.progresso_leads}/{meta.meta_leads}</span>
                     </div>
                   )}
@@ -420,7 +420,7 @@ export default function DashboardPage() {
                 className="flex items-center gap-2.5 p-3 rounded-lg bg-green-50 text-green-700 hover:bg-green-100 transition-colors"
               >
                 <UserPlus className="w-4 h-4" />
-                <span className="text-sm font-medium">Novo Lead</span>
+                <span className="text-sm font-medium">Novo Cliente</span>
               </Link>
               <Link
                 href="/dashboard/imoveis?new=true"

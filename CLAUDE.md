@@ -4955,6 +4955,13 @@ Conforme Art. 39 da LGPD: *"O operador deverá realizar o tratamento segundo as 
     - Especificações: PNG/JPG/WebP/SVG, máx 2MB, 600×200px recomendado, mín 300×100px, fundo transparente
   - Formulário de registro: campo opcional de logomarca com preview em tempo real; `logo_url` salva no tenant na criação (bug: campo era ignorado no `tx.tenant.create`, corrigido)
 - **Fix gráfico dashboard**: hover do Recharts corrigido com `cursor={{ fill: 'rgba(0,0,0,0.04)' }}` e `activeBar` props
+- **Cookie de sessão**: token armazenado como session cookie (sem max-age), destruído ao fechar o browser ou fazer logout. `last_tenant` cookie (90 dias) preservado no logout para redirecionar ao /login do tenant correto na próxima visita.
+
+**Versão 1.6.2** (fevereiro de 2026):
+- Substituição completa de "Lead/Leads" por "Cliente/Clientes" em toda a interface do usuário (frontend only)
+  - 15 arquivos alterados: layout.tsx, dashboard/page.tsx, leads/page.tsx, leads/importar/page.tsx, agendamentos/page.tsx, negociacoes/page.tsx, metas/page.tsx, tarefas/page.tsx, whatsapp/page.tsx, gerencial/page.tsx, meu-desempenho/page.tsx, MetaWidget.tsx, ReportDownloadButton.tsx, app/layout.tsx, login/page.tsx
+  - Sem alterações no backend, rotas, variáveis, chaves de API ou endpoints
+  - Textos alterados: labels, títulos, botões, mensagens de estado vazio, gráficos (name=), menus de navegação, placeholders, headers de tabela
 
 **Versão 1.6.1** (fevereiro de 2026):
 - Profissionalização completa de TODAS as páginas do dashboard e componentes

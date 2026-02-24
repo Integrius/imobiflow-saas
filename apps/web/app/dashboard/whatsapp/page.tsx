@@ -174,7 +174,7 @@ export default function WhatsAppConfigPage() {
           </div>
           <div className="bg-surface rounded-xl shadow-sm p-4 border border-edge-light">
             <div className="text-2xl font-bold text-[#A97E6F]">{stats.leads_from_whatsapp}</div>
-            <div className="text-sm text-[#8B7F76]">Leads via WhatsApp</div>
+            <div className="text-sm text-[#8B7F76]">Clientes via WhatsApp</div>
           </div>
         </div>
       )}

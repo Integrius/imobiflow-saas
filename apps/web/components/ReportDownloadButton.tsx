@@ -21,7 +21,7 @@ export default function ReportDownloadButton({
   const getDefaultLabel = () => {
     switch (reportType) {
       case 'leads':
-        return 'Relatório de Leads'
+        return 'Relatório de Clientes'
       case 'corretor':
         return 'Relatório de Desempenho'
       case 'tenant':

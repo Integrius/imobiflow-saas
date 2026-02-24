@@ -468,7 +468,7 @@ export default function AgendamentosPage() {
       <Modal isOpen={showModal} onClose={() => setShowModal(false)} title="Novo Agendamento de Visita">
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm font-bold text-content mb-1">Lead *</label>
+            <label className="block text-sm font-bold text-content mb-1">Cliente *</label>
             <select
               value={formData.lead_id}
               onChange={(e) => setFormData({ ...formData, lead_id: e.target.value })}
@@ -620,9 +620,9 @@ export default function AgendamentosPage() {
               <p className="text-sm text-green-600">{selectedAgendamento.duracao_minutos} minutos</p>
             </div>
 
-            {/* Lead */}
+            {/* Cliente */}
             <div className="bg-surface-secondary rounded-lg p-4">
-              <p className="text-xs text-content-secondary font-bold uppercase mb-1">Lead</p>
+              <p className="text-xs text-content-secondary font-bold uppercase mb-1">Cliente</p>
               <p className="font-bold text-content">{selectedAgendamento.lead.nome}</p>
               <p className="text-sm text-content-secondary">{selectedAgendamento.lead.telefone}</p>
               {selectedAgendamento.lead.email && (
@@ -652,7 +652,7 @@ export default function AgendamentosPage() {
                 <div className="flex gap-4">
                   <div className="flex items-center gap-2">
                     {selectedAgendamento.confirmado_lead ? <CheckCircle2 className="w-4 h-4 text-green-500" /> : <Clock className="w-4 h-4 text-yellow-500" />}
-                    <span className="text-sm text-content">Lead</span>
+                    <span className="text-sm text-content">Cliente</span>
                   </div>
                   <div className="flex items-center gap-2">
                     {selectedAgendamento.confirmado_corretor ? <CheckCircle2 className="w-4 h-4 text-green-500" /> : <Clock className="w-4 h-4 text-yellow-500" />}
@@ -679,7 +679,7 @@ export default function AgendamentosPage() {
             )}
             {selectedAgendamento.nota_lead && (
               <div className="bg-purple-50 rounded-lg p-4">
-                <p className="text-xs text-purple-600 font-bold uppercase mb-1">Nota do Lead</p>
+                <p className="text-xs text-purple-600 font-bold uppercase mb-1">Nota do Cliente</p>
                 <p className="text-lg font-bold text-purple-700">
                   {'★'.repeat(selectedAgendamento.nota_lead)}{'☆'.repeat(5 - selectedAgendamento.nota_lead)}
                   <span className="text-sm ml-2">{selectedAgendamento.nota_lead}/5</span>
@@ -703,7 +703,7 @@ export default function AgendamentosPage() {
                     onClick={() => handleConfirmar(selectedAgendamento, 'LEAD')}
                     className="flex-1 px-4 py-2.5 bg-blue-50 text-blue-700 rounded-lg font-bold hover:bg-blue-100 transition-colors text-sm"
                   >
-                    Confirmar (Lead)
+                    Confirmar (Cliente)
                   </button>
                   <button
                     onClick={() => handleConfirmar(selectedAgendamento, 'CORRETOR')}
@@ -787,7 +787,7 @@ export default function AgendamentosPage() {
       <Modal isOpen={showFeedbackModal} onClose={() => { setShowFeedbackModal(false); setFeedbackData({ feedback_corretor: '', feedback_lead: '', nota_lead: 5 }) }} title="Feedback da Visita">
         <div className="space-y-4">
           <div>
-            <label className="block text-sm font-bold text-content mb-1">Nota do Lead (1-5)</label>
+            <label className="block text-sm font-bold text-content mb-1">Nota do Cliente (1-5)</label>
             <div className="flex gap-2">
               {[1, 2, 3, 4, 5].map(nota => (
                 <button
@@ -808,18 +808,18 @@ export default function AgendamentosPage() {
               value={feedbackData.feedback_corretor}
               onChange={(e) => setFeedbackData({ ...feedbackData, feedback_corretor: e.target.value })}
               rows={3}
-              placeholder="Como foi a visita? O lead demonstrou interesse?"
+              placeholder="Como foi a visita? O cliente demonstrou interesse?"
               className="w-full px-3 py-2 border border-edge rounded-lg text-sm text-content bg-surface placeholder:text-content-tertiary focus:ring-2 focus:ring-green-500 focus:border-transparent outline-none resize-none"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-bold text-content mb-1">Feedback do Lead</label>
+            <label className="block text-sm font-bold text-content mb-1">Feedback do Cliente</label>
             <textarea
               value={feedbackData.feedback_lead}
               onChange={(e) => setFeedbackData({ ...feedbackData, feedback_lead: e.target.value })}
               rows={3}
-              placeholder="O que o lead achou do imóvel?"
+              placeholder="O que o cliente achou do imóvel?"
               className="w-full px-3 py-2 border border-edge rounded-lg text-sm text-content bg-surface placeholder:text-content-tertiary focus:ring-2 focus:ring-green-500 focus:border-transparent outline-none resize-none"
             />
           </div>

@@ -199,7 +199,7 @@ export default function LoginPage() {
                 </div>
                 <div>
                   <h3 className="text-[#064E3B] font-semibold text-sm">Gestão Completa</h3>
-                  <p className="text-gray-600 text-xs">Leads, imóveis e negociações</p>
+                  <p className="text-gray-600 text-xs">Clientes, imóveis e negociações</p>
                 </div>
               </div>
             </div>

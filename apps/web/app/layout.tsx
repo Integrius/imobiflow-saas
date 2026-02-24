@@ -5,7 +5,7 @@ import { ThemeProvider } from "@/components/ThemeProvider";
 import CookieBannerWrapper from "@/components/CookieBannerWrapper";
 
 export const metadata: Metadata = {
-  title: 'CRM Imobiliário com IA | Gestão de Leads para Imobiliárias | Integrius',
+  title: 'CRM Imobiliário com IA | Gestão de Clientes para Imobiliárias | Integrius',
   description: 'Sistema de CRM imobiliário com inteligência artificial. Automatize a gestão de leads, acompanhe negociações e aumente suas vendas. Teste grátis por 14 dias.',
   keywords: [
     'CRM imobiliário',

@@ -565,7 +565,7 @@ export default function TarefasPage() {
 
               <div>
                 <label className="block text-sm font-bold text-content mb-1">
-                  Lead Relacionado
+                  Cliente Relacionado
                 </label>
                 <select
                   value={formData.lead_id}

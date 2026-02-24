@@ -142,7 +142,7 @@ export default function DashboardLayout({
       key: 'comercial',
       title: 'Comercial',
       items: [
-        { name: 'Leads', href: '/dashboard/leads', icon: Users },
+        { name: 'Clientes', href: '/dashboard/leads', icon: Users },
         { name: 'Negociações', href: '/dashboard/negociacoes', icon: Handshake },
         { name: 'Agendamentos', href: '/dashboard/agendamentos', icon: CalendarDays },
         { name: 'Imóveis', href: '/dashboard/imoveis', icon: Building2 },
@@ -196,7 +196,7 @@ export default function DashboardLayout({
       key: 'comercial',
       title: 'Comercial',
       items: [
-        { name: 'Leads', href: '/dashboard/leads', icon: Users },
+        { name: 'Clientes', href: '/dashboard/leads', icon: Users },
         { name: 'Negociações', href: '/dashboard/negociacoes', icon: Handshake },
         { name: 'Agendamentos', href: '/dashboard/agendamentos', icon: CalendarDays },
         { name: 'Imóveis', href: '/dashboard/imoveis', icon: Building2 },

@@ -363,7 +363,7 @@ export default function MetasPage() {
             <thead className="bg-surface-secondary">
               <tr>
                 <th className="px-6 py-4 text-left text-sm font-bold text-[#064E3B]">Corretor</th>
-                <th className="px-6 py-4 text-center text-sm font-bold text-[#064E3B]">Leads</th>
+                <th className="px-6 py-4 text-center text-sm font-bold text-[#064E3B]">Clientes</th>
                 <th className="px-6 py-4 text-center text-sm font-bold text-[#064E3B]">Visitas</th>
                 <th className="px-6 py-4 text-center text-sm font-bold text-[#064E3B]">Propostas</th>
                 <th className="px-6 py-4 text-center text-sm font-bold text-[#064E3B]">Fechamentos</th>
@@ -559,7 +559,7 @@ export default function MetasPage() {
               {/* Grid de Metas */}
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-bold text-[#064E3B] mb-1">Meta de Leads</label>
+                  <label className="block text-sm font-bold text-[#064E3B] mb-1">Meta de Clientes</label>
                   <input
                     type="number"
                     value={formData.meta_leads}
