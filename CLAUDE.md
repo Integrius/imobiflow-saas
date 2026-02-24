@@ -102,7 +102,9 @@ Conectar leads (pessoas procurando imóveis) com corretores e imobiliárias de f
 - **Rotas**: `/api/v1/pagamentos` (webhook, assinar, assinatura, cancelar, historico)
 - **Env vars**: MERCADOPAGO_ACCESS_TOKEN, MERCADOPAGO_PLAN_BASICO/_PRO/_ENTERPRISE, MERCADOPAGO_WEBHOOK_SECRET
 - **Webhook URL**: https://imobiflow-saas-1.onrender.com/api/v1/pagamentos/webhook
-- **Frontend**: `/dashboard/planos` (página de gestão de assinatura)
+- **Frontend**: `/dashboard/planos` — visão diferenciada por status do tenant:
+  - **TRIAL / SUSPENSO / INATIVO**: grid com os 3 planos e botão de assinatura (redireciona para MP checkout via `POST /pagamentos/assinar`)
+  - **ATIVO** (plano pago): plano atual + seção "Alterar Plano" (cards dos outros planos) + histórico de pagamentos. Ao selecionar novo plano, modal de confirmação com comparativo de preços e features → botão "Ir para Pagamento" → redirect para MP checkout
 
 ---
 
