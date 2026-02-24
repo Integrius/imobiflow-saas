@@ -7,6 +7,7 @@ export const createTenantSchema = z.object({
     .regex(/^[a-z0-9-]+$/, 'Slug deve conter apenas letras minúsculas, números e hífens'),
   email: z.string().email('Email inválido'),
   telefone: z.string().optional(),
+  logo_url: z.string().url().optional(),
   plano: z.enum(['BASICO', 'PRO', 'ENTERPRISE', 'CUSTOM']).default('BASICO'),
   // Dados do usuário admin
   adminNome: z.string().min(3, 'Nome do admin deve ter no mínimo 3 caracteres').optional(),
