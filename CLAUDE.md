@@ -4725,6 +4725,11 @@ Conforme Art. 39 da LGPD: *"O operador deverá realizar o tratamento segundo as 
 **Versão**: 1.17.0
 **Status**: Em produção ✅
 
+**Novidades da versão 1.18.0** (25 de fevereiro de 2026):
+- Migração do banco para suportar estrutura avançada de imóveis conforme regrasDoNegocio.md
+- 30 tipos de imóvel, 3 novos enums, 12 novos campos em Imovel, nova tabela TipoImovelConfig
+- Schema Zod expandido e alinhado com o banco
+
 **Novidades da versão 1.17.0** (19 de fevereiro de 2026):
 - ✅ **Dark/Light Mode com next-themes e CSS Variables**
 - ✅ ThemeProvider (`next-themes`) integrado no root layout com suporte a `light`, `dark` e `system`
@@ -4921,6 +4926,18 @@ Conforme Art. 39 da LGPD: *"O operador deverá realizar o tratamento segundo as 
   - Placeholders de busca sem emoji (antes: "🔍 Buscar...", agora: "Buscar...")
   - Badges de tipo sem emoji (Admin, Gestor, Corretor em vez de 👑📋🏠)
   - Temperatura de leads: texto "Q/M/F" em vez de 🔥⚡❄️
+
+**Versão 1.18.0** (25 de fevereiro de 2026):
+- **Migração de Banco de Dados — Regras de Negócio v1**
+  - Novos enums: `MacroCategoriaImovel` (RESIDENCIAL, COMERCIAL, RURAL, TERRENO), `StatusMobilia` (VAZIO, SEMIMOBILIADO, MOBILIADO, PORTEIRA_FECHADA), `PosicaoSolar` (NASCENTE, POENTE, NASCENTE_POENTE)
+  - `TipoImovel` expandido de 10 para 30 valores: adicionados STUDIO, FLAT, CASA_DE_VILA, EDICULA, SALA_COMERCIAL, LAJE_CORPORATIVA, LOJA_RUA, LOJA_SHOPPING, CASA_COMERCIAL, QUIOSQUE, GALPAO, DEPOSITO, FAZENDA, SITIO, HARAS, GLEBA, LOTE_CONDOMINIO, LOTE_RUA, TERRENO_INDUSTRIAL, AREA_INCORPORACAO
+  - `Proprietario`: adicionados campos `rg String?` e `endereco Json?`
+  - `Imovel`: adicionados 12 campos: `macro_categoria`, `area_util`, `posicao_solar`, `status_mobilia`, `pe_direito`, `matricula`, `inscricao_imobiliaria`, `coordenadas_gps`, `planta_baixa_url`, `atributos_extras`, `descricao_amigavel`; índice em `macro_categoria`
+  - Nova tabela `TipoImovelConfig`: permite ao admin de cada tenant ativar/desativar tipos de imóvel e atributos visíveis
+  - `imoveis.schema.ts` Zod atualizado: novos enum schemas, `caracteristicasSchema` expandido (amenidades, lazer, comercial, rural), `createImovelSchema` com todos os novos campos, `filterImoveisSchema` com `macro_categoria`, novos tipos exportados
+  - Inconsistência `vagas` vs `vagas_garagem` corrigida (ambos aceitos no schema Zod)
+  - Migration aplicada via `prisma db push` ✅
+  - Arquivos: `apps/api/prisma/schema.prisma`, `apps/api/src/modules/imoveis/imoveis.schema.ts`
 
 **Versão 1.17.0** (fevereiro de 2026):
 - Implementação completa de **Dark/Light mode** com `next-themes`

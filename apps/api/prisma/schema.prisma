@@ -70,9 +70,10 @@ model Tenant {
   activity_logs    ActivityLog[]
   lead_interactions LeadInteraction[]
   metas            Meta[]
-  whatsapp_config  WhatsAppConfig?
-  notifications    Notification[]
-  tarefas          Tarefa[]
+  whatsapp_config     WhatsAppConfig?
+  notifications       Notification[]
+  tarefas             Tarefa[]
+  tipo_imovel_configs TipoImovelConfig[]
 
   @@index([slug])
   @@index([plano])
@@ -546,6 +547,7 @@ model Proprietario {
   // Dados pessoais
   nome        String
   cpf_cnpj    String
+  rg          String?    // Documento de identidade (RG)
   tipo_pessoa TipoPessoa @default(FISICA)
 
   // Contato
@@ -553,6 +555,9 @@ model Proprietario {
   telefone            String
   telefone_secundario String?
   contato             Json?
+
+  // Endereço residencial
+  endereco Json? // { logradouro, numero, complemento, bairro, cidade, estado, cep }
 
   // Configurações financeiras
   forma_pagamento     String  @default("PIX")
@@ -590,9 +595,10 @@ model Imovel {
   codigo String
 
   // Tipo e categoria
-  tipo      TipoImovel
-  categoria CategoriaImovel
-  status    StatusImovel    @default(DISPONIVEL)
+  tipo            TipoImovel
+  macro_categoria MacroCategoriaImovel?
+  categoria       CategoriaImovel
+  status          StatusImovel @default(DISPONIVEL)
 
   // Endereço
   endereco Json
@@ -601,14 +607,32 @@ model Imovel {
   caracteristicas Json
 
   // Descrição
-  titulo       String
-  descricao    String   @db.Text
-  diferenciais String[]
+  titulo             String
+  descricao          String  @db.Text
+  descricao_amigavel String? @db.Text // Gerada pela IA Sofia para anúncios automáticos
+  diferenciais       String[]
+
+  // Características físicas avançadas
+  area_util     Decimal?     @db.Decimal(10, 2) // Área privativa/útil (m²)
+  posicao_solar PosicaoSolar?
+  status_mobilia StatusMobilia?
+  pe_direito    Decimal?     @db.Decimal(5, 2)  // Altura livre em metros
+
+  // Documentação registral
+  matricula             String? // Matrícula no cartório de registro de imóveis
+  inscricao_imobiliaria String? // Inscrição imobiliária (IPTU)
+
+  // Localização georreferenciada
+  coordenadas_gps Json? // { lat: number, lng: number }
+
+  // Campos específicos por nicho (CAR, CCIR, testada, recursos hídricos, etc.)
+  atributos_extras Json?
 
   // Mídia
   fotos        String[]
   video_url    String?
   tour_360_url String?
+  planta_baixa_url String?
 
   // Documentos
   documentos String[]
@@ -644,6 +668,7 @@ model Imovel {
   @@unique([tenant_id, codigo])
   @@index([tenant_id])
   @@index([tipo])
+  @@index([macro_categoria])
   @@index([categoria])
   @@index([status])
   @@index([proprietario_id])
@@ -652,22 +677,69 @@ model Imovel {
 }
 
 enum TipoImovel {
+  // Residencial
   APARTAMENTO
   CASA
-  TERRENO
-  COMERCIAL
-  RURAL
-  CHACARA
   SOBRADO
   COBERTURA
   LOFT
   KITNET
+  STUDIO
+  FLAT          // Apart-hotel
+  CASA_DE_VILA
+  EDICULA
+
+  // Comercial
+  COMERCIAL     // Legado — manter para compatibilidade
+  SALA_COMERCIAL
+  LAJE_CORPORATIVA
+  LOJA_RUA
+  LOJA_SHOPPING
+  CASA_COMERCIAL
+  QUIOSQUE
+  GALPAO
+  DEPOSITO
+
+  // Rural
+  RURAL         // Legado — manter para compatibilidade
+  CHACARA
+  FAZENDA
+  SITIO
+  HARAS
+  GLEBA
+
+  // Terrenos
+  TERRENO       // Legado — manter para compatibilidade
+  LOTE_CONDOMINIO
+  LOTE_RUA
+  TERRENO_INDUSTRIAL
+  AREA_INCORPORACAO
 }
 
 enum CategoriaImovel {
   VENDA
   LOCACAO
   TEMPORADA
+}
+
+enum MacroCategoriaImovel {
+  RESIDENCIAL
+  COMERCIAL
+  RURAL
+  TERRENO
+}
+
+enum StatusMobilia {
+  VAZIO
+  SEMIMOBILIADO
+  MOBILIADO
+  PORTEIRA_FECHADA
+}
+
+enum PosicaoSolar {
+  NASCENTE
+  POENTE
+  NASCENTE_POENTE
 }
 
 enum TipoNegocio {
@@ -684,6 +756,34 @@ enum StatusImovel {
   ALUGADO
   INATIVO
   MANUTENCAO
+}
+
+// ============================================
+// CONFIGURAÇÃO DE TIPOS DE IMÓVEL POR TENANT
+// ============================================
+
+model TipoImovelConfig {
+  id String @id @default(uuid())
+
+  // Multi-tenant
+  tenant_id String
+  tenant    Tenant @relation(fields: [tenant_id], references: [id], onDelete: Cascade)
+
+  // Tipo de imóvel configurado
+  tipo  TipoImovel
+  ativo Boolean    @default(true)
+
+  // Quais atributos extras ficam visíveis para este tipo
+  // Ex: ["car", "ccir", "testada", "recursos_hidricos"] para imóveis rurais
+  atributos_visiveis String[]
+
+  // Timestamps
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  @@unique([tenant_id, tipo])
+  @@index([tenant_id])
+  @@map("tipo_imovel_configs")
 }
 
 // ============================================

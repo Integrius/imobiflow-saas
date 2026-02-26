@@ -12,11 +12,20 @@ interface Proprietario {
   nome: string;
   cpf_cnpj: string;
   tipo_pessoa: 'FISICA' | 'JURIDICA';
+  rg?: string;
   contato: {
     telefone_principal: string;
     email?: string;
   };
-  endereco?: string;
+  endereco?: {
+    logradouro?: string;
+    numero?: string;
+    complemento?: string;
+    bairro?: string;
+    cidade?: string;
+    estado?: string;
+    cep?: string;
+  };
   corretor?: {
     id: string;
     user: {
@@ -31,7 +40,14 @@ interface ProprietarioForm {
   telefone: string;
   cpf_cnpj: string;
   tipo_pessoa: string;
-  endereco: string;
+  rg: string;
+  end_logradouro: string;
+  end_numero: string;
+  end_complemento: string;
+  end_bairro: string;
+  end_cidade: string;
+  end_estado: string;
+  end_cep: string;
 }
 
 interface Imovel {
@@ -78,7 +94,14 @@ export default function ProprietariosPage() {
     telefone: '',
     cpf_cnpj: '',
     tipo_pessoa: 'FISICA',
-    endereco: '',
+    rg: '',
+    end_logradouro: '',
+    end_numero: '',
+    end_complemento: '',
+    end_bairro: '',
+    end_cidade: '',
+    end_estado: '',
+    end_cep: '',
   });
 
   useEffect(() => {
@@ -148,7 +171,14 @@ export default function ProprietariosPage() {
       telefone: '',
       cpf_cnpj: '',
       tipo_pessoa: 'FISICA',
-      endereco: '',
+      rg: '',
+      end_logradouro: '',
+      end_numero: '',
+      end_complemento: '',
+      end_bairro: '',
+      end_cidade: '',
+      end_estado: '',
+      end_cep: '',
     });
     setOriginalFormData(null);
     setHasUnsavedChanges(false);
@@ -194,6 +224,7 @@ export default function ProprietariosPage() {
 
   const openEditModal = (proprietario: Proprietario) => {
     setEditingProprietario(proprietario);
+    const end = typeof proprietario.endereco === 'object' ? proprietario.endereco : {};
     const formDataToSet = {
       nome: proprietario.nome,
       email: proprietario.contato?.email || '',
@@ -202,7 +233,14 @@ export default function ProprietariosPage() {
         ? formatCPF(proprietario.cpf_cnpj)
         : formatCNPJ(proprietario.cpf_cnpj),
       tipo_pessoa: proprietario.tipo_pessoa,
-      endereco: proprietario.endereco || '',
+      rg: proprietario.rg || '',
+      end_logradouro: end?.logradouro || '',
+      end_numero: end?.numero || '',
+      end_complemento: end?.complemento || '',
+      end_bairro: end?.bairro || '',
+      end_cidade: end?.cidade || '',
+      end_estado: end?.estado || '',
+      end_cep: end?.cep || '',
     };
     setFormData(formDataToSet);
     setOriginalFormData({ ...formDataToSet });
@@ -221,7 +259,16 @@ export default function ProprietariosPage() {
 
     try {
       // Transformar dados do formulário para o formato da API
-      const payload = {
+      const endereco: Record<string, string> = {};
+      if (formData.end_logradouro) endereco.logradouro = formData.end_logradouro;
+      if (formData.end_numero) endereco.numero = formData.end_numero;
+      if (formData.end_complemento) endereco.complemento = formData.end_complemento;
+      if (formData.end_bairro) endereco.bairro = formData.end_bairro;
+      if (formData.end_cidade) endereco.cidade = formData.end_cidade;
+      if (formData.end_estado) endereco.estado = formData.end_estado;
+      if (formData.end_cep) endereco.cep = formData.end_cep.replace(/\D/g, '');
+
+      const payload: any = {
         nome: formData.nome,
         cpf_cnpj: formData.cpf_cnpj.replace(/\D/g, ''), // Remove caracteres não numéricos
         tipo_pessoa: formData.tipo_pessoa,
@@ -230,6 +277,9 @@ export default function ProprietariosPage() {
           email: formData.email,
         },
       };
+
+      if (formData.rg) payload.rg = formData.rg;
+      if (Object.keys(endereco).length > 0) payload.endereco = endereco;
 
       if (editingProprietario) {
         await api.put(`/proprietarios/${editingProprietario.id}`, payload);
@@ -405,7 +455,7 @@ export default function ProprietariosPage() {
         isOpen={modalOpen}
         onClose={handleCloseModal}
         title={editingProprietario ? 'Consultar Proprietário' : 'Novo Proprietário'}
-        size="lg"
+        size="xl"
       >
         {/* Resumo de Vinculações - apenas quando editando */}
         {editingProprietario && (
@@ -512,6 +562,21 @@ export default function ProprietariosPage() {
               />
             </div>
 
+            {formData.tipo_pessoa === 'FISICA' && (
+              <div>
+                <label className="block text-sm font-bold text-content mb-2">
+                  RG
+                </label>
+                <input
+                  type="text"
+                  value={formData.rg}
+                  onChange={(e) => handleFormChange('rg', e.target.value)}
+                  className="w-full px-3 py-2 border border-edge rounded-lg text-content bg-surface focus:ring-2 focus:ring-brand/30 focus:border-transparent"
+                  placeholder="00.000.000-0"
+                />
+              </div>
+            )}
+
             <div>
               <label className="block text-sm font-bold text-content mb-2">
                 Email *
@@ -539,16 +604,69 @@ export default function ProprietariosPage() {
               />
             </div>
 
-            <div className="col-span-2">
-              <label className="block text-sm font-bold text-content mb-2">
-                Endereço
-              </label>
-              <input
-                type="text"
-                value={formData.endereco}
-                onChange={(e) => handleFormChange('endereco', e.target.value)}
-                className="w-full px-3 py-2 border border-edge rounded-lg text-content bg-surface focus:ring-2 focus:ring-brand/30 focus:border-transparent"
-              />
+            {/* Endereço Estruturado */}
+            <div className="col-span-2 border-t border-edge-light pt-4 mt-2">
+              <p className="text-xs font-bold text-content-secondary uppercase tracking-wider mb-3">Endereço</p>
+              <div className="grid grid-cols-3 gap-3">
+                <div className="col-span-2">
+                  <label className="block text-sm font-bold text-content mb-1">Logradouro</label>
+                  <input
+                    type="text"
+                    placeholder="Rua, Av., Travessa..."
+                    value={formData.end_logradouro}
+                    onChange={(e) => handleFormChange('end_logradouro', e.target.value)}
+                    className="w-full px-3 py-2 border border-edge rounded-lg text-content bg-surface focus:ring-2 focus:ring-brand/30 focus:border-transparent"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-bold text-content mb-1">Número</label>
+                  <input
+                    type="text"
+                    value={formData.end_numero}
+                    onChange={(e) => handleFormChange('end_numero', e.target.value)}
+                    className="w-full px-3 py-2 border border-edge rounded-lg text-content bg-surface focus:ring-2 focus:ring-brand/30 focus:border-transparent"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-bold text-content mb-1">Complemento</label>
+                  <input
+                    type="text"
+                    placeholder="Apto, Bloco..."
+                    value={formData.end_complemento}
+                    onChange={(e) => handleFormChange('end_complemento', e.target.value)}
+                    className="w-full px-3 py-2 border border-edge rounded-lg text-content bg-surface focus:ring-2 focus:ring-brand/30 focus:border-transparent"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-bold text-content mb-1">Bairro</label>
+                  <input
+                    type="text"
+                    value={formData.end_bairro}
+                    onChange={(e) => handleFormChange('end_bairro', e.target.value)}
+                    className="w-full px-3 py-2 border border-edge rounded-lg text-content bg-surface focus:ring-2 focus:ring-brand/30 focus:border-transparent"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-bold text-content mb-1">Cidade</label>
+                  <input
+                    type="text"
+                    value={formData.end_cidade}
+                    onChange={(e) => handleFormChange('end_cidade', e.target.value)}
+                    className="w-full px-3 py-2 border border-edge rounded-lg text-content bg-surface focus:ring-2 focus:ring-brand/30 focus:border-transparent"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-bold text-content mb-1">Estado</label>
+                  <input
+                    type="text"
+                    maxLength={2}
+                    placeholder="UF"
+                    value={formData.end_estado}
+                    onChange={(e) => handleFormChange('end_estado', e.target.value.toUpperCase())}
+                    className="w-full px-3 py-2 border border-edge rounded-lg text-content bg-surface focus:ring-2 focus:ring-brand/30 focus:border-transparent"
+                  />
+                </div>
+              </div>
             </div>
           </div>
 
