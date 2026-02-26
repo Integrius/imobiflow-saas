@@ -184,7 +184,7 @@ export const createImovelSchema = z.object({
   }).optional().nullable(),
 
   // Campos de nicho (CAR, CCIR, testada de terreno, etc.)
-  atributos_extras: z.record(z.unknown()).optional().nullable(),
+  atributos_extras: z.record(z.string(), z.unknown()).optional().nullable(),
 
   // Valores financeiros
   preco:      z.number().positive(),

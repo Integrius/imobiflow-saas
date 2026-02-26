@@ -14,7 +14,7 @@ export class ImoveisRepository {
         titulo: data.titulo,
         descricao: data.descricao,
         endereco: data.endereco,
-        caracteristicas: data.caracteristicas,
+        caracteristicas: data.caracteristicas as any,
         preco: data.preco,
         condominio: data.condominio,
         iptu: data.iptu,
