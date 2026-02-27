@@ -4728,6 +4728,9 @@ Conforme Art. 39 da LGPD: *"O operador deverá realizar o tratamento segundo as 
 **Novidades da versão 1.18.2** (27 de fevereiro de 2026):
 - Fix dark mode: `leads/page.tsx` e `metas/page.tsx` — substituídos todos os hardcoded gray/hex (`text-gray-*`, `border-gray-*`, `#064E3B`, `#00C48C`, `#374151`, etc.) por tokens semânticos (`text-content`, `bg-surface`, `border-edge`, `focus:ring-brand/30`, etc.)
 - Fix dark mode crítico: `components/Modal.tsx` — container usava `bg-white` e `border-gray-200` hardcoded; corrigido para `bg-surface` e `border-edge-light` (afetava TODOS os modais do sistema)
+- Fix bug: erro 400 ao cadastrar imóvel — campo `endereco` único com regex de vírgula substituído por dois campos separados `logradouro` e `numero` no formulário; `numero` agora opcional no schema Zod
+- Fix bug: `descricao` exigia `min(50)` no backend sem validação visual — agora opcional no schema
+- Fix bug: `titulo` exigia `min(10)` — reduzido para `min(3)`
 
 **Novidades da versão 1.18.1** (26 de fevereiro de 2026):
 - Fix bug: campo `rg` adicionado ao Zod schema de proprietários (era descartado pelo backend)

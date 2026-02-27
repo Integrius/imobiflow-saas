@@ -118,7 +118,8 @@ interface ImovelForm {
   tipo: string;
   categoria: string;
   macro_categoria: string;
-  endereco: string;
+  logradouro: string;
+  numero: string;
   bairro: string;
   cidade: string;
   estado: string;
@@ -164,7 +165,8 @@ const FORM_INICIAL: ImovelForm = {
   tipo: 'APARTAMENTO',
   categoria: 'VENDA',
   macro_categoria: 'RESIDENCIAL',
-  endereco: '',
+  logradouro: '',
+  numero: '',
   bairro: '',
   cidade: '',
   estado: '',
@@ -330,7 +332,8 @@ export default function ImoveisPage() {
       tipo: imovel.tipo || 'APARTAMENTO',
       categoria: imovel.categoria || 'VENDA',
       macro_categoria: imovel.macro_categoria || 'RESIDENCIAL',
-      endereco: `${imovel.endereco?.logradouro || ''}, ${imovel.endereco?.numero || ''}`,
+      logradouro: imovel.endereco?.logradouro || '',
+      numero: imovel.endereco?.numero || '',
       bairro: imovel.endereco?.bairro || '',
       cidade: imovel.endereco?.cidade || '',
       estado: imovel.endereco?.estado || '',
@@ -372,19 +375,14 @@ export default function ImoveisPage() {
     setSubmitting(true);
 
     try {
-      // Extrai logradouro e número do campo endereco combinado
-      const enderecoMatch = formData.endereco.match(/^(.*?),\s*(.*)$/);
-      const logradouro = enderecoMatch ? enderecoMatch[1].trim() : formData.endereco;
-      const numero = enderecoMatch ? enderecoMatch[2].trim() : '';
-
       const payload: any = {
         titulo: formData.titulo,
-        descricao: formData.descricao,
+        descricao: formData.descricao || undefined,
         tipo: formData.tipo,
         categoria: formData.categoria,
         endereco: {
-          logradouro,
-          numero,
+          logradouro: formData.logradouro || undefined,
+          numero: formData.numero || undefined,
           bairro: formData.bairro || undefined,
           cidade: formData.cidade,
           estado: formData.estado,
@@ -815,14 +813,24 @@ export default function ImoveisPage() {
               Endereço
             </h4>
             <div className="grid grid-cols-2 gap-4">
-              <div className="col-span-2">
-                <label className="block text-sm font-bold text-content mb-1">Logradouro e Número *</label>
+              <div>
+                <label className="block text-sm font-bold text-content mb-1">Logradouro</label>
                 <input
                   type="text"
-                  required
-                  placeholder="Ex: Rua das Flores, 123"
-                  value={formData.endereco}
-                  onChange={(e) => handleFormChange('endereco', e.target.value)}
+                  placeholder="Ex: Rua das Flores"
+                  value={formData.logradouro}
+                  onChange={(e) => handleFormChange('logradouro', e.target.value)}
+                  className="w-full px-3 py-2 border border-edge rounded-lg text-content bg-surface focus:ring-2 focus:ring-brand/30 focus:border-transparent"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-bold text-content mb-1">Número</label>
+                <input
+                  type="text"
+                  placeholder="Ex: 123 ou S/N"
+                  value={formData.numero}
+                  onChange={(e) => handleFormChange('numero', e.target.value)}
                   className="w-full px-3 py-2 border border-edge rounded-lg text-content bg-surface focus:ring-2 focus:ring-brand/30 focus:border-transparent"
                 />
               </div>

@@ -135,7 +135,7 @@ export const caracteristicasSchema = z.object({
 export const enderecoSchema = z.object({
   cep:         z.string().regex(/^\d{8}$/, 'CEP deve ter 8 dígitos numéricos (sem hífen)'),
   logradouro:  z.string().min(3, 'Logradouro deve ter pelo menos 3 caracteres').optional(),
-  numero:      z.string().min(1, 'Número do imóvel é obrigatório'),
+  numero:      z.string().optional().nullable(),
   complemento: z.string().optional().nullable(),
   bairro:      z.string().min(2, 'Bairro deve ter pelo menos 2 caracteres').optional().nullable(),
   cidade:      z.string().min(2, 'Cidade deve ter pelo menos 2 caracteres').optional().nullable(),
@@ -156,8 +156,8 @@ export const createImovelSchema = z.object({
   categoria: categoriaImovelSchema,
 
   // Descrição
-  titulo:             z.string().min(10).max(200),
-  descricao:          z.string().min(50).max(5000),
+  titulo:             z.string().min(3).max(200),
+  descricao:          z.string().max(5000).optional().nullable(),
   descricao_amigavel: z.string().max(2000).optional().nullable(),
   diferenciais:       z.array(z.string()).optional().default([]),
 
