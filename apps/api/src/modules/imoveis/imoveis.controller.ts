@@ -1,5 +1,5 @@
 import { FastifyRequest, FastifyReply } from 'fastify'
-import { AppError } from '../../shared/errors/app-error'
+import { AppError } from '../../shared/errors/AppError'
 import { ImoveisService } from './imoveis.service'
 import {
   createImovelSchema,

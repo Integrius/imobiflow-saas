@@ -4731,6 +4731,8 @@ Conforme Art. 39 da LGPD: *"O operador deverá realizar o tratamento segundo as 
 - Fix bug: erro 400 ao cadastrar imóvel — campo `endereco` único com regex de vírgula substituído por dois campos separados `logradouro` e `numero` no formulário; `numero` agora opcional no schema Zod
 - Fix bug: `descricao` exigia `min(50)` no backend sem validação visual — agora opcional no schema
 - Fix bug: `titulo` exigia `min(10)` — reduzido para `min(3)`
+- Fix bug crítico: `imoveis.controller.ts` importava `AppError` de `app-error.ts` (lowercase) enquanto o service usa `AppError.ts` (uppercase) — no Linux (FS case-sensitive) são classes diferentes, fazendo `instanceof AppError` retornar sempre `false` e erros 400 (CEP inválido, código duplicado, etc.) serem retornados como 500
+- Fix deploy Render: `imoveis.repository.ts` — `descricao: data.descricao ?? ''` para evitar erro TS (`string | null | undefined` não atribuível a `string`)
 
 **Novidades da versão 1.18.1** (26 de fevereiro de 2026):
 - Fix bug: campo `rg` adicionado ao Zod schema de proprietários (era descartado pelo backend)
