@@ -4733,6 +4733,7 @@ Conforme Art. 39 da LGPD: *"O operador deverá realizar o tratamento segundo as 
 - Fix bug: `titulo` exigia `min(10)` — reduzido para `min(3)`
 - Fix bug crítico: `imoveis.controller.ts` importava `AppError` de `app-error.ts` (lowercase) enquanto o service usa `AppError.ts` (uppercase) — no Linux (FS case-sensitive) são classes diferentes, fazendo `instanceof AppError` retornar sempre `false` e erros 400 (CEP inválido, código duplicado, etc.) serem retornados como 500
 - Fix deploy Render: `imoveis.repository.ts` — `descricao: data.descricao ?? ''` para evitar erro TS (`string | null | undefined` não atribuível a `string`)
+- Limite de upload de fotos de imóveis aumentado de 5MB para 10MB (server.ts, imoveis.controller.ts, ImageUpload.tsx)
 
 **Novidades da versão 1.18.1** (26 de fevereiro de 2026):
 - Fix bug: campo `rg` adicionado ao Zod schema de proprietários (era descartado pelo backend)

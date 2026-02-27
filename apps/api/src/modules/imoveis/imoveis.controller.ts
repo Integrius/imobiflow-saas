@@ -115,11 +115,11 @@ export class ImoveisController {
         return reply.status(400).send({ error: 'Tipo de arquivo inválido. Use JPG, PNG ou WebP' })
       }
 
-      // Valida tamanho (max 5MB)
+      // Valida tamanho (max 10MB)
       const buffer = await data.toBuffer()
-      const maxSize = 5 * 1024 * 1024 // 5MB
+      const maxSize = 10 * 1024 * 1024 // 10MB
       if (buffer.length > maxSize) {
-        return reply.status(400).send({ error: 'Arquivo muito grande. Tamanho máximo: 5MB' })
+        return reply.status(400).send({ error: 'Arquivo muito grande. Tamanho máximo: 10MB' })
       }
 
       // Upload para Cloudinary

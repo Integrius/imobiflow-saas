@@ -74,9 +74,9 @@ export default function ImageUpload({
       return;
     }
 
-    // Validação de tamanho (5MB)
-    if (file.size > 5 * 1024 * 1024) {
-      alert('Arquivo muito grande. Tamanho máximo: 5MB');
+    // Validação de tamanho (10MB)
+    if (file.size > 10 * 1024 * 1024) {
+      alert('Arquivo muito grande. Tamanho máximo: 10MB');
       return;
     }
 
@@ -288,7 +288,7 @@ export default function ImageUpload({
               Clique para enviar ou arraste e solte
             </p>
             <p className="mt-1 text-xs text-[#8B7F76]">
-              PNG, JPG, WebP até 5MB
+              PNG, JPG, WebP até 10MB
             </p>
           </div>
         )}
