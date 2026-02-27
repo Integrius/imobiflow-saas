@@ -4727,6 +4727,7 @@ Conforme Art. 39 da LGPD: *"O operador deverá realizar o tratamento segundo as 
 
 **Novidades da versão 1.18.2** (27 de fevereiro de 2026):
 - Fix dark mode: `leads/page.tsx` e `metas/page.tsx` — substituídos todos os hardcoded gray/hex (`text-gray-*`, `border-gray-*`, `#064E3B`, `#00C48C`, `#374151`, etc.) por tokens semânticos (`text-content`, `bg-surface`, `border-edge`, `focus:ring-brand/30`, etc.)
+- Fix dark mode crítico: `components/Modal.tsx` — container usava `bg-white` e `border-gray-200` hardcoded; corrigido para `bg-surface` e `border-edge-light` (afetava TODOS os modais do sistema)
 
 **Novidades da versão 1.18.1** (26 de fevereiro de 2026):
 - Fix bug: campo `rg` adicionado ao Zod schema de proprietários (era descartado pelo backend)

@@ -26,7 +26,7 @@ export default function Modal({ isOpen, onClose, title, children, size = 'md' }:
       />
 
       {/* Modal */}
-      <div className={`relative bg-white rounded-xl shadow-2xl transform transition-all ${sizeClasses[size]} w-full max-h-[90vh] flex flex-col border border-gray-200`}>
+      <div className={`relative bg-surface rounded-xl shadow-2xl transform transition-all ${sizeClasses[size]} w-full max-h-[90vh] flex flex-col border border-edge-light`}>
         {/* Header - Fixed */}
         <div className="bg-gradient-to-r from-[#064E3B] to-[#065F46] px-6 pt-6 pb-5 border-b border-white/10 flex-shrink-0 rounded-t-xl">
           <div className="flex items-center justify-between">
@@ -43,7 +43,7 @@ export default function Modal({ isOpen, onClose, title, children, size = 'md' }:
         </div>
 
         {/* Content - Scrollable */}
-        <div className="overflow-y-auto flex-1 px-6 py-6 bg-white">{children}</div>
+        <div className="overflow-y-auto flex-1 px-6 py-6 bg-surface">{children}</div>
       </div>
     </div>
   );
