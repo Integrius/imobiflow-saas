@@ -12,7 +12,7 @@ export class ImoveisRepository {
         tipo: data.tipo,
         categoria: data.categoria,
         titulo: data.titulo,
-        descricao: data.descricao,
+        descricao: data.descricao ?? '',
         endereco: data.endereco,
         caracteristicas: data.caracteristicas as any,
         preco: data.preco,
