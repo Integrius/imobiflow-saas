@@ -16,7 +16,7 @@ export class ProprietariosRepository {
         telefone: data.contato.telefone_principal,
         telefone_secundario: data.contato.telefone_secundario,
         contato: data.contato,
-        endereco: data.endereco || null,
+        endereco: data.endereco as any,
         forma_pagamento: data.forma_pagamento,
         banco: data.dados_bancarios || {},
       },
