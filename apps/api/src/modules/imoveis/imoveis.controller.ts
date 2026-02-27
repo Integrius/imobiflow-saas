@@ -1,4 +1,5 @@
 import { FastifyRequest, FastifyReply } from 'fastify'
+import { AppError } from '../../shared/errors/app-error'
 import { ImoveisService } from './imoveis.service'
 import {
   createImovelSchema,
@@ -37,6 +38,12 @@ export class ImoveisController {
       return reply.status(201).send(imovel)
     } catch (error: any) {
       console.error('Erro ao criar imóvel:', error)
+      if (error instanceof AppError) {
+        return reply.status(error.statusCode).send({
+          error: error.message,
+          code: error.code
+        })
+      }
       return reply.status(500).send({
         error: 'Erro ao criar imóvel',
         mensagem: error.message
