@@ -286,8 +286,8 @@ export default function LeadsPage() {
       {/* KPIs - Cards minimalistas */}
       <div className="grid grid-cols-4 gap-4">
         <div className="bg-surface p-4 rounded-xl shadow-sm border border-edge-light">
-          <span className="text-xs font-bold text-gray-600 uppercase tracking-wide">Total</span>
-          <div className="text-3xl font-bold text-gray-900 mt-1">{leads.length}</div>
+          <span className="text-xs font-bold text-content-secondary uppercase tracking-wide">Total</span>
+          <div className="text-3xl font-bold text-content mt-1">{leads.length}</div>
         </div>
         <div className="bg-surface p-4 rounded-xl shadow-sm border border-edge-light">
           <span className="text-xs font-bold text-red-600 uppercase tracking-wide">Quentes</span>
@@ -311,7 +311,7 @@ export default function LeadsPage() {
           {/* Barra de busca e ações */}
           <div className="flex gap-3">
             <div className="flex-1 relative">
-              <svg xmlns="http://www.w3.org/2000/svg" className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <svg xmlns="http://www.w3.org/2000/svg" className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-content-tertiary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
               </svg>
               <input
@@ -319,12 +319,12 @@ export default function LeadsPage() {
                 placeholder="Buscar por nome, email ou telefone..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-10 pr-4 py-2.5 border border-gray-200 rounded-lg text-sm font-medium focus:ring-2 focus:ring-green-500 focus:border-transparent placeholder:text-gray-400 placeholder:font-normal"
+                className="w-full pl-10 pr-4 py-2.5 border border-edge rounded-lg text-sm font-medium text-content bg-surface focus:ring-2 focus:ring-brand/30 focus:border-transparent placeholder:text-content-tertiary placeholder:font-normal"
               />
             </div>
             <Link
               href="/dashboard/leads/importar"
-              className="px-4 py-2.5 border border-gray-200 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors flex items-center gap-2 text-sm font-semibold"
+              className="px-4 py-2.5 border border-edge text-content-secondary rounded-lg hover:bg-surface-secondary transition-colors flex items-center gap-2 text-sm font-semibold"
             >
               <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
@@ -334,7 +334,7 @@ export default function LeadsPage() {
             <ReportDownloadButton
               reportType="leads"
               label="PDF"
-              className="bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold"
+              className="bg-surface-secondary hover:bg-surface-tertiary text-content-secondary font-semibold"
             />
           </div>
 
@@ -468,22 +468,22 @@ export default function LeadsPage() {
 
           {/* Resumo por Origem */}
           <div className="bg-surface p-5 rounded-xl shadow-sm border border-edge-light">
-            <h3 className="font-bold text-gray-900 text-sm mb-3">Por Origem</h3>
+            <h3 className="font-bold text-content text-sm mb-3">Por Origem</h3>
             <div className="space-y-2.5 text-sm">
               {['SITE', 'WHATSAPP', 'INDICACAO', 'REDES_SOCIAIS', 'TELEFONE'].map(origem => {
                 const count = leads.filter(l => l.origem === origem).length;
                 if (count === 0) return null;
                 return (
                   <div key={origem} className="flex justify-between items-center">
-                    <span className="font-medium text-gray-700">{origem.replace('_', ' ')}</span>
-                    <span className="font-bold text-gray-900">{count}</span>
+                    <span className="font-medium text-content-secondary">{origem.replace('_', ' ')}</span>
+                    <span className="font-bold text-content">{count}</span>
                   </div>
                 );
               })}
               {leads.filter(l => !l.origem).length > 0 && (
                 <div className="flex justify-between items-center">
-                  <span className="font-medium text-gray-700">Não definido</span>
-                  <span className="font-bold text-gray-900">{leads.filter(l => !l.origem).length}</span>
+                  <span className="font-medium text-content-secondary">Não definido</span>
+                  <span className="font-bold text-content">{leads.filter(l => !l.origem).length}</span>
                 </div>
               )}
             </div>
@@ -501,48 +501,48 @@ export default function LeadsPage() {
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* Dados Básicos */}
           <div className="space-y-4">
-            <h4 className="text-sm font-bold text-gray-900 border-b border-gray-100 pb-2">Dados Básicos</h4>
+            <h4 className="text-sm font-bold text-content border-b border-edge-light pb-2">Dados Básicos</h4>
             <div className="grid grid-cols-2 gap-4">
               <div className="col-span-2">
-                <label className="block text-xs font-bold text-gray-600 uppercase mb-1.5">Nome *</label>
+                <label className="block text-xs font-bold text-content-secondary uppercase mb-1.5">Nome *</label>
                 <input
                   type="text"
                   required
                   value={formData.nome}
                   onChange={(e) => handleFormChange('nome', e.target.value)}
-                  className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm font-medium focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                  className="w-full px-3 py-2.5 border border-edge rounded-lg text-sm font-medium text-content bg-surface focus:ring-2 focus:ring-brand/30 focus:border-transparent"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-gray-600 uppercase mb-1.5">Email *</label>
+                <label className="block text-xs font-bold text-content-secondary uppercase mb-1.5">Email *</label>
                 <input
                   type="email"
                   required
                   value={formData.email}
                   onChange={(e) => handleFormChange('email', e.target.value)}
-                  className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm font-medium focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                  className="w-full px-3 py-2.5 border border-edge rounded-lg text-sm font-medium text-content bg-surface focus:ring-2 focus:ring-brand/30 focus:border-transparent"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-gray-600 uppercase mb-1.5">Telefone *</label>
+                <label className="block text-xs font-bold text-content-secondary uppercase mb-1.5">Telefone *</label>
                 <input
                   type="tel"
                   required
                   placeholder="(00) 00000-0000"
                   value={formData.telefone}
                   onChange={(e) => handleFormChange('telefone', e.target.value)}
-                  className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm font-medium focus:ring-2 focus:ring-green-500 focus:border-transparent placeholder:font-normal"
+                  className="w-full px-3 py-2.5 border border-edge rounded-lg text-sm font-medium focus:ring-2 focus:ring-brand/30 focus:border-transparent placeholder:font-normal"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-gray-600 uppercase mb-1.5">Status</label>
+                <label className="block text-xs font-bold text-content-secondary uppercase mb-1.5">Status</label>
                 <select
                   value={formData.status}
                   onChange={(e) => handleFormChange('status', e.target.value)}
-                  className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm font-medium focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                  className="w-full px-3 py-2.5 border border-edge rounded-lg text-sm font-medium text-content bg-surface focus:ring-2 focus:ring-brand/30 focus:border-transparent"
                 >
                   <option value="FRIO">Frio</option>
                   <option value="MORNO">Morno</option>
@@ -551,11 +551,11 @@ export default function LeadsPage() {
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-gray-600 uppercase mb-1.5">Origem</label>
+                <label className="block text-xs font-bold text-content-secondary uppercase mb-1.5">Origem</label>
                 <select
                   value={formData.origem}
                   onChange={(e) => handleFormChange('origem', e.target.value)}
-                  className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm font-medium focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                  className="w-full px-3 py-2.5 border border-edge rounded-lg text-sm font-medium text-content bg-surface focus:ring-2 focus:ring-brand/30 focus:border-transparent"
                 >
                   <option value="SITE">Site</option>
                   <option value="INDICACAO">Indicação</option>
@@ -569,10 +569,10 @@ export default function LeadsPage() {
 
           {/* Perfil do Cliente */}
           <div className="space-y-4">
-            <h4 className="text-sm font-bold text-gray-900 border-b border-gray-100 pb-2">Perfil do Cliente</h4>
+            <h4 className="text-sm font-bold text-content border-b border-edge-light pb-2">Perfil do Cliente</h4>
             <div className="grid grid-cols-2 gap-4">
               <div className="col-span-2">
-                <label className="block text-xs font-bold text-gray-600 uppercase mb-2">Tipo *</label>
+                <label className="block text-xs font-bold text-content-secondary uppercase mb-2">Tipo *</label>
                 <div className="grid grid-cols-2 gap-3">
                   <label className={`flex items-center p-3 border rounded-lg cursor-pointer transition-all ${
                     formData.perfil === 'PROPRIETARIO'
@@ -608,7 +608,7 @@ export default function LeadsPage() {
               </div>
 
               <div className="col-span-2">
-                <label className="block text-xs font-bold text-gray-600 uppercase mb-2">Finalidade *</label>
+                <label className="block text-xs font-bold text-content-secondary uppercase mb-2">Finalidade *</label>
                 <div className="grid grid-cols-2 gap-3">
                   <label className={`flex items-center p-3 border rounded-lg cursor-pointer transition-all ${
                     formData.interesse.finalidade === 'VENDA'
@@ -644,10 +644,10 @@ export default function LeadsPage() {
               </div>
 
               <div className="col-span-2">
-                <label className="block text-xs font-bold text-gray-600 uppercase mb-2">Formas de Pagamento</label>
+                <label className="block text-xs font-bold text-content-secondary uppercase mb-2">Formas de Pagamento</label>
                 <div className="grid grid-cols-2 gap-2">
                   {['À Vista', 'Financiamento Bancário', 'Carta de Crédito', 'Consórcio', 'Permuta'].map((forma) => (
-                    <label key={forma} className="flex items-center p-2.5 bg-white border border-gray-200 rounded-lg hover:border-green-300 cursor-pointer transition-all">
+                    <label key={forma} className="flex items-center p-2.5 bg-surface border border-edge rounded-lg hover:border-brand/30 cursor-pointer transition-all">
                       <input
                         type="checkbox"
                         checked={formData.interesse.forma_pagamento.includes(forma)}
@@ -659,7 +659,7 @@ export default function LeadsPage() {
                         }}
                         className="mr-2 text-green-600"
                       />
-                      <span className="text-sm font-medium text-gray-700">{forma}</span>
+                      <span className="text-sm font-medium text-content-secondary">{forma}</span>
                     </label>
                   ))}
                 </div>
@@ -669,13 +669,13 @@ export default function LeadsPage() {
 
           {/* Observações */}
           <div className="space-y-4">
-            <h4 className="text-sm font-bold text-gray-900 border-b border-gray-100 pb-2">Observações</h4>
+            <h4 className="text-sm font-bold text-content border-b border-edge-light pb-2">Observações</h4>
             <textarea
               rows={3}
               value={formData.observacoes}
               onChange={(e) => handleFormChange('observacoes', e.target.value)}
               placeholder="Informações adicionais sobre o lead..."
-              className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm font-medium focus:ring-2 focus:ring-green-500 focus:border-transparent placeholder:text-gray-400 placeholder:font-normal"
+              className="w-full px-3 py-2.5 border border-edge rounded-lg text-sm font-medium focus:ring-2 focus:ring-brand/30 focus:border-transparent placeholder:text-content-tertiary placeholder:font-normal"
             />
           </div>
 
@@ -684,7 +684,7 @@ export default function LeadsPage() {
             <>
               {/* Ações Rápidas */}
               <div className="bg-gradient-to-br from-indigo-50 to-purple-50 p-4 rounded-xl border border-indigo-100">
-                <h4 className="text-sm font-bold text-gray-900 mb-3 flex items-center gap-2">
+                <h4 className="text-sm font-bold text-content mb-3 flex items-center gap-2">
                   <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
                   </svg>
@@ -714,8 +714,8 @@ export default function LeadsPage() {
               </div>
 
               {/* Vinculações */}
-              <div className="bg-gray-50 p-4 rounded-xl border border-gray-100">
-                <h4 className="text-sm font-bold text-gray-900 mb-3">Informações</h4>
+              <div className="bg-surface-secondary p-4 rounded-xl border border-edge-light">
+                <h4 className="text-sm font-bold text-content mb-3">Informações</h4>
 
                 {loadingDetails ? (
                   <div className="flex justify-center py-4">
@@ -723,24 +723,24 @@ export default function LeadsPage() {
                   </div>
                 ) : (
                   <div className="grid grid-cols-3 gap-3">
-                    <div className="bg-white p-3 rounded-lg border border-gray-100">
-                      <div className="text-xs font-bold text-gray-600 uppercase mb-1">Corretor</div>
+                    <div className="bg-surface p-3 rounded-lg border border-edge-light">
+                      <div className="text-xs font-bold text-content-secondary uppercase mb-1">Corretor</div>
                       {editingLead.corretor ? (
-                        <div className="text-sm font-semibold text-gray-900">{editingLead.corretor.user.nome}</div>
+                        <div className="text-sm font-semibold text-content">{editingLead.corretor.user.nome}</div>
                       ) : (
-                        <div className="text-sm font-medium text-gray-400">Não atribuído</div>
+                        <div className="text-sm font-medium text-content-tertiary">Não atribuído</div>
                       )}
                     </div>
 
-                    <div className="bg-white p-3 rounded-lg border border-gray-100">
-                      <div className="text-xs font-bold text-gray-600 uppercase mb-1">Negociações</div>
+                    <div className="bg-surface p-3 rounded-lg border border-edge-light">
+                      <div className="text-xs font-bold text-content-secondary uppercase mb-1">Negociações</div>
                       <div className="text-xl font-bold text-green-600">
                         {editingLead.negociacoes?.length || 0}
                       </div>
                     </div>
 
-                    <div className="bg-white p-3 rounded-lg border border-gray-100">
-                      <div className="text-xs font-bold text-gray-600 uppercase mb-1">Propostas</div>
+                    <div className="bg-surface p-3 rounded-lg border border-edge-light">
+                      <div className="text-xs font-bold text-content-secondary uppercase mb-1">Propostas</div>
                       <div className="text-xl font-bold text-green-600">
                         {leadDetails.totalPropostas}
                       </div>
@@ -750,7 +750,7 @@ export default function LeadsPage() {
               </div>
 
               {/* Timeline de Interações */}
-              <div className="bg-white p-4 rounded-xl border border-gray-100">
+              <div className="bg-surface p-4 rounded-xl border border-edge-light">
                 <TimelineInteracoes
                   leadId={editingLead.id}
                   leadNome={editingLead.nome}
@@ -764,11 +764,11 @@ export default function LeadsPage() {
             </>
           )}
 
-          <div className="flex justify-end gap-3 pt-4 border-t border-gray-100">
+          <div className="flex justify-end gap-3 pt-4 border-t border-edge-light">
             <button
               type="button"
               onClick={handleCloseModal}
-              className="px-4 py-2.5 text-sm font-semibold text-gray-700 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
+              className="px-4 py-2.5 text-sm font-semibold text-content-secondary border border-edge rounded-lg hover:bg-surface-secondary transition-colors"
             >
               Cancelar
             </button>
@@ -791,15 +791,15 @@ export default function LeadsPage() {
         size="sm"
       >
         <div className="space-y-4">
-          <p className="text-gray-700 text-sm font-medium">
-            Tem certeza que deseja excluir o cliente <strong className="text-gray-900">{deletingLead?.nome}</strong>?
+          <p className="text-content-secondary text-sm font-medium">
+            Tem certeza que deseja excluir o cliente <strong className="text-content">{deletingLead?.nome}</strong>?
           </p>
-          <p className="text-xs font-medium text-gray-500">Esta ação não pode ser desfeita.</p>
+          <p className="text-xs font-medium text-content-tertiary">Esta ação não pode ser desfeita.</p>
 
-          <div className="flex justify-end gap-3 pt-4 border-t border-gray-100">
+          <div className="flex justify-end gap-3 pt-4 border-t border-edge-light">
             <button
               onClick={() => setDeleteModalOpen(false)}
-              className="px-4 py-2.5 text-sm font-semibold text-gray-700 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
+              className="px-4 py-2.5 text-sm font-semibold text-content-secondary border border-edge rounded-lg hover:bg-surface-secondary transition-colors"
             >
               Cancelar
             </button>

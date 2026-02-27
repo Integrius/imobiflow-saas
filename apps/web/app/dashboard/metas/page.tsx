@@ -238,7 +238,7 @@ export default function MetasPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#00C48C]"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-brand"></div>
       </div>
     );
   }
@@ -247,10 +247,10 @@ export default function MetasPage() {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
         <div className="text-center">
-          <p className="text-[#FF6B6B] mb-4 font-bold">{error}</p>
+          <p className="text-red-500 mb-4 font-bold">{error}</p>
           <button
             onClick={() => window.location.reload()}
-            className="px-4 py-2.5 bg-[#00C48C] text-white rounded-lg font-bold hover:bg-[#059669] transition-colors"
+            className="px-4 py-2.5 bg-brand text-white rounded-lg font-bold hover:bg-brand/80 transition-colors"
           >
             Tentar Novamente
           </button>
@@ -264,8 +264,8 @@ export default function MetasPage() {
       {/* Header */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
-          <h2 className="text-4xl font-bold text-[#064E3B] tracking-tight">Metas de Corretores</h2>
-          <p className="text-[#374151] mt-2 text-lg font-medium">Defina e acompanhe metas mensais do time</p>
+          <h2 className="text-4xl font-bold text-content tracking-tight">Metas de Corretores</h2>
+          <p className="text-content-secondary mt-2 text-lg font-medium">Defina e acompanhe metas mensais do time</p>
         </div>
 
         <div className="flex items-center gap-4">
@@ -273,7 +273,7 @@ export default function MetasPage() {
           <select
             value={mesAno.mes}
             onChange={(e) => setMesAno({ ...mesAno, mes: parseInt(e.target.value) })}
-            className="px-4 py-2 border border-edge rounded-lg focus:ring-2 focus:ring-[#00C48C] focus:border-transparent"
+            className="px-4 py-2 border border-edge rounded-lg focus:ring-2 focus:ring-brand/30 focus:border-transparent"
           >
             {MESES.map((mes, index) => (
               <option key={index} value={index + 1}>{mes}</option>
@@ -283,7 +283,7 @@ export default function MetasPage() {
           <select
             value={mesAno.ano}
             onChange={(e) => setMesAno({ ...mesAno, ano: parseInt(e.target.value) })}
-            className="px-4 py-2 border border-edge rounded-lg focus:ring-2 focus:ring-[#00C48C] focus:border-transparent"
+            className="px-4 py-2 border border-edge rounded-lg focus:ring-2 focus:ring-brand/30 focus:border-transparent"
           >
             {[2024, 2025, 2026, 2027].map((ano) => (
               <option key={ano} value={ano}>{ano}</option>
@@ -292,7 +292,7 @@ export default function MetasPage() {
 
           <button
             onClick={handleAtualizarProgresso}
-            className="px-4 py-2.5 bg-[#059669] text-white rounded-lg font-bold hover:bg-[#047857] transition-colors"
+            className="px-4 py-2.5 bg-brand text-white rounded-lg font-bold hover:bg-brand/80 transition-colors"
           >
             <RefreshCw className="w-4 h-4 inline mr-1" /> Atualizar
           </button>
@@ -302,40 +302,40 @@ export default function MetasPage() {
       {/* Cards de Estatísticas */}
       {resumo && (
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-          <div className="bg-surface rounded-xl p-6 shadow-lg border-2 border-[#00C48C]/20">
+          <div className="bg-surface rounded-xl p-6 shadow-lg border-2 border-brand/20">
             <div className="flex items-center justify-between mb-2">
-              <Users className="w-5 h-5 text-[#00C48C]" />
-              <span className="text-xs font-bold text-[#00C48C] uppercase">Corretores</span>
+              <Users className="w-5 h-5 text-brand" />
+              <span className="text-xs font-bold text-brand uppercase">Corretores</span>
             </div>
-            <div className="text-3xl font-bold text-[#064E3B]">{resumo.estatisticas.totalCorretoresComMeta}</div>
-            <p className="text-sm text-[#374151] font-medium">com metas definidas</p>
+            <div className="text-3xl font-bold text-content">{resumo.estatisticas.totalCorretoresComMeta}</div>
+            <p className="text-sm text-content-secondary font-medium">com metas definidas</p>
           </div>
 
-          <div className="bg-surface rounded-xl p-6 shadow-lg border-2 border-[#059669]/20">
+          <div className="bg-surface rounded-xl p-6 shadow-lg border-2 border-brand/20">
             <div className="flex items-center justify-between mb-2">
-              <Target className="w-5 h-5 text-[#059669]" />
-              <span className="text-xs font-bold text-[#059669] uppercase">Atingidas</span>
+              <Target className="w-5 h-5 text-brand" />
+              <span className="text-xs font-bold text-brand uppercase">Atingidas</span>
             </div>
-            <div className="text-3xl font-bold text-[#064E3B]">{resumo.estatisticas.metasAtingidas}</div>
-            <p className="text-sm text-[#374151] font-medium">{resumo.estatisticas.percentualAtingimento}% do total</p>
+            <div className="text-3xl font-bold text-content">{resumo.estatisticas.metasAtingidas}</div>
+            <p className="text-sm text-content-secondary font-medium">{resumo.estatisticas.percentualAtingimento}% do total</p>
           </div>
 
-          <div className="bg-surface rounded-xl p-6 shadow-lg border-2 border-[#FFB627]/20">
+          <div className="bg-surface rounded-xl p-6 shadow-lg border-2 border-amber-500/20">
             <div className="flex items-center justify-between mb-2">
-              <BarChart3 className="w-5 h-5 text-[#FFB627]" />
-              <span className="text-xs font-bold text-[#FFB627] uppercase">Média</span>
+              <BarChart3 className="w-5 h-5 text-amber-500" />
+              <span className="text-xs font-bold text-amber-500 uppercase">Média</span>
             </div>
-            <div className="text-3xl font-bold text-[#064E3B]">{resumo.estatisticas.mediaProgresso}%</div>
-            <p className="text-sm text-[#374151] font-medium">progresso médio</p>
+            <div className="text-3xl font-bold text-content">{resumo.estatisticas.mediaProgresso}%</div>
+            <p className="text-sm text-content-secondary font-medium">progresso médio</p>
           </div>
 
-          <div className="bg-surface rounded-xl p-6 shadow-lg border-2 border-[#8B5CF6]/20">
+          <div className="bg-surface rounded-xl p-6 shadow-lg border-2 border-violet-500/20">
             <div className="flex items-center justify-between mb-2">
-              <CalendarDays className="w-5 h-5 text-[#8B5CF6]" />
-              <span className="text-xs font-bold text-[#8B5CF6] uppercase">Período</span>
+              <CalendarDays className="w-5 h-5 text-violet-500" />
+              <span className="text-xs font-bold text-violet-500 uppercase">Período</span>
             </div>
-            <div className="text-2xl font-bold text-[#064E3B]">{MESES[mesAno.mes - 1]}</div>
-            <p className="text-sm text-[#374151] font-medium">{mesAno.ano}</p>
+            <div className="text-2xl font-bold text-content">{MESES[mesAno.mes - 1]}</div>
+            <p className="text-sm text-content-secondary font-medium">{mesAno.ano}</p>
           </div>
         </div>
       )}
@@ -344,13 +344,13 @@ export default function MetasPage() {
       <div className="flex gap-4">
         <button
           onClick={() => openCreateModal('individual')}
-          className="px-6 py-3 bg-gradient-to-r from-[#00C48C] to-[#059669] text-white rounded-lg font-bold hover:shadow-lg transition-all"
+          className="px-6 py-3 bg-brand text-white rounded-lg font-bold hover:bg-brand/80 hover:shadow-lg transition-all"
         >
           <Plus className="w-4 h-4 inline mr-1" /> Nova Meta Individual
         </button>
         <button
           onClick={() => openCreateModal('lote')}
-          className="px-6 py-3 bg-gradient-to-r from-[#8B5CF6] to-[#7C3AED] text-white rounded-lg font-bold hover:shadow-lg transition-all"
+          className="px-6 py-3 bg-gradient-to-r from-violet-500 to-violet-700 text-white rounded-lg font-bold hover:shadow-lg transition-all"
         >
           <Package className="w-4 h-4 inline mr-1" /> Criar Metas em Lote
         </button>
@@ -362,21 +362,21 @@ export default function MetasPage() {
           <table className="w-full">
             <thead className="bg-surface-secondary">
               <tr>
-                <th className="px-6 py-4 text-left text-sm font-bold text-[#064E3B]">Corretor</th>
-                <th className="px-6 py-4 text-center text-sm font-bold text-[#064E3B]">Clientes</th>
-                <th className="px-6 py-4 text-center text-sm font-bold text-[#064E3B]">Visitas</th>
-                <th className="px-6 py-4 text-center text-sm font-bold text-[#064E3B]">Propostas</th>
-                <th className="px-6 py-4 text-center text-sm font-bold text-[#064E3B]">Fechamentos</th>
-                <th className="px-6 py-4 text-center text-sm font-bold text-[#064E3B]">Valor</th>
-                <th className="px-6 py-4 text-center text-sm font-bold text-[#064E3B]">Geral</th>
-                <th className="px-6 py-4 text-center text-sm font-bold text-[#064E3B]">Status</th>
-                <th className="px-6 py-4 text-center text-sm font-bold text-[#064E3B]">Ações</th>
+                <th className="px-6 py-4 text-left text-sm font-bold text-content">Corretor</th>
+                <th className="px-6 py-4 text-center text-sm font-bold text-content">Clientes</th>
+                <th className="px-6 py-4 text-center text-sm font-bold text-content">Visitas</th>
+                <th className="px-6 py-4 text-center text-sm font-bold text-content">Propostas</th>
+                <th className="px-6 py-4 text-center text-sm font-bold text-content">Fechamentos</th>
+                <th className="px-6 py-4 text-center text-sm font-bold text-content">Valor</th>
+                <th className="px-6 py-4 text-center text-sm font-bold text-content">Geral</th>
+                <th className="px-6 py-4 text-center text-sm font-bold text-content">Status</th>
+                <th className="px-6 py-4 text-center text-sm font-bold text-content">Ações</th>
               </tr>
             </thead>
             <tbody>
               {resumo?.todas.length === 0 && (
                 <tr>
-                  <td colSpan={9} className="px-6 py-8 text-center text-[#374151] font-medium">
+                  <td colSpan={9} className="px-6 py-8 text-center text-content-secondary font-medium">
                     Nenhuma meta definida para este período
                   </td>
                 </tr>
@@ -385,8 +385,8 @@ export default function MetasPage() {
                 <tr key={meta.id} className="border-t hover:bg-surface-secondary transition-colors">
                   <td className="px-6 py-4">
                     <div>
-                      <p className="font-bold text-[#064E3B]">{meta.corretor.user.nome}</p>
-                      <p className="text-xs text-[#374151] font-medium">CRECI: {meta.corretor.creci}</p>
+                      <p className="font-bold text-content">{meta.corretor.user.nome}</p>
+                      <p className="text-xs text-content-secondary font-medium">CRECI: {meta.corretor.creci}</p>
                     </div>
                   </td>
 
@@ -395,7 +395,7 @@ export default function MetasPage() {
                     <div className="text-center">
                       <p className="font-bold">{meta.progresso_leads}/{meta.meta_leads || '-'}</p>
                       {meta.meta_leads && (
-                        <div className="w-full bg-gray-200 rounded-full h-2 mt-1">
+                        <div className="w-full bg-surface-secondary rounded-full h-2 mt-1">
                           <div
                             className={`h-2 rounded-full ${getProgressColor(meta.percentuais.leads)}`}
                             style={{ width: `${Math.min(meta.percentuais.leads, 100)}%` }}
@@ -410,7 +410,7 @@ export default function MetasPage() {
                     <div className="text-center">
                       <p className="font-bold">{meta.progresso_visitas}/{meta.meta_visitas || '-'}</p>
                       {meta.meta_visitas && (
-                        <div className="w-full bg-gray-200 rounded-full h-2 mt-1">
+                        <div className="w-full bg-surface-secondary rounded-full h-2 mt-1">
                           <div
                             className={`h-2 rounded-full ${getProgressColor(meta.percentuais.visitas)}`}
                             style={{ width: `${Math.min(meta.percentuais.visitas, 100)}%` }}
@@ -425,7 +425,7 @@ export default function MetasPage() {
                     <div className="text-center">
                       <p className="font-bold">{meta.progresso_propostas}/{meta.meta_propostas || '-'}</p>
                       {meta.meta_propostas && (
-                        <div className="w-full bg-gray-200 rounded-full h-2 mt-1">
+                        <div className="w-full bg-surface-secondary rounded-full h-2 mt-1">
                           <div
                             className={`h-2 rounded-full ${getProgressColor(meta.percentuais.propostas)}`}
                             style={{ width: `${Math.min(meta.percentuais.propostas, 100)}%` }}
@@ -440,7 +440,7 @@ export default function MetasPage() {
                     <div className="text-center">
                       <p className="font-bold">{meta.progresso_fechamentos}/{meta.meta_fechamentos || '-'}</p>
                       {meta.meta_fechamentos && (
-                        <div className="w-full bg-gray-200 rounded-full h-2 mt-1">
+                        <div className="w-full bg-surface-secondary rounded-full h-2 mt-1">
                           <div
                             className={`h-2 rounded-full ${getProgressColor(meta.percentuais.fechamentos)}`}
                             style={{ width: `${Math.min(meta.percentuais.fechamentos, 100)}%` }}
@@ -456,11 +456,11 @@ export default function MetasPage() {
                       <p className="font-bold text-sm">
                         {formatCurrency(meta.progresso_valor)}
                       </p>
-                      <p className="text-xs text-[#374151] font-medium">
+                      <p className="text-xs text-content-secondary font-medium">
                         / {meta.meta_valor ? formatCurrency(meta.meta_valor) : '-'}
                       </p>
                       {meta.meta_valor && (
-                        <div className="w-full bg-gray-200 rounded-full h-2 mt-1">
+                        <div className="w-full bg-surface-secondary rounded-full h-2 mt-1">
                           <div
                             className={`h-2 rounded-full ${getProgressColor(meta.percentuais.valor)}`}
                             style={{ width: `${Math.min(meta.percentuais.valor, 100)}%` }}
@@ -523,7 +523,7 @@ export default function MetasPage() {
       {showModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
           <div className="bg-surface rounded-xl p-6 w-full max-w-lg shadow-2xl">
-            <h3 className="text-xl font-bold text-[#064E3B] mb-4">
+            <h3 className="text-xl font-bold text-content mb-4">
               {modalMode === 'lote' ? 'Criar Metas em Lote' :
                selectedMeta ? 'Editar Meta' : 'Nova Meta'}
             </h3>
@@ -532,11 +532,11 @@ export default function MetasPage() {
               {/* Seletor de Corretor (apenas para individual) */}
               {modalMode === 'individual' && !selectedMeta && (
                 <div>
-                  <label className="block text-sm font-bold text-[#064E3B] mb-1">Corretor</label>
+                  <label className="block text-sm font-bold text-content mb-1">Corretor</label>
                   <select
                     value={formData.corretor_id}
                     onChange={(e) => setFormData({ ...formData, corretor_id: e.target.value })}
-                    className="w-full px-4 py-2 border border-edge rounded-lg focus:ring-2 focus:ring-[#00C48C] focus:border-transparent"
+                    className="w-full px-4 py-2 border border-edge rounded-lg text-content bg-surface focus:ring-2 focus:ring-brand/30 focus:border-transparent"
                   >
                     <option value="">Selecione um corretor</option>
                     {corretores.map((corretor) => (
@@ -559,56 +559,56 @@ export default function MetasPage() {
               {/* Grid de Metas */}
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-bold text-[#064E3B] mb-1">Meta de Clientes</label>
+                  <label className="block text-sm font-bold text-content mb-1">Meta de Clientes</label>
                   <input
                     type="number"
                     value={formData.meta_leads}
                     onChange={(e) => setFormData({ ...formData, meta_leads: e.target.value })}
-                    className="w-full px-4 py-2 border border-edge rounded-lg focus:ring-2 focus:ring-[#00C48C] focus:border-transparent"
+                    className="w-full px-4 py-2 border border-edge rounded-lg text-content bg-surface focus:ring-2 focus:ring-brand/30 focus:border-transparent"
                     placeholder="Ex: 20"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-bold text-[#064E3B] mb-1">Meta de Visitas</label>
+                  <label className="block text-sm font-bold text-content mb-1">Meta de Visitas</label>
                   <input
                     type="number"
                     value={formData.meta_visitas}
                     onChange={(e) => setFormData({ ...formData, meta_visitas: e.target.value })}
-                    className="w-full px-4 py-2 border border-edge rounded-lg focus:ring-2 focus:ring-[#00C48C] focus:border-transparent"
+                    className="w-full px-4 py-2 border border-edge rounded-lg text-content bg-surface focus:ring-2 focus:ring-brand/30 focus:border-transparent"
                     placeholder="Ex: 15"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-bold text-[#064E3B] mb-1">Meta de Propostas</label>
+                  <label className="block text-sm font-bold text-content mb-1">Meta de Propostas</label>
                   <input
                     type="number"
                     value={formData.meta_propostas}
                     onChange={(e) => setFormData({ ...formData, meta_propostas: e.target.value })}
-                    className="w-full px-4 py-2 border border-edge rounded-lg focus:ring-2 focus:ring-[#00C48C] focus:border-transparent"
+                    className="w-full px-4 py-2 border border-edge rounded-lg text-content bg-surface focus:ring-2 focus:ring-brand/30 focus:border-transparent"
                     placeholder="Ex: 10"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-bold text-[#064E3B] mb-1">Meta de Fechamentos</label>
+                  <label className="block text-sm font-bold text-content mb-1">Meta de Fechamentos</label>
                   <input
                     type="number"
                     value={formData.meta_fechamentos}
                     onChange={(e) => setFormData({ ...formData, meta_fechamentos: e.target.value })}
-                    className="w-full px-4 py-2 border border-edge rounded-lg focus:ring-2 focus:ring-[#00C48C] focus:border-transparent"
+                    className="w-full px-4 py-2 border border-edge rounded-lg text-content bg-surface focus:ring-2 focus:ring-brand/30 focus:border-transparent"
                     placeholder="Ex: 5"
                   />
                 </div>
 
                 <div className="col-span-2">
-                  <label className="block text-sm font-bold text-[#064E3B] mb-1">Meta de Valor (R$)</label>
+                  <label className="block text-sm font-bold text-content mb-1">Meta de Valor (R$)</label>
                   <input
                     type="number"
                     value={formData.meta_valor}
                     onChange={(e) => setFormData({ ...formData, meta_valor: e.target.value })}
-                    className="w-full px-4 py-2 border border-edge rounded-lg focus:ring-2 focus:ring-[#00C48C] focus:border-transparent"
+                    className="w-full px-4 py-2 border border-edge rounded-lg text-content bg-surface focus:ring-2 focus:ring-brand/30 focus:border-transparent"
                     placeholder="Ex: 500000"
                   />
                 </div>
@@ -618,14 +618,14 @@ export default function MetasPage() {
             <div className="flex justify-end gap-4 mt-6">
               <button
                 onClick={() => setShowModal(false)}
-                className="px-4 py-2.5 text-[#374151] font-medium hover:bg-surface-tertiary rounded-lg transition-colors"
+                className="px-4 py-2.5 text-content-secondary font-bold border border-edge rounded-lg hover:bg-surface-secondary transition-colors"
               >
                 Cancelar
               </button>
               <button
                 onClick={handleSave}
                 disabled={saving}
-                className="px-6 py-2.5 bg-gradient-to-r from-[#00C48C] to-[#059669] text-white rounded-lg font-bold hover:shadow-lg transition-all disabled:opacity-50"
+                className="px-6 py-2.5 bg-brand text-white rounded-lg font-bold hover:bg-brand/80 hover:shadow-lg transition-all disabled:opacity-50"
               >
                 {saving ? 'Salvando...' : 'Salvar'}
               </button>

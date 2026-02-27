@@ -4721,9 +4721,12 @@ Conforme Art. 39 da LGPD: *"O operador deverá realizar o tratamento segundo as 
 
 ---
 
-**Última atualização**: 26 de fevereiro de 2026
-**Versão**: 1.18.1
+**Última atualização**: 27 de fevereiro de 2026
+**Versão**: 1.18.2
 **Status**: Em produção ✅
+
+**Novidades da versão 1.18.2** (27 de fevereiro de 2026):
+- Fix dark mode: `leads/page.tsx` e `metas/page.tsx` — substituídos todos os hardcoded gray/hex (`text-gray-*`, `border-gray-*`, `#064E3B`, `#00C48C`, `#374151`, etc.) por tokens semânticos (`text-content`, `bg-surface`, `border-edge`, `focus:ring-brand/30`, etc.)
 
 **Novidades da versão 1.18.1** (26 de fevereiro de 2026):
 - Fix bug: campo `rg` adicionado ao Zod schema de proprietários (era descartado pelo backend)
