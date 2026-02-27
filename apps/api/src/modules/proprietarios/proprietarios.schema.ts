@@ -22,6 +22,7 @@ export const createProprietarioSchema = z.object({
   nome: z.string().min(3).max(200),
   cpf_cnpj: z.string().regex(/^\d{11}$|^\d{14}$/, 'CPF deve ter 11 dígitos ou CNPJ 14 dígitos'),
   tipo_pessoa: z.enum(['FISICA', 'JURIDICA']).default('FISICA'),
+  rg: z.string().optional().nullable(),
   contato: contatoSchema,
   endereco: z.object({
     cep: z.string().regex(/^\d{8}$/).optional(),

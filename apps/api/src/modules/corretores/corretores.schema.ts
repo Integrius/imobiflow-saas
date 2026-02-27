@@ -5,7 +5,7 @@ export const createCorretorSchema = z.object({
   email: z.string().email(),
   telefone: z.string().min(10),
   creci: z.string().min(5).max(20),
-  especialidade: z.string().optional(),
+  especializacoes: z.array(z.string()).optional(),
   comissao: z.number().min(0).max(100).optional(),
   tipo: z.enum(['ADMIN', 'GESTOR', 'CORRETOR']).optional().default('CORRETOR'),
 })
@@ -15,7 +15,7 @@ export const updateCorretorSchema = z.object({
   email: z.string().email().optional(),
   telefone: z.string().min(10).optional(),
   creci: z.string().min(5).max(20).optional(),
-  especialidade: z.string().optional(),
+  especializacoes: z.array(z.string()).optional(),
   comissao: z.number().min(0).max(100).optional(),
   tipo: z.enum(['ADMIN', 'GESTOR', 'CORRETOR']).optional(),
 })

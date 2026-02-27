@@ -27,13 +27,52 @@ import {
   DollarSign,
 } from 'lucide-react';
 
+const TIPOS_POR_MACRO: Record<string, { value: string; label: string }[]> = {
+  RESIDENCIAL: [
+    { value: 'APARTAMENTO', label: 'Apartamento' },
+    { value: 'CASA', label: 'Casa' },
+    { value: 'SOBRADO', label: 'Sobrado' },
+    { value: 'COBERTURA', label: 'Cobertura' },
+    { value: 'LOFT', label: 'Loft' },
+    { value: 'KITNET', label: 'Kitnet' },
+    { value: 'STUDIO', label: 'Studio' },
+    { value: 'FLAT', label: 'Flat' },
+    { value: 'CASA_DE_VILA', label: 'Casa de Vila' },
+    { value: 'EDICULA', label: 'Edícula' },
+  ],
+  COMERCIAL: [
+    { value: 'SALA_COMERCIAL', label: 'Sala Comercial' },
+    { value: 'LAJE_CORPORATIVA', label: 'Laje Corporativa' },
+    { value: 'LOJA_RUA', label: 'Loja de Rua' },
+    { value: 'LOJA_SHOPPING', label: 'Loja em Shopping' },
+    { value: 'CASA_COMERCIAL', label: 'Casa Comercial' },
+    { value: 'QUIOSQUE', label: 'Quiosque' },
+    { value: 'GALPAO', label: 'Galpão' },
+    { value: 'DEPOSITO', label: 'Depósito' },
+  ],
+  RURAL: [
+    { value: 'CHACARA', label: 'Chácara' },
+    { value: 'FAZENDA', label: 'Fazenda' },
+    { value: 'SITIO', label: 'Sítio' },
+    { value: 'HARAS', label: 'Haras' },
+    { value: 'GLEBA', label: 'Gleba' },
+  ],
+  TERRENO: [
+    { value: 'TERRENO', label: 'Terreno' },
+    { value: 'LOTE_CONDOMINIO', label: 'Lote em Condomínio' },
+    { value: 'LOTE_RUA', label: 'Lote de Rua' },
+    { value: 'TERRENO_INDUSTRIAL', label: 'Terreno Industrial' },
+    { value: 'AREA_INCORPORACAO', label: 'Área para Incorporação' },
+  ],
+};
+
 interface Corretor {
   id: string;
   nome: string;
   email: string;
   telefone: string;
   creci: string;
-  especialidade?: string;
+  especializacoes?: string[];
   comissao?: number;
   ativo?: boolean;
   primeiro_acesso?: boolean;
@@ -46,7 +85,7 @@ interface CorretorForm {
   email: string;
   telefone: string;
   creci: string;
-  especialidade: string;
+  especializacoes: string[];
   comissao: string;
   tipo: 'ADMIN' | 'GESTOR' | 'CORRETOR';
 }
@@ -100,7 +139,7 @@ export default function CorretoresPage() {
     email: '',
     telefone: '',
     creci: '',
-    especialidade: '',
+    especializacoes: [],
     comissao: '',
     tipo: 'CORRETOR',
   });
@@ -140,7 +179,7 @@ export default function CorretoresPage() {
       email: '',
       telefone: '',
       creci: '',
-      especialidade: '',
+      especializacoes: [],
       comissao: '',
       tipo: 'CORRETOR',
     });
@@ -205,7 +244,7 @@ export default function CorretoresPage() {
       email: corretor.email,
       telefone: formatPhone(corretor.telefone),
       creci: corretor.creci,
-      especialidade: corretor.especialidade || '',
+      especializacoes: corretor.especializacoes || [],
       comissao: corretor.comissao?.toString() || '',
       tipo: corretor.tipo || 'CORRETOR',
     };
@@ -812,15 +851,38 @@ export default function CorretoresPage() {
 
             <div className="col-span-2">
               <label className="block text-sm font-bold text-content mb-2">
-                Especialidade
+                Especialidades
+                {formData.especializacoes.length > 0 && (
+                  <span className="ml-2 text-xs font-normal bg-brand-light text-brand px-2 py-0.5 rounded-full border border-brand/30">
+                    {formData.especializacoes.length} selecionada{formData.especializacoes.length !== 1 ? 's' : ''}
+                  </span>
+                )}
               </label>
-              <input
-                type="text"
-                value={formData.especialidade}
-                onChange={(e) => handleFormChange('especialidade', e.target.value)}
-                className="w-full px-3 py-2 border border-edge rounded-lg text-content bg-surface focus:ring-2 focus:ring-brand/30 focus:border-transparent"
-                placeholder="Ex: Imóveis comerciais, Apartamentos de luxo..."
-              />
+              <div className="border border-edge rounded-lg p-4 bg-surface-secondary space-y-3 max-h-64 overflow-y-auto">
+                {Object.entries(TIPOS_POR_MACRO).map(([macro, tipos]) => (
+                  <div key={macro}>
+                    <p className="text-xs font-bold text-content-tertiary uppercase tracking-wider mb-2">{macro}</p>
+                    <div className="grid grid-cols-3 gap-1.5">
+                      {tipos.map(({ value, label }) => (
+                        <label key={value} className="flex items-center gap-2 cursor-pointer group">
+                          <input
+                            type="checkbox"
+                            checked={formData.especializacoes.includes(value)}
+                            onChange={(e) => {
+                              const updated = e.target.checked
+                                ? [...formData.especializacoes, value]
+                                : formData.especializacoes.filter(v => v !== value);
+                              handleFormChange('especializacoes', updated);
+                            }}
+                            className="rounded border-edge text-brand focus:ring-brand/30 accent-[var(--color-brand)]"
+                          />
+                          <span className="text-xs text-content-secondary group-hover:text-content transition-colors">{label}</span>
+                        </label>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
 

@@ -11,10 +11,12 @@ export class ProprietariosRepository {
         nome: data.nome,
         cpf_cnpj: data.cpf_cnpj,
         tipo_pessoa: data.tipo_pessoa,
+        rg: data.rg || null,
         email: data.contato.email,
         telefone: data.contato.telefone_principal,
         telefone_secundario: data.contato.telefone_secundario,
         contato: data.contato,
+        endereco: data.endereco || null,
         forma_pagamento: data.forma_pagamento,
         banco: data.dados_bancarios || {},
       },
@@ -116,6 +118,8 @@ export class ProprietariosRepository {
     if (data.cpf_cnpj) updateData.cpf_cnpj = data.cpf_cnpj
     if (data.tipo_pessoa) updateData.tipo_pessoa = data.tipo_pessoa
     if (data.forma_pagamento) updateData.forma_pagamento = data.forma_pagamento
+    if (data.rg !== undefined) updateData.rg = data.rg
+    if (data.endereco !== undefined) updateData.endereco = data.endereco
 
     if (data.contato) {
       updateData.email = data.contato.email

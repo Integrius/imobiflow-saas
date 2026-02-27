@@ -4721,14 +4721,24 @@ Conforme Art. 39 da LGPD: *"O operador deverá realizar o tratamento segundo as 
 
 ---
 
-**Última atualização**: 19 de fevereiro de 2026
-**Versão**: 1.17.0
+**Última atualização**: 26 de fevereiro de 2026
+**Versão**: 1.18.1
 **Status**: Em produção ✅
+
+**Novidades da versão 1.18.1** (26 de fevereiro de 2026):
+- Fix bug: campo `rg` adicionado ao Zod schema de proprietários (era descartado pelo backend)
+- Fix bug: campo `endereco` de proprietários agora mapeado no repository (create + update)
+- Corretor: `especialidade: string` → `especializacoes: string[]` em Zod, repository e frontend
+- Frontend corretores: multiselect de checkboxes agrupado por macro-categoria (Residencial/Comercial/Rural/Terreno)
+- Fix deploy Render: `z.record(z.unknown())` → `z.record(z.string(), z.unknown())` (Zod v4)
+- Fix deploy Render: cast `data.caracteristicas as any` no repository de imóveis (incompatibilidade Prisma InputJsonValue)
 
 **Novidades da versão 1.18.0** (25 de fevereiro de 2026):
 - Migração do banco para suportar estrutura avançada de imóveis conforme regrasDoNegocio.md
 - 30 tipos de imóvel, 3 novos enums, 12 novos campos em Imovel, nova tabela TipoImovelConfig
 - Schema Zod expandido e alinhado com o banco
+- Frontend imoveis/page.tsx: TIPOS_POR_MACRO, multiselect dinâmico, 8 seções de formulário, bug categoria corrigido
+- Frontend proprietarios/page.tsx: campo RG, endereço estruturado, modal xl
 
 **Novidades da versão 1.17.0** (19 de fevereiro de 2026):
 - ✅ **Dark/Light Mode com next-themes e CSS Variables**
